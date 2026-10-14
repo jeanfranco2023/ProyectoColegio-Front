@@ -1,0 +1,213 @@
+<main class="public-page admission-page" id="inicio">
+  <div class="admission-topline"><span>INSTITUCIÓN EDUCATIVA PRIVADA</span><span><i></i> Portal de admisión y matrícula</span></div>
+  <nav class="public-nav" aria-label="Navegación principal">
+    <a class="public-brand" [routerLink]="['/matricula', 'inicio']" aria-label="Shuji Kitamura, inicio">
+      <img class="brand-logo" src="/images/shuji-kitamura-emblema.jpg" alt="Emblema de Shuji Kitamura">
+      <span><strong>I.E.P. Shuji Kitamura</strong><small>Aprender · crecer · trascender</small></span>
+    </a>
+    <div class="admission-nav-links" aria-label="Apartados de admisión">
+      <a [routerLink]="['/matricula', 'propuesta']" routerLinkActive="is-active">Propuesta</a>
+      <a [routerLink]="['/matricula', 'niveles']" routerLinkActive="is-active">Niveles</a>
+      <a [routerLink]="['/matricula', 'admision']" routerLinkActive="is-active">Admisión</a>
+      <a [routerLink]="['/matricula', 'preguntas']" routerLinkActive="is-active">Preguntas</a>
+    </div>
+    <button class="button nav-apply" type="button" (click)="abrirSolicitud()" [disabled]="cargandoCatalogo()">{{ cargandoCatalogo() ? 'Cargando vacantes…' : solicitud()?.estado === 'MATRICULADA' || solicitud()?.estado === 'RECHAZADA' ? 'Iniciar otra solicitud' : solicitud() ? 'Continuar mi trámite' : 'Iniciar matrícula' }} <span aria-hidden="true">↗</span></button>
+  </nav>
+
+  @switch (vista()) {
+  @case ('inicio') {
+  <section class="admission-hero">
+    <div class="hero-copy">
+      <span class="hero-kicker"><i></i> ADMISIÓN · CICLO ESCOLAR</span>
+      <h1 class="admission-title">Aprender hoy.<br><em>Crecer sin límites.</em></h1>
+      <p class="admission-lead">Una comunidad educativa para descubrir talentos, fortalecer conocimientos y construir con confianza el camino de cada estudiante.</p>
+      <div class="hero-actions">
+        <button class="button button-gold" type="button" (click)="abrirSolicitud()" [disabled]="cargandoCatalogo()">{{ cargandoCatalogo() ? 'Cargando vacantes…' : solicitud()?.estado === 'MATRICULADA' || solicitud()?.estado === 'RECHAZADA' ? 'Iniciar otra solicitud' : solicitud() ? 'Continuar mi trámite' : 'Iniciar matrícula' }} <span aria-hidden="true">→</span></button>
+        <a class="hero-secondary" [routerLink]="['/matricula', 'propuesta']"><span>Conoce nuestra propuesta</span><b aria-hidden="true">→</b></a>
+      </div>
+      <div class="hero-trust"><span><i>✓</i> Solicitud en línea</span><span><i>✓</i> Sin crear una cuenta</span><span><i>✓</i> Seguimiento privado</span></div>
+      @if (solicitud()) { <div class="application-status"><span class="status-dot"></span>{{ estadoLabel(solicitud()!.estado) }}</div> }
+      @if (error() && !modal()) { <p class="inline-error">{{ error() }}</p> }
+    </div>
+    <div class="hero-art" aria-label="Identidad de la Institución Educativa Shuji Kitamura">
+      <div class="hero-art-ring hero-art-ring-one"></div><div class="hero-art-ring hero-art-ring-two"></div>
+      <div class="hero-art-spark hero-art-spark-one">✳</div><div class="hero-art-spark hero-art-spark-two">✦</div>
+      <div class="hero-emblem-card">
+        <span class="emblem-caption">NUESTRA COMUNIDAD</span>
+        <div class="emblem-image-wrap"><img src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de la I.E.P. Shuji Kitamura"></div>
+        <strong>Una educación<br>con propósito</strong>
+        <span class="emblem-divider"></span>
+        <small>INICIAL&nbsp; · &nbsp;PRIMARIA&nbsp; · &nbsp;SECUNDARIA</small>
+      </div>
+      <div class="hero-art-note"><span class="note-star">✦</span><span><b>Un camino para cada etapa</b><small>Conoce el proceso de admisión</small></span><a [routerLink]="['/matricula', 'admision']" aria-label="Ver pasos de admisión">→</a></div>
+      <div class="hero-art-year"><span>SK</span><small>SHUJI<br>KITAMURA</small></div>
+    </div>
+    <a [routerLink]="['/matricula', 'niveles']" class="scroll-cue"><span></span> DESCUBRE SHUJI KITAMURA</a>
+  </section>
+
+  <section class="intro-strip" aria-label="Niveles educativos"><span class="intro-strip-label">ACOMPAÑAMOS SU CRECIMIENTO</span><div><b>Inicial</b><i>✦</i><b>Primaria</b><i>✦</i><b>Secundaria</b></div><a [routerLink]="['/matricula', 'niveles']">Explorar niveles <span>→</span></a></section>
+  }
+
+  @case ('propuesta') {
+  <header class="route-page-heading"><span class="eyebrow">01 · NUESTRA IDENTIDAD</span><h1>Una propuesta para<br><em>aprender con propósito.</em></h1><p>Conoce los principios que acompañan el crecimiento de cada estudiante.</p></header>
+  <section class="values-section" id="propuesta" aria-labelledby="values-title">
+    <div class="section-heading section-heading-centered"><span class="eyebrow">FORMACIÓN QUE INSPIRA</span><h2 id="values-title">Cada talento merece<br><em>un espacio para florecer.</em></h2><p>Una experiencia educativa que invita a descubrir, imaginar y avanzar con seguridad.</p></div>
+    <div class="values-grid">
+      <article class="value-card value-card-blue"><span class="value-index">01 / APRENDER</span><div class="value-illustration"><span class="value-sun"></span><span class="value-book">✦</span></div><h3>Aprende</h3><p>Fortalece conocimientos y descubre todo lo que puedes lograr.</p><span class="value-line"></span></article>
+      <article class="value-card value-card-gold"><span class="value-index">02 / CREAR</span><div class="value-illustration"><span class="value-orbit"></span><span class="value-spark">✳</span></div><h3>Crea</h3><p>Transforma ideas en nuevas posibilidades y soluciones.</p><span class="value-line"></span></article>
+      <article class="value-card value-card-green"><span class="value-index">03 / PENSAR</span><div class="value-illustration"><span class="value-thought">◇</span><span class="value-dots">•••</span></div><h3>Piensa</h3><p>Desarrolla criterio, curiosidad y confianza para decidir.</p><span class="value-line"></span></article>
+      <article class="value-card value-card-lilac"><span class="value-index">04 / PROYECTAR</span><div class="value-illustration"><span class="value-path">↗</span><span class="value-path-dot"></span></div><h3>Proyéctate</h3><p>Reconoce tu potencial y traza nuevas metas para el futuro.</p><span class="value-line"></span></article>
+    </div>
+  </section>
+  }
+
+  @case ('niveles') {
+  <header class="route-page-heading"><span class="eyebrow">02 · TRAYECTORIA EDUCATIVA</span><h1>Un lugar para cada<br><em>etapa de crecimiento.</em></h1><p>Explora Inicial, Primaria y Secundaria; cada nivel acompaña nuevos aprendizajes y desafíos.</p></header>
+  <section class="levels-section" id="niveles" aria-labelledby="levels-title">
+    <div class="levels-heading"><div><span class="eyebrow">UN LUGAR PARA CADA ETAPA</span><h2 id="levels-title">Crecer también es<br><em>encontrar tu propio ritmo.</em></h2></div><p>Una ruta educativa que acompaña a niñas, niños y jóvenes en cada nuevo descubrimiento.</p></div>
+    <div class="levels-grid">
+      <article class="level-card level-inicial"><div class="level-card-top"><span>01</span><span class="level-stamp">PRIMEROS PASOS</span></div><div class="level-art level-art-inicial" aria-hidden="true"><span class="level-shape level-shape-a"></span><span class="level-shape level-shape-b"></span><span class="level-art-letter">i</span></div><div class="level-card-copy"><span>INICIAL</span><h3>Curiosidad para descubrir.</h3><p>Un comienzo para explorar, expresarse y aprender jugando.</p></div></article>
+      <article class="level-card level-primaria"><div class="level-card-top"><span>02</span><span class="level-stamp">NUEVOS APRENDIZAJES</span></div><div class="level-art level-art-primaria" aria-hidden="true"><span class="level-shape level-shape-a"></span><span class="level-shape level-shape-b"></span><span class="level-art-letter">p</span></div><div class="level-card-copy"><span>PRIMARIA</span><h3>Ideas que toman forma.</h3><p>Conocimientos y habilidades que crecen paso a paso.</p></div></article>
+      <article class="level-card level-secundaria"><div class="level-card-top"><span>03</span><span class="level-stamp">MIRAR MÁS LEJOS</span></div><div class="level-art level-art-secundaria" aria-hidden="true"><span class="level-shape level-shape-a"></span><span class="level-shape level-shape-b"></span><span class="level-art-letter">s</span></div><div class="level-card-copy"><span>SECUNDARIA</span><h3>Prepararse para lo que viene.</h3><p>Autonomía, pensamiento y nuevas metas por alcanzar.</p></div></article>
+    </div>
+  </section>
+  }
+
+  @case ('admision') {
+  <header class="route-page-heading"><span class="eyebrow">03 · ADMISIONES</span><h1>Comienza el proceso<br><em>con tranquilidad.</em></h1><p>Revisa las etapas y prepara tus documentos antes de iniciar una solicitud.</p></header>
+  <section class="process-section" id="proceso" aria-labelledby="process-title">
+    <div class="process-intro"><span class="eyebrow">ADMISIÓN CLARA Y ACOMPAÑADA</span><h2 id="process-title">Tres pasos para<br><em>comenzar esta historia.</em></h2><p>Prepara tus documentos y avanza con calma. El sistema te guiará durante todo el proceso.</p><button class="button button-primary" type="button" (click)="abrirSolicitud()" [disabled]="cargandoCatalogo()">{{ cargandoCatalogo() ? 'Cargando vacantes…' : solicitud()?.estado === 'MATRICULADA' || solicitud()?.estado === 'RECHAZADA' ? 'Iniciar otra solicitud' : solicitud() ? 'Continuar mi trámite' : 'Iniciar matrícula' }} <span>→</span></button></div>
+    <div class="process-list">
+      <article class="process-item"><span class="process-number">01</span><div><h3>Presenta tus documentos</h3><p>Completa la información del estudiante y su apoderado, y adjunta los archivos requeridos.</p><small>Partida de nacimiento · DNI o C4 · Recibo de luz o agua</small></div><span class="process-icon">↗</span></article>
+      <article class="process-item process-item-review"><span class="process-number">02</span><div><h3>Revisión documental</h3><p>Se verifica el tipo, la legibilidad y la coherencia básica de cada documento. Si alguno requiere corrección, podrás reemplazarlo.</p><small class="process-time"><i>◷</i> Tiempo estimado: 1–3 minutos · revisión secuencial</small></div><span class="process-icon">✦</span></article>
+      <article class="process-item"><span class="process-number">03</span><div><h3>Pago y confirmación</h3><p>Revisa el monto antes de pagar. La matrícula se confirma solo cuando el sistema verifica el pago aprobado.</p><small>Sin pago aprobado no se registra una matrícula</small></div><span class="process-icon">✓</span></article>
+    </div>
+  </section>
+
+  <section class="documents-section" aria-labelledby="documents-prep-title">
+    <div class="documents-copy"><span class="eyebrow">TENLOS A LA MANO</span><h2 id="documents-prep-title">Una solicitud más fácil<br>empieza por prepararte.</h2><p>Reúne estos archivos antes de abrir el formulario para completar tu solicitud con tranquilidad.</p><div class="documents-format"><span class="format-icon">↑</span><span>PDF, JPG, PNG o WebP<small>Máximo 5 MB por documento</small></span></div></div>
+    <div class="documents-checklist"><div><span>01</span><b>Partida de nacimiento</b><i>✓</i></div><div><span>02</span><b>DNI o C4 del estudiante</b><i>✓</i></div><div><span>03</span><b>Recibo de luz o agua</b><i>✓</i></div><small>Los documentos se revisan de uno en uno para cuidar la disponibilidad del servicio.</small></div>
+  </section>
+  }
+
+  @case ('preguntas') {
+  <header class="route-page-heading"><span class="eyebrow">04 · INFORMACIÓN PARA FAMILIAS</span><h1>Resolvemos tus<br><em>preguntas frecuentes.</em></h1><p>Encuentra información sobre la solicitud, los documentos y la confirmación de matrícula.</p></header>
+  <section class="faq-section" id="preguntas" aria-labelledby="faq-title">
+    <div class="faq-heading"><span class="eyebrow">¿TIENES DUDAS?</span><h2 id="faq-title">Antes de empezar</h2><p>Información breve para acompañarte durante la solicitud.</p><a [routerLink]="['/matricula', 'admision']">Ver los pasos de admisión <span>→</span></a></div>
+    <div class="faq-list">
+      <details><summary>¿Necesito crear una cuenta para solicitar matrícula?<span>+</span></summary><p>No. Puedes iniciar la solicitud pública sin crear una cuenta ni iniciar sesión.</p></details>
+      <details><summary>¿Qué documentos debo preparar?<span>+</span></summary><p>Partida de nacimiento, DNI o C4 del estudiante y un recibo de luz o agua. Se aceptan PDF, JPG, PNG o WebP de hasta 5 MB cada uno.</p></details>
+      <details><summary>¿Cuánto demora la revisión de documentos?<span>+</span></summary><p>El tiempo estimado es de 1–3 minutos. Los documentos se procesan uno por uno y la espera puede variar según la disponibilidad del servicio.</p></details>
+      <details><summary>¿Cuándo queda confirmada la matrícula?<span>+</span></summary><p>Después de que el sistema verifica que el pago fue aprobado. En ese momento se confirma el proceso y se registra la matrícula.</p></details>
+    </div>
+  </section>
+  }
+  }
+
+  <section class="final-cta"><img src="/images/shuji-kitamura-emblema.jpg" alt="" aria-hidden="true"><div><span>EL PRÓXIMO PASO COMIENZA AQUÍ</span><h2>Estamos listos para acompañarte.</h2><p>Inicia tu solicitud cuando tengas los documentos preparados.</p></div><button class="button button-gold" type="button" (click)="abrirSolicitud()" [disabled]="cargandoCatalogo()">{{ cargandoCatalogo() ? 'Cargando vacantes…' : solicitud()?.estado === 'MATRICULADA' || solicitud()?.estado === 'RECHAZADA' ? 'Iniciar otra solicitud' : solicitud() ? 'Continuar mi trámite' : 'Iniciar matrícula' }} <span>→</span></button></section>
+
+  <footer class="public-footer"><a class="footer-brand" [routerLink]="['/matricula', 'inicio']"><img src="/images/shuji-kitamura-emblema.jpg" alt=""><span><b>I.E.P. Shuji Kitamura</b><small>Institución educativa</small></span></a><span>Admisión y matrícula · La solicitud no requiere crear una cuenta.</span><a [routerLink]="['/matricula', 'inicio']">Volver al inicio ↑</a></footer>
+</main>
+
+@if (modal()) {
+  <div class="modal-backdrop" (click)="cerrarModal()" (keydown.escape)="cerrarModal()">
+    @if (modal() === 'documentos') {
+      <section class="enrollment-modal wide-modal" role="dialog" aria-modal="true" aria-labelledby="documents-title" (click)="$event.stopPropagation()">
+        <header class="modal-header"><div><span class="eyebrow">ETAPA 1 DE 3</span><h2 id="documents-title">{{ solicitud() ? 'Corrige tus documentos' : 'Datos y documentos' }}</h2><p>Completa la solicitud una sola vez. No se crea una matrícula hasta confirmar el pago.</p></div><button type="button" class="icon-close" aria-label="Cerrar" (click)="cerrarModal()">×</button></header>
+        <div class="modal-body">
+          @if (!solicitud()) {
+            <div class="form-section-title"><span>01</span><div><b>Datos del estudiante</b><small>Información que se contrastará con los documentos.</small></div></div>
+            <div class="form-grid">
+              <label>Año lectivo<select [ngModel]="anioId()" (ngModelChange)="anioId.set(+$event); seccionId.set(null)" name="anioLectivo" required><option [ngValue]="null">Selecciona</option>@for (anio of catalogo().anios; track anio.id) {<option [ngValue]="anio.id">{{ anio.anio }}</option>}</select></label>
+              <label>Grado y sección<select [ngModel]="seccionId()" (ngModelChange)="seccionId.set(+$event)" name="seccion" required><option [ngValue]="null">Selecciona</option>@for (seccion of seccionesDisponibles; track seccion.id) {<option [ngValue]="seccion.id">{{ seccion.nivel }} · {{ seccion.grado }} · {{ seccion.letra }} ({{ seccion.vacantesDisponibles }} vacantes)</option>}</select></label>
+              <div class="dni-lookup span-2"><label>DNI del estudiante<input [(ngModel)]="documentoEstudiante" name="documentoEstudiante" inputmode="numeric" maxlength="8" minlength="8" placeholder="8 dígitos" required></label><button class="button button-quiet" type="button" (click)="consultarDni('estudiante')" [disabled]="consultandoDniEstudiante()">{{ consultandoDniEstudiante() ? 'Consultando…' : 'Consultar DNI' }}</button></div>
+              <label class="span-2">Nombres<input [(ngModel)]="nombresEstudiante" name="nombresEstudiante" autocomplete="given-name" maxlength="100" required></label>
+              <label>Apellido paterno<input [(ngModel)]="apellidoPaternoEstudiante" name="apellidoPaternoEstudiante" autocomplete="family-name" maxlength="80" required></label>
+              <label>Apellido materno<input [(ngModel)]="apellidoMaternoEstudiante" name="apellidoMaternoEstudiante" maxlength="80" required></label>
+              <p class="span-2 form-hint">La consulta solo completa nombres y apellidos. Fecha de nacimiento y género deben coincidir con la partida.</p>
+              <label>Fecha de nacimiento<input type="date" [(ngModel)]="nacimientoEstudiante" name="nacimientoEstudiante" required></label>
+              <label>Género<select [(ngModel)]="generoEstudiante" name="genero"><option value="M">Masculino</option><option value="F">Femenino</option></select></label>
+            </div>
+            <div class="form-section-title section-spaced"><span>02</span><div><b>Datos del apoderado</b><small>Contacto responsable para la comunicación institucional.</small></div></div>
+            <div class="form-grid">
+              <div class="dni-lookup span-2"><label>DNI del apoderado<input [(ngModel)]="documentoApoderado" name="documentoApoderado" inputmode="numeric" maxlength="8" minlength="8" placeholder="8 dígitos" required></label><button class="button button-quiet" type="button" (click)="consultarDni('apoderado')" [disabled]="consultandoDniApoderado()">{{ consultandoDniApoderado() ? 'Consultando…' : 'Consultar DNI' }}</button></div>
+              <label>Nombres<input [(ngModel)]="nombresApoderado" name="nombresApoderado" maxlength="100" required></label>
+              <label>Apellido paterno<input [(ngModel)]="apellidoPaternoApoderado" name="apellidoPaternoApoderado" maxlength="80" required></label>
+              <label>Apellido materno<input [(ngModel)]="apellidoMaternoApoderado" name="apellidoMaternoApoderado" maxlength="80" required></label>
+              <label>Celular<input [(ngModel)]="celularApoderado" name="celularApoderado" inputmode="tel" maxlength="9" placeholder="9 dígitos" required></label>
+              <label>Correo electrónico<input type="email" [(ngModel)]="emailApoderado" name="emailApoderado" maxlength="100"></label>
+              <label>Parentesco<select [(ngModel)]="parentesco" name="parentesco"><option value="MADRE">Madre</option><option value="PADRE">Padre</option><option value="TUTOR_LEGAL">Tutor legal</option><option value="ABUELO_A">Abuelo/a</option><option value="OTRO">Otro</option></select></label>
+              <label>Ubigeo INEI<input [(ngModel)]="ubigeoApoderado" name="ubigeo" inputmode="numeric" maxlength="6" minlength="6" placeholder="6 dígitos" required></label>
+              <label class="span-2">Dirección<input [(ngModel)]="direccionApoderado" name="direccion" maxlength="200" required></label>
+            </div>
+            @if (mensajeDni()) { <p class="form-hint" role="status">{{ mensajeDni() }}</p> }
+          }
+
+          <div class="form-section-title section-spaced"><span>03</span><div><b>Documentos del estudiante</b><small>Sube una imagen nítida, completa y sin reflejos.</small></div></div>
+          <div class="review-estimate"><span>◷</span><p><b>Revisión estimada: 1–3 minutos</b><small>Se procesa un documento a la vez. Los documentos ya validados no se vuelven a enviar.</small></p></div>
+          <div class="upload-grid">
+            @for (tipo of documentTypes; track tipo) {
+              <label class="upload-card" [class.upload-observed]="estadoDocumento(tipo)?.estado === 'OBSERVADO'">
+                <span class="upload-glyph">{{ estadoDocumento(tipo)?.estado === 'VALIDADO' ? '✓' : '↑' }}</span>
+                <b>{{ etiquetaDocumento(tipo) }}</b>
+                <small>{{ estadoDocumento(tipo)?.estado === 'OBSERVADO' ? estadoDocumento(tipo)?.observacion : estadoDocumento(tipo)?.estado === 'VALIDADO' ? 'Validado · no requiere reemplazo' : archivos[tipo]?.name || 'Seleccionar archivo' }}</small>
+                <input type="file" [attr.accept]="tipo === 'PARTIDA_NACIMIENTO' ? 'application/pdf' : 'application/pdf,image/jpeg,image/png,image/webp'" (change)="seleccionarArchivo(tipo, $event)" [disabled]="estadoDocumento(tipo)?.estado === 'VALIDADO'" [attr.aria-label]="'Adjuntar ' + etiquetaDocumento(tipo)">
+              </label>
+            }
+          </div>
+          @if (!solicitud()) {
+            <label class="consent-row"><input type="checkbox" [(ngModel)]="consentimientoGemini" name="consentimientoGemini"><span>Autorizo guardar estos archivos en almacenamiento privado de la institución y enviarlos a Google Gemini para revisar tipo, legibilidad y coherencia. La revisión automática no sustituye la validación oficial.</span></label>
+          }
+          @if (error()) { <p class="form-error" role="alert">{{ error() }}</p> }
+        </div>
+        <footer class="modal-footer"><button type="button" class="button button-quiet" (click)="cerrarModal()">Cancelar</button><button type="button" class="button button-primary" (click)="validarYEnviarDocumentos()" [disabled]="procesando()">{{ procesando() ? 'Enviando…' : 'Enviar a revisión' }}<span>→</span></button></footer>
+      </section>
+    }
+
+    @if (modal() === 'validacion') {
+      <section class="enrollment-modal compact-modal" role="dialog" aria-modal="true" aria-labelledby="review-title" (click)="$event.stopPropagation()">
+        <header class="modal-header"><div><span class="eyebrow">ETAPA 2 DE 3</span><h2 id="review-title">Revisión documental</h2><p>Estamos revisando la legibilidad y correspondencia básica de los archivos.</p></div><button type="button" class="icon-close" aria-label="Cerrar" (click)="cerrarModal()">×</button></header>
+        <div class="modal-body">
+          @if (procesando()) {
+            <div class="validation-loading" role="status" aria-live="polite">
+              <div class="processing-spinner"><span class="spinner"></span>@if (totalRevision()) { <b>{{ numeroDocumentoRevision() }}/{{ totalRevision() }}</b> }</div>
+              <b>{{ documentoEnProceso() ? 'Revisando ' + etiquetaDocumento(documentoEnProceso()!) + '…' : 'Preparando tu expediente…' }}</b>
+              <small>{{ avanceRevision() }} de {{ totalRevision() }} documentos revisados</small>
+              <div class="progress-track" role="progressbar" aria-label="Avance de revisión documental" [attr.aria-valuenow]="avanceRevision()" [attr.aria-valuemax]="totalRevision() || 1"><span [style.width.%]="progresoRevision()"></span></div>
+              <div class="review-wait-note"><b>Tiempo estimado: 1–3 minutos</b><span>{{ mensajeRevision() }} Puede tardar más si el servicio está ocupado. No cierres esta ventana.</span></div>
+            </div>
+          }
+          @else {
+            <div class="review-list">
+              @for (doc of solicitud()?.documentos ?? []; track doc.tipo) {
+                <div class="review-item"><span class="review-state" [class.good]="doc.estado === 'VALIDADO'" [class.bad]="doc.estado === 'OBSERVADO'">{{ doc.estado === 'VALIDADO' ? '✓' : doc.estado === 'OBSERVADO' ? '!' : '·' }}</span><div><b>{{ etiquetaDocumento(doc.tipo) }}</b><small>{{ doc.observacion || 'Pendiente de revisión' }}</small></div></div>
+              }
+            </div>
+            @if (documentosAprobados()) { <div class="notice-success">Los tres documentos completaron las verificaciones automáticas. Puedes continuar al pago.</div> }
+            @else { <div class="notice-warning">Hay comprobaciones pendientes o documentos observados. La partida requiere el PDF original firmado digitalmente por RENIEC.</div> }
+            @if (error()) { <p class="form-error" role="alert">{{ error() }}</p> }
+          }
+        </div>
+        @if (!procesando()) { <footer class="modal-footer"><button type="button" class="button button-quiet" (click)="modal.set('documentos')">Ver documentos</button><button type="button" class="button button-quiet" (click)="actualizarRevision()">Actualizar revisión</button>@if (documentosAprobados()) {<button type="button" class="button button-primary" (click)="continuarAlPago()" [disabled]="procesando()">Continuar al pago <span>→</span></button>}</footer> }
+      </section>
+    }
+
+    @if (modal() === 'pago') {
+      <section class="enrollment-modal compact-modal" role="dialog" aria-modal="true" aria-labelledby="payment-title" (click)="$event.stopPropagation()">
+        <header class="modal-header"><div><span class="eyebrow">ETAPA 3 DE 3</span><h2 id="payment-title">Derecho de matrícula</h2><p>Entorno de prueba. No se realizará un cobro real.</p></div><button type="button" class="icon-close" aria-label="Cerrar" (click)="cerrarModal()">×</button></header>
+        <div class="modal-body payment-body"><div class="payment-total"><span>Total de prueba</span><strong>S/ {{ montoPago() | number:'1.2-2' }}</strong><small>Mercado Pago · Soles peruanos (PEN)</small></div><p class="payment-notice">Tu solicitud todavía no es una matrícula. Se confirmará y aparecerá en el padrón únicamente cuando el backend verifique el pago aprobado.</p><a class="button button-primary payment-link" [href]="enlacePago()">Abrir Mercado Pago de prueba <span>↗</span></a><p class="payment-poll">Al terminar, Mercado Pago te devolverá a esta página para verificar el resultado. {{ estadoPago() }}</p>@if (error()) { <p class="form-error" role="alert">{{ error() }}</p> }</div>
+        <footer class="modal-footer"><button type="button" class="button button-quiet" (click)="actualizarEstadoPago()">Ya pagué · consultar estado</button></footer>
+      </section>
+    }
+
+    @if (modal() === 'exito') {
+      <section class="enrollment-modal success-modal" role="dialog" aria-modal="true" aria-labelledby="success-title" (click)="$event.stopPropagation()">
+        <div class="success-emblem">✓</div><span class="eyebrow">PROCESO COMPLETADO</span><h2 id="success-title">Matrícula confirmada</h2><p>{{ solicitud()?.nombreEstudiante }} ya aparece registrado en el padrón de estudiantes.</p><div class="success-reference"><span>Código de matrícula</span><b>#{{ solicitud()?.matriculaId }}</b></div>
+        <div class="success-document-actions"><button type="button" class="button button-primary" (click)="descargarComprobante()" [disabled]="procesando()">Descargar comprobante de pago</button><button type="button" class="button button-quiet" (click)="descargarFicha()" [disabled]="procesando()">Descargar ficha de matrícula</button></div>
+        <p class="success-document-note">Archivos HTML imprimibles; desde el navegador puedes guardarlos como PDF. El comprobante es interno y no reemplaza una boleta electrónica SUNAT.</p>
+        @if (error()) { <p class="form-error" role="alert">{{ error() }}</p> }
+        <button type="button" class="button button-quiet" (click)="iniciarNuevaSolicitud()">Iniciar otra solicitud</button>
+      </section>
+    }
+  </div>
+}
