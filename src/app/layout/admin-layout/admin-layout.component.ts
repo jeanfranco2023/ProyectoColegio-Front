@@ -1,117 +1,143 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { AuthStore } from '../../core/state/auth.store';
 
+export type AdminMenuRole = 'DIRECCION' | 'SECRETARIA' | 'DOCENTE' | 'AUXILIAR' | 'TUTOR' | 'APODERADO';
+
+export interface AdminMenuItem {
+  label: string;
+  route: string;
+  roles: readonly AdminMenuRole[];
+  section: 'Principal' | 'Vida académica' | 'Comunidad y gestión';
+  icon: string;
+}
+
+const MANAGEMENT_ROLES: readonly AdminMenuRole[] = ['DIRECCION', 'SECRETARIA'];
+const ACADEMIC_ROLES: readonly AdminMenuRole[] = ['DIRECCION', 'SECRETARIA', 'DOCENTE'];
+const STUDENT_SUPPORT_ROLES: readonly AdminMenuRole[] = ['DIRECCION', 'SECRETARIA', 'AUXILIAR', 'TUTOR'];
+const FAMILY_ROLES: readonly AdminMenuRole[] = ['DIRECCION', 'SECRETARIA', 'APODERADO'];
+const ROLE_LABELS: Record<AdminMenuRole, string> = {
+  DIRECCION: 'Dirección',
+  SECRETARIA: 'Secretaría',
+  DOCENTE: 'Docente',
+  AUXILIAR: 'Auxiliar',
+  TUTOR: 'Tutor',
+  APODERADO: 'Apoderado'
+};
+
+// This is the single source for both desktop and mobile navigation.
+export const ADMIN_MENU_ITEMS: readonly AdminMenuItem[] = [
+  { label: 'Panel general', route: '/admin/dashboard', roles: MANAGEMENT_ROLES, section: 'Principal', icon: 'M3 3h8v8H3z M13 3h8v5h-8z M13 10h8v11h-8z M3 13h8v8H3z' },
+  { label: 'Matrículas', route: '/admin/matriculas', roles: MANAGEMENT_ROLES, section: 'Vida académica', icon: 'M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z' },
+  { label: 'Aulas y horarios', route: '/admin/academico', roles: MANAGEMENT_ROLES, section: 'Vida académica', icon: 'M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M8 9h.01M16 9h.01' },
+  { label: 'Calificaciones', route: '/admin/calificaciones', roles: ACADEMIC_ROLES, section: 'Vida académica', icon: 'M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2zM7 8h2m4 0h4M7 12h2m4 0h4M7 16h2m4 0h4' },
+  { label: 'Asistencia', route: '/admin/asistencia', roles: STUDENT_SUPPORT_ROLES, section: 'Vida académica', icon: 'M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11' },
+  { label: 'Convivencia', route: '/admin/convivencia', roles: STUDENT_SUPPORT_ROLES, section: 'Vida académica', icon: 'M12 21s-8-4.5-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 6.5-8 11-8 11z' },
+  { label: 'Tesorería y pagos', route: '/admin/tesoreria', roles: FAMILY_ROLES, section: 'Comunidad y gestión', icon: 'M3 6h18v14H3zM3 10h18M7 15h4M6 3h12' },
+  { label: 'Comunicados', route: '/admin/comunicados', roles: FAMILY_ROLES, section: 'Comunidad y gestión', icon: 'M4 4h16v16H4zM8 8h8M8 12h8M8 16h5' },
+  { label: 'Usuarios y permisos', route: '/admin/usuarios', roles: MANAGEMENT_ROLES, section: 'Comunidad y gestión', icon: 'M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM20 8v6m3-3h-6' },
+  { label: 'Mi perfil', route: '/admin/perfil', roles: [], section: 'Comunidad y gestión', icon: 'M20 21a8 8 0 00-16 0M12 13a5 5 0 100-10 5 5 0 000 10z' }
+];
+
+export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminMenuItem[] {
+  return ADMIN_MENU_ITEMS.filter(item => item.roles.length === 0 || item.roles.some(role => roles.includes(role)));
+}
+
 @Component({
   selector: 'app-admin-layout',
+  encapsulation: ViewEncapsulation.None,
   standalone: true,
   imports: [RouterOutlet, RouterLink, RouterLinkActive, MatButtonModule, MatMenuModule],
   template: `
-    <div class="min-h-screen bg-[#f4f6fb] text-slate-900 lg:flex">
-      <aside class="sidebar-shell hidden w-[268px] shrink-0 flex-col lg:sticky lg:top-0 lg:flex lg:h-screen">
-        <a routerLink="/admin/dashboard" class="flex items-center gap-3 px-6 py-7" aria-label="Inicio institucional">
-          <span class="brand-crest">SK</span>
+    <div class="min-h-screen bg-[#f5f7fb] text-slate-900 lg:flex">
+      <aside class="hidden w-[268px] shrink-0 flex-col border-r border-[#e7edf5] bg-white text-[#172b4d] lg:sticky lg:top-0 lg:flex lg:h-screen">
+        <a routerLink="/admin/dashboard" class="flex min-h-[102px] items-center gap-3 px-6 py-7 no-underline focus-visible:outline-[3px] focus-visible:outline-[#83a9ea] focus-visible:outline-offset-2" aria-label="Inicio institucional">
+          <img class="h-[42px] w-[42px] shrink-0 rounded-full bg-white object-contain" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de I.E.P. Shuji Kitamura">
           <span class="min-w-0">
-            <span class="block truncate text-sm font-bold tracking-tight text-white">Shuji Kitamura</span>
-            <span class="mt-0.5 block text-[10px] font-medium tracking-[0.12em] text-slate-400">GESTIÓN ESCOLAR</span>
+            <span class="block truncate text-sm font-bold tracking-tight text-[#172b4d]">Shuji Kitamura</span>
+            <span class="mt-0.5 block text-[11px] font-medium tracking-[0.12em] text-[#5d6b7f]">GESTIÓN ESCOLAR</span>
           </span>
         </a>
 
-        <nav class="flex-1 space-y-6 overflow-y-auto px-4 pb-5" aria-label="Navegación principal">
-          @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) {
-            <section>
-              <p class="nav-section-label">Principal</p>
-              <a routerLink="/admin/dashboard" routerLinkActive="nav-link-active" class="nav-link">
-                <span class="nav-link-icon">01</span><span>Panel general</span>
-              </a>
-            </section>
+        <nav class="flex flex-1 flex-col gap-[5px] overflow-y-auto px-4 pb-5" aria-label="Navegación principal">
+          @for (item of visibleMenuItems; track item.route; let i = $index) {
+            @if (i === 0 || visibleMenuItems[i - 1].section !== item.section) {
+              <p class="mt-[19px] mb-[6px] px-3 text-[11px] font-bold leading-[1.4] tracking-[0.11em] text-[#59677a] uppercase">{{ item.section }}</p>
+            }
+            <a [routerLink]="item.route" routerLinkActive="bg-[#eaf1fd] text-[#1f5bb7] font-bold" class="flex min-h-[43px] items-center gap-3 rounded-[10px] px-3 text-[13px] font-medium text-[#56657c] no-underline transition-colors duration-[140ms] hover:bg-[#f3f6fb] hover:text-[#172b4d] focus-visible:outline-[3px] focus-visible:outline-[#83a9ea] focus-visible:outline-offset-2" [attr.aria-label]="item.label">
+              <svg class="h-[19px] w-[19px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" [attr.d]="item.icon" /></svg>
+              <span>{{ item.label }}</span>
+            </a>
           }
-
-          <section>
-            <p class="nav-section-label">Vida académica</p>
-            @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) {
-              <a routerLink="/admin/matriculas" routerLinkActive="nav-link-active" class="nav-link"><span class="nav-link-icon">02</span><span>Matrículas</span></a>
-              <a routerLink="/admin/academico" routerLinkActive="nav-link-active" class="nav-link"><span class="nav-link-icon">03</span><span>Aulas y horarios</span></a>
-            }
-            @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA', 'DOCENTE'])) {
-              <a routerLink="/admin/calificaciones" routerLinkActive="nav-link-active" class="nav-link"><span class="nav-link-icon">04</span><span>Calificaciones</span></a>
-            }
-            @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA', 'AUXILIAR', 'TUTOR'])) {
-              <a routerLink="/admin/asistencia" routerLinkActive="nav-link-active" class="nav-link"><span class="nav-link-icon">05</span><span>Asistencia</span></a>
-              <a routerLink="/admin/convivencia" routerLinkActive="nav-link-active" class="nav-link"><span class="nav-link-icon">06</span><span>Convivencia</span></a>
-            }
-          </section>
-
-          <section>
-            <p class="nav-section-label">Comunidad y gestión</p>
-            @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA', 'APODERADO'])) {
-              <a routerLink="/admin/tesoreria" routerLinkActive="nav-link-active" class="nav-link"><span class="nav-link-icon">07</span><span>Tesorería y pagos</span></a>
-              <a routerLink="/admin/comunicados" routerLinkActive="nav-link-active" class="nav-link"><span class="nav-link-icon">08</span><span>Comunicados</span></a>
-            }
-            @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) {
-              <a routerLink="/admin/usuarios" routerLinkActive="nav-link-active" class="nav-link"><span class="nav-link-icon">09</span><span>Usuarios y permisos</span></a>
-            }
-            <a routerLink="/admin/perfil" routerLinkActive="nav-link-active" class="nav-link"><span class="nav-link-icon">10</span><span>Mi perfil</span></a>
-          </section>
         </nav>
 
-        <div class="mx-4 mb-4 rounded-2xl border border-white/10 bg-white/[0.04] p-3.5">
+        <div class="mx-4 mb-4 rounded-2xl border border-[#e7edf5] bg-[#f8fafd] p-3.5">
           <div class="flex items-center gap-3">
-            <span class="user-avatar">{{ (store.user()?.username || 'U').substring(0, 1).toUpperCase() }}</span>
+            <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#e8effc] text-[13px] font-bold text-[#285bad]">{{ firstInitial }}</span>
             <span class="min-w-0 flex-1">
-              <span class="block truncate text-xs font-semibold text-white">{{ store.user()?.username }}</span>
-              <span class="mt-0.5 block truncate text-[10px] text-slate-400">{{ store.roles().join(' · ') }}</span>
+              <span class="block truncate text-xs font-semibold text-[#172b4d]">{{ store.user()?.username || 'Usuario' }}</span>
+              <span class="mt-0.5 block truncate text-[11px] text-[#5d6b7f]">{{ roleLabel }}</span>
             </span>
           </div>
-          <button mat-button type="button" (click)="store.logout()" class="logout-button mt-3 w-full !justify-start !rounded-xl !text-slate-300">
-            <svg class="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6"/></svg>
-            Cerrar sesión
+          <button mat-button type="button" (click)="store.logout()" class="ui-logout-button mt-3 w-full !justify-start !rounded-xl !font-[inherit] hover:bg-[#eef2f8] hover:text-[#243954]">
+            <span class="inline-flex items-center gap-2 whitespace-nowrap font-[inherit]"><svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg><span>Cerrar sesión</span></span>
           </button>
         </div>
       </aside>
 
       <main class="min-w-0 flex-1">
-        <header class="app-topbar sticky top-0 z-40 flex h-[72px] items-center justify-between px-4 sm:px-7 xl:px-10">
-          <div class="flex items-center gap-3">
-            <button mat-icon-button type="button" [matMenuTriggerFor]="mobileNav" class="!flex lg:!hidden" aria-label="Abrir navegación">
-              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <header class="sticky top-0 z-40 flex h-[72px] items-center justify-between border-b border-[#e7edf5] bg-[rgb(255_255_255_/_94%)] px-4 text-[#172b4d] backdrop-blur-[12px] sm:px-7 xl:px-10 max-[639px]:grid max-[639px]:h-16 max-[639px]:grid-cols-[minmax(0,1fr)_112px] max-[639px]:gap-2 max-[639px]:px-3">
+          <div class="flex min-w-0 items-center gap-3 max-[639px]:w-full max-[639px]:max-w-full">
+            <button mat-icon-button type="button" [matMenuTriggerFor]="mobileNav" class="!flex text-[#172b4d] focus-visible:outline-[3px] focus-visible:outline-[#83a9ea] focus-visible:outline-offset-2 lg:!hidden" aria-label="Abrir navegación" aria-haspopup="menu">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
-            <mat-menu #mobileNav="matMenu">
-              @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) { <a mat-menu-item routerLink="/admin/dashboard">Panel general</a> }
-              @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) { <a mat-menu-item routerLink="/admin/matriculas">Matrículas</a> }
-              @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA', 'DOCENTE'])) { <a mat-menu-item routerLink="/admin/calificaciones">Calificaciones</a> }
-              @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA', 'AUXILIAR', 'TUTOR'])) { <a mat-menu-item routerLink="/admin/asistencia">Asistencia</a> }
-              @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) { <a mat-menu-item routerLink="/admin/academico">Aulas y horarios</a> }
-              @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA', 'APODERADO'])) { <a mat-menu-item routerLink="/admin/tesoreria">Tesorería y pagos</a> }
-              @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA', 'AUXILIAR', 'TUTOR'])) { <a mat-menu-item routerLink="/admin/convivencia">Convivencia</a> }
-              @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA', 'APODERADO'])) { <a mat-menu-item routerLink="/admin/comunicados">Comunicados</a> }
-              @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) { <a mat-menu-item routerLink="/admin/usuarios">Usuarios y permisos</a> }
-              <a mat-menu-item routerLink="/admin/perfil">Mi perfil</a>
-              <button mat-menu-item type="button" (click)="store.logout()">Cerrar sesión</button>
+            <mat-menu #mobileNav="matMenu" class="ui-mobile-nav-panel" xPosition="after" yPosition="below">
+              @for (item of visibleMenuItems; track item.route) {
+                <a mat-menu-item class="ui-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 px-3 text-[13px] leading-[1.35] text-[#56657c] no-underline" [routerLink]="item.route" routerLinkActive="bg-[#eaf1fd] text-[#1f5bb7] font-bold" [attr.aria-label]="item.label">
+                  <svg class="h-[19px] w-[19px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" [attr.d]="item.icon" /></svg>
+                  <span>{{ item.label }}</span>
+                </a>
+              }
+              <div class="my-[6px] h-px bg-[#e8edf4]" role="separator"></div>
+              <button mat-menu-item class="ui-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 px-3 text-[13px] leading-[1.35] text-[#56657c] no-underline" type="button" (click)="store.logout()">
+                <svg class="h-[19px] w-[19px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg>
+                <span>Cerrar sesión</span>
+              </button>
             </mat-menu>
             <div>
-              <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">Portal institucional</p>
-              <p class="text-sm font-semibold text-slate-800">Shuji Kitamura <span class="font-normal text-slate-400">/ Gestión escolar</span></p>
+              <p class="text-[11px] font-bold tracking-[0.16em] text-[#5d6b7f] uppercase">Portal institucional</p>
+              <p class="text-sm font-semibold">Shuji Kitamura <span class="font-normal text-[#5d6b7f] max-[639px]:hidden">/ Gestión escolar</span></p>
             </div>
           </div>
 
-          <a routerLink="/admin/perfil" class="hidden items-center gap-2.5 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-600 shadow-sm transition hover:border-blue-200 hover:text-blue-700 sm:flex">
-            <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
-            <span class="max-w-[220px] truncate">{{ store.user()?.email }}</span>
-            <span class="user-avatar user-avatar-small">{{ (store.user()?.username || 'U').substring(0, 1).toUpperCase() }}</span>
+          <a routerLink="/admin/perfil" class="flex items-center gap-2.5 rounded-full border border-[#e7edf5] bg-white px-3 py-2 text-xs font-medium text-[#52627a] no-underline hover:border-[#cad9f1] hover:bg-[#fafdff] focus-visible:outline-[3px] focus-visible:outline-[#83a9ea] focus-visible:outline-offset-2 max-[639px]:w-[112px] max-[639px]:max-w-[112px] max-[639px]:shrink-0 max-[639px]:gap-1.5 max-[639px]:py-[3px] max-[639px]:pr-[7px] max-[639px]:pl-1">
+            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#e8effc] text-[13px] font-bold text-[#285bad] max-[639px]:h-7 max-[639px]:w-7">{{ firstInitial }}</span>
+            <span class="flex min-w-0 flex-col"><span class="block max-w-[180px] truncate font-semibold text-[#172b4d] max-[639px]:max-w-[58px] max-[639px]:text-[11px]">{{ store.user()?.username || 'Usuario' }}</span><span class="block max-w-[180px] truncate text-[11px] text-[#5d6b7f] max-[639px]:max-w-[58px]">{{ roleLabel }}</span></span>
           </a>
         </header>
 
         <div class="mx-auto w-full max-w-[1560px] p-4 sm:p-6 xl:p-9">
           <div class="app-content"><router-outlet /></div>
         </div>
-        <footer class="px-5 pb-5 text-center text-[10px] tracking-wide text-slate-400">© 2026 I.E.P. Shuji Kitamura · Excelencia, disciplina y saber</footer>
+        <footer class="px-5 pb-5 text-center text-[11px] tracking-wide text-[#59677a]">© 2026 I.E.P. Shuji Kitamura · Excelencia, disciplina y saber</footer>
       </main>
     </div>
   `
 })
 export class AdminLayoutComponent {
   readonly store = inject(AuthStore);
+
+  get visibleMenuItems(): readonly AdminMenuItem[] {
+    return visibleAdminMenuItems(this.store.roles());
+  }
+
+  get roleLabel(): string {
+    return this.store.roles().map(role => ROLE_LABELS[role] ?? role).join(' · ') || 'Usuario';
+  }
+
+  get firstInitial(): string {
+    return (this.store.user()?.username || 'U').substring(0, 1).toUpperCase();
+  }
 }
