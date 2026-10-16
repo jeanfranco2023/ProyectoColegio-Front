@@ -9,10 +9,10 @@ import { environment } from '../../../environments/environment';
 
 interface ResumenDashboard {
   anio: number;
-  totalEstudiantes: number;
+  totalEstudiantes: number | null;
   asistenciaHoy: number | null;
-  recaudacionMes: number;
-  alumnosEnRiesgo: number;
+  recaudacionMes: number | null;
+  alumnosEnRiesgo: number | null;
 }
 
 @Component({
@@ -160,10 +160,10 @@ export class DashboardDispatcherComponent implements OnInit {
     this.http.get<ResumenDashboard>(`${environment.apiUrl}/dashboard/resumen`).subscribe({
       next: res => {
         this.anio.set(res?.anio ?? new Date().getFullYear());
-        this.totalEstudiantes.set(res?.totalEstudiantes ?? 0);
+        this.totalEstudiantes.set(res?.totalEstudiantes ?? null);
         this.asistenciaHoy.set(res?.asistenciaHoy ?? null);
-        this.recaudacionMes.set(res?.recaudacionMes ?? 0);
-        this.alumnosEnRiesgo.set(res?.alumnosEnRiesgo ?? 0);
+        this.recaudacionMes.set(res?.recaudacionMes ?? null);
+        this.alumnosEnRiesgo.set(res?.alumnosEnRiesgo ?? null);
         this.loading.set(false);
       },
       error: () => {
