@@ -7,8 +7,8 @@ export interface AulaResponseDto {
   codigo: string;
   nombre: string;
   ubicacion: string;
-  capacidad: number;
-  activa: boolean;
+  capacidad: number | null;
+  activa: boolean | null;
 }
 
 export interface NivelResponseDto {

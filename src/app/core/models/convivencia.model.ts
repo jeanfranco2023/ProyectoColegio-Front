@@ -8,7 +8,7 @@ export interface IncidenciaResponseDto {
   tipoFalta: TipoFalta;
   descripcion: string;
   reportadoPorUsuarioId: number;
-  requiereCitacion: boolean;
+  requiereCitacion: boolean | null;
   estado: EstadoIncidencia;
   createdAt?: string;
 }

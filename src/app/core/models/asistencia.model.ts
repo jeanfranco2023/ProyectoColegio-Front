@@ -31,10 +31,6 @@ export interface DiscrepanciaAlertaResponseDto {
   estudianteId: number;
   fecha: string;
   tipoDiscrepancia: TipoDiscrepancia;
-  estudianteNombre?: string;
-  dni?: string;
-  marcoPorteria?: boolean;
-  presenteAula?: boolean;
 }
 
 export interface ConciliacionAsistenciaResponseDto {
