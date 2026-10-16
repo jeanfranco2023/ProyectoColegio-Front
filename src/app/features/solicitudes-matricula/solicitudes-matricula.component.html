@@ -1,32 +1,71 @@
-<main class="admin-applications">
-  <header class="admin-heading"><div><span class="admin-eyebrow">ADMISIÓN · CONTROL INTERNO</span><h1>Solicitudes de matrícula</h1><p>Revisa la documentación, comunica correcciones y consulta el estado del pago antes de incorporar al padrón.</p></div><button class="refresh-button" type="button" (click)="cargar()" [disabled]="cargando()">↻ <span>Actualizar</span></button></header>
-  <div class="admin-notice"><span class="notice-mark">i</span><span>Las verificaciones son automáticas: firma digital RENIEC en la partida, contraste de DNI con la API y análisis documental. El pago se habilita cuando los tres documentos cumplen las comprobaciones.</span></div>
-  @if (aviso()) { <p class="admin-success" role="status">{{ aviso() }} <button type="button" (click)="aviso.set('')">×</button></p> }
-  @if (error()) { <p class="admin-error" role="alert">{{ error() }}</p> }
+<main class="ui-applications-page grid min-w-0 gap-[18px] text-[#1c2e49]">
+  <header class="flex items-center justify-between gap-5 max-[700px]:items-start max-[440px]:flex-col">
+    <div>
+      <span class="text-[11px] font-bold tracking-[.12em] text-[#76500a]">ADMISIÓN · CONTROL INTERNO</span>
+      <h1 class="mb-[5px] mt-[7px] text-[clamp(24px,3vw,32px)] font-normal tracking-[-.04em] text-[#172944]">Solicitudes de matrícula</h1>
+      <p class="m-0 max-w-[780px] text-[12px] leading-[1.6] text-[#718096] max-[700px]:text-[11px]">Revisa la documentación, comunica correcciones y consulta el estado del pago antes de incorporar al padrón.</p>
+    </div>
+    <button class="inline-flex min-h-11 items-center gap-2 rounded-[11px] border border-[#e0e6ee] bg-white px-[14px] text-[12px] font-bold text-[#38516e] disabled:opacity-55 max-[440px]:w-full max-[440px]:justify-center" type="button" (click)="cargar()" [disabled]="cargando()">↻ <span>Actualizar</span></button>
+  </header>
 
-  <section class="application-list" aria-label="Trámites recientes">
-    @if (cargando()) { <div class="admin-empty"><span class="admin-spinner"></span><b>Cargando solicitudes…</b></div> }
-    @else if (!solicitudes().length) { <div class="admin-empty"><span class="empty-icon">▤</span><b>No hay solicitudes públicas todavía</b><p>Los trámites iniciados desde la página pública aparecerán aquí.</p></div> }
+  <div class="flex items-start gap-[11px] rounded-[13px] border border-[#dfe8f5] bg-[#f4f8fd] px-[15px] py-[13px] text-[11px] leading-[1.6] text-[#60718a]">
+    <span class="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#e3edfc] font-extrabold text-[#315f9b]">i</span>
+    <span>Las verificaciones son automáticas: firma digital RENIEC en la partida, contraste de DNI con la API y análisis documental. El pago se habilita cuando los tres documentos cumplen las comprobaciones.</span>
+  </div>
+  @if (aviso()) { <p class="m-0 flex justify-between gap-2 rounded-[11px] border border-[#d4f0df] bg-[#effaf4] px-[13px] py-[11px] text-[11px] leading-[1.5] text-[#17694c]" role="status">{{ aviso() }} <button class="border-0 bg-transparent text-[18px] text-inherit" type="button" (click)="aviso.set('')">×</button></p> }
+  @if (error()) { <p class="m-0 rounded-[11px] border border-[#f5d7d4] bg-[#fff4f3] px-[13px] py-[11px] text-[11px] leading-[1.5] text-[#aa3d32]" role="alert">{{ error() }}</p> }
+
+  <section class="grid min-w-0 gap-[13px]" aria-label="Trámites recientes">
+    @if (cargando()) { <div class="flex min-h-[220px] flex-col items-center justify-center gap-2 rounded-[17px] border border-[#e6ebf2] bg-white text-center text-[#596b84]"><span class="h-[25px] w-[25px] animate-spin rounded-full border-[3px] border-[#e6edf6] border-t-[#3469bb]"></span><b class="text-[13px]">Cargando solicitudes…</b></div> }
+    @else if (!solicitudes().length) { <div class="ui-empty-state-art flex min-h-[220px] flex-col items-center justify-center gap-2 rounded-[17px] border border-[#e6ebf2] bg-white px-4 text-center text-[#596b84]"><b class="text-[14px]">No hay solicitudes públicas todavía</b><p class="m-0 text-[11px] text-[#59677a]">Los trámites iniciados desde la página pública aparecerán aquí.</p></div> }
     @else {
       @for (solicitud of solicitudes(); track solicitud.id) {
-        <article class="application-card">
-          <div class="card-main"><div class="student-avatar">{{ solicitud.nombreEstudiante.slice(0, 1) }}</div><div class="student-summary"><div class="student-title"><h2>{{ solicitud.nombreEstudiante }}</h2><span class="state-chip" [class.state-green]="solicitud.estado === 'MATRICULADA'" [class.state-gold]="solicitud.estado === 'PAGO_PENDIENTE' || solicitud.estado === 'DOCUMENTOS_VALIDADOS'" [class.state-red]="solicitud.estado === 'DOCUMENTOS_OBSERVADOS' || solicitud.estado === 'RECHAZADA'">{{ estadoLabel(solicitud.estado) }}</span></div><p>DNI {{ solicitud.documentoEstudiante }} · Apoderado: {{ solicitud.nombreApoderado }}</p><small>{{ solicitud.emailApoderado || solicitud.celularApoderado }} · Solicitud {{ solicitud.creadaAt | date:'dd/MM/yyyy HH:mm' }}</small></div><div class="class-chip">Año {{ solicitud.anioLectivoId }}<br><span>Sección #{{ solicitud.seccionId }}</span></div></div>
-          <div class="document-status-grid">
+        <article class="min-w-0 rounded-[17px] border border-[#e5eaf1] bg-white p-[19px] shadow-[0_5px_17px_rgb(22_42_73_/_3%)] max-[700px]:p-[15px]">
+          <div class="flex min-w-0 items-center gap-[13px] max-[600px]:items-start">
+            <div class="grid h-[42px] w-[42px] shrink-0 place-items-center rounded-[14px] bg-[#eff4fb] font-extrabold text-[#315d99]">{{ solicitud.nombreEstudiante.slice(0, 1) }}</div>
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-[9px]">
+                <h2 class="m-0 text-[14px] font-normal text-[#172b4d]">{{ solicitud.nombreEstudiante }}</h2>
+                @if (solicitud.estado === 'DOCUMENTOS_PENDIENTES') {<ui-status-badge [label]="estadoLabel(solicitud.estado)" tone="warning" />}
+                @else {<span class="inline-flex items-center rounded-full bg-[#f0f3f7] px-2 py-[5px] text-[11px] font-bold text-[#617086]" [class.bg-emerald-100]="solicitud.estado === 'MATRICULADA'" [class.text-emerald-800]="solicitud.estado === 'MATRICULADA'" [class.bg-amber-100]="solicitud.estado === 'PAGO_PENDIENTE' || solicitud.estado === 'DOCUMENTOS_VALIDADOS'" [class.text-amber-900]="solicitud.estado === 'PAGO_PENDIENTE' || solicitud.estado === 'DOCUMENTOS_VALIDADOS'" [class.bg-rose-100]="solicitud.estado === 'DOCUMENTOS_OBSERVADOS' || solicitud.estado === 'RECHAZADA'" [class.text-rose-800]="solicitud.estado === 'DOCUMENTOS_OBSERVADOS' || solicitud.estado === 'RECHAZADA'">{{ estadoLabel(solicitud.estado) }}</span>}
+              </div>
+              <p class="mb-0 mt-[5px] text-[13px] text-[#475569]">DNI {{ solicitud.documentoEstudiante }} · Apoderado: {{ solicitud.nombreApoderado }}</p>
+              <small class="text-[13px] text-[#59677a]">{{ solicitud.emailApoderado || solicitud.celularApoderado }} · Solicitud {{ solicitud.creadaAt | uiDatePe:true }}</small>
+            </div>
+            <div class="shrink-0 rounded-[10px] bg-[#f7f9fc] px-[11px] py-2 text-right text-[12px] leading-[1.6] text-[#586b83] max-[700px]:hidden">Año {{ solicitud.anioLectivoId }}<br><span class="text-[#8491a2]">Sección #{{ solicitud.seccionId }}</span></div>
+          </div>
+          <div class="mt-[17px] grid grid-cols-3 gap-[9px] max-[700px]:grid-cols-1">
             @for (doc of solicitud.documentos; track doc.tipo) {
-              <div class="document-status"><span class="doc-state-icon" [class.doc-ok]="doc.estado === 'VALIDADO'" [class.doc-bad]="doc.estado === 'OBSERVADO'">{{ doc.estado === 'VALIDADO' ? '✓' : doc.estado === 'OBSERVADO' ? '!' : '·' }}</span>
-                <div><b>{{ etiquetaDocumento(doc.tipo) }}</b><small>{{ doc.observacion || 'Pendiente de carga' }}</small>
+              <div class="flex min-w-0 items-start gap-2 rounded-[11px] border border-[#edf0f4] bg-[#fcfdff] p-[11px]">
+                <span class="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#eff2f6] text-[#64748b] [&_svg]:h-5 [&_svg]:w-5 [&_svg]:fill-none [&_svg]:stroke-current [&_svg]:stroke-[1.8] [&_svg]:[stroke-linecap:round] [&_svg]:[stroke-linejoin:round]" [class.bg-emerald-100]="doc.estado === 'VALIDADO'" [class.text-emerald-800]="doc.estado === 'VALIDADO'" [class.bg-amber-100]="doc.estado === 'OBSERVADO'" [class.text-amber-800]="doc.estado === 'OBSERVADO'">
+                  @if (doc.estado === 'VALIDADO') { <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg> }
+                  @else if (doc.estado === 'OBSERVADO') { <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z" /><path d="M12 9v4m0 3h.01" /></svg> }
+                  @else { <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" /></svg> }
+                </span>
+                <div class="min-w-0 flex-1">
+                  <b class="block text-[14px] text-[#34445d]">{{ etiquetaDocumento(doc.tipo) }}</b>
+                  <small class="ui-document-state-label mt-1 block text-[12px] font-bold text-[#34445d]">{{ doc.estado === 'VALIDADO' ? 'Válido' : doc.estado === 'OBSERVADO' ? 'Observado' : 'Pendiente' }}</small>
+                  <small class="mt-1 block break-words text-[14px] leading-[1.45] text-[#59677a]">{{ doc.observacion || 'Pendiente de carga' }}</small>
                   @if (doc.versionId) {
-                    <small>Análisis auxiliar: {{ doc.iaValida === null ? 'no disponible' : doc.iaValida ? 'compatible' : 'requiere revisión' }}</small>
-                    @if (doc.tipo !== 'RECIBO_SERVICIO') { <small>Consulta DNI: {{ doc.dniApiCoincide === null ? 'pendiente' : doc.dniApiCoincide ? 'coincide' : 'no coincide' }}</small> }
-                    <small>Firma: {{ firmaLabel(doc.estadoFirma) }}. {{ doc.detalleFirma }}</small>
-                    <button type="button" class="secondary-action" (click)="verDocumento(solicitud, doc)">Obtener acceso al archivo</button>
-                    @if (urlsDocumentos()[solicitud.id + ':' + doc.tipo]) { <a [href]="urlsDocumentos()[solicitud.id + ':' + doc.tipo]" target="_blank" rel="noopener noreferrer">Abrir documento · acceso temporal</a> }
+                    <small class="mt-1 block text-[13px] text-[#59677a]">Análisis auxiliar: {{ doc.iaValida === null ? 'no disponible' : doc.iaValida ? 'compatible' : 'requiere revisión' }}</small>
+                    @if (doc.tipo !== 'RECIBO_SERVICIO') { <small class="mt-1 block text-[13px] text-[#59677a]">Consulta DNI: {{ doc.dniApiCoincide === null ? 'pendiente' : doc.dniApiCoincide ? 'coincide' : 'no coincide' }}</small> }
+                    <small class="mt-1 block text-[13px] text-[#59677a]">Firma: {{ firmaLabel(doc.estadoFirma) }}. {{ doc.detalleFirma }}</small>
+                    <button type="button" class="mt-2 min-h-11 rounded-[9px] border border-[#e0e6ee] bg-white px-3 text-[11px] font-bold text-[#3d5676]" (click)="verDocumento(solicitud, doc)">Obtener acceso al archivo</button>
+                    @if (urlsDocumentos()[solicitud.id + ':' + doc.tipo]) { <a class="mt-2 block text-[11px] text-[#245dcc] underline" [href]="urlsDocumentos()[solicitud.id + ':' + doc.tipo]" target="_blank" rel="noopener noreferrer">Abrir documento · acceso temporal</a> }
                   }
                 </div>
               </div>
             }
           </div>
-          <footer class="application-actions"><span>ID {{ solicitud.id }}</span>@if (solicitud.estado !== 'MATRICULADA' && solicitud.estado !== 'RECHAZADA') {<div><button type="button" class="secondary-action" (click)="abrirObservacion(solicitud)">Solicitar corrección</button><button type="button" class="danger-action" (click)="abrirRechazo(solicitud)">Rechazar solicitud</button></div>} @else if (solicitud.estado === 'MATRICULADA') {<b class="enrollment-result">Estudiante #{{ solicitud.estudianteId }} · Matrícula #{{ solicitud.matriculaId }}</b>}</footer>
+          <footer class="mt-[14px] flex flex-wrap items-center justify-between gap-2 border-t border-[#eff2f6] pt-[13px] text-[13px] text-[#59677a] max-[600px]:items-start">
+            <span>ID {{ solicitud.id }}</span>
+            @if (solicitud.estado !== 'MATRICULADA' && solicitud.estado !== 'RECHAZADA') {
+              <div class="flex flex-wrap gap-2 max-[600px]:grid max-[600px]:w-full max-[600px]:grid-cols-1">
+                <button type="button" class="min-h-11 rounded-[9px] border border-[#e0e6ee] bg-white px-3 text-[11px] font-bold text-[#3d5676] max-[600px]:w-full" (click)="abrirObservacion(solicitud)">Solicitar corrección</button>
+                <button type="button" class="min-h-11 rounded-[9px] border border-[#f0dbd7] bg-[#fffafa] px-3 text-[11px] font-bold text-[#ad4639] max-[600px]:w-full" (click)="abrirRechazo(solicitud)">Rechazar solicitud</button>
+              </div>
+            } @else if (solicitud.estado === 'MATRICULADA') {<b class="text-[11px] font-bold text-[#18744e]">Estudiante #{{ solicitud.estudianteId }} · Matrícula #{{ solicitud.matriculaId }}</b>}
+          </footer>
         </article>
       }
     }
@@ -34,17 +73,26 @@
 </main>
 
 @if (seleccion()) {
-  <div class="admin-modal-backdrop" (click)="cerrarModal()">
-    <section class="admin-modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+  <div class="fixed inset-0 z-[2100] grid place-items-center bg-[rgb(12_25_43_/_48%)] p-[15px] backdrop-blur-[4px]" (click)="cerrarModal()" (keydown.escape)="cerrarModal()">
+    <section class="max-h-[calc(100dvh-30px)] w-full max-w-[500px] overflow-y-auto rounded-[18px] border border-[#e2e8f0] bg-white p-[23px] shadow-[0_25px_80px_rgb(10_24_45_/_25%)] max-[600px]:p-[18px]" role="dialog" aria-modal="true" cdkTrapFocus cdkTrapFocusAutoCapture (click)="$event.stopPropagation()">
       @if (!confirmandoRechazo()) {
-        <header><span class="admin-eyebrow">GESTIÓN DE SOLICITUD</span><h2>Solicitar corrección</h2><p>La familia podrá volver a subir el documento observado con el código privado de su trámite.</p></header>
-        <div class="admin-modal-body"><label>Documento<select [ngModel]="documento()" (ngModelChange)="documento.set($event)"><option value="PARTIDA_NACIMIENTO">Partida de nacimiento</option><option value="DNI_C4">DNI o C4 del estudiante</option><option value="RECIBO_SERVICIO">Recibo de luz o agua</option></select></label><label>Indicación para la familia<textarea [ngModel]="observacion()" (ngModelChange)="observacion.set($event)" maxlength="500" rows="4" placeholder="Explica qué debe volver a cargar o corregir…"></textarea></label></div>
-        @if (error()) {<p class="admin-error">{{ error() }}</p>}
-        <footer><button type="button" class="secondary-action" (click)="cerrarModal()">Cancelar</button><button type="button" class="primary-action" (click)="guardarObservacion()" [disabled]="guardando()">{{ guardando() ? 'Guardando…' : 'Enviar observación' }}</button></footer>
+        <header><span class="text-[11px] font-bold tracking-[.12em] text-[#76500a]">GESTIÓN DE SOLICITUD</span><h2 class="mb-[7px] mt-[7px] text-[21px] font-normal text-[#1d304c]">Solicitar corrección</h2><p class="m-0 text-[11px] leading-[1.65] text-[#59677a]">La familia podrá volver a subir el documento observado con el código privado de su trámite.</p></header>
+        <div class="my-5 grid gap-[14px]">
+          <label class="grid gap-[6px] text-[11px] font-bold text-[#59677c]">Documento<select class="min-h-11 w-full min-w-0 rounded-[10px] border border-[#dce3ec] bg-white p-[10px] text-[12px] text-[#243650]" [ngModel]="documento()" (ngModelChange)="documento.set($event)"><option value="PARTIDA_NACIMIENTO">Partida de nacimiento</option><option value="DNI_C4">DNI o C4 del estudiante</option><option value="RECIBO_SERVICIO">Recibo de luz o agua</option></select></label>
+          <label class="grid gap-[6px] text-[11px] font-bold text-[#59677c]">Indicación para la familia<textarea class="min-h-11 w-full min-w-0 resize-y rounded-[10px] border border-[#dce3ec] bg-white p-[10px] text-[12px] text-[#243650]" [ngModel]="observacion()" (ngModelChange)="observacion.set($event)" maxlength="500" rows="4" placeholder="Explica qué debe volver a cargar o corregir…"></textarea></label>
+        </div>
+        @if (error()) {<p class="m-0 rounded-[11px] border border-[#f5d7d4] bg-[#fff4f3] px-[13px] py-[11px] text-[11px] leading-[1.5] text-[#aa3d32]">{{ error() }}</p>}
+        <footer class="mt-5 flex flex-wrap justify-end gap-2">
+          <button type="button" class="min-h-11 rounded-[9px] border border-[#e0e6ee] bg-white px-3 text-[11px] font-bold text-[#3d5676]" (click)="cerrarModal()">Cancelar</button>
+          <button type="button" class="min-h-11 rounded-[9px] border border-[#245dcc] bg-[#245dcc] px-3 text-[11px] font-bold text-white" (click)="guardarObservacion()" [disabled]="guardando()">{{ guardando() ? 'Guardando…' : 'Enviar observación' }}</button>
+        </footer>
       } @else {
-        <header><span class="admin-eyebrow">CONFIRMAR ACCIÓN</span><h2>¿Rechazar esta solicitud?</h2><p>Se cerrará el trámite y se liberará cualquier vacante reservada. La matrícula confirmada no se puede rechazar desde aquí.</p></header>
-        @if (error()) {<p class="admin-error">{{ error() }}</p>}
-        <footer><button type="button" class="secondary-action" (click)="cerrarModal()">Volver</button><button type="button" class="danger-action" (click)="rechazar()" [disabled]="guardando()">{{ guardando() ? 'Procesando…' : 'Rechazar solicitud' }}</button></footer>
+        <header><span class="text-[11px] font-bold tracking-[.12em] text-[#76500a]">CONFIRMAR ACCIÓN</span><h2 class="mb-[7px] mt-[7px] text-[21px] font-normal text-[#1d304c]">¿Rechazar esta solicitud?</h2><p class="m-0 text-[11px] leading-[1.65] text-[#59677a]">Se cerrará el trámite y se liberará cualquier vacante reservada. La matrícula confirmada no se puede rechazar desde aquí.</p></header>
+        @if (error()) {<p class="mt-3 rounded-[11px] border border-[#f5d7d4] bg-[#fff4f3] px-[13px] py-[11px] text-[11px] leading-[1.5] text-[#aa3d32]">{{ error() }}</p>}
+        <footer class="mt-5 flex flex-wrap justify-end gap-2">
+          <button type="button" class="min-h-11 rounded-[9px] border border-[#e0e6ee] bg-white px-3 text-[11px] font-bold text-[#3d5676]" (click)="cerrarModal()">Volver</button>
+          <button type="button" class="min-h-11 rounded-[9px] border border-[#f0dbd7] bg-[#fffafa] px-3 text-[11px] font-bold text-[#ad4639]" (click)="rechazar()" [disabled]="guardando()">{{ guardando() ? 'Procesando…' : 'Rechazar solicitud' }}</button>
+        </footer>
       }
     </section>
   </div>

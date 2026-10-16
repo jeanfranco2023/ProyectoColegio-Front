@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
+import { A11yModule } from '@angular/cdk/a11y';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { StatusBadgeComponent } from '../../shared/ui/status-badge.component';
+import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
 import { MatriculaPublicaService } from '../../core/services/matricula-publica.service';
 import {
   DocumentoSolicitudDto,
@@ -11,9 +14,8 @@ import {
 @Component({
   selector: 'app-solicitudes-matricula',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, A11yModule, StatusBadgeComponent, UiDatePePipe],
   templateUrl: './solicitudes-matricula.component.html',
-  styleUrl: './solicitudes-matricula.component.css'
 })
 export class SolicitudesMatriculaComponent implements OnInit {
   private readonly api = inject(MatriculaPublicaService);
