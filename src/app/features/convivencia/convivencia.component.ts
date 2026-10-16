@@ -2,6 +2,7 @@ import { Component, ElementRef, inject, signal, OnInit, ViewChild } from '@angul
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConvivenciaService } from '../../core/services/convivencia.service';
+import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
 
 export interface IncidenciaEscolar {
   id: number;
@@ -17,9 +18,9 @@ export interface IncidenciaEscolar {
 @Component({
   selector: 'app-convivencia',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
-    <div class="space-y-6">
+  imports: [CommonModule, FormsModule, UiDatePePipe],
+template: `
+    <div class="space-y-6 ui-coexistence-page">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -44,7 +45,7 @@ export interface IncidenciaEscolar {
       @if (error()) { <p class="text-red-400 text-sm" role="alert">{{ error() }}</p> }
       @if (mensaje()) { <p class="text-emerald-700 text-sm" role="status">{{ mensaje() }}</p> }
       <dialog #incidenciaDialog class="school-native-dialog" aria-labelledby="incidencia-dialog-title">
-        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="incidencia-dialog-title">Registrar incidencia escolar</h3><p>Documenta el hecho y define si requiere citación.</p></div><button type="button" class="school-dialog-cancel !min-h-9 !px-3" (click)="cerrarDialogo()" aria-label="Cerrar">✕</button></header>
+        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="incidencia-dialog-title">Registrar incidencia escolar</h3><p>Documenta el hecho y define si requiere citación.</p></div><button type="button" class="school-dialog-cancel ui-dialog-close !min-h-9 !px-3" (click)="cerrarDialogo()" aria-label="Cerrar">✕</button></header>
           <form (ngSubmit)="registrar()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
             @if (error()) { <p class="school-dialog-error" role="alert">{{ error() }}</p> }
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -71,7 +72,7 @@ export interface IncidenciaEscolar {
         </div>
 
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
+          <table class="w-full text-left text-xs ui-mobile-table-cards">
             <thead class="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
               <tr>
                 <th class="px-5 py-3.5">ID BD</th>
@@ -94,36 +95,28 @@ export interface IncidenciaEscolar {
               } @else {
                 @for (item of incidencias(); track item.id) {
                   <tr class="hover:bg-slate-800/40 transition">
-                    <td class="px-5 py-3.5 font-mono text-slate-500">{{ item.id }}</td>
-                    <td class="px-5 py-3.5 font-bold text-white">Matrícula #{{ item.matriculaId }}</td>
-                    <td class="px-5 py-3.5 font-mono text-slate-400">{{ item.fecha }}</td>
-                    <td class="px-5 py-3.5">
+                    <td class="px-5 py-3.5 font-mono text-slate-500" data-label="ID BD">{{ item.id }}</td>
+                    <td class="px-5 py-3.5 font-bold text-white" data-label="Matrícula ID">Matrícula #{{ item.matriculaId }}</td>
+                    <td class="px-5 py-3.5 font-mono text-slate-400" data-label="Fecha">{{ item.fecha | uiDatePe }}</td>
+                    <td class="px-5 py-3.5" data-label="Tipo Falta">
                       <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300">
                         {{ item.tipoFalta }}
                       </span>
                     </td>
-                    <td class="px-5 py-3.5 text-slate-300 max-w-xs truncate" [title]="item.descripcion">
+                    <td class="px-5 py-3.5 text-slate-300 max-w-xs truncate" [title]="item.descripcion" data-label="Detalle Formativo">
                       {{ item.descripcion }}
                     </td>
-                    <td class="px-5 py-3.5">
+                    <td class="px-5 py-3.5" data-label="Citación">
                       @if (item.citacionPadre) {
                         <span class="text-amber-400 font-semibold text-[11px]">Citado a Dirección</span>
                       } @else {
                         <span class="text-slate-500 text-[11px]">No requerida</span>
                       }
                     </td>
-                    <td class="px-5 py-3.5">
+                    <td class="px-5 py-3.5" data-label="Estado en BD">
                       <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">
                         {{ item.estado }}
                       </span>
-                    </td>
-                  </tr>
-                } @empty {
-                  <tr>
-                    <td colspan="7" class="text-center py-12 text-slate-500 space-y-2">
-                      <div class="text-2xl">⚖️</div>
-                      <p class="font-medium text-slate-400">No se encontraron incidencias registradas en la base de datos.</p>
-                      <p class="text-[11px] text-slate-500">El libro de incidencias y medidas formativas se encuentra al día y sin faltas reportadas en PostgreSQL.</p>
                     </td>
                   </tr>
                 }
@@ -131,6 +124,12 @@ export interface IncidenciaEscolar {
             </tbody>
           </table>
         </div>
+        @if (!cargando() && incidencias().length === 0) {
+          <div class="ui-coexistence-empty-state ui-empty-state-art">
+            <p class="font-medium text-slate-400">No se encontraron incidencias registradas en la base de datos.</p>
+            <p class="text-[11px] text-slate-500">El libro de incidencias y medidas formativas se encuentra al día y sin faltas reportadas en PostgreSQL.</p>
+          </div>
+        }
       </div>
     </div>
   `
