@@ -4,30 +4,25 @@ import { FormsModule } from '@angular/forms';
 import { AsistenciaService } from '../../core/services/asistencia.service';
 import { AcademicoService } from '../../core/services/academico.service';
 import { AnioLectivoResponseDto } from '../../core/models/academico.model';
+import { DiscrepanciaAlertaResponseDto, TipoDiscrepancia } from '../../core/models/asistencia.model';
+import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
+import { StatusBadgeComponent, UiStatusTone } from '../../shared/ui/status-badge.component';
 
 export type EstadoAsistencia = 'PRESENTE' | 'TARDANZA' | 'FALTA_JUSTIFICADA' | 'FALTA_INJUSTIFICADA';
 
 export interface AlumnoAsistenciaItem {
   id: number;
-  dni: string;
   estudiante: string;
   estado: EstadoAsistencia;
+  fecha: string;
   horaMarcacionPuerta?: string;
 }
 
-export interface DiscrepanciaBiometricaItem {
-  id: number;
-  estudiante: string;
-  dni: string;
-  horaPuerta: string;
-  estadoAula: string;
-  tipoDiscrepancia: string;
-}
 
 @Component({
   selector: 'app-asistencia',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, UiDatePePipe, StatusBadgeComponent],
   template: `
     <div class="space-y-6 ui-attendance-page">
       <!-- Header -->
@@ -164,7 +159,7 @@ export interface DiscrepanciaBiometricaItem {
               <thead class="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
                 <tr>
                   <th class="px-5 py-3.5">Estudiante</th>
-                  <th class="px-5 py-3.5">DNI</th>
+                  <th class="px-5 py-3.5">Fecha</th>
                   <th class="px-5 py-3.5">Molinete Puerta</th>
                   <th class="px-5 py-3.5 text-center">Pase de Lista en Aula</th>
                   <th class="px-5 py-3.5 text-center">Acciones</th>
@@ -182,7 +177,7 @@ export interface DiscrepanciaBiometricaItem {
                   @for (item of alumnos(); track item.id) {
                     <tr class="hover:bg-slate-800/40 transition">
                       <td class="px-5 py-3.5 font-bold text-white" data-label="Estudiante">{{ item.estudiante }}</td>
-                      <td class="px-5 py-3.5 font-mono text-slate-400" data-label="DNI">{{ item.dni }}</td>
+                      <td class="px-5 py-3.5 font-mono text-slate-400" data-label="Fecha">{{ item.fecha | uiDatePe }}</td>
                       <td class="px-5 py-3.5 font-mono text-emerald-400" data-label="Molinete Puerta">{{ item.horaMarcacionPuerta || '-' }}</td>
                       <td class="px-5 py-3.5 text-center font-bold" data-label="Pase de Lista en Aula">
                         @switch (item.estado) {
@@ -199,7 +194,7 @@ export interface DiscrepanciaBiometricaItem {
                       </td>
                     </tr>
                   } @empty {
-                    <tr>
+                    <tr [hidden]="!!error()">
                       <td colspan="5" class="text-center py-12 text-slate-500 space-y-2 ui-empty-state-art" data-illustration="calendar">
                         <p class="font-medium text-slate-400">No se encontraron marcas de asistencia para la fecha indicada.</p>
                         <p class="text-[11px] text-slate-500">Los pases de lista registrados en el aula y las importaciones biométricas se mostrarán aquí.</p>
@@ -222,26 +217,24 @@ export interface DiscrepanciaBiometricaItem {
               <thead class="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
                 <tr>
                   <th class="px-5 py-3.5">Estudiante</th>
-                  <th class="px-5 py-3.5">DNI</th>
-                  <th class="px-5 py-3.5">Portería</th>
-                  <th class="px-5 py-3.5">Aula</th>
-                  <th class="px-5 py-3.5">Tipo de Discrepancia</th>
+                  <th class="px-5 py-3.5">Fecha</th>
+                  <th class="px-5 py-3.5">Resultado</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-800/60 text-slate-300">
-                @for (d of discrepancias(); track d.id) {
+                @for (d of discrepancias(); track $index) {
                   <tr class="hover:bg-slate-800/40 transition">
-                    <td class="px-5 py-3.5 font-bold text-white" data-label="Estudiante">{{ d.estudiante }}</td>
-                    <td class="px-5 py-3.5 font-mono text-slate-400" data-label="DNI">{{ d.dni }}</td>
-                    <td class="px-5 py-3.5 font-mono text-emerald-400" data-label="Portería">{{ d.horaPuerta }}</td>
-                    <td class="px-5 py-3.5 font-bold text-red-400" data-label="Aula">{{ d.estadoAula }}</td>
-                    <td class="px-5 py-3.5" data-label="Tipo de Discrepancia">{{ d.tipoDiscrepancia }}</td>
+                    <td class="px-5 py-3.5 font-bold text-white" data-label="Estudiante">Estudiante #{{ d.estudianteId }}</td>
+                    <td class="px-5 py-3.5 font-mono text-slate-400" data-label="Fecha">{{ d.fecha | uiDatePe }}</td>
+                    <td class="px-5 py-3.5" data-label="Resultado">
+                      <ui-status-badge [label]="resultadoDiscrepancia(d.tipoDiscrepancia)" [tone]="tonoDiscrepancia(d.tipoDiscrepancia)" />
+                    </td>
                   </tr>
                 } @empty {
-                  <tr>
-                    <td colspan="5" class="text-center py-12 text-slate-500 space-y-2 ui-empty-state-art" data-illustration="calendar">
-                      <p class="font-medium text-slate-400">No hay discrepancias registradas en la base de datos.</p>
-                      <p class="text-[11px] text-slate-500">Molinete de portería y pase de lista de aula se encuentran perfectamente conciliados.</p>
+                  <tr [hidden]="!!error()">
+                    <td colspan="3" class="text-center py-12 text-slate-500 space-y-2 ui-empty-state-art" data-illustration="calendar">
+                      <p class="font-medium text-slate-400">No hay resultados de conciliación para la fecha indicada.</p>
+                      <p class="text-[11px] text-slate-500">La respuesta no contiene alertas para esta fecha.</p>
                     </td>
                   </tr>
                 }
@@ -281,7 +274,7 @@ export class AsistenciaComponent implements OnInit {
   dispositivoCodigo = 'PUERTA-1';
 
   readonly alumnos = signal<AlumnoAsistenciaItem[]>([]);
-  readonly discrepancias = signal<DiscrepanciaBiometricaItem[]>([]);
+  readonly discrepancias = signal<DiscrepanciaAlertaResponseDto[]>([]);
 
   readonly totalPresentes = computed(() => this.alumnos().filter(a => a.estado === 'PRESENTE').length);
   readonly totalTardanzas = computed(() => this.alumnos().filter(a => a.estado === 'TARDANZA').length);
@@ -297,16 +290,17 @@ export class AsistenciaComponent implements OnInit {
   }
 
   cargarAsistencia(): void {
+    this.error.set(null);
     this.cargando.set(true);
     this.asistenciaService.obtenerReporteDiario(this.fechaSeleccionada).subscribe({
       next: (res) => {
         this.cargando.set(false);
         if (res && Array.isArray(res.asistencias)) {
           this.alumnos.set(
-            res.asistencias.map((a, idx) => ({
-              id: a.id || idx + 1,
-              dni: `EST-${a.matriculaId}`,
+            res.asistencias.map(a => ({
+              id: a.id,
               estudiante: `Matrícula #${a.matriculaId}`,
+              fecha: a.fechaSesion,
               estado: a.estado as EstadoAsistencia,
               horaMarcacionPuerta: a.horaRegistro || '-'
             }))
@@ -318,30 +312,43 @@ export class AsistenciaComponent implements OnInit {
       error: () => {
         this.cargando.set(false);
         this.alumnos.set([]);
+        this.error.set('No se pudieron cargar las marcas de asistencia.');
       }
     });
 
     this.asistenciaService.listarAlertasConciliacion(this.fechaSeleccionada).subscribe({
       next: (res) => {
         if (Array.isArray(res)) {
-          this.discrepancias.set(
-            res.map((d, idx) => ({
-              id: idx + 1,
-              estudiante: d.estudianteNombre || `Estudiante #${d.estudianteId}`,
-              dni: d.dni || String(d.estudianteId),
-              horaPuerta: d.marcoPorteria ? 'Marcó' : 'Sin marca',
-              estadoAula: d.presenteAula ? 'Presente' : 'Ausente',
-              tipoDiscrepancia: d.tipoDiscrepancia
-            }))
-          );
+          this.discrepancias.set(res);
         } else {
           this.discrepancias.set([]);
         }
       },
       error: () => {
         this.discrepancias.set([]);
+        this.error.set('No se pudieron cargar las alertas de conciliación.');
       }
     });
+  }
+
+  resultadoDiscrepancia(tipo: TipoDiscrepancia): string {
+    switch (tipo) {
+      case 'ASISTENCIA_CONCILIADA': return 'Conciliada';
+      case 'DISCREPANCIA_FUGA': return 'Posible fuga';
+      case 'DISCREPANCIA_OMISION_PORTERIA': return 'Omisión en portería';
+      case 'PENDIENTE_CIERRE_TURNO': return 'Pendiente de cierre de turno';
+      default: return tipo;
+    }
+  }
+
+  tonoDiscrepancia(tipo: TipoDiscrepancia): UiStatusTone {
+    switch (tipo) {
+      case 'ASISTENCIA_CONCILIADA': return 'success';
+      case 'DISCREPANCIA_FUGA': return 'error';
+      case 'DISCREPANCIA_OMISION_PORTERIA': return 'warning';
+      case 'PENDIENTE_CIERRE_TURNO': return 'info';
+      default: return 'info';
+    }
   }
 
   registrarAsistencia(): void {
