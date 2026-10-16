@@ -19,8 +19,8 @@ interface ResumenDashboard {
   selector: 'app-dashboard-dispatcher',
   standalone: true,
   imports: [CommonModule, RouterLink, MatButtonModule, MatCardModule],
-  template: `
-    <div class="space-y-8 sm:space-y-10">
+template: `
+    <div class="space-y-8 sm:space-y-10 ui-dashboard-page">
       <section class="dashboard-welcome relative overflow-hidden rounded-[28px] px-6 py-7 text-white sm:px-9 sm:py-9 xl:px-11">
         <div class="pointer-events-none absolute -right-20 -top-32 h-96 w-96 rounded-full border border-white/[0.08]"></div>
         <div class="pointer-events-none absolute -right-4 -top-16 h-72 w-72 rounded-full border border-white/[0.08]"></div>
@@ -39,9 +39,6 @@ interface ResumenDashboard {
             </p>
           </div>
           <div class="grid grid-cols-1 gap-3 sm:flex sm:flex-wrap sm:items-center">
-            <span class="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/[0.07] px-3.5 py-2.5 text-xs font-medium text-blue-50 sm:justify-start">
-              <span class="h-2 w-2 animate-pulse rounded-full bg-emerald-400"></span> Sistema en línea
-            </span>
             @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) {
               <a mat-flat-button routerLink="/admin/matriculas" class="dashboard-primary-action">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 5v14m-7-7h14"/></svg>
