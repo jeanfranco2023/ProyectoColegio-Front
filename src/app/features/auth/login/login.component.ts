@@ -23,14 +23,14 @@ import { AuthStore } from '../../../core/state/auth.store';
     MatProgressSpinnerModule
   ],
   template: `
-    <main class="grid min-h-screen bg-[#f4f6fb] lg:grid-cols-[1.05fr_0.95fr]">
-      <section class="login-brand-panel relative hidden min-h-screen overflow-hidden px-10 py-12 text-white lg:flex lg:flex-col lg:justify-between xl:px-16 xl:py-14">
+    <main class="grid min-h-screen bg-[#f4f6fb] font-[Inter,ui-sans-serif,system-ui,sans-serif] text-[#172b4d] lg:grid-cols-[1.05fr_0.95fr]">
+      <section class="relative hidden min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_78%_20%,rgb(63_104_158_/_30%),transparent_42%),linear-gradient(145deg,#102541_0%,#17375e_58%,#1b416c_100%)] px-10 py-12 text-white lg:flex lg:flex-col lg:justify-between xl:px-16 xl:py-14">
         <div class="absolute -right-28 top-1/4 h-[28rem] w-[28rem] rounded-full border border-white/[0.08]"></div>
         <div class="absolute -right-10 top-[29%] h-[22rem] w-[22rem] rounded-full border border-white/[0.08]"></div>
         <div class="absolute -bottom-36 -left-28 h-[28rem] w-[28rem] rounded-full bg-blue-400/[0.08] blur-3xl"></div>
 
         <a routerLink="/auth/login" class="relative z-10 flex w-fit items-center gap-3" aria-label="I.E.P. Shuji Kitamura">
-          <span class="brand-crest !h-12 !w-12 !text-base">SK</span>
+          <img class="block size-12 shrink-0 rounded-full border-2 border-[#c49a58] bg-white object-contain p-[3px]" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de Shuji Kitamura">
           <span>
             <span class="block text-sm font-bold tracking-wide">I.E.P. Shuji Kitamura</span>
             <span class="mt-0.5 block text-[10px] font-medium tracking-[0.18em] text-blue-100/70">PORTAL INSTITUCIONAL</span>
@@ -59,14 +59,14 @@ import { AuthStore } from '../../../core/state/auth.store';
       <section class="flex min-h-screen min-w-0 items-center justify-center px-5 py-10 sm:px-8 lg:px-12">
         <div class="w-full min-w-0 max-w-[440px]">
           <a routerLink="/auth/login" class="mb-8 flex items-center gap-3 lg:hidden">
-            <span class="brand-crest">SK</span>
+            <img class="block size-11 shrink-0 rounded-full border-2 border-[#c49a58] bg-white object-contain p-[3px]" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de Shuji Kitamura">
             <span>
               <span class="block text-sm font-bold text-slate-800">I.E.P. Shuji Kitamura</span>
               <span class="mt-0.5 block text-[10px] font-semibold tracking-[0.15em] text-slate-500">PORTAL INSTITUCIONAL</span>
             </span>
           </a>
 
-          <div class="w-full min-w-0 rounded-[28px] border border-white bg-white p-5 shadow-[0_24px_80px_rgba(23,43,77,0.10)] sm:p-9">
+          <div class="w-full min-w-0 rounded-[28px] border border-[#e4eaf2] bg-white p-5 shadow-[0_24px_70px_rgba(23,43,77,0.10)] sm:p-9">
             <div class="mb-8">
               <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#9a743d]">Acceso seguro</p>
               <h2 class="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[#14213d]">Bienvenido de nuevo</h2>
@@ -81,12 +81,12 @@ import { AuthStore } from '../../../core/state/auth.store';
             }
 
             <form (ngSubmit)="submit()" class="space-y-2">
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="mb-[5px] block w-full">
                 <mat-label>Usuario o correo institucional</mat-label>
                 <input matInput id="username" type="text" name="username" [(ngModel)]="username" placeholder="usuario@shuji.edu.pe" required autocomplete="username" />
               </mat-form-field>
 
-              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="mb-[5px] block w-full">
                 <mat-label>Contraseña</mat-label>
                 <input matInput id="password" [type]="showPassword() ? 'text' : 'password'" name="password" [(ngModel)]="password" required autocomplete="current-password" />
                 <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()" [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
@@ -98,9 +98,9 @@ import { AuthStore } from '../../../core/state/auth.store';
                 </button>
               </mat-form-field>
 
-              <div class="flex flex-col items-start gap-2 pb-3 pt-1 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-                <mat-checkbox [(ngModel)]="rememberMe" name="rememberMe" color="primary" class="text-xs">Recordar este equipo</mat-checkbox>
-                <button type="button" (click)="openPasswordHelp(passwordHelp)" class="min-h-11 shrink-0 text-xs font-semibold text-blue-700 transition hover:text-blue-900">¿Olvidaste tu clave?</button>
+              <div class="flex flex-wrap items-center justify-between gap-x-3.5 gap-y-2 py-[3px] pb-3.5">
+                <mat-checkbox [(ngModel)]="rememberMe" name="rememberMe" color="primary" class="text-xs text-[#34445d]">Recordar este equipo</mat-checkbox>
+                <button type="button" (click)="openPasswordHelp(passwordHelp)" class="min-h-10 cursor-pointer border-0 bg-transparent font-[inherit] text-xs font-semibold text-[#184fae] hover:text-[#123d89] hover:underline">¿Olvidaste tu clave?</button>
               </div>
 
               <button mat-flat-button color="primary" type="submit" [disabled]="store.isLoading() || !username || !password" [attr.aria-busy]="store.isLoading()" class="!h-12 !w-full !rounded-xl !text-sm !font-semibold !shadow-md">
@@ -131,7 +131,7 @@ import { AuthStore } from '../../../core/state/auth.store';
           Por políticas de seguridad institucional, solicita el restablecimiento de tu acceso en Secretaría o mediante la Dirección Académica.
         </mat-dialog-content>
         <mat-dialog-actions align="end" class="!px-6 !pb-5">
-          <button mat-flat-button color="primary" mat-dialog-close>Entendido</button>
+          <button mat-flat-button color="primary" mat-dialog-close class="!min-h-11">Entendido</button>
         </mat-dialog-actions>
       </ng-template>
     </main>

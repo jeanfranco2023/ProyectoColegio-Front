@@ -1,9 +1,11 @@
 import { CommonModule } from '@angular/common';
+import { A11yModule } from '@angular/cdk/a11y';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { finalize, firstValueFrom, Subscription } from 'rxjs';
 import { MatriculaPublicaService } from '../../core/services/matricula-publica.service';
+import { CommunityGalleryComponent } from '../../shared/ui/community-gallery.component';
 import {
   CatalogoMatriculaPublicaDto,
   CrearSolicitudMatriculaPublicaDto,
@@ -20,9 +22,8 @@ type VistaMatricula = 'inicio' | 'propuesta' | 'niveles' | 'admision' | 'pregunt
 @Component({
   selector: 'app-matricula-publica',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, A11yModule, CommunityGalleryComponent],
   templateUrl: './matricula-publica.component.html',
-  styleUrl: './matricula-publica.component.css',
   host: { class: 'matricula-public-shell' }
 })
 export class MatriculaPublicaComponent implements OnInit, OnDestroy {
