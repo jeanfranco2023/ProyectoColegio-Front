@@ -9,13 +9,14 @@ import { MatSelectModule } from '@angular/material/select';
 import { UsuarioService } from '../../core/services/usuario.service';
 import { UserResponseDto, RolNombre } from '../../core/models/auth.model';
 import { AuthStore } from '../../core/state/auth.store';
+import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
 
 @Component({
   selector: 'app-usuarios',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatButtonModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule],
-  template: `
-    <div class="space-y-6">
+  imports: [CommonModule, FormsModule, MatButtonModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, UiDatePePipe],
+template: `
+    <div class="space-y-6 ui-users-page">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -72,7 +73,7 @@ import { AuthStore } from '../../core/state/auth.store';
       <!-- Users Table -->
       <div class="rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
+          <table class="w-full text-left text-xs ui-mobile-table-cards">
             <thead class="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
               <tr>
                 <th class="px-5 py-3.5">ID BD</th>
@@ -95,10 +96,10 @@ import { AuthStore } from '../../core/state/auth.store';
               } @else {
                 @for (user of usuarios(); track user.id) {
                   <tr class="hover:bg-slate-800/40 transition">
-                    <td class="px-5 py-3.5 font-mono text-slate-500">{{ user.id }}</td>
-                    <td class="px-5 py-3.5 font-bold text-white">{{ user.username }}</td>
-                    <td class="px-5 py-3.5 text-slate-300">{{ user.email }}</td>
-                    <td class="px-5 py-3.5">
+                    <td class="px-5 py-3.5 font-mono text-slate-500" data-label="ID BD">{{ user.id }}</td>
+                    <td class="px-5 py-3.5 font-bold text-white" data-label="Usuario">{{ user.username }}</td>
+                    <td class="px-5 py-3.5 text-slate-300" data-label="Correo Electrónico">{{ user.email }}</td>
+                    <td class="px-5 py-3.5" data-label="Roles Asignados">
                       <div class="flex flex-wrap gap-1">
                         @for (r of user.roles; track r.codigo) {
                           <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-blue-400 border border-slate-700">
@@ -107,7 +108,7 @@ import { AuthStore } from '../../core/state/auth.store';
                         }
                       </div>
                     </td>
-                    <td class="px-5 py-3.5">
+                    <td class="px-5 py-3.5" data-label="Estado en BD">
                       @if (user.activo) {
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">
                           ACTIVO
@@ -118,8 +119,8 @@ import { AuthStore } from '../../core/state/auth.store';
                         </span>
                       }
                     </td>
-                    <td class="px-5 py-3.5 text-slate-400 font-mono">{{ user.createdAt || '-' }}</td>
-                    <td class="px-5 py-3.5 text-right">
+                    <td class="px-5 py-3.5 text-slate-400 font-mono" data-label="Fecha Creación">{{ user.createdAt ? (user.createdAt | uiDatePe:true) : '-' }}</td>
+                    <td class="px-5 py-3.5 text-right" data-label="Acción">
                       <button
                         (click)="alternarEstado(user)"
                         [class]="user.activo ? 'text-red-400 hover:text-red-300' : 'text-emerald-400 hover:text-emerald-300'"
@@ -131,10 +132,11 @@ import { AuthStore } from '../../core/state/auth.store';
                   </tr>
                 } @empty {
                   <tr>
-                    <td colspan="7" class="text-center py-12 text-slate-500 space-y-2">
-                      <div class="text-2xl">👥</div>
-                      <p class="font-medium text-slate-400">No se encontraron usuarios registrados en la base de datos.</p>
-                      <p class="text-[11px] text-slate-500">Cree un nuevo usuario institucional con el botón superior para darlo de alta en PostgreSQL.</p>
+                    <td colspan="7" data-label="">
+                      <div class="text-center py-12 text-slate-500 space-y-2 ui-empty-state-art" data-illustration="crest">
+                        <p class="font-medium text-slate-400">No se encontraron usuarios registrados en la base de datos.</p>
+                        <p class="text-[11px] text-slate-500">Cree un nuevo usuario institucional con el botón superior para darlo de alta en PostgreSQL.</p>
+                      </div>
                     </td>
                   </tr>
                 }
@@ -145,10 +147,10 @@ import { AuthStore } from '../../core/state/auth.store';
       </div>
 
       <ng-template #crearUsuarioDialog>
-        <h2 mat-dialog-title class="!px-6 !pt-6 !text-xl !font-semibold !tracking-tight !text-[#14213d]">Nuevo usuario institucional</h2>
-        <p class="px-6 text-xs leading-5 text-slate-500">Configura las credenciales y el rol de acceso de la cuenta.</p>
-        <form id="crear-usuario-form" (ngSubmit)="guardarNuevoUsuario()">
-        <mat-dialog-content class="!px-6 !pt-5">
+        <h2 mat-dialog-title class="ui-users-dialog-title !px-6 !pt-6 !text-xl !font-semibold !tracking-tight !text-[#14213d]">Nuevo usuario institucional</h2>
+        <p class="ui-users-dialog-copy px-6 text-xs leading-5 text-slate-500">Configura las credenciales y el rol de acceso de la cuenta.</p>
+        <form id="crear-usuario-form" class="ui-users-dialog-form" (ngSubmit)="guardarNuevoUsuario()">
+        <mat-dialog-content class="ui-users-dialog-content !px-6 !pt-5">
           @if (error()) { <p class="school-dialog-error mb-4" role="alert">{{ error() }}</p> }
           <div class="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2">
             <mat-form-field appearance="outline" subscriptSizing="dynamic" class="sm:col-span-2">
@@ -175,7 +177,7 @@ import { AuthStore } from '../../core/state/auth.store';
             </mat-form-field>
           </div>
         </mat-dialog-content>
-        <mat-dialog-actions align="end" class="!gap-2 !px-6 !pb-6">
+        <mat-dialog-actions align="end" class="ui-users-dialog-actions !gap-2 !px-6 !pb-6">
           <button mat-button type="button" mat-dialog-close>Cancelar</button>
           <button mat-flat-button color="primary" type="submit" [disabled]="creando() || !nuevoUsername.trim() || !nuevoEmail.trim() || nuevoPassword.length < 6">{{ creando() ? 'Creando…' : 'Crear cuenta' }}</button>
         </mat-dialog-actions>
@@ -183,13 +185,13 @@ import { AuthStore } from '../../core/state/auth.store';
       </ng-template>
 
       <ng-template #confirmarEstadoDialog>
-        <h2 mat-dialog-title class="!px-6 !pt-6 !text-xl !font-semibold !tracking-tight !text-[#14213d]">{{ usuarioPendienteEstado()?.activo ? 'Suspender usuario' : 'Activar usuario' }}</h2>
-        <mat-dialog-content class="!px-6 !pt-3">
+        <h2 mat-dialog-title class="ui-users-dialog-title !px-6 !pt-6 !text-xl !font-semibold !tracking-tight !text-[#14213d]">{{ usuarioPendienteEstado()?.activo ? 'Suspender usuario' : 'Activar usuario' }}</h2>
+        <mat-dialog-content class="ui-users-dialog-content !px-6 !pt-3">
           <p class="text-sm leading-6 text-slate-600">{{ usuarioPendienteEstado()?.activo ? 'La cuenta perderá el acceso al portal.' : 'La cuenta recuperará el acceso según sus roles asignados.' }}</p>
           @if (usuarioPendienteEstado()) { <p class="mt-3 break-all text-sm font-semibold text-slate-800">{{ usuarioPendienteEstado()!.email }}</p> }
           @if (error()) { <p class="school-dialog-error mt-4" role="alert">{{ error() }}</p> }
         </mat-dialog-content>
-        <mat-dialog-actions align="end" class="!gap-2 !px-6 !pb-6">
+        <mat-dialog-actions align="end" class="ui-users-dialog-actions !gap-2 !px-6 !pb-6">
           <button mat-button type="button" mat-dialog-close [disabled]="actualizandoEstado()">Cancelar</button>
           <button mat-flat-button color="primary" type="button" (click)="confirmarCambioEstado()" [disabled]="actualizandoEstado()">{{ actualizandoEstado() ? 'Actualizando…' : 'Confirmar' }}</button>
         </mat-dialog-actions>
