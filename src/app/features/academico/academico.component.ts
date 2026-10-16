@@ -9,8 +9,8 @@ export interface AulaItem {
   codigo: string;
   nombre: string;
   ubicacion: string;
-  capacidad: number;
-  activa: boolean;
+  capacidad: number | null;
+  activa: boolean | null;
 }
 
 export interface NivelItem {
@@ -80,7 +80,7 @@ export interface NivelItem {
               {{ contarAulasPorFiltro('INIC') }} Aulas
             </span>
           </div>
-          <div class="text-2xl font-black text-white mt-3">{{ contarCapacidadPorFiltro('INIC') }} Capacidad</div>
+          <div class="text-2xl font-black text-white mt-3">{{ contarCapacidadPorFiltro('INIC') ?? '—' }} Capacidad</div>
           <p class="text-xs text-slate-400 mt-1">Aulas de 3, 4 y 5 años configuradas en PostgreSQL</p>
         </div>
 
@@ -91,7 +91,7 @@ export interface NivelItem {
               {{ contarAulasPorFiltro('PRIM') }} Aulas
             </span>
           </div>
-          <div class="text-2xl font-black text-white mt-3">{{ contarCapacidadPorFiltro('PRIM') }} Capacidad</div>
+          <div class="text-2xl font-black text-white mt-3">{{ contarCapacidadPorFiltro('PRIM') ?? '—' }} Capacidad</div>
           <p class="text-xs text-slate-400 mt-1">De 1° a 6° de Primaria registradas en PostgreSQL</p>
         </div>
 
@@ -102,7 +102,7 @@ export interface NivelItem {
               {{ contarAulasPorFiltro('SEC') }} Aulas
             </span>
           </div>
-          <div class="text-2xl font-black text-white mt-3">{{ contarCapacidadPorFiltro('SEC') }} Capacidad</div>
+          <div class="text-2xl font-black text-white mt-3">{{ contarCapacidadPorFiltro('SEC') ?? '—' }} Capacidad</div>
           <p class="text-xs text-slate-400 mt-1">De 1° a 5° de Secundaria registradas en PostgreSQL</p>
         </div>
       </div>
@@ -148,16 +148,20 @@ export interface NivelItem {
                       <div class="text-[11px] text-slate-500">{{ aula.ubicacion || 'Sin ubicación registrada' }}</div>
                     </td>
                     <td class="px-5 py-3.5 font-mono text-white" data-label="Capacidad Aforo">
-                      {{ aula.capacidad }} vacantes
+                      {{ aula.capacidad == null ? 'Sin dato de capacidad' : aula.capacidad + ' vacantes' }}
                     </td>
                     <td class="px-5 py-3.5 text-center" data-label="Estado en BD">
-                      @if (aula.activa) {
+                      @if (aula.activa === true) {
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">
                           ACTIVA
                         </span>
-                      } @else {
+                      } @else if (aula.activa === false) {
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">
                           INACTIVA
+                        </span>
+                      } @else {
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">
+                          SIN DATO
                         </span>
                       }
                     </td>
@@ -167,7 +171,7 @@ export interface NivelItem {
             </tbody>
           </table>
         </div>
-        @if (!cargando() && aulas().length === 0) {
+        @if (!cargando() && !error() && aulas().length === 0) {
           <div class="ui-academic-empty-state ui-empty-state-art" data-illustration="crest">
             <p class="font-medium text-slate-400">No se encontraron aulas físicas en la base de datos.</p>
             <p class="text-[11px] text-slate-500">Configure los pabellones y aulas escolares en PostgreSQL para visualizar el directorio.</p>
@@ -196,6 +200,7 @@ export class AcademicoComponent implements OnInit {
   }
 
   cargarDatos(): void {
+    this.error.set(null);
     this.cargando.set(true);
     this.academicoService.listarAulas().subscribe({
       next: (res: AulaResponseDto[]) => {
@@ -207,8 +212,8 @@ export class AcademicoComponent implements OnInit {
               codigo: a.codigo,
               nombre: a.nombre,
               ubicacion: a.ubicacion,
-              capacidad: a.capacidad,
-              activa: a.activa ?? true
+              capacidad: a.capacidad ?? null,
+              activa: a.activa ?? null
             }))
           );
         } else {
@@ -218,6 +223,7 @@ export class AcademicoComponent implements OnInit {
       error: () => {
         this.cargando.set(false);
         this.aulas.set([]);
+        this.error.set('No se pudieron cargar las aulas.');
       }
     });
 
@@ -231,6 +237,7 @@ export class AcademicoComponent implements OnInit {
       },
       error: () => {
         this.niveles.set([]);
+        this.error.set('No se pudieron cargar los niveles académicos.');
       }
     });
   }
@@ -239,10 +246,10 @@ export class AcademicoComponent implements OnInit {
     return this.aulas().filter(a => a.codigo && a.codigo.toUpperCase().includes(codigoPrefix)).length;
   }
 
-  contarCapacidadPorFiltro(codigoPrefix: string): number {
-    return this.aulas()
-      .filter(a => a.codigo && a.codigo.toUpperCase().includes(codigoPrefix))
-      .reduce((sum, a) => sum + (a.capacidad || 0), 0);
+  contarCapacidadPorFiltro(codigoPrefix: string): number | null {
+    const aulas = this.aulas().filter(a => a.codigo && a.codigo.toUpperCase().includes(codigoPrefix));
+    if (aulas.some(a => a.capacidad == null)) return null;
+    return aulas.reduce((sum, a) => sum + (a.capacidad as number), 0);
   }
 
   abrirModalNuevaAula(): void {

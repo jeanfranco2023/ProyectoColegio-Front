@@ -15,7 +15,7 @@ export interface EvaluacionAlumno {
   c2: NotaCNEB;
   c3: NotaCNEB;
   conclusionDescriptiva: string;
-  requiereRefuerzo: boolean;
+  requiereRefuerzo: boolean | null;
   competenciaId: number;
 }
 
@@ -127,10 +127,12 @@ template: `
                     </td>
                     <td class="ui-grade-conclusion" [title]="alumno.conclusionDescriptiva || 'Sin conclusión'" data-label="Conclusión">{{ alumno.conclusionDescriptiva || 'Sin conclusión' }}</td>
                     <td data-label="Refuerzo">
-                      @if (alumno.requiereRefuerzo) {
+                      @if (alumno.requiereRefuerzo === true) {
                         <span class="ui-grade-support ui-grade-support--needed">CNEB C</span>
-                      } @else {
+                      } @else if (alumno.requiereRefuerzo === false) {
                         <span class="ui-grade-support">Normal</span>
+                      } @else {
+                        <span class="ui-grade-support">Sin dato</span>
                       }
                     </td>
                     <td class="ui-grade-row-action" data-label="Acciones"><button type="button" (click)="abrirEdicion(alumno)" class="ui-button ui-button--secondary ui-grade-edit">Editar</button></td>
@@ -269,7 +271,7 @@ export class CalificacionesComponent implements OnInit {
               c2: '-',
               c3: '-',
               conclusionDescriptiva: c.conclusionDescriptiva || '',
-              requiereRefuerzo: c.requiereRefuerzo ?? false,
+              requiereRefuerzo: c.requiereRefuerzo ?? null,
               competenciaId: c.competenciaId
             }))
           );

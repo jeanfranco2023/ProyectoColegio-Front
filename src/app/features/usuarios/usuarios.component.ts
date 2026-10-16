@@ -131,7 +131,7 @@ template: `
                     </td>
                   </tr>
                 } @empty {
-                  <tr>
+                  <tr [hidden]="!!error()">
                     <td colspan="7" data-label="">
                       <div class="text-center py-12 text-slate-500 space-y-2 ui-empty-state-art" data-illustration="crest">
                         <p class="font-medium text-slate-400">No se encontraron usuarios registrados en la base de datos.</p>
@@ -226,6 +226,7 @@ export class UsuariosComponent implements OnInit {
   }
 
   cargarUsuarios(): void {
+    this.error.set(null);
     this.cargando.set(true);
     this.usuarioService.listarUsuarios(this.filtroRol).subscribe({
       next: (data) => {
@@ -235,6 +236,7 @@ export class UsuariosComponent implements OnInit {
       error: () => {
         this.cargando.set(false);
         this.usuarios.set([]);
+        this.error.set('No se pudieron cargar los usuarios.');
       }
     });
   }

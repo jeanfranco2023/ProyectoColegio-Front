@@ -11,7 +11,7 @@ export interface IncidenciaEscolar {
   tipoFalta: string;
   descripcion: string;
   reportadoPor: string;
-  citacionPadre: boolean;
+  citacionPadre: boolean | null;
   estado: string;
 }
 
@@ -107,10 +107,12 @@ template: `
                       {{ item.descripcion }}
                     </td>
                     <td class="px-5 py-3.5" data-label="Citación">
-                      @if (item.citacionPadre) {
+                      @if (item.citacionPadre === true) {
                         <span class="text-amber-400 font-semibold text-[11px]">Citado a Dirección</span>
-                      } @else {
+                      } @else if (item.citacionPadre === false) {
                         <span class="text-slate-500 text-[11px]">No requerida</span>
+                      } @else {
+                        <span class="text-slate-500 text-[11px]">Sin dato</span>
                       }
                     </td>
                     <td class="px-5 py-3.5" data-label="Estado en BD">
@@ -124,10 +126,10 @@ template: `
             </tbody>
           </table>
         </div>
-        @if (!cargando() && incidencias().length === 0) {
+        @if (!cargando() && !error() && incidencias().length === 0) {
           <div class="ui-coexistence-empty-state ui-empty-state-art">
             <p class="font-medium text-slate-400">No se encontraron incidencias registradas en la base de datos.</p>
-            <p class="text-[11px] text-slate-500">El libro de incidencias y medidas formativas se encuentra al día y sin faltas reportadas en PostgreSQL.</p>
+            <p class="text-[11px] text-slate-500">Cuando existan observaciones, aparecerán aquí.</p>
           </div>
         }
       </div>
@@ -154,6 +156,7 @@ export class ConvivenciaComponent implements OnInit {
   }
 
   cargarIncidencias(): void {
+    this.error.set(null);
     this.cargando.set(true);
     this.convivenciaService.listarIncidencias().subscribe({
       next: (res) => {
@@ -164,10 +167,10 @@ export class ConvivenciaComponent implements OnInit {
               id: i.id,
               matriculaId: i.matriculaId,
               fecha: i.fechaIncidencia ? String(i.fechaIncidencia) : '-',
-              tipoFalta: i.tipoFalta || 'GENERAL',
+              tipoFalta: i.tipoFalta || '—',
               descripcion: i.descripcion || '',
-              reportadoPor: i.reportadoPorUsuarioId ? `Usuario #${i.reportadoPorUsuarioId}` : 'Tutor',
-              citacionPadre: i.requiereCitacion ?? false,
+              reportadoPor: i.reportadoPorUsuarioId ? `Usuario #${i.reportadoPorUsuarioId}` : '—',
+              citacionPadre: i.requiereCitacion ?? null,
               estado: i.estado
             }))
           );
@@ -178,6 +181,7 @@ export class ConvivenciaComponent implements OnInit {
       error: () => {
         this.cargando.set(false);
         this.incidencias.set([]);
+        this.error.set('No se pudieron cargar las observaciones de convivencia.');
       }
     });
   }
