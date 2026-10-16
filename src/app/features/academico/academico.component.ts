@@ -24,7 +24,7 @@ export interface NivelItem {
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="space-y-6">
+    <div class="space-y-6 ui-academic-page">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -76,7 +76,7 @@ export interface NivelItem {
         <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800">
           <div class="flex items-center justify-between">
             <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Nivel Inicial</span>
-            <span class="px-2 py-0.5 rounded text-[10px] bg-amber-950 text-amber-300 border border-amber-800 font-semibold">
+            <span class="px-2 py-0.5 rounded text-[10px] bg-amber-950 text-amber-300 border border-amber-800 font-semibold ui-academic-initial-badge">
               {{ contarAulasPorFiltro('INIC') }} Aulas
             </span>
           </div>
@@ -120,7 +120,7 @@ export interface NivelItem {
         </div>
 
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
+          <table class="w-full text-left text-xs ui-mobile-table-cards">
             <thead class="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
               <tr>
                 <th class="px-5 py-3.5">ID BD</th>
@@ -141,16 +141,16 @@ export interface NivelItem {
               } @else {
                 @for (aula of aulas(); track aula.id) {
                   <tr class="hover:bg-slate-800/40 transition">
-                    <td class="px-5 py-3.5 font-mono text-slate-500">{{ aula.id }}</td>
-                    <td class="px-5 py-3.5 font-mono text-blue-400 font-semibold">{{ aula.codigo }}</td>
-                    <td class="px-5 py-3.5">
+                    <td class="px-5 py-3.5 font-mono text-slate-500" data-label="ID BD">{{ aula.id }}</td>
+                    <td class="px-5 py-3.5 font-mono text-blue-400 font-semibold" data-label="Código Aula">{{ aula.codigo }}</td>
+                    <td class="px-5 py-3.5" data-label="Nombre & Ubicación">
                       <div class="font-bold text-white">{{ aula.nombre }}</div>
                       <div class="text-[11px] text-slate-500">{{ aula.ubicacion || 'Sin ubicación registrada' }}</div>
                     </td>
-                    <td class="px-5 py-3.5 font-mono text-white">
+                    <td class="px-5 py-3.5 font-mono text-white" data-label="Capacidad Aforo">
                       {{ aula.capacidad }} vacantes
                     </td>
-                    <td class="px-5 py-3.5 text-center">
+                    <td class="px-5 py-3.5 text-center" data-label="Estado en BD">
                       @if (aula.activa) {
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">
                           ACTIVA
@@ -162,19 +162,17 @@ export interface NivelItem {
                       }
                     </td>
                   </tr>
-                } @empty {
-                  <tr>
-                    <td colspan="5" class="text-center py-12 text-slate-500 space-y-2">
-                      <div class="text-2xl">🏫</div>
-                      <p class="font-medium text-slate-400">No se encontraron aulas físicas en la base de datos.</p>
-                      <p class="text-[11px] text-slate-500">Configure los pabellones y aulas escolares en PostgreSQL para visualizar el directorio.</p>
-                    </td>
-                  </tr>
                 }
               }
             </tbody>
           </table>
         </div>
+        @if (!cargando() && aulas().length === 0) {
+          <div class="ui-academic-empty-state ui-empty-state-art" data-illustration="crest">
+            <p class="font-medium text-slate-400">No se encontraron aulas físicas en la base de datos.</p>
+            <p class="text-[11px] text-slate-500">Configure los pabellones y aulas escolares en PostgreSQL para visualizar el directorio.</p>
+          </div>
+        }
       </div>
     </div>
   `
