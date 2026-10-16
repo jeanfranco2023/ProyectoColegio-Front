@@ -271,7 +271,7 @@ export interface EstudianteMatriculadoItem {
                         </td>
                       </tr>
                     } @empty {
-                      <tr>
+                      <tr [hidden]="!!error()">
                         <td colspan="9" class="text-center py-12 text-slate-500 space-y-2 ui-empty-state-art">
                           <p class="font-medium text-slate-400">No se encontraron estudiantes registrados.</p>
                           <p class="text-[11px] text-slate-500">Haz clic en "Registrar Alumno" para dar de alta al primer estudiante en la base de datos.</p>
@@ -353,7 +353,7 @@ export interface EstudianteMatriculadoItem {
                 <thead class="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
                   <tr>
                     <th class="px-5 py-3.5">ID BD</th>
-                    <th class="px-5 py-3.5">Código Matrícula</th>
+                    <th class="px-5 py-3.5">Matrícula</th>
                     <th class="px-5 py-3.5">Estudiante ID</th>
                     <th class="px-5 py-3.5">Fecha Registro</th>
                     <th class="px-5 py-3.5">Estado en BD</th>
@@ -373,7 +373,7 @@ export interface EstudianteMatriculadoItem {
                     @for (est of estudiantesFiltrados(); track est.id) {
                       <tr class="hover:bg-slate-800/40 transition">
                         <td class="px-5 py-3.5 font-mono text-slate-500" data-label="ID BD">#{{ est.id }}</td>
-                        <td class="px-5 py-3.5 font-mono text-blue-400 font-semibold" data-label="Código Matrícula">{{ est.codigoMatricula }}</td>
+                        <td class="px-5 py-3.5 font-mono text-blue-400 font-semibold" data-label="Matrícula">{{ est.codigoMatricula }}</td>
                         <td class="px-5 py-3.5 font-mono text-slate-300" data-label="Estudiante ID">Estudiante #{{ est.estudianteId }}</td>
                         <td class="px-5 py-3.5 text-slate-400 font-mono" data-label="Fecha Registro">{{ est.fechaMatricula | uiDatePe }}</td>
                         <td class="px-5 py-3.5" data-label="Estado en BD">
@@ -403,7 +403,7 @@ export interface EstudianteMatriculadoItem {
                         </td>
                       </tr>
                     } @empty {
-                      <tr>
+                      <tr [hidden]="!!error()">
                         <td colspan="7" class="text-center py-12 text-slate-500 space-y-2 ui-empty-state-art">
                           <p class="font-medium text-slate-400">No se encontraron matrículas en esta sección.</p>
                           <p class="text-[11px] text-slate-500">Los registros generados se sincronizan directamente con PostgreSQL.</p>
@@ -796,13 +796,15 @@ export class MatriculasComponent implements OnInit {
 
   anioActivoTexto(): string {
     const a = this.anios().find(x => x.id === this.anioLectivoId);
-    return a ? String(a.anio) : '2026';
+    return a ? String(a.anio) : '—';
   }
 
   obtenerNombreSeccion(s: SeccionResponseDto): string {
     const nombreGrado = this.gradosMap.get(s.gradoId) ?? `Grado ${s.gradoId}`;
     const aula = s.aulaFisica ? ` · ${s.aulaFisica}` : '';
-    const vacantes = ` · ${s.vacantesOcupadas ?? 0}/${s.cupoMaximo ?? 30}`;
+    const vacantes = s.vacantesOcupadas == null || s.cupoMaximo == null
+      ? ` \u00b7 \u2014`
+      : ` \u00b7 ${s.vacantesOcupadas}/${s.cupoMaximo}`;
     return `${nombreGrado} - Sección ${s.letra}${aula}${vacantes}`;
   }
 
@@ -856,6 +858,7 @@ export class MatriculasComponent implements OnInit {
   }
 
   cargarEstudiantes(): void {
+    this.error.set(null);
     this.cargandoEstudiantes.set(true);
     this.matriculaService.listarEstudiantes().subscribe({
       next: (estudiantes) => {
@@ -865,6 +868,7 @@ export class MatriculasComponent implements OnInit {
       error: () => {
         this.cargandoEstudiantes.set(false);
         this.listaEstudiantes.set([]);
+        this.error.set('No se pudieron cargar los estudiantes.');
       }
     });
   }
@@ -883,6 +887,7 @@ export class MatriculasComponent implements OnInit {
   }
 
   cargarMatriculas(): void {
+    this.error.set(null);
     if (!this.seccionIdSeleccionada) {
       this.estudiantes.set([]);
       return;
@@ -909,6 +914,7 @@ export class MatriculasComponent implements OnInit {
       error: () => {
         this.cargando.set(false);
         this.estudiantes.set([]);
+        this.error.set('No se pudieron cargar las matrículas de la sección.');
       }
     });
   }
