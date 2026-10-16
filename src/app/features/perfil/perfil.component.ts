@@ -11,8 +11,8 @@ import { MatInputModule } from '@angular/material/input';
   selector: 'app-perfil',
   standalone: true,
   imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
-  template: `
-    <div class="max-w-4xl space-y-8">
+template: `
+    <div class="max-w-4xl space-y-8 ui-profile-page">
       <!-- Header -->
       <div>
         <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Mi Perfil Institucional</h2>
@@ -73,7 +73,7 @@ import { MatInputModule } from '@angular/material/input';
       </div>
 
       <dialog #passwordDialog class="school-native-dialog" aria-labelledby="password-dialog-title">
-        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="password-dialog-title">Cambiar contraseña</h3><p>Usa una clave nueva y confirma que ambas coincidan.</p></div><button type="button" class="school-dialog-cancel !min-h-9 !px-3" (click)="cerrarCambioPassword()" aria-label="Cerrar">✕</button></header>
+        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="password-dialog-title">Cambiar contraseña</h3><p>Usa una clave nueva y confirma que ambas coincidan.</p></div><button type="button" class="school-dialog-cancel ui-dialog-close !min-h-9 !px-3" (click)="cerrarCambioPassword()" aria-label="Cerrar">✕</button></header>
           <form (ngSubmit)="cambiarPassword()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
             @if (mensajeError()) { <p class="school-dialog-error" role="alert">{{ mensajeError() }}</p> }
             <label class="school-dialog-field">Contraseña actual<input type="password" [(ngModel)]="passwordActual" name="passwordActual" required autocomplete="current-password"></label>
