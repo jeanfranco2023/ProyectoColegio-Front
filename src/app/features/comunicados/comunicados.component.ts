@@ -113,7 +113,7 @@ template: `
               }
             </div>
           } @empty {
-            <div class="col-span-full p-12 text-center text-slate-500 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 ui-empty-state-art" data-illustration="calendar">
+            <div [hidden]="!!error()" class="col-span-full p-12 text-center text-slate-500 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 ui-empty-state-art" data-illustration="calendar">
               <p class="font-medium text-slate-400">No hay comunicados oficiales emitidos en la base de datos.</p>
               <p class="text-xs text-slate-500">Las circulares y notificaciones dirigidas a la comunidad educativa se sincronizarán directamente desde PostgreSQL.</p>
             </div>
@@ -148,6 +148,7 @@ export class ComunicadosComponent implements OnInit {
   }
 
   cargarComunicados(): void {
+    this.error.set(null);
     this.cargando.set(true);
     const consulta = this.store.hasRole('APODERADO')
       ? this.comunicadoService.consultarBandeja(0, 20).pipe(map(res => res.comunicados))
@@ -159,12 +160,12 @@ export class ComunicadosComponent implements OnInit {
           this.comunicados.set(
             res.map((c) => ({
               id: c.id,
-              titulo: c.titulo || `Comunicado #${c.id}`,
+              titulo: c.titulo || 'Sin título',
               resumen: c.contenido || 'Sin contenido adicional',
-              destinatarios: 'APODERADOS',
-              prioridad: 'INFORMATIVO',
+              destinatarios: '—',
+              prioridad: '—',
               fechaPublicacion: c.fechaPublicacion ? String(c.fechaPublicacion).split('T')[0] : '—',
-              autor: c.remitenteUsuarioId ? `Usuario #${c.remitenteUsuarioId}` : 'Dirección',
+              autor: c.remitenteUsuarioId ? `Usuario #${c.remitenteUsuarioId}` : '—',
               requiereAcuse: c.requiereAcuse
             }))
           );
@@ -175,6 +176,7 @@ export class ComunicadosComponent implements OnInit {
       error: () => {
         this.cargando.set(false);
         this.comunicados.set([]);
+        this.error.set('No se pudieron cargar los comunicados.');
       }
     });
   }
