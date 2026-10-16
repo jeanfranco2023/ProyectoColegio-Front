@@ -29,7 +29,7 @@ export interface DiscrepanciaBiometricaItem {
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="space-y-6">
+    <div class="space-y-6 ui-attendance-page">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -39,11 +39,11 @@ export interface DiscrepanciaBiometricaItem {
           </p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <button (click)="abrirDialogoRegistro()" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm cursor-pointer">Registrar asistencia</button>
-          <button (click)="abrirDialogoBiometrico()" class="px-4 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold text-xs sm:text-sm cursor-pointer">Importar marca</button>
+          <button (click)="abrirDialogoRegistro()" class="ui-attendance-primary px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm cursor-pointer">Registrar asistencia</button>
+          <button (click)="abrirDialogoBiometrico()" class="ui-attendance-secondary px-4 py-2.5 rounded-xl bg-slate-700 hover:bg-slate-600 text-white font-semibold text-xs sm:text-sm cursor-pointer">Importar marca</button>
           <button
             (click)="ejecutarConciliacion()"
-            class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-amber-600/30 transition flex items-center gap-2 cursor-pointer"
+            class="ui-attendance-reconcile px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-amber-600/30 transition flex items-center gap-2 cursor-pointer"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -56,7 +56,7 @@ export interface DiscrepanciaBiometricaItem {
       @if (mensaje()) { <p class="text-emerald-400 text-sm" role="status">{{ mensaje() }}</p> }
 
       <dialog #registroDialog class="school-native-dialog" aria-labelledby="registro-dialog-title">
-        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="registro-dialog-title">Registrar asistencia</h3><p>Registra una marca manual para la matrícula seleccionada.</p></div><button type="button" class="school-dialog-cancel !min-h-9 !px-3" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
+        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="registro-dialog-title">Registrar asistencia</h3><p>Registra una marca manual para la matrícula seleccionada.</p></div><button type="button" class="school-dialog-cancel ui-dialog-close !min-h-9 !px-3" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
           <form (ngSubmit)="registrarAsistencia()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
             @if (error()) { <p class="school-dialog-error" role="alert">{{ error() }}</p> }
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -70,7 +70,7 @@ export interface DiscrepanciaBiometricaItem {
       </dialog>
 
       <dialog #biometricoDialog class="school-native-dialog" aria-labelledby="biometrico-dialog-title">
-        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="biometrico-dialog-title">Importar marca biométrica</h3><p>Registra una lectura de molinete asociada a un DNI.</p></div><button type="button" class="school-dialog-cancel !min-h-9 !px-3" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
+        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="biometrico-dialog-title">Importar marca biométrica</h3><p>Registra una lectura de molinete asociada a un DNI.</p></div><button type="button" class="school-dialog-cancel ui-dialog-close !min-h-9 !px-3" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
           <form (ngSubmit)="importarMarca()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
             @if (error()) { <p class="school-dialog-error" role="alert">{{ error() }}</p> }
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -83,7 +83,7 @@ export interface DiscrepanciaBiometricaItem {
       </dialog>
 
       <dialog #justificacionDialog class="school-native-dialog" aria-labelledby="justificacion-dialog-title">
-        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="justificacion-dialog-title">Justificar inasistencia</h3><p>La justificación quedará asociada a la asistencia seleccionada.</p></div><button type="button" class="school-dialog-cancel !min-h-9 !px-3" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
+        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="justificacion-dialog-title">Justificar inasistencia</h3><p>La justificación quedará asociada a la asistencia seleccionada.</p></div><button type="button" class="school-dialog-cancel ui-dialog-close !min-h-9 !px-3" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
           <form (ngSubmit)="justificarSeleccionada()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
             @if (error()) { <p class="school-dialog-error" role="alert">{{ error() }}</p> }
             <label class="school-dialog-field">Motivo de justificación *<textarea [(ngModel)]="motivoJustificacion" name="motivoJustificacion" required maxlength="4000" rows="4" placeholder="Describe brevemente el motivo"></textarea></label>
@@ -117,19 +117,19 @@ export interface DiscrepanciaBiometricaItem {
 
       <!-- Summary Quick Stats -->
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div class="p-4 rounded-xl bg-emerald-950/30 border border-emerald-800/40">
+        <div class="ui-attendance-stat ui-attendance-stat--present p-4 rounded-xl bg-emerald-950/30 border border-emerald-800/40">
           <div class="text-[10px] font-bold uppercase tracking-wider text-emerald-400">Presentes</div>
           <div class="text-2xl font-black text-white mt-1">{{ totalPresentes() }}</div>
         </div>
-        <div class="p-4 rounded-xl bg-amber-950/30 border border-amber-800/40">
+        <div class="ui-attendance-stat ui-attendance-stat--late p-4 rounded-xl bg-amber-950/30 border border-amber-800/40">
           <div class="text-[10px] font-bold uppercase tracking-wider text-amber-400">Tardanzas</div>
           <div class="text-2xl font-black text-white mt-1">{{ totalTardanzas() }}</div>
         </div>
-        <div class="p-4 rounded-xl bg-blue-950/30 border border-blue-800/40">
+        <div class="ui-attendance-stat ui-attendance-stat--excused p-4 rounded-xl bg-blue-950/30 border border-blue-800/40">
           <div class="text-[10px] font-bold uppercase tracking-wider text-blue-400">Faltas Justificadas</div>
           <div class="text-2xl font-black text-white mt-1">{{ totalJustificadas() }}</div>
         </div>
-        <div class="p-4 rounded-xl bg-red-950/30 border border-red-800/40">
+        <div class="ui-attendance-stat ui-attendance-stat--unexcused p-4 rounded-xl bg-red-950/30 border border-red-800/40">
           <div class="text-[10px] font-bold uppercase tracking-wider text-red-400">Faltas Injustificadas</div>
           <div class="text-2xl font-black text-white mt-1">{{ totalInjustificadas() }}</div>
         </div>
@@ -150,7 +150,7 @@ export interface DiscrepanciaBiometricaItem {
           class="px-4 py-2.5 border-b-2 text-xs transition cursor-pointer flex items-center gap-2"
         >
           <span>Alertas de Conciliación Biométrica</span>
-          <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-amber-950 text-amber-400 border border-amber-800">
+          <span class="ui-attendance-alert-count px-1.5 py-0.2 rounded-full text-[10px] bg-amber-950 text-amber-400 border border-amber-800">
             {{ discrepancias().length }}
           </span>
         </button>
@@ -159,8 +159,8 @@ export interface DiscrepanciaBiometricaItem {
       <!-- Tab Content: Pase de Lista -->
       @if (tabActiva() === 'AULA') {
         <div class="rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden shadow-sm">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+          <div class="overflow-x-auto ui-attendance-table-scroll">
+            <table class="w-full text-left text-xs ui-mobile-table-cards">
               <thead class="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
                 <tr>
                   <th class="px-5 py-3.5">Estudiante</th>
@@ -181,11 +181,18 @@ export interface DiscrepanciaBiometricaItem {
                 } @else {
                   @for (item of alumnos(); track item.id) {
                     <tr class="hover:bg-slate-800/40 transition">
-                      <td class="px-5 py-3.5 font-bold text-white">{{ item.estudiante }}</td>
-                      <td class="px-5 py-3.5 font-mono text-slate-400">{{ item.dni }}</td>
-                      <td class="px-5 py-3.5 font-mono text-emerald-400">{{ item.horaMarcacionPuerta || '-' }}</td>
-                      <td class="px-5 py-3.5 text-center font-bold">{{ item.estado }}</td>
-                      <td class="px-5 py-3.5 text-center">
+                      <td class="px-5 py-3.5 font-bold text-white" data-label="Estudiante">{{ item.estudiante }}</td>
+                      <td class="px-5 py-3.5 font-mono text-slate-400" data-label="DNI">{{ item.dni }}</td>
+                      <td class="px-5 py-3.5 font-mono text-emerald-400" data-label="Molinete Puerta">{{ item.horaMarcacionPuerta || '-' }}</td>
+                      <td class="px-5 py-3.5 text-center font-bold" data-label="Pase de Lista en Aula">
+                        @switch (item.estado) {
+                          @case ('PRESENTE') { <span class="ui-attendance-status ui-attendance-present"><span aria-hidden="true">✓</span><span>Presente</span><small>PRESENTE</small></span> }
+                          @case ('TARDANZA') { <span class="ui-attendance-status ui-attendance-late"><span aria-hidden="true">◷</span><span>Tardanza</span><small>TARDANZA</small></span> }
+                          @case ('FALTA_JUSTIFICADA') { <span class="ui-attendance-status ui-attendance-excused"><span aria-hidden="true">✓</span><span>Falta justificada</span><small>FALTA_JUSTIFICADA</small></span> }
+                          @case ('FALTA_INJUSTIFICADA') { <span class="ui-attendance-status ui-attendance-unexcused"><span aria-hidden="true">!</span><span>Falta injustificada</span><small>FALTA_INJUSTIFICADA</small></span> }
+                        }
+                      </td>
+                      <td class="px-5 py-3.5 text-center" data-label="Acciones">
                         @if (item.estado === 'FALTA_INJUSTIFICADA') {
                           <button (click)="abrirDialogoJustificacion(item.id)" class="text-blue-600 font-semibold">Justificar</button>
                         }
@@ -193,8 +200,7 @@ export interface DiscrepanciaBiometricaItem {
                     </tr>
                   } @empty {
                     <tr>
-                      <td colspan="5" class="text-center py-12 text-slate-500 space-y-2">
-                        <div class="text-2xl">🕒</div>
+                      <td colspan="5" class="text-center py-12 text-slate-500 space-y-2 ui-empty-state-art" data-illustration="calendar">
                         <p class="font-medium text-slate-400">No se encontraron marcas de asistencia para la fecha indicada.</p>
                         <p class="text-[11px] text-slate-500">Los pases de lista registrados en el aula y las importaciones biométricas se mostrarán aquí.</p>
                       </td>
@@ -211,8 +217,8 @@ export interface DiscrepanciaBiometricaItem {
       @if (tabActiva() === 'CONCILIACION') {
         <div class="space-y-4">
           <div class="rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden shadow-sm">
-            <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+            <div class="overflow-x-auto ui-attendance-table-scroll">
+            <table class="w-full text-left text-xs ui-mobile-table-cards">
               <thead class="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
                 <tr>
                   <th class="px-5 py-3.5">Estudiante</th>
@@ -225,16 +231,15 @@ export interface DiscrepanciaBiometricaItem {
               <tbody class="divide-y divide-slate-800/60 text-slate-300">
                 @for (d of discrepancias(); track d.id) {
                   <tr class="hover:bg-slate-800/40 transition">
-                    <td class="px-5 py-3.5 font-bold text-white">{{ d.estudiante }}</td>
-                    <td class="px-5 py-3.5 font-mono text-slate-400">{{ d.dni }}</td>
-                    <td class="px-5 py-3.5 font-mono text-emerald-400">{{ d.horaPuerta }}</td>
-                    <td class="px-5 py-3.5 font-bold text-red-400">{{ d.estadoAula }}</td>
-                    <td class="px-5 py-3.5">{{ d.tipoDiscrepancia }}</td>
+                    <td class="px-5 py-3.5 font-bold text-white" data-label="Estudiante">{{ d.estudiante }}</td>
+                    <td class="px-5 py-3.5 font-mono text-slate-400" data-label="DNI">{{ d.dni }}</td>
+                    <td class="px-5 py-3.5 font-mono text-emerald-400" data-label="Portería">{{ d.horaPuerta }}</td>
+                    <td class="px-5 py-3.5 font-bold text-red-400" data-label="Aula">{{ d.estadoAula }}</td>
+                    <td class="px-5 py-3.5" data-label="Tipo de Discrepancia">{{ d.tipoDiscrepancia }}</td>
                   </tr>
                 } @empty {
                   <tr>
-                    <td colspan="5" class="text-center py-12 text-slate-500 space-y-2">
-                      <div class="text-2xl">✓</div>
+                    <td colspan="5" class="text-center py-12 text-slate-500 space-y-2 ui-empty-state-art" data-illustration="calendar">
                       <p class="font-medium text-slate-400">No hay discrepancias registradas en la base de datos.</p>
                       <p class="text-[11px] text-slate-500">Molinete de portería y pase de lista de aula se encuentran perfectamente conciliados.</p>
                     </td>
