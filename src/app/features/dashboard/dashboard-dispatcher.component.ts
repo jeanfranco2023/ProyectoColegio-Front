@@ -161,17 +161,17 @@ export class DashboardDispatcherComponent implements OnInit {
       next: res => {
         this.anio.set(res?.anio ?? new Date().getFullYear());
         this.totalEstudiantes.set(res?.totalEstudiantes ?? 0);
-        this.asistenciaHoy.set(res?.asistenciaHoy ?? 0);
+        this.asistenciaHoy.set(res?.asistenciaHoy ?? null);
         this.recaudacionMes.set(res?.recaudacionMes ?? 0);
         this.alumnosEnRiesgo.set(res?.alumnosEnRiesgo ?? 0);
         this.loading.set(false);
       },
       error: () => {
-        this.anio.set(new Date().getFullYear());
-        this.totalEstudiantes.set(0);
-        this.asistenciaHoy.set(0);
-        this.recaudacionMes.set(0);
-        this.alumnosEnRiesgo.set(0);
+        this.anio.set(null);
+        this.totalEstudiantes.set(null);
+        this.asistenciaHoy.set(null);
+        this.recaudacionMes.set(null);
+        this.alumnosEnRiesgo.set(null);
         this.loading.set(false);
       }
     });
