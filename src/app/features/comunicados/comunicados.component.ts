@@ -6,6 +6,7 @@ import { ComunicadoService } from '../../core/services/comunicado.service';
 import { AcademicoService } from '../../core/services/academico.service';
 import { AuthStore } from '../../core/state/auth.store';
 import { AnioLectivoResponseDto } from '../../core/models/academico.model';
+import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
 
 export interface ComunicadoEscolar {
   id: number;
@@ -21,9 +22,9 @@ export interface ComunicadoEscolar {
 @Component({
   selector: 'app-comunicados',
   standalone: true,
-  imports: [CommonModule, FormsModule],
-  template: `
-    <div class="space-y-6">
+  imports: [CommonModule, FormsModule, UiDatePePipe],
+template: `
+    <div class="space-y-6 ui-notices-page">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -54,7 +55,7 @@ export interface ComunicadoEscolar {
       @if (error()) { <p class="text-sm text-red-400" role="alert">{{ error() }}</p> }
       @if (mensaje()) { <p class="text-sm text-emerald-400" role="status">{{ mensaje() }}</p> }
       <dialog #comunicadoDialog class="school-native-dialog" aria-labelledby="comunicado-dialog-title">
-        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="comunicado-dialog-title">Publicar comunicado</h3><p>El mensaje será visible para la comunidad según su alcance.</p></div><button type="button" class="school-dialog-cancel !min-h-9 !px-3" (click)="cerrarDialogo()" aria-label="Cerrar">✕</button></header>
+        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="comunicado-dialog-title">Publicar comunicado</h3><p>El mensaje será visible para la comunidad según su alcance.</p></div><button type="button" class="school-dialog-cancel ui-dialog-close !min-h-9 !px-3" (click)="cerrarDialogo()" aria-label="Cerrar">✕</button></header>
           <form (ngSubmit)="publicar()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
             @if (error()) { <p class="school-dialog-error" role="alert">{{ error() }}</p> }
             <label class="school-dialog-field">Año lectivo *<select [(ngModel)]="anioLectivoId" name="anioLectivoId" [disabled]="!anios().length" required>@if (!anios().length) { <option [ngValue]="0">Sin años lectivos disponibles</option> } @for (anio of anios(); track anio.id) { <option [ngValue]="anio.id">Año {{ anio.anio }}</option> }</select></label>
@@ -105,15 +106,14 @@ export interface ComunicadoEscolar {
 
               <div class="pt-4 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-500 font-mono">
                 <span>Publicado por: {{ item.autor }}</span>
-                <span>{{ item.fechaPublicacion }}</span>
+                <span>{{ item.fechaPublicacion | uiDatePe }}</span>
               </div>
               @if (store.hasRole('APODERADO') && item.requiereAcuse) {
                 <button (click)="confirmarAcuse(item.id)" class="mt-3 p-2 rounded bg-blue-600 text-white text-xs">Confirmar lectura y acuse</button>
               }
             </div>
           } @empty {
-            <div class="col-span-full p-12 text-center text-slate-500 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
-              <div class="text-3xl">📢</div>
+            <div class="col-span-full p-12 text-center text-slate-500 rounded-2xl bg-slate-900 border border-slate-800 space-y-2 ui-empty-state-art" data-illustration="calendar">
               <p class="font-medium text-slate-400">No hay comunicados oficiales emitidos en la base de datos.</p>
               <p class="text-xs text-slate-500">Las circulares y notificaciones dirigidas a la comunidad educativa se sincronizarán directamente desde PostgreSQL.</p>
             </div>
