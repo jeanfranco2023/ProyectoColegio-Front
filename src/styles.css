@@ -1071,6 +1071,11 @@ router-outlet + * {
   background-color: transparent !important;
 }
 
+@media (max-width: 375px) {
+  .mat-mdc-form-field .mdc-floating-label,
+  .mat-mdc-form-field .mdc-floating-label--float-above { font-size: 13px !important; }
+}
+
 
 /* Etapa 10: tablas accesibles como tarjetas solo en móvil. */
 .ui-mobile-table-hint { display: none; }
@@ -2897,4 +2902,3 @@ router-outlet + * {
 
 & .ui-s9-scroll-hint{display:none;margin:0 0 8px;color:#46566e;font:var(--ui-font-label)}
 }
-
