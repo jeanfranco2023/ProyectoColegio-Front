@@ -50,7 +50,7 @@ export interface AlumnoAsistenciaItem {
       @if (error()) { <p class="text-red-400 text-sm" role="alert">{{ error() }}</p> }
       @if (mensaje()) { <p class="text-emerald-400 text-sm" role="status">{{ mensaje() }}</p> }
 
-      <dialog #registroDialog class="school-native-dialog !w-[min(620px,calc(100vw-24px))] !max-w-[calc(100vw-24px)] !max-h-[calc(100dvh-24px)] !overflow-auto" aria-labelledby="registro-dialog-title">
+      <dialog #registroDialog class="school-native-dialog" aria-labelledby="registro-dialog-title">
         <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="registro-dialog-title">Registrar asistencia</h3><p>Registra una marca manual para la matrícula seleccionada.</p></div><button type="button" class="school-dialog-cancel !h-11 !w-11 !min-w-11 !min-h-11 !shrink-0 !p-0 grid place-items-center" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
           <form (ngSubmit)="registrarAsistencia()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
             @if (error()) { <p class="school-dialog-error" role="alert">{{ error() }}</p> }
@@ -64,7 +64,7 @@ export interface AlumnoAsistenciaItem {
         </div>
       </dialog>
 
-      <dialog #biometricoDialog class="school-native-dialog !w-[min(620px,calc(100vw-24px))] !max-w-[calc(100vw-24px)] !max-h-[calc(100dvh-24px)] !overflow-auto" aria-labelledby="biometrico-dialog-title">
+      <dialog #biometricoDialog class="school-native-dialog" aria-labelledby="biometrico-dialog-title">
         <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="biometrico-dialog-title">Importar marca biométrica</h3><p>Registra una lectura de molinete asociada a un DNI.</p></div><button type="button" class="school-dialog-cancel !h-11 !w-11 !min-w-11 !min-h-11 !shrink-0 !p-0 grid place-items-center" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
           <form (ngSubmit)="importarMarca()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
             @if (error()) { <p class="school-dialog-error" role="alert">{{ error() }}</p> }
@@ -77,7 +77,7 @@ export interface AlumnoAsistenciaItem {
         </div>
       </dialog>
 
-      <dialog #justificacionDialog class="school-native-dialog !w-[min(620px,calc(100vw-24px))] !max-w-[calc(100vw-24px)] !max-h-[calc(100dvh-24px)] !overflow-auto" aria-labelledby="justificacion-dialog-title">
+      <dialog #justificacionDialog class="school-native-dialog" aria-labelledby="justificacion-dialog-title">
         <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="justificacion-dialog-title">Justificar inasistencia</h3><p>La justificación quedará asociada a la asistencia seleccionada.</p></div><button type="button" class="school-dialog-cancel !h-11 !w-11 !min-w-11 !min-h-11 !shrink-0 !p-0 grid place-items-center" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
           <form (ngSubmit)="justificarSeleccionada()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
             @if (error()) { <p class="school-dialog-error" role="alert">{{ error() }}</p> }

@@ -47,7 +47,7 @@ export interface NivelItem {
       </div>
 
       @if (error()) { <p class="text-red-400 text-sm" role="alert">{{ error() }}</p> }
-      <dialog #aulaDialog class="school-native-dialog !w-[min(620px,calc(100vw-24px))] !max-w-[calc(100vw-24px)] !max-h-[calc(100dvh-24px)] !overflow-auto" aria-labelledby="aula-dialog-title">
+      <dialog #aulaDialog class="school-native-dialog" aria-labelledby="aula-dialog-title">
         <div class="school-dialog-shell">
           <header class="school-dialog-header">
             <div><h3 id="aula-dialog-title">Registrar aula</h3><p>Completa los datos del ambiente escolar.</p></div>
