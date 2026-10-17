@@ -52,7 +52,7 @@ template: `
       <section aria-labelledby="resumen-title" [attr.aria-busy]="loading()">
         <div class="mb-4 flex items-end justify-between gap-4">
           <div>
-            <p class="text-[11px] font-extrabold tracking-[0.16em] text-[#805300] uppercase">Indicadores clave</p>
+            <p class="text-[11px] font-extrabold tracking-[0.16em] text-[#9a743d] uppercase">Indicadores clave</p>
             <h2 id="resumen-title" class="mt-1 text-lg font-semibold text-slate-800">Resumen institucional</h2>
           </div>
           <span class="hidden text-[11px] text-slate-400 sm:block">Cifras sincronizadas con la plataforma</span>
@@ -115,7 +115,7 @@ template: `
 
       <section aria-labelledby="modulos-title">
         <div class="mb-4">
-          <p class="text-[11px] font-extrabold tracking-[0.16em] text-[#805300] uppercase">Accesos rápidos</p>
+          <p class="text-[11px] font-extrabold tracking-[0.16em] text-[#9a743d] uppercase">Accesos rápidos</p>
           <h2 id="modulos-title" class="mt-1 text-lg font-semibold text-slate-800">Continúa con tu trabajo</h2>
         </div>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
