@@ -97,7 +97,7 @@ template: `
                   <tr class="hover:bg-slate-800/40 transition">
                     <td class="px-5 py-3.5 font-mono text-[#59677a]" data-label="ID BD">{{ item.id }}</td>
                     <td class="px-5 py-3.5 font-bold text-white" data-label="Matrícula ID">Matrícula #{{ item.matriculaId }}</td>
-                    <td class="px-5 py-3.5 font-mono text-[#59677a]" data-label="Fecha">{{ item.fecha | uiDatePe }}</td>
+                    <td class="px-5 py-3.5 font-mono !text-[#59677a]" data-label="Fecha">{{ item.fecha | uiDatePe }}</td>
                     <td class="px-5 py-3.5" data-label="Tipo Falta">
                       <span class="px-2 py-0.5 rounded bg-[#f3f6fa] text-[#34445d]">
                         {{ item.tipoFalta }}
