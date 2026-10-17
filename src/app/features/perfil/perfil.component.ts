@@ -12,11 +12,11 @@ import { MatInputModule } from '@angular/material/input';
   standalone: true,
   imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
 template: `
-    <div class="max-w-4xl space-y-8 ui-profile-page">
+    <div class="max-w-4xl min-w-0 space-y-8 font-inter text-[#172b4d] [&_button]:min-h-11 [&_input]:min-h-11 [&_:focus-visible]:outline-[3px] [&_:focus-visible]:outline-[#2864c5] [&_:focus-visible]:outline-offset-[3px] [&_.grid>div]:min-w-0 [&_.grid>article]:min-w-0">
       <!-- Header -->
-      <div>
+      <div class="border-t-[3px] border-[#c49a58]/50 pt-3">
         <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Mi Perfil Institucional</h2>
-        <p class="text-sm text-slate-400 mt-1">
+        <p class="text-sm text-[#59677a] mt-1">
           Información de la cuenta de usuario, credenciales de acceso y roles autorizados.
         </p>
       </div>
@@ -32,14 +32,14 @@ template: `
 
           <div>
             <h3 class="text-lg font-bold text-white">{{ store.user()?.username }}</h3>
-            <p class="text-xs text-slate-400 font-mono">{{ store.user()?.email }}</p>
+            <p class="text-xs !text-[11px] text-[#59677a] font-mono">{{ store.user()?.email }}</p>
           </div>
 
           <div class="pt-4 border-t border-slate-800 text-left space-y-2">
-            <span class="text-[10px] font-bold uppercase text-slate-500 tracking-wider">Roles Asignados</span>
+            <span class="text-[11px] font-bold uppercase text-[#59677a] tracking-wider">Roles Asignados</span>
             <div class="flex flex-wrap gap-1.5">
               @for (rol of store.roles(); track rol) {
-                <span class="px-2.5 py-1 rounded-lg bg-blue-950 text-blue-400 border border-blue-800 text-xs font-bold">
+                <span class="px-2.5 py-1 rounded-lg bg-[#eff5ff] border border-[#c3d6f5] text-xs !text-[11px] font-bold text-[#184fae]">
                   {{ rol }}
                 </span>
               }
@@ -51,35 +51,35 @@ template: `
         <div class="md:col-span-2 p-6 sm:p-8 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
           <div>
             <h3 class="text-base font-bold text-white">Seguridad de la Cuenta</h3>
-            <p class="text-xs text-slate-400 mt-0.5">
+            <p class="text-xs !text-[11px] text-[#59677a] mt-0.5">
               Actualice periódicamente su contraseña para preservar la integridad de los datos CNEB.
             </p>
           </div>
 
           @if (mensajeExito()) {
-            <div class="p-3.5 rounded-xl bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs">
+            <div class="p-3.5 rounded-xl bg-[#edf9f3] border border-[#b8dfcc] text-xs !text-[11px] text-[#126943]">
               ✓ Contraseña actualizada exitosamente.
             </div>
           }
 
           @if (mensajeError()) {
-            <div class="p-3.5 rounded-xl bg-red-950/60 border border-red-800 text-red-300 text-xs">
+            <div class="p-3.5 rounded-xl bg-[#fff1ef] border border-[#f2b7b0] text-xs !text-[11px] text-[#a43128]">
               ✕ {{ mensajeError() }}
             </div>
           }
 
-          <button mat-flat-button color="primary" type="button" (click)="abrirCambioPassword()" class="!rounded-xl !px-5 !text-xs !font-semibold">Cambiar contraseña</button>
+          <button mat-flat-button color="primary" type="button" (click)="abrirCambioPassword()" class="!rounded-xl !px-5 !text-xs !font-semibold max-[640px]:w-full">Cambiar contraseña</button>
         </div>
       </div>
 
-      <dialog #passwordDialog class="school-native-dialog" aria-labelledby="password-dialog-title">
-        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="password-dialog-title">Cambiar contraseña</h3><p>Usa una clave nueva y confirma que ambas coincidan.</p></div><button type="button" class="school-dialog-cancel ui-dialog-close !min-h-9 !px-3" (click)="cerrarCambioPassword()" aria-label="Cerrar">✕</button></header>
+      <dialog #passwordDialog class="school-native-dialog !w-[min(520px,calc(100vw_-_24px))] !max-w-[calc(100vw_-_24px)] !max-h-[calc(100dvh_-_24px)] !overflow-auto" aria-labelledby="password-dialog-title">
+        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="password-dialog-title">Cambiar contraseña</h3><p>Usa una clave nueva y confirma que ambas coincidan.</p></div><button type="button" class="school-dialog-cancel !grid !h-11 !w-11 !min-h-11 !min-w-11 !flex-none !place-items-center !p-0" (click)="cerrarCambioPassword()" aria-label="Cerrar">✕</button></header>
           <form (ngSubmit)="cambiarPassword()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
             @if (mensajeError()) { <p class="school-dialog-error" role="alert">{{ mensajeError() }}</p> }
             <label class="school-dialog-field">Contraseña actual<input type="password" [(ngModel)]="passwordActual" name="passwordActual" required autocomplete="current-password"></label>
             <label class="school-dialog-field">Nueva contraseña<input type="password" [(ngModel)]="passwordNuevo" name="passwordNuevo" minlength="6" required autocomplete="new-password" placeholder="Mínimo 6 caracteres"></label>
             <label class="school-dialog-field">Confirmar nueva contraseña<input type="password" [(ngModel)]="confirmarPassword" name="confirmarPassword" minlength="6" required autocomplete="new-password"></label>
-          </div><footer class="school-dialog-footer"><button type="button" class="school-dialog-cancel" (click)="cerrarCambioPassword()">Cancelar</button><button type="submit" [disabled]="guardando() || !passwordActual || passwordNuevo.length < 6 || passwordNuevo !== confirmarPassword" class="school-dialog-submit">{{ guardando() ? 'Actualizando…' : 'Actualizar contraseña' }}</button></footer></form>
+          </div><footer class="school-dialog-footer"><button type="button" class="school-dialog-cancel max-[640px]:w-full" (click)="cerrarCambioPassword()">Cancelar</button><button type="submit" [disabled]="guardando() || !passwordActual || passwordNuevo.length < 6 || passwordNuevo !== confirmarPassword" class="school-dialog-submit max-[640px]:w-full">{{ guardando() ? 'Actualizando…' : 'Actualizar contraseña' }}</button></footer></form>
         </div>
       </dialog>
     </div>
