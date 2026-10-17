@@ -24,7 +24,7 @@ type VistaMatricula = 'inicio' | 'propuesta' | 'niveles' | 'admision' | 'pregunt
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, A11yModule, CommunityGalleryComponent],
   templateUrl: './matricula-publica.component.html',
-  host: { class: 'matricula-public-shell' }
+  host: { class: 'block' }
 })
 export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   private readonly api = inject(MatriculaPublicaService);
