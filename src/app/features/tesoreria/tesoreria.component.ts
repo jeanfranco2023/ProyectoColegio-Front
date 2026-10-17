@@ -76,10 +76,10 @@ template: `
           <div class="school-dialog-shell max-h-[calc(100dvh-24px)] overflow-auto bg-white"><header class="school-dialog-header bg-white"><div><h3 id="cronograma-dialog-title" class="!text-[#172b4d] !text-[19px] font-[750]">Generar cronograma de cobros</h3><p class="text-[#59677a]">Confirma matrícula, conceptos y fecha del primer vencimiento.</p></div><button type="button" class="school-dialog-cancel !min-h-9 !px-3 font-sans" (click)="cerrarCronograma()" aria-label="Cerrar">✕</button></header>
             <form (ngSubmit)="generarCronograma()" class="school-dialog-form"><div class="school-dialog-body space-y-4 bg-white text-[#34445d]">
               @if (error()) { <p class="ui-alert ui-alert--error" role="alert">{{ error() }}</p> }
-              <label class="school-dialog-field text-[#34445d]">Matrícula ID *<input type="number" [(ngModel)]="matriculaId" name="matricula" min="1" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-base"></label>
-              <label class="school-dialog-field text-[#34445d]">Concepto matrícula *<select [(ngModel)]="conceptoMatriculaId" name="conceptoMatricula" [disabled]="!conceptosMatricula().length" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-base">@if (!conceptosMatricula().length) { <option [ngValue]="0">Sin conceptos disponibles</option> } @for (c of conceptosMatricula(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }</select></label>
-              <label class="school-dialog-field text-[#34445d]">Concepto pensión *<select [(ngModel)]="conceptoPensionId" name="conceptoPension" [disabled]="!conceptosPension().length" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-base">@if (!conceptosPension().length) { <option [ngValue]="0">Sin conceptos disponibles</option> } @for (c of conceptosPension(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }</select></label>
-              <label class="school-dialog-field text-[#34445d]">Primer vencimiento *<input type="date" [(ngModel)]="primerVencimiento" name="primerVencimiento" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-base"></label>
+              <label class="school-dialog-field text-[#34445d]">Matrícula ID *<input type="number" [(ngModel)]="matriculaId" name="matricula" min="1" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-sm"></label>
+              <label class="school-dialog-field text-[#34445d]">Concepto matrícula *<select [(ngModel)]="conceptoMatriculaId" name="conceptoMatricula" [disabled]="!conceptosMatricula().length" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-sm">@if (!conceptosMatricula().length) { <option [ngValue]="0">Sin conceptos disponibles</option> } @for (c of conceptosMatricula(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }</select></label>
+              <label class="school-dialog-field text-[#34445d]">Concepto pensión *<select [(ngModel)]="conceptoPensionId" name="conceptoPension" [disabled]="!conceptosPension().length" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-sm">@if (!conceptosPension().length) { <option [ngValue]="0">Sin conceptos disponibles</option> } @for (c of conceptosPension(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }</select></label>
+              <label class="school-dialog-field text-[#34445d]">Primer vencimiento *<input type="date" [(ngModel)]="primerVencimiento" name="primerVencimiento" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-sm"></label>
             </div><footer class="school-dialog-footer border-t border-[#e5eaf2] bg-white max-[600px]:!flex-col-reverse"><button type="button" class="school-dialog-cancel" (click)="cerrarCronograma()">Cancelar</button><button type="submit" [disabled]="guardando()" class="school-dialog-submit">{{ guardando() ? 'Generando…' : 'Generar cronograma' }}</button></footer></form>
           </div>
         </dialog>
@@ -176,7 +176,7 @@ template: `
                     <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2 font-mono text-[#64748b]" data-label="ID BD">{{ item.id }}</td>
                     <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2 font-bold text-[#172b4d]" data-label="Matrícula ID">{{ item.estudiante }}</td>
                     <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2" data-label="Concepto">
-                      <span class="inline-block max-w-[260px] align-middle rounded bg-[#f1f4f9] px-2 py-0.5 text-[#475569] whitespace-normal leading-[1.35] max-[600px]:text-xs min-[1400px]:max-w-full">
+                      <span class="inline-block max-w-[260px] align-middle rounded bg-[#f1f4f9] px-2 py-0.5 text-[#475569] font-medium whitespace-normal leading-[1.35] min-[1400px]:max-w-full">
                         {{ item.concepto }}
                       </span>
                     </td>
@@ -212,7 +212,7 @@ template: `
                             (click)="pagarConMercadoPago(item)"
                             [disabled]="pagandoId() !== null || cobrandoId() !== null"
                             [attr.aria-label]="pagandoId() === item.id ? 'Preparando pago con Mercado Pago' : 'Pagar con Mercado Pago'"
-                            class="ui-button ui-button--primary !min-h-10 !px-[10px] !py-2 !text-xs !font-normal whitespace-nowrap max-[600px]:!min-h-11 max-[600px]:!w-full"
+                            class="ui-button ui-button--primary !min-h-10 !px-[10px] !py-2 !text-[11px] whitespace-nowrap max-[600px]:!min-h-11 max-[600px]:!w-full"
                           ><span>{{ pagandoId() === item.id ? 'Preparando...' : 'Pagar' }}</span><span class="sr-only"> con Mercado Pago</span></button>
                           @if (esAdministrativo()) {
                             <button
@@ -230,7 +230,7 @@ template: `
                 } @empty {
                   <tr>
                     <td colspan="9" class="py-12 text-center text-[#59677a]">
-                      <div class="grid min-h-[180px] content-center justify-items-center gap-[10px] p-6 text-center text-[#34445d]"><p class="text-[#253a59] text-sm font-bold">No se encontraron obligaciones de cobro en la base de datos.</p><p class="max-w-[48ch] text-[#59677a] text-xs leading-[1.5]">Genere el cronograma anual de pensiones para visualizar los compromisos de pago en PostgreSQL.</p></div>
+                      <div class="ui-list-state grid min-h-[180px] content-center justify-items-center gap-[10px] p-6 text-center text-[#34445d]"><p class="m-0 text-[#253a59] text-sm font-[750]">No se encontraron obligaciones de cobro en la base de datos.</p><p class="m-0 max-w-[48ch] text-[#59677a] text-xs leading-[1.5]">Genere el cronograma anual de pensiones para visualizar los compromisos de pago en PostgreSQL.</p></div>
                     </td>
                   </tr>
                 }

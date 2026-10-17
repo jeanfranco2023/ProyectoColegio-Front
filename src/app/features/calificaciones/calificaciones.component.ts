@@ -53,21 +53,21 @@ template: `
       <section class="grid min-w-0 grid-cols-[minmax(160px,.9fr)_minmax(240px,1.25fr)_minmax(310px,1.55fr)_minmax(150px,.8fr)] items-end gap-4 rounded-2xl border border-[#e1e8f1] bg-white !p-[18px] shadow-[0_5px_16px_rgb(23_43_77_/_5%)] max-[1399px]:grid-cols-2 max-[600px]:grid-cols-1 max-[600px]:gap-[13px] max-[600px]:!p-[15px]" aria-label="Filtros de calificaciones">
         <div class="ui-field min-w-0 m-0">
           <label class="ui-field__label" for="periodo-calificaciones">Periodo Académico</label>
-          <select id="periodo-calificaciones" [(ngModel)]="periodoId" (change)="cargarCalificaciones()" [disabled]="!periodos().length" class="ui-field__control ui-select__control min-[601px]:!text-[13px]">
+          <select id="periodo-calificaciones" [(ngModel)]="periodoId" (change)="cargarCalificaciones()" [disabled]="!periodos().length" class="ui-field__control ui-select__control max-[600px]:!text-sm min-[601px]:!text-[13px]">
             @if (!periodos().length) { <option [ngValue]="0">Sin periodos disponibles</option> } @for (periodo of periodos(); track periodo.id) { <option [ngValue]="periodo.id">{{ periodo.nombre }}</option> }
           </select>
         </div>
 
         <div class="ui-field min-w-0 m-0">
           <label class="ui-field__label" for="asignacion-calificaciones">Asignación docente y sección</label>
-          <select id="asignacion-calificaciones" [(ngModel)]="asignacionId" (change)="cambiarAsignacion()" [disabled]="!asignaciones().length" class="ui-field__control ui-select__control min-[601px]:!text-[13px]">
+          <select id="asignacion-calificaciones" [(ngModel)]="asignacionId" (change)="cambiarAsignacion()" [disabled]="!asignaciones().length" class="ui-field__control ui-select__control max-[600px]:!text-sm min-[601px]:!text-[13px]">
             @if (!asignaciones().length) { <option [ngValue]="0">Sin asignaciones disponibles</option> } @for (a of asignaciones(); track a.id) { <option [ngValue]="a.id">Sección {{ a.seccionId }} · Área {{ a.areaCurricularId }} · Asignación {{ a.id }}</option> }
           </select>
         </div>
 
         <div class="ui-field min-w-0 m-0">
           <label class="ui-field__label" for="competencia-calificaciones">Competencia</label>
-          <select id="competencia-calificaciones" [(ngModel)]="competenciaId" (change)="cargarCalificaciones()" [disabled]="!competencias().length" class="ui-field__control ui-select__control min-[601px]:!text-[13px]">
+          <select id="competencia-calificaciones" [(ngModel)]="competenciaId" (change)="cargarCalificaciones()" [disabled]="!competencias().length" class="ui-field__control ui-select__control max-[600px]:!text-sm min-[601px]:!text-[13px]">
             @if (!competencias().length) { <option [ngValue]="0">Sin competencias disponibles</option> } @for (c of competencias(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }
           </select>
         </div>
@@ -135,7 +135,7 @@ template: `
                         <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-[#dce5f0] bg-[#f3f6fa] px-[9px] py-[3px] text-xs font-[650] leading-[1.3] text-[#4c5d74] whitespace-nowrap">Sin dato</span>
                       }
                     </td>
-                    <td class="sticky right-0 z-[1] min-w-[88px] bg-white text-right shadow-[-8px_0_12px_rgb(23_43_77_/_8%)]" data-label="Acciones"><button type="button" (click)="abrirEdicion(alumno)" class="ui-button ui-button--secondary !px-3 !text-xs">Editar</button></td>
+                    <td class="sticky right-0 z-[1] min-w-[88px] bg-white text-right shadow-[-8px_0_12px_rgb(23_43_77_/_8%)]" data-label="Acciones"><button type="button" (click)="abrirEdicion(alumno)" class="ui-button ui-button--secondary !min-h-11 !px-3 !text-sm !font-semibold">Editar</button></td>
                   </tr>
                 } @empty {
                   <tr>
@@ -180,7 +180,7 @@ template: `
             </div>
             <footer class="sticky bottom-0 flex flex-[0_0_auto] justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[600px]:flex-col-reverse max-[600px]:px-4 max-[600px]:py-3">
               <button type="button" class="ui-button ui-button--secondary max-[600px]:w-full" (click)="cerrarEdicion()">Cancelar</button>
-              <button type="submit" [disabled]="notaEditada === '-'" class="ui-button ui-button--primary max-[600px]:w-full">Aplicar cambios</button>
+              <button type="submit" [disabled]="notaEditada === '-'" class="ui-button ui-button--primary !bg-[#1d4ed8] max-[600px]:w-full">Aplicar cambios</button>
             </footer>
           </form>
         </div>
