@@ -197,7 +197,7 @@ export interface EstudianteMatriculadoItem {
           <!-- Students Table -->
           <div class="rounded-2xl !bg-white border !border-[#e1e8f1] overflow-hidden shadow-sm">
             <div class="overflow-x-auto ui-enrollments-table-scroll">
-              <table id="tabla-estudiantes" class="w-full min-w-[1080px] text-left !text-[11px] ui-mobile-table-cards [&>thead>tr>th:last-child]:static [&>tbody>tr>td:last-child]:static [&>thead>tr>th:last-child]:shadow-none [&>tbody>tr>td:last-child]:shadow-none [&>thead>tr>th:last-child]:px-3 [&>tbody>tr>td:last-child]:px-3">
+              <table id="tabla-estudiantes" class="w-full min-w-[1080px] text-left text-xs !text-[11px] ui-mobile-table-cards [&>thead>tr>th:last-child]:static [&>tbody>tr>td:last-child]:static [&>thead>tr>th:last-child]:shadow-none [&>tbody>tr>td:last-child]:shadow-none [&>thead>tr>th:last-child]:px-3 [&>tbody>tr>td:last-child]:px-3">
                 <thead class="bg-slate-950/80 border-b !border-[#e1e8f1] !text-[#59677a] uppercase tracking-wider font-semibold">
                   <tr>
                     <th class="px-5 py-3.5">ID</th>
@@ -350,7 +350,7 @@ export interface EstudianteMatriculadoItem {
           <!-- Matriculas Table -->
           <div class="rounded-2xl !bg-white border !border-[#e1e8f1] overflow-hidden shadow-sm">
             <div class="overflow-x-auto ui-enrollments-table-scroll">
-              <table class="w-full min-w-[1080px] text-left !text-[11px] ui-mobile-table-cards [&>thead>tr>th:last-child]:static [&>tbody>tr>td:last-child]:static [&>thead>tr>th:last-child]:shadow-none [&>tbody>tr>td:last-child]:shadow-none [&>thead>tr>th:last-child]:px-3 [&>tbody>tr>td:last-child]:px-3">
+              <table class="w-full min-w-[1080px] text-left text-xs !text-[11px] ui-mobile-table-cards [&>thead>tr>th:last-child]:static [&>tbody>tr>td:last-child]:static [&>thead>tr>th:last-child]:shadow-none [&>tbody>tr>td:last-child]:shadow-none [&>thead>tr>th:last-child]:px-3 [&>tbody>tr>td:last-child]:px-3">
                 <thead class="bg-slate-950/70 border-b !border-[#e1e8f1] !text-[#59677a] uppercase tracking-wider font-semibold">
                   <tr>
                     <th class="px-5 py-3.5">ID BD</th>
