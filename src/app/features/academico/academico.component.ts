@@ -24,19 +24,19 @@ export interface NivelItem {
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="space-y-6 ui-academic-page">
+    <div class="space-y-6 min-w-0 text-[#172b4d] [&_*:focus-visible]:outline-[3px] [&_*:focus-visible]:outline-[#2864c5] [&_*:focus-visible]:outline-offset-[3px]">
       <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t-[3px] border-t-[#c49a58]/50 pt-3">
         <div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Estructura Académica & Aulas</h2>
-          <p class="text-sm text-slate-400 mt-1">
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight !text-[#172b4d]">Estructura Académica & Aulas</h2>
+          <p class="text-sm !text-[#59677a] mt-1">
             Configuración de niveles educativos, secciones, aforo físico y aulas registradas en la base de datos.
           </p>
         </div>
         <div class="flex items-center gap-3">
           <button
             (click)="abrirModalNuevaAula()"
-            class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer"
+            class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold !text-[11px] leading-[1.333333] sm:text-sm shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer max-[640px]:min-h-11"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -47,7 +47,7 @@ export interface NivelItem {
       </div>
 
       @if (error()) { <p class="text-red-400 text-sm" role="alert">{{ error() }}</p> }
-      <dialog #aulaDialog class="school-native-dialog" aria-labelledby="aula-dialog-title">
+      <dialog #aulaDialog class="school-native-dialog !w-[min(620px,calc(100vw-24px))] !max-w-[calc(100vw-24px)] !max-h-[calc(100dvh-24px)] !overflow-auto" aria-labelledby="aula-dialog-title">
         <div class="school-dialog-shell">
           <header class="school-dialog-header">
             <div><h3 id="aula-dialog-title">Registrar aula</h3><p>Completa los datos del ambiente escolar.</p></div>
@@ -64,8 +64,8 @@ export interface NivelItem {
               </div>
             </div>
             <footer class="school-dialog-footer">
-              <button type="button" class="school-dialog-cancel" (click)="cerrarDialogoAula()">Cancelar</button>
-              <button type="submit" [disabled]="guardando()" class="school-dialog-submit">{{ guardando() ? 'Guardando…' : 'Crear aula' }}</button>
+              <button type="button" class="school-dialog-cancel max-[640px]:min-h-11" (click)="cerrarDialogoAula()">Cancelar</button>
+              <button type="submit" [disabled]="guardando()" class="school-dialog-submit max-[640px]:min-h-11">{{ guardando() ? 'Guardando…' : 'Crear aula' }}</button>
             </footer>
           </form>
         </div>
@@ -73,55 +73,55 @@ export interface NivelItem {
 
       <!-- Level Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800">
+        <div class="p-6 rounded-2xl !bg-white border !border-[#e1e8f1]">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider">Nivel Inicial</span>
-            <span class="px-2 py-0.5 rounded text-[10px] bg-amber-950 text-amber-300 border border-amber-800 font-semibold ui-academic-initial-badge">
+            <span class="!text-[11px] leading-[1.333333] font-bold text-amber-400 uppercase tracking-wider">Nivel Inicial</span>
+            <span class="px-2 py-0.5 rounded !text-[11px] !bg-[#fff7e7] !text-[#805300] border !border-[#edca83] font-semibold ">
               {{ contarAulasPorFiltro('INIC') }} Aulas
             </span>
           </div>
-          <div class="text-2xl font-black text-white mt-3">{{ contarCapacidadPorFiltro('INIC') ?? '—' }} Capacidad</div>
-          <p class="text-xs text-slate-400 mt-1">Aulas de 3, 4 y 5 años configuradas en PostgreSQL</p>
+          <div class="text-2xl font-black !text-[#172b4d] mt-3">{{ contarCapacidadPorFiltro('INIC') ?? '—' }} Capacidad</div>
+          <p class="!text-[11px] leading-[1.333333] !text-[#59677a] mt-1">Aulas de 3, 4 y 5 años configuradas en PostgreSQL</p>
         </div>
 
-        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800">
+        <div class="p-6 rounded-2xl !bg-white border !border-[#e1e8f1]">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Nivel Primaria</span>
-            <span class="px-2 py-0.5 rounded text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800 font-semibold">
+            <span class="!text-[11px] leading-[1.333333] font-bold text-emerald-400 uppercase tracking-wider">Nivel Primaria</span>
+            <span class="px-2 py-0.5 rounded !text-[11px] !bg-[#edf9f3] !text-[#126943] border !border-[#b8dfcc] font-semibold">
               {{ contarAulasPorFiltro('PRIM') }} Aulas
             </span>
           </div>
-          <div class="text-2xl font-black text-white mt-3">{{ contarCapacidadPorFiltro('PRIM') ?? '—' }} Capacidad</div>
-          <p class="text-xs text-slate-400 mt-1">De 1° a 6° de Primaria registradas en PostgreSQL</p>
+          <div class="text-2xl font-black !text-[#172b4d] mt-3">{{ contarCapacidadPorFiltro('PRIM') ?? '—' }} Capacidad</div>
+          <p class="!text-[11px] leading-[1.333333] !text-[#59677a] mt-1">De 1° a 6° de Primaria registradas en PostgreSQL</p>
         </div>
 
-        <div class="p-6 rounded-2xl bg-slate-900 border border-slate-800">
+        <div class="p-6 rounded-2xl !bg-white border !border-[#e1e8f1]">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-bold text-blue-400 uppercase tracking-wider">Nivel Secundaria</span>
-            <span class="px-2 py-0.5 rounded text-[10px] bg-blue-950 text-blue-300 border border-blue-800 font-semibold">
+            <span class="!text-[11px] leading-[1.333333] font-bold text-blue-400 uppercase tracking-wider">Nivel Secundaria</span>
+            <span class="px-2 py-0.5 rounded !text-[11px] bg-blue-950 text-blue-300 border border-blue-800 font-semibold">
               {{ contarAulasPorFiltro('SEC') }} Aulas
             </span>
           </div>
-          <div class="text-2xl font-black text-white mt-3">{{ contarCapacidadPorFiltro('SEC') ?? '—' }} Capacidad</div>
-          <p class="text-xs text-slate-400 mt-1">De 1° a 5° de Secundaria registradas en PostgreSQL</p>
+          <div class="text-2xl font-black !text-[#172b4d] mt-3">{{ contarCapacidadPorFiltro('SEC') ?? '—' }} Capacidad</div>
+          <p class="!text-[11px] leading-[1.333333] !text-[#59677a] mt-1">De 1° a 5° de Secundaria registradas en PostgreSQL</p>
         </div>
       </div>
 
       <!-- Classrooms List -->
-      <div class="rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden shadow-sm">
-        <div class="px-6 py-4 bg-slate-950/50 border-b border-slate-800 flex items-center justify-between">
-          <h3 class="text-sm font-bold text-white">Directorio de Aulas Físicas</h3>
+      <div class="rounded-2xl !bg-white border !border-[#e1e8f1] overflow-hidden shadow-sm">
+        <div class="px-6 py-4 !bg-white border-b !border-[#e1e8f1] flex items-center justify-between">
+          <h3 class="text-sm font-bold !text-[#172b4d]">Directorio de Aulas Físicas</h3>
           <button
             (click)="cargarDatos()"
-            class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold cursor-pointer"
+            class="px-3 py-1.5 rounded-xl !bg-[#f3f6fa] hover:bg-slate-700 !text-[#34445d] !text-[11px] leading-[1.333333] font-semibold cursor-pointer max-[640px]:min-h-11"
           >
             Actualizar BD
           </button>
         </div>
 
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs ui-mobile-table-cards">
-            <thead class="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
+          <table class="w-full min-w-[680px] text-left !text-[11px] leading-[1.333333] ui-mobile-table-cards">
+            <thead class="bg-slate-950/70 border-b !border-[#e1e8f1] !text-[#59677a] uppercase tracking-wider font-semibold">
               <tr>
                 <th class="px-5 py-3.5">ID BD</th>
                 <th class="px-5 py-3.5">Código Aula</th>
@@ -130,10 +130,10 @@ export interface NivelItem {
                 <th class="px-5 py-3.5 text-center">Estado en BD</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800/60 text-slate-300">
+            <tbody class="divide-y divide-slate-800/60 !text-[#34445d]">
               @if (cargando()) {
                 <tr>
-                  <td colspan="5" class="text-center py-10 text-slate-400">
+                  <td colspan="5" class="text-center py-10 !text-[#59677a]">
                     <span class="inline-block w-5 h-5 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-2"></span>
                     <p>Consultando infraestructura escolar en la base de datos...</p>
                   </td>
@@ -141,26 +141,26 @@ export interface NivelItem {
               } @else {
                 @for (aula of aulas(); track aula.id) {
                   <tr class="hover:bg-slate-800/40 transition">
-                    <td class="px-5 py-3.5 font-mono text-slate-500" data-label="ID BD">{{ aula.id }}</td>
+                    <td class="px-5 py-3.5 font-mono !text-[#59677a]" data-label="ID BD">{{ aula.id }}</td>
                     <td class="px-5 py-3.5 font-mono text-blue-400 font-semibold" data-label="Código Aula">{{ aula.codigo }}</td>
                     <td class="px-5 py-3.5" data-label="Nombre & Ubicación">
-                      <div class="font-bold text-white">{{ aula.nombre }}</div>
-                      <div class="text-[11px] text-slate-500">{{ aula.ubicacion || 'Sin ubicación registrada' }}</div>
+                      <div class="font-bold !text-[#172b4d]">{{ aula.nombre }}</div>
+                      <div class="text-[11px] !text-[#59677a]">{{ aula.ubicacion || 'Sin ubicación registrada' }}</div>
                     </td>
-                    <td class="px-5 py-3.5 font-mono text-white" data-label="Capacidad Aforo">
+                    <td class="px-5 py-3.5 font-mono !text-[#172b4d]" data-label="Capacidad Aforo">
                       {{ aula.capacidad == null ? 'Sin dato de capacidad' : aula.capacidad + ' vacantes' }}
                     </td>
                     <td class="px-5 py-3.5 text-center" data-label="Estado en BD">
                       @if (aula.activa === true) {
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">
+                        <span class="px-2.5 py-1 rounded-full !text-[11px] font-bold !bg-[#edf9f3] !text-[#126943] border !border-[#b8dfcc]">
                           ACTIVA
                         </span>
                       } @else if (aula.activa === false) {
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">
+                        <span class="px-2.5 py-1 rounded-full !text-[11px] font-bold !bg-[#f3f6fa] !text-[#59677a] border !border-[#e1e8f1]">
                           INACTIVA
                         </span>
                       } @else {
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">
+                        <span class="px-2.5 py-1 rounded-full !text-[11px] font-bold !bg-[#f3f6fa] !text-[#59677a] border !border-[#e1e8f1]">
                           SIN DATO
                         </span>
                       }
@@ -172,9 +172,10 @@ export interface NivelItem {
           </table>
         </div>
         @if (!cargando() && !error() && aulas().length === 0) {
-          <div class="ui-academic-empty-state ui-empty-state-art" data-illustration="crest">
-            <p class="font-medium text-slate-400">No se encontraron aulas físicas en la base de datos.</p>
-            <p class="text-[11px] text-slate-500">Configure los pabellones y aulas escolares en PostgreSQL para visualizar el directorio.</p>
+          <div class="relative grid justify-items-center gap-2 w-full px-5 pt-[62px] pb-9 !text-[#59677a] text-center whitespace-normal [overflow-wrap:anywhere]" data-illustration="crest">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="#102447" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute top-3 left-1/2 h-[42px] w-[42px] -translate-x-1/2"><path d="M24 5 39 11v11c0 10-6.5 16-15 21C15.5 38 9 32 9 22V11z"/><path d="M15 18c3-1 6-.5 9 1.5v13c-3-2-6-2.5-9-1.5zM33 18c-3-1-6-.5-9 1.5v13c3-2 6-2.5 9-1.5z" stroke="#C49A58"/></svg>
+            <p class="m-0 max-w-full font-medium !text-[#59677a]">No se encontraron aulas físicas en la base de datos.</p>
+            <p class="text-[11px] !text-[#59677a]">Configure los pabellones y aulas escolares en PostgreSQL para visualizar el directorio.</p>
           </div>
         }
       </div>
