@@ -119,7 +119,7 @@ template: `
                         </span>
                       }
                     </td>
-                    <td class="px-5 py-3.5 text-[#59677a] font-mono" data-label="Fecha Creación">{{ user.createdAt ? (user.createdAt | uiDatePe:true) : '-' }}</td>
+                    <td class="px-5 py-3.5 !text-[#59677a] font-mono" data-label="Fecha Creación">{{ user.createdAt ? (user.createdAt | uiDatePe:true) : '-' }}</td>
                     <td class="px-5 py-3.5 text-right" data-label="Acción">
                       <button
                         (click)="alternarEstado(user)"
