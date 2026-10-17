@@ -29,12 +29,12 @@ export interface ObligacionCobro {
   standalone: true,
   imports: [CommonModule, FormsModule, AppAlertComponent, StatusBadgeComponent, UiDatePePipe],
 template: `
-    <div class="space-y-6 ui-payments-page">
+    <div class="space-y-6 grid min-w-0 gap-[22px] text-[#172b4d] font-sans max-[600px]:gap-4">
       <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t-[3px] border-[rgb(196_154_88_/_50%)] pt-3">
         <div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Tesorería & Pagos</h2>
-          <p class="text-sm text-slate-400 mt-1">
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#14213d]">Tesorería & Pagos</h2>
+          <p class="text-sm text-[#64748b] mt-0">
             @if (esAdministrativo()) { Gestión de pensiones escolares, conciliación de caja y pagos digitales. }
             @else { Consulta tus obligaciones escolares y paga de forma segura con Mercado Pago. }
           </p>
@@ -64,73 +64,73 @@ template: `
 
       @if (error()) { <p class="ui-alert ui-alert--error" role="alert">{{ error() }}</p> }
       @if (checkoutUrl()) {
-        <div class="ui-alert ui-alert--info ui-payments-checkout" role="status">
+        <div class="ui-alert ui-alert--info !grid gap-[10px] m-0" role="status">
           <p>Preferencia de prueba creada para la obligación #{{ checkoutObligacionId() }}. El pago solo se registrará cuando Mercado Pago confirme la operación.</p>
           <a [href]="checkoutUrl()" target="_blank" rel="noopener noreferrer" class="ui-button ui-button--primary">Abrir checkout de prueba</a>
-          <p class="ui-payments-checkout__hint">Usa una cuenta compradora de prueba distinta de la vendedora. Después, vuelve aquí y actualiza las obligaciones.</p>
+          <p class="m-0 text-[#34445d] text-xs">Usa una cuenta compradora de prueba distinta de la vendedora. Después, vuelve aquí y actualiza las obligaciones.</p>
         </div>
       }
       @if (mensaje()) { <p class="ui-alert ui-alert--success" role="status">{{ mensaje() }}</p> }
       @if (esAdministrativo()) {
-        <dialog #cronogramaDialog class="school-native-dialog ui-payments-dialog" aria-labelledby="cronograma-dialog-title">
-          <div class="school-dialog-shell ui-payments-dialog__shell"><header class="school-dialog-header ui-payments-dialog__header"><div><h3 id="cronograma-dialog-title">Generar cronograma de cobros</h3><p>Confirma matrícula, conceptos y fecha del primer vencimiento.</p></div><button type="button" class="school-dialog-cancel ui-payments-dialog__close !min-h-9 !px-3" (click)="cerrarCronograma()" aria-label="Cerrar">✕</button></header>
-            <form (ngSubmit)="generarCronograma()" class="school-dialog-form"><div class="school-dialog-body ui-payments-dialog__body space-y-4">
+        <dialog #cronogramaDialog class="school-native-dialog !w-[min(600px,calc(100vw-24px))] !max-w-[calc(100vw-24px)] !max-h-[calc(100dvh-24px)] !overflow-hidden !rounded-[18px] !border-[#e1e8f1] !bg-white !p-0 !text-[#172b4d] font-sans !shadow-[0_24px_72px_rgb(15_31_57_/_24%)] backdrop:!bg-[rgb(15_31_57_/_48%)] backdrop:!backdrop-blur-[3px]" aria-labelledby="cronograma-dialog-title">
+          <div class="school-dialog-shell max-h-[calc(100dvh-24px)] overflow-auto bg-white"><header class="school-dialog-header bg-white"><div><h3 id="cronograma-dialog-title" class="!text-[#172b4d] !text-[19px] font-[750]">Generar cronograma de cobros</h3><p class="text-[#59677a]">Confirma matrícula, conceptos y fecha del primer vencimiento.</p></div><button type="button" class="school-dialog-cancel !min-h-9 !px-3 font-sans" (click)="cerrarCronograma()" aria-label="Cerrar">✕</button></header>
+            <form (ngSubmit)="generarCronograma()" class="school-dialog-form"><div class="school-dialog-body space-y-4 bg-white text-[#34445d]">
               @if (error()) { <p class="ui-alert ui-alert--error" role="alert">{{ error() }}</p> }
-              <label class="school-dialog-field">Matrícula ID *<input type="number" [(ngModel)]="matriculaId" name="matricula" min="1" required></label>
-              <label class="school-dialog-field">Concepto matrícula *<select [(ngModel)]="conceptoMatriculaId" name="conceptoMatricula" [disabled]="!conceptosMatricula().length" required>@if (!conceptosMatricula().length) { <option [ngValue]="0">Sin conceptos disponibles</option> } @for (c of conceptosMatricula(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }</select></label>
-              <label class="school-dialog-field">Concepto pensión *<select [(ngModel)]="conceptoPensionId" name="conceptoPension" [disabled]="!conceptosPension().length" required>@if (!conceptosPension().length) { <option [ngValue]="0">Sin conceptos disponibles</option> } @for (c of conceptosPension(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }</select></label>
-              <label class="school-dialog-field">Primer vencimiento *<input type="date" [(ngModel)]="primerVencimiento" name="primerVencimiento" required></label>
-            </div><footer class="school-dialog-footer ui-payments-dialog__footer"><button type="button" class="school-dialog-cancel" (click)="cerrarCronograma()">Cancelar</button><button type="submit" [disabled]="guardando()" class="school-dialog-submit">{{ guardando() ? 'Generando…' : 'Generar cronograma' }}</button></footer></form>
+              <label class="school-dialog-field text-[#34445d]">Matrícula ID *<input type="number" [(ngModel)]="matriculaId" name="matricula" min="1" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-base"></label>
+              <label class="school-dialog-field text-[#34445d]">Concepto matrícula *<select [(ngModel)]="conceptoMatriculaId" name="conceptoMatricula" [disabled]="!conceptosMatricula().length" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-base">@if (!conceptosMatricula().length) { <option [ngValue]="0">Sin conceptos disponibles</option> } @for (c of conceptosMatricula(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }</select></label>
+              <label class="school-dialog-field text-[#34445d]">Concepto pensión *<select [(ngModel)]="conceptoPensionId" name="conceptoPension" [disabled]="!conceptosPension().length" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-base">@if (!conceptosPension().length) { <option [ngValue]="0">Sin conceptos disponibles</option> } @for (c of conceptosPension(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }</select></label>
+              <label class="school-dialog-field text-[#34445d]">Primer vencimiento *<input type="date" [(ngModel)]="primerVencimiento" name="primerVencimiento" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-base"></label>
+            </div><footer class="school-dialog-footer border-t border-[#e5eaf2] bg-white max-[600px]:!flex-col-reverse"><button type="button" class="school-dialog-cancel" (click)="cerrarCronograma()">Cancelar</button><button type="submit" [disabled]="guardando()" class="school-dialog-submit">{{ guardando() ? 'Generando…' : 'Generar cronograma' }}</button></footer></form>
           </div>
         </dialog>
-        <dialog #cobroDialog class="school-native-dialog ui-payments-dialog" aria-labelledby="cobro-dialog-title">
+        <dialog #cobroDialog class="school-native-dialog !w-[min(600px,calc(100vw-24px))] !max-w-[calc(100vw-24px)] !max-h-[calc(100dvh-24px)] !overflow-hidden !rounded-[18px] !border-[#e1e8f1] !bg-white !p-0 !text-[#172b4d] font-sans !shadow-[0_24px_72px_rgb(15_31_57_/_24%)] backdrop:!bg-[rgb(15_31_57_/_48%)] backdrop:!backdrop-blur-[3px]" aria-labelledby="cobro-dialog-title">
           @if (cobroSeleccionado(); as obligacion) {
-            <div class="school-dialog-shell ui-payments-dialog__shell"><header class="school-dialog-header ui-payments-dialog__header"><div><h3 id="cobro-dialog-title">Confirmar cobro en caja</h3><p>Verifica el monto antes de registrar el pago en efectivo.</p></div><button type="button" class="school-dialog-cancel ui-payments-dialog__close !min-h-9 !px-3" (click)="cerrarCobro()" aria-label="Cerrar">✕</button></header>
-              <div class="school-dialog-body ui-payments-dialog__body space-y-3 text-sm"><p><span class="font-semibold">Obligación:</span> #{{ obligacion.id }} · {{ obligacion.concepto }}</p><p><span class="font-semibold">Saldo a registrar:</span> S/ {{ obligacion.saldoPendiente | number:'1.2-2' }}</p>@if (error()) { <p class="ui-alert ui-alert--error" role="alert">{{ error() }}</p> }</div>
-              <footer class="school-dialog-footer ui-payments-dialog__footer"><button type="button" class="school-dialog-cancel" (click)="cerrarCobro()">Cancelar</button><button type="button" class="school-dialog-submit" [disabled]="cobrandoId() !== null" (click)="confirmarCobro(obligacion)">{{ cobrandoId() === obligacion.id ? 'Registrando…' : 'Confirmar pago en efectivo' }}</button></footer>
+            <div class="school-dialog-shell max-h-[calc(100dvh-24px)] overflow-auto bg-white"><header class="school-dialog-header bg-white"><div><h3 id="cobro-dialog-title" class="!text-[#172b4d] !text-[19px] font-[750]">Confirmar cobro en caja</h3><p class="text-[#59677a]">Verifica el monto antes de registrar el pago en efectivo.</p></div><button type="button" class="school-dialog-cancel !min-h-9 !px-3 font-sans" (click)="cerrarCobro()" aria-label="Cerrar">✕</button></header>
+              <div class="school-dialog-body space-y-3 bg-white text-[#34445d] text-sm"><p><span class="font-semibold">Obligación:</span> #{{ obligacion.id }} · {{ obligacion.concepto }}</p><p><span class="font-semibold">Saldo a registrar:</span> S/ {{ obligacion.saldoPendiente | number:'1.2-2' }}</p>@if (error()) { <p class="ui-alert ui-alert--error" role="alert">{{ error() }}</p> }</div>
+              <footer class="school-dialog-footer border-t border-[#e5eaf2] bg-white max-[600px]:!flex-col-reverse"><button type="button" class="school-dialog-cancel" (click)="cerrarCobro()">Cancelar</button><button type="button" class="school-dialog-submit" [disabled]="cobrandoId() !== null" (click)="confirmarCobro(obligacion)">{{ cobrandoId() === obligacion.id ? 'Registrando…' : 'Confirmar pago en efectivo' }}</button></footer>
             </div>
           }
         </dialog>
       }
 
       <!-- Financial Summary Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 ui-payments-summary">
-        <div class="ui-card ui-payments-summary-card">
-          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pagado en obligaciones consultadas</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 min-[901px]:!grid-cols-3 gap-5 max-[600px]:!gap-3 [&>*:last-child]:max-[900px]:col-span-full">
+        <div class="ui-card grid min-w-0 gap-[10px] !rounded-2xl !border-[#e1e8f1] !p-5 max-[600px]:!p-[17px] bg-white shadow-[0_5px_16px_rgb(23_43_77_/_5%)]">
+          <div class="text-xs font-semibold text-[#64748b] uppercase tracking-wider">Pagado en obligaciones consultadas</div>
           <div class="text-3xl font-black text-emerald-400 mt-2">S/ {{ recaudacionTotal() | number:'1.2-2' }}</div>
-          <p class="text-xs text-slate-500 mt-1">Suma de pagos registrados en las obligaciones consultadas</p>
+          <p class="text-xs text-[#64748b]">Suma de pagos registrados en las obligaciones consultadas</p>
         </div>
 
-        <div class="ui-card ui-payments-summary-card">
-          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pendiente por Cobrar</div>
+        <div class="ui-card grid min-w-0 gap-[10px] !rounded-2xl !border-[#e1e8f1] !p-5 max-[600px]:!p-[17px] bg-white shadow-[0_5px_16px_rgb(23_43_77_/_5%)]">
+          <div class="text-xs font-semibold text-[#64748b] uppercase tracking-wider">Pendiente por Cobrar</div>
           <div class="text-3xl font-black text-amber-400 mt-2">S/ {{ pendienteTotal() | number:'1.2-2' }}</div>
-          <p class="text-xs text-slate-500 mt-1">Obligaciones vigentes en PostgreSQL</p>
+          <p class="text-xs text-[#64748b]">Obligaciones vigentes en PostgreSQL</p>
         </div>
 
-        <div class="ui-card ui-payments-summary-card">
-          <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Pasarela Mercado Pago</div>
+        <div class="ui-card grid min-w-0 gap-[10px] !rounded-2xl !border-[#e1e8f1] !p-5 max-[600px]:!p-[17px] bg-white shadow-[0_5px_16px_rgb(23_43_77_/_5%)]">
+          <div class="text-xs font-semibold text-[#64748b] uppercase tracking-wider">Pasarela Mercado Pago</div>
           <div class="text-3xl font-black text-blue-400 mt-2">Pago digital</div>
-          <p class="text-xs text-slate-500 mt-1">Checkout de prueba disponible para saldos pendientes</p>
+          <p class="text-xs text-[#64748b]">Checkout de prueba disponible para saldos pendientes</p>
         </div>
       </div>
 
       <!-- Obligations & Invoices Table -->
-      <div class="ui-card ui-payments-table-card rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden shadow-sm">
-        <div class="px-6 py-4 bg-slate-950/50 border-b border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 ui-payments-toolbar">
-          <h3 class="text-sm font-bold text-white">Registro de Obligaciones y Comprobantes</h3>
-          <div class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3">
+      <div class="min-w-0 overflow-hidden rounded-2xl border border-[#e1e8f1] bg-white shadow-sm">
+        <div class="flex items-end justify-between gap-4 border-b border-[#e5eaf2] bg-white p-[18px] max-[600px]:items-stretch max-[600px]:flex-col max-[600px]:p-4">
+          <h3 class="m-0 text-[#172b4d] text-[15px] font-extrabold">Registro de Obligaciones y Comprobantes</h3>
+          <div class="flex flex-col flex-wrap items-stretch gap-3 sm:flex-row sm:items-center">
             @if (esAdministrativo()) { <div class="flex items-center gap-2">
-              <label class="text-xs text-slate-400">Matrícula ID:</label>
+              <label class="text-xs text-[#34445d]">Matrícula ID:</label>
               <input
                 type="number"
                 [(ngModel)]="matriculaId"
                 (change)="cargarObligaciones()"
-              class="w-full sm:w-24 px-2 py-1 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none"
+              class="w-full sm:w-24 rounded-lg border border-[#cbd5e1] bg-white px-2 py-1 text-xs text-[#172b4d] focus:outline-none"
               />
             </div> }
             <select
               [(ngModel)]="filtroEstado"
-              class="w-full sm:w-auto px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none"
+              class="w-full rounded-xl border border-[#cbd5e1] bg-white px-3 py-1.5 text-xs text-[#172b4d] focus:outline-none sm:w-auto"
             >
               <option value="TODOS">Todos los Estados</option>
               <option value="PAGADO_TOTAL">Pagado</option>
@@ -140,53 +140,54 @@ template: `
             </select>
             <button
               (click)="cargarObligaciones()"
-              class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold cursor-pointer"
+              class="cursor-pointer rounded-xl border border-[#e1e8f1] bg-[#f3f6fa] px-3 py-1.5 text-xs font-semibold text-[#172b4d] hover:bg-[#e8edf5]"
             >
               Consultar BD
             </button>
           </div>
         </div>
 
-        <div class="ui-table-wrap overflow-x-auto ui-payments-table-wrap">
-          <table class="ui-table w-full text-left text-xs ui-payments-table ui-mobile-table-cards">
-            <thead class="bg-slate-950/70 border-b border-slate-800 text-slate-400 uppercase tracking-wider font-semibold">
+        <p class="hidden min-[601px]:max-[1399px]:block m-0 bg-[#f4f7fb] px-3 py-[9px] text-[#34445d] text-[11px] font-semibold">Desliza horizontalmente para ver todas las columnas</p>
+        <div class="ui-table-wrap min-w-0 overflow-x-auto">
+          <table class="ui-table w-full min-w-[1100px] text-left text-xs ui-mobile-table-cards min-[1400px]:min-w-0 min-[1400px]:table-fixed">
+            <thead class="border-b border-[#e1e8f1] bg-[#f5f7fb] text-[#34445d] uppercase tracking-[.04em] font-extrabold">
               <tr>
-                <th class="px-5 py-3.5">ID BD</th>
-                <th class="px-5 py-3.5">Matrícula ID</th>
-                <th class="px-5 py-3.5">Concepto</th>
-                <th class="px-5 py-3.5">Monto Base</th>
-                <th class="px-5 py-3.5">Saldo Pendiente</th>
-                <th class="px-5 py-3.5">Vencimiento</th>
-                <th class="px-5 py-3.5">Estado en BD</th>
-                <th class="px-5 py-3.5">Comprobante</th>
-                <th class="px-5 py-3.5 text-right">Acción</th>
+                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[6%]">ID BD</th>
+                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[10%]">Matrícula ID</th>
+                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-w-[190px] min-[1400px]:!py-2 min-[1400px]:w-[15%] min-[1400px]:min-w-0">Concepto</th>
+                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[9%]">Monto Base</th>
+                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[11%]">Saldo Pendiente</th>
+                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[9%]">Vencimiento</th>
+                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[14%]">Estado en BD</th>
+                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-w-[140px] min-[1400px]:!py-2 min-[1400px]:w-[10%] min-[1400px]:min-w-0 min-[1400px]:whitespace-normal">Comprobante</th>
+                <th class="sticky right-0 z-[5] !px-[5px] !py-[14px] !text-[11px] font-extrabold text-right whitespace-nowrap min-w-[170px] bg-[#f5f7fb] shadow-[-8px_0_12px_rgb(16_36_71_/_10%)] min-[1400px]:static min-[1400px]:z-auto min-[1400px]:!py-2 min-[1400px]:w-[16%] min-[1400px]:min-w-0 min-[1400px]:shadow-none">Acción</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-800/60 text-slate-300">
+            <tbody class="text-[#34445d]">
               @if (cargando()) {
                 <tr>
-                  <td colspan="9" class="text-center py-10 text-slate-400">
-                    <div class="ui-list-state ui-payments-state"><span class="ui-grade-spinner" aria-hidden="true"></span><p>Consultando obligaciones financieras en la base de datos...</p></div>
+                  <td colspan="9" class="py-10 text-center text-[#59677a]">
+                    <div class="grid min-h-[180px] content-center justify-items-center gap-[10px] p-6 text-center text-[#34445d]"><span class="mb-1 h-[30px] w-[30px] rounded-full border-[3px] border-[#dbe6f5] border-t-[#2864c5] animate-[ui-grade-spin_.8s_linear_infinite]" aria-hidden="true"></span><p>Consultando obligaciones financieras en la base de datos...</p></div>
                   </td>
                 </tr>
               } @else {
                 @for (item of obligacionesFiltradas(); track item.id) {
-                  <tr class="hover:bg-slate-800/40 transition">
-                    <td class="px-5 py-3.5 font-mono text-slate-500" data-label="ID BD">{{ item.id }}</td>
-                    <td class="px-5 py-3.5 font-bold text-white" data-label="Matrícula ID">{{ item.estudiante }}</td>
-                    <td class="px-5 py-3.5" data-label="Concepto">
-                      <span class="ui-payments-concept px-2 py-0.5 rounded bg-slate-800 font-medium text-slate-300">
+                  <tr class="transition hover:[&>td]:bg-[#f8faff]">
+                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2 font-mono text-[#64748b]" data-label="ID BD">{{ item.id }}</td>
+                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2 font-bold text-[#172b4d]" data-label="Matrícula ID">{{ item.estudiante }}</td>
+                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2" data-label="Concepto">
+                      <span class="inline-block max-w-[260px] align-middle rounded bg-[#f1f4f9] px-2 py-0.5 text-[#475569] whitespace-normal leading-[1.35] max-[600px]:text-xs min-[1400px]:max-w-full">
                         {{ item.concepto }}
                       </span>
                     </td>
-                    <td class="px-5 py-3.5 font-mono font-bold text-white" data-label="Monto Base">
+                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2 font-mono font-bold text-[#172b4d]" data-label="Monto Base">
                       S/ {{ item.monto | number:'1.2-2' }}
                     </td>
-                    <td class="px-5 py-3.5 font-mono text-amber-400 font-semibold" data-label="Saldo Pendiente">
+                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2 font-mono font-semibold text-[#805300]" data-label="Saldo Pendiente">
                       S/ {{ item.saldoPendiente | number:'1.2-2' }}
                     </td>
-                    <td class="px-5 py-3.5 text-slate-400 font-mono" data-label="Vencimiento">{{ item.fechaVencimiento | uiDatePe }}</td>
-                    <td class="px-5 py-3.5" data-label="Estado en BD">
+                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2 font-mono text-[#34445d]" data-label="Vencimiento">{{ item.fechaVencimiento | uiDatePe }}</td>
+                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2" data-label="Estado en BD">
                       @switch (item.estado) {
                         @case ('PAGADO_TOTAL') {
                           <ui-status-badge tone="success" label="PAGADO" />
@@ -200,36 +201,36 @@ template: `
                         @case ('VENCIDO') {
                           <ui-status-badge tone="error" label="VENCIDO" />
                         }
-                        @default { <span class="text-slate-400">{{ item.estado }}</span> }
+                        @default { <span class="text-[#34445d]">{{ item.estado }}</span> }
                       }
                     </td>
-                    <td data-label="Comprobante">@if (item.comprobanteNumero) { <span class="ui-payments-receipt">{{ item.comprobanteNumero }}</span> } @else { <span class="ui-payments-no-receipt">—</span> }</td>
-                    <td class="px-5 py-3.5 text-right" data-label="Acción">
+                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2" data-label="Comprobante">@if (item.comprobanteNumero) { <span class="inline-flex min-h-7 items-center rounded-lg border border-[#b8dfcc] bg-[#edf9f3] px-2 py-1 text-[11px] font-bold text-[#126943] whitespace-nowrap">{{ item.comprobanteNumero }}</span> } @else { <span class="text-[#59677a] text-[11px]">—</span> }</td>
+                    <td class="sticky right-0 z-[3] px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] text-right min-w-[170px] bg-white shadow-[-8px_0_12px_rgb(16_36_71_/_10%)] min-[1400px]:static min-[1400px]:z-auto min-[1400px]:!py-2 min-[1400px]:w-[16%] min-[1400px]:min-w-0 min-[1400px]:shadow-none" data-label="Acción">
                       @if (item.estado !== 'PAGADO_TOTAL' && item.estado !== 'CANCELADO_POR_TRASLADO' && item.saldoPendiente > 0) {
-                        <div class="ui-payments-action__buttons">
+                        <div class="flex flex-wrap justify-end gap-[7px] max-[600px]:w-full max-[600px]:flex-col max-[600px]:items-stretch">
                           <button
                             (click)="pagarConMercadoPago(item)"
                             [disabled]="pagandoId() !== null || cobrandoId() !== null"
                             [attr.aria-label]="pagandoId() === item.id ? 'Preparando pago con Mercado Pago' : 'Pagar con Mercado Pago'"
-                            class="ui-button ui-button--primary ui-payments-action-button"
+                            class="ui-button ui-button--primary !min-h-10 !px-[10px] !py-2 !text-xs !font-normal whitespace-nowrap max-[600px]:!min-h-11 max-[600px]:!w-full"
                           ><span>{{ pagandoId() === item.id ? 'Preparando...' : 'Pagar' }}</span><span class="sr-only"> con Mercado Pago</span></button>
                           @if (esAdministrativo()) {
                             <button
                               (click)="cobrar(item)"
                               [disabled]="cobrandoId() !== null || pagandoId() !== null"
-                              class="ui-button ui-button--secondary ui-payments-action-button"
+                              class="ui-button ui-button--secondary !min-h-10 !px-[10px] !py-2 !text-xs !font-normal whitespace-nowrap max-[600px]:!min-h-11 max-[600px]:!w-full"
                             >Cobrar en Caja</button>
                           }
                         </div>
                       } @else {
-                        <span class="text-slate-500 font-mono text-xs">Emitido</span>
+                        <span class="font-mono text-xs text-[#59677a]">Emitido</span>
                       }
                     </td>
                   </tr>
                 } @empty {
                   <tr>
-                    <td colspan="9" class="text-center py-12 text-slate-500 space-y-2">
-                      <div class="ui-list-state ui-payments-state"><p class="ui-list-state__title">No se encontraron obligaciones de cobro en la base de datos.</p><p class="ui-list-state__message">Genere el cronograma anual de pensiones para visualizar los compromisos de pago en PostgreSQL.</p></div>
+                    <td colspan="9" class="py-12 text-center text-[#59677a]">
+                      <div class="grid min-h-[180px] content-center justify-items-center gap-[10px] p-6 text-center text-[#34445d]"><p class="text-[#253a59] text-sm font-bold">No se encontraron obligaciones de cobro en la base de datos.</p><p class="max-w-[48ch] text-[#59677a] text-xs leading-[1.5]">Genere el cronograma anual de pensiones para visualizar los compromisos de pago en PostgreSQL.</p></div>
                     </td>
                   </tr>
                 }
