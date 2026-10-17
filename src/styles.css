@@ -1130,7 +1130,7 @@ router-outlet + * {
 .ui-s9-heading { border-top: 3px solid rgb(196 154 88 / 55%); padding-top: 12px; }
 
 /* Shared subtle navy/gold ribbon for page-level headings. */
-:is(.ui-attendance-page, .ui-grade-page, .ui-notices-page,
+:is(.ui-grade-page, .ui-notices-page,
     .ui-coexistence-page, .ui-dashboard-page, .ui-profile-page,
     .ui-payments-page, .ui-users-page) > :first-child {
   border-top: 3px solid rgb(196 154 88 / 50%);
@@ -1198,73 +1198,6 @@ router-outlet + * {
 
 
 
-
-@utility ui-attendance-page {
-& { min-width: 0; color: #172b4d; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
-& .text-white { color: #172b4d !important; }
-& .text-slate-200, & .text-slate-300 { color: #34445d !important; }
-& .text-slate-400, & .text-slate-500 { color: #59677a !important; }
-& .text-xs, & [class*="text-[10px]"] { font-size: 11px !important; }
-& .bg-slate-900, & .bg-slate-950, & [class~="bg-slate-950/50"] { background: #fff !important; }
-& .border-slate-800, & .border-slate-700 { border-color: #e1e8f1 !important; }
-& .overflow-x-auto { min-width: 0; overflow-x: auto; scrollbar-width: auto; scrollbar-color: #8a9ab1 #edf1f6; }
-& .overflow-x-auto::-webkit-scrollbar { height: 12px; }
-& .overflow-x-auto::-webkit-scrollbar-thumb { border: 3px solid #edf1f6; border-radius: 999px; background: #8a9ab1; }
-& table { min-width: 760px; }
-& table th:last-child, & table td:last-child { position: static; box-shadow: none; }
-& :is(button, input, select) { min-height: 44px; }
-& button.text-white { color: #fff !important; }
-& .ui-attendance-primary { background: #1d4ed8; }
-& .ui-attendance-primary:hover { background: #1e40af; }
-& .ui-attendance-secondary { background: #334155; }
-& .ui-attendance-secondary:hover { background: #1f2937; }
-& .ui-attendance-reconcile { border: 1px solid #874300; background: #9a4d00; color: #fff !important; }
-& .ui-attendance-reconcile:hover { background: #874300; }
-& button.border-blue-500 { color: #184fae !important; }
-& button.border-amber-500 { color: #805300 !important; }
-& .ui-attendance-stat--present { border-color: #b8dfcc; background: #edf9f3; }
-& .ui-attendance-stat--present > div:first-child { color: #146c45 !important; }
-& .ui-attendance-stat--late { border-color: #edca83; background: #fff7e7; }
-& .ui-attendance-stat--late > div:first-child { color: #805300 !important; }
-& .ui-attendance-stat--excused { border-color: #c3d6f5; background: #eff5ff; }
-& .ui-attendance-stat--excused > div:first-child { color: #184fae !important; }
-& .ui-attendance-stat--unexcused { border-color: #f2b7b0; background: #fff1ef; }
-& .ui-attendance-stat--unexcused > div:first-child { color: #a43128 !important; }
-& .ui-attendance-alert-count { border-color: #edca83 !important; background: #fff0c7 !important; color: #704500 !important; }
-& .ui-attendance-status { display: inline-grid; grid-template-columns: 20px auto; align-items: center; gap: 1px 7px; padding: 6px 10px; border: 1px solid; border-radius: 12px; text-align: left; line-height: 1.25; }
-& .ui-attendance-status > span:first-child { grid-row: span 2; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; font-weight: 800; }
-& .ui-attendance-status small { grid-column: 2; font-size: 11px; font-weight: 650; }
-& .ui-attendance-present { color: #146c45; border-color: #b8dfcc; background: #edf9f3; }
-& .ui-attendance-present > span:first-child { background: #d8f0e3; }
-& .ui-attendance-late { color: #805300; border-color: #edca83; background: #fff7e7; }
-& .ui-attendance-late > span:first-child { background: #ffedc5; }
-& .ui-attendance-excused { color: #184fae; border-color: #c3d6f5; background: #eff5ff; }
-& .ui-attendance-excused > span:first-child { background: #dce9ff; }
-& .ui-attendance-unexcused { color: #a43128; border-color: #f2b7b0; background: #fff1ef; }
-& .ui-attendance-unexcused > span:first-child { background: #ffe0dc; }
-& .school-native-dialog { width: min(620px, calc(100vw - 24px)); max-width: calc(100vw - 24px); max-height: calc(100dvh - 24px); overflow: auto; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
-& .school-dialog-header .ui-dialog-close { display: grid; flex: 0 0 44px; place-items: center; width: 44px !important; min-width: 44px; height: 44px; min-height: 44px; padding: 0 !important; }
-& .ui-attendance-table-scroll { position: relative; }
-& .ui-attendance-table-scroll::before { content: none; }
-& :focus-visible { outline: 3px solid #2864c5; outline-offset: 3px; }
-@media (max-width: 640px) {
-  & table { min-width: 760px; }
-  & button:not(.ui-dialog-close) { width: 100%; }
-  & .ui-attendance-table-scroll::before {
-    display: block; padding: 9px 12px; background: #f4f7fb; color: #34445d;
-    font-size: 11px; font-weight: 650; content: 'Desliza horizontalmente para ver todas las columnas';
-  }
-}
-
-@media (max-width: 600px) {
-  & .ui-attendance-table-scroll::before {
-    display: none;
-    content: none;
-  }
-}
-@media (prefers-reduced-motion: reduce) { & *, & *::before, & *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
-
-}
 
 @utility ui-payments-page {& {
   display: grid;
