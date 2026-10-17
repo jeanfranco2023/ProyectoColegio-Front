@@ -81,7 +81,7 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
               <span class="mt-0.5 block truncate text-[11px] text-[#5d6b7f]">{{ roleLabel }}</span>
             </span>
           </div>
-          <button mat-button type="button" (click)="store.logout()" class="mt-3 w-full !justify-start !rounded-xl !font-[inherit] !text-[#65748b] hover:bg-[#eef2f8] hover:text-[#243954]">
+          <button mat-button type="button" (click)="store.logout()" class="mt-3 w-full !justify-start !rounded-xl !font-[inherit] hover:bg-[#eef2f8] hover:text-[#243954]">
             <span class="inline-flex items-center gap-2 whitespace-nowrap font-[inherit]"><svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg><span>Cerrar sesión</span></span>
           </button>
         </div>
@@ -107,7 +107,7 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
               </button>
             </mat-menu>
             <div class="min-w-0 max-w-full">
-              <p class="whitespace-nowrap text-[11px] font-bold tracking-[0.16em] text-[#5d6b7f] uppercase max-[359px]:truncate max-[359px]:text-[9px] max-[359px]:leading-3 max-[359px]:tracking-[0.08em]">Portal institucional</p>
+              <p class="whitespace-nowrap text-[11px] font-bold tracking-[0.16em] text-[#5d6b7f] uppercase max-[359px]:truncate max-[359px]:text-[10px] max-[359px]:leading-3 max-[359px]:tracking-[0.04em]">Portal institucional</p>
               <p class="whitespace-nowrap text-sm font-semibold max-[359px]:truncate max-[359px]:text-xs max-[359px]:leading-4">Shuji Kitamura <span class="font-normal text-[#5d6b7f] max-[639px]:hidden">/ Gestión escolar</span></p>
             </div>
           </div>
