@@ -81,7 +81,7 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
               <span class="mt-0.5 block truncate text-[11px] text-[#5d6b7f]">{{ roleLabel }}</span>
             </span>
           </div>
-          <button mat-button type="button" (click)="store.logout()" class="ui-logout-button mt-3 w-full !justify-start !rounded-xl !font-[inherit] hover:bg-[#eef2f8] hover:text-[#243954]">
+          <button mat-button type="button" (click)="store.logout()" class="mt-3 w-full !justify-start !rounded-xl !font-[inherit] !text-[#65748b] hover:bg-[#eef2f8] hover:text-[#243954]">
             <span class="inline-flex items-center gap-2 whitespace-nowrap font-[inherit]"><svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg><span>Cerrar sesión</span></span>
           </button>
         </div>
@@ -93,26 +93,26 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
             <button mat-icon-button type="button" [matMenuTriggerFor]="mobileNav" class="!flex text-[#172b4d] focus-visible:outline-[3px] focus-visible:outline-[#83a9ea] focus-visible:outline-offset-2 lg:!hidden" aria-label="Abrir navegación" aria-haspopup="menu">
               <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
-            <mat-menu #mobileNav="matMenu" class="ui-mobile-nav-panel" xPosition="after" yPosition="below">
+            <mat-menu #mobileNav="matMenu" class="admin-mobile-nav-panel mt-3" xPosition="after" yPosition="below">
               @for (item of visibleMenuItems; track item.route) {
-                <a mat-menu-item class="ui-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 px-3 text-[13px] leading-[1.35] text-[#56657c] no-underline" [routerLink]="item.route" routerLinkActive="bg-[#eaf1fd] text-[#1f5bb7] font-bold" [attr.aria-label]="item.label">
+                <a mat-menu-item class="admin-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 px-3 text-[13px] leading-[1.35] text-[#56657c] no-underline" [routerLink]="item.route" routerLinkActive="bg-[#eaf1fd] text-[#1f5bb7] font-bold" [attr.aria-label]="item.label">
                   <svg class="h-[19px] w-[19px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" [attr.d]="item.icon" /></svg>
                   <span>{{ item.label }}</span>
                 </a>
               }
               <div class="my-[6px] h-px bg-[#e8edf4]" role="separator"></div>
-              <button mat-menu-item class="ui-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 px-3 text-[13px] leading-[1.35] text-[#56657c] no-underline" type="button" (click)="store.logout()">
+              <button mat-menu-item class="admin-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 px-3 text-[13px] leading-[1.35] text-[#56657c] no-underline" type="button" (click)="store.logout()">
                 <svg class="h-[19px] w-[19px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg>
                 <span>Cerrar sesión</span>
               </button>
             </mat-menu>
-            <div>
-              <p class="text-[11px] font-bold tracking-[0.16em] text-[#5d6b7f] uppercase">Portal institucional</p>
-              <p class="text-sm font-semibold">Shuji Kitamura <span class="font-normal text-[#5d6b7f] max-[639px]:hidden">/ Gestión escolar</span></p>
+            <div class="min-w-0 max-w-full">
+              <p class="whitespace-nowrap text-[11px] font-bold tracking-[0.16em] text-[#5d6b7f] uppercase max-[359px]:truncate max-[359px]:text-[9px] max-[359px]:leading-3 max-[359px]:tracking-[0.08em]">Portal institucional</p>
+              <p class="whitespace-nowrap text-sm font-semibold max-[359px]:truncate max-[359px]:text-xs max-[359px]:leading-4">Shuji Kitamura <span class="font-normal text-[#5d6b7f] max-[639px]:hidden">/ Gestión escolar</span></p>
             </div>
           </div>
 
-          <a routerLink="/admin/perfil" class="flex items-center gap-2.5 rounded-full border border-[#e7edf5] bg-white px-3 py-2 text-xs font-medium text-[#52627a] no-underline hover:border-[#cad9f1] hover:bg-[#fafdff] focus-visible:outline-[3px] focus-visible:outline-[#83a9ea] focus-visible:outline-offset-2 max-[639px]:w-[112px] max-[639px]:max-w-[112px] max-[639px]:shrink-0 max-[639px]:gap-1.5 max-[639px]:py-[3px] max-[639px]:pr-[7px] max-[639px]:pl-1">
+          <a routerLink="/admin/perfil" class="flex min-h-11 items-center gap-2.5 rounded-full border border-[#e7edf5] bg-white px-3 py-2 text-xs font-medium text-[#52627a] no-underline hover:border-[#cad9f1] hover:bg-[#fafdff] focus-visible:outline-[3px] focus-visible:outline-[#83a9ea] focus-visible:outline-offset-2 max-[639px]:w-[112px] max-[639px]:max-w-[112px] max-[639px]:shrink-0 max-[639px]:gap-1.5 max-[639px]:py-2 max-[639px]:pr-[7px] max-[639px]:pl-1">
             <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#e8effc] text-[13px] font-bold text-[#285bad] max-[639px]:h-7 max-[639px]:w-7">{{ firstInitial }}</span>
             <span class="flex min-w-0 flex-col"><span class="block max-w-[180px] truncate font-semibold text-[#172b4d] max-[639px]:max-w-[58px] max-[639px]:text-[11px]">{{ store.user()?.username || 'Usuario' }}</span><span class="block max-w-[180px] truncate text-[11px] text-[#5d6b7f] max-[639px]:max-w-[58px]">{{ roleLabel }}</span></span>
           </a>

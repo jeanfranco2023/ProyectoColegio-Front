@@ -1125,21 +1125,14 @@ router-outlet + * {
 }
 
 /* Angular Material menu/button surface overrides for the admin layout. */
-.ui-logout-button { color: #65748b; font-family: inherit !important; }
-.ui-logout-button .mdc-button__label {
-  display: flex;
-  width: 100%;
-  align-items: center;
-  font-family: inherit !important;
-}
-.mat-mdc-menu-panel.ui-mobile-nav-panel {
+.mat-mdc-menu-panel.admin-mobile-nav-panel {
   max-width: calc(100vw - 24px);
   border: 1px solid #e7edf5;
   border-radius: 14px;
   background: #fff;
   box-shadow: 0 16px 36px rgb(30 53 89 / 17%);
 }
-.ui-mobile-nav-panel .mat-mdc-menu-item.ui-mobile-nav-item {
+.admin-mobile-nav-panel .mat-mdc-menu-item.admin-mobile-nav-item {
   display: flex;
   min-width: 220px;
   min-height: 44px;
@@ -1152,7 +1145,7 @@ router-outlet + * {
   line-height: 1.35;
   text-decoration: none;
 }
-.ui-mobile-nav-panel .mat-mdc-menu-item.ui-mobile-nav-item .mat-mdc-menu-item-text {
+.admin-mobile-nav-panel .mat-mdc-menu-item.admin-mobile-nav-item .mat-mdc-menu-item-text {
   display: flex;
   width: 100%;
   align-items: center;
@@ -1163,7 +1156,7 @@ router-outlet + * {
   font-weight: 500;
   line-height: 18px;
 }
-.ui-mobile-nav-panel .mat-mdc-menu-item.ui-mobile-nav-item .mat-mdc-menu-item-text > span { font: inherit; }
+.admin-mobile-nav-panel .mat-mdc-menu-item.admin-mobile-nav-item .mat-mdc-menu-item-text > span { font: inherit; }
 
 @utility matricula-public-shell {/* Landing pública Shuji Kitamura — capa visual, sin lógica de matrícula. */
 & .admission-page {
