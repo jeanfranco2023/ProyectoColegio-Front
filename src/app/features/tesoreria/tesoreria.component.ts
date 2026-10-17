@@ -152,15 +152,15 @@ template: `
           <table class="ui-table w-full min-w-[1100px] text-left text-xs ui-mobile-table-cards min-[1400px]:min-w-0 min-[1400px]:table-fixed">
             <thead class="border-b border-[#e1e8f1] bg-[#f5f7fb] text-[#34445d] uppercase tracking-[.04em] font-extrabold">
               <tr>
-                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[6%]">ID BD</th>
-                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[10%]">Matrícula ID</th>
-                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-w-[190px] min-[1400px]:!py-2 min-[1400px]:w-[15%] min-[1400px]:min-w-0">Concepto</th>
-                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[9%]">Monto Base</th>
-                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[11%]">Saldo Pendiente</th>
-                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[9%]">Vencimiento</th>
-                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[14%]">Estado en BD</th>
-                <th class="!px-[5px] !py-[14px] !text-[11px] font-extrabold whitespace-nowrap min-w-[140px] min-[1400px]:!py-2 min-[1400px]:w-[10%] min-[1400px]:min-w-0 min-[1400px]:whitespace-normal">Comprobante</th>
-                <th class="sticky right-0 z-[5] !px-[5px] !py-[14px] !text-[11px] font-extrabold text-right whitespace-nowrap min-w-[170px] bg-[#f5f7fb] shadow-[-8px_0_12px_rgb(16_36_71_/_10%)] min-[1400px]:static min-[1400px]:z-auto min-[1400px]:!py-2 min-[1400px]:w-[16%] min-[1400px]:min-w-0 min-[1400px]:shadow-none">Acción</th>
+                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[6%]">ID BD</th>
+                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[10%]">Matrícula ID</th>
+                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-w-[190px] min-[1400px]:!py-2 min-[1400px]:w-[15%] min-[1400px]:min-w-0">Concepto</th>
+                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[9%]">Monto Base</th>
+                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[11%]">Saldo Pendiente</th>
+                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[9%]">Vencimiento</th>
+                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[14%]">Estado en BD</th>
+                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-w-[140px] min-[1400px]:!py-2 min-[1400px]:w-[10%] min-[1400px]:min-w-0 min-[1400px]:whitespace-normal">Comprobante</th>
+                <th class="sticky right-0 z-[5] !px-[5px] !py-3 !text-[11px] font-extrabold text-right whitespace-nowrap min-w-[170px] bg-[#f5f7fb] shadow-[-8px_0_12px_rgb(16_36_71_/_10%)] min-[1400px]:static min-[1400px]:z-auto min-[1400px]:!py-2 min-[1400px]:w-[16%] min-[1400px]:min-w-0 min-[1400px]:shadow-none">Acción</th>
               </tr>
             </thead>
             <tbody class="text-[#34445d]">
@@ -173,21 +173,21 @@ template: `
               } @else {
                 @for (item of obligacionesFiltradas(); track item.id) {
                   <tr class="transition hover:[&>td]:bg-[#f8faff]">
-                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2 font-mono text-[#64748b]" data-label="ID BD">{{ item.id }}</td>
-                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2 font-bold text-[#172b4d]" data-label="Matrícula ID">{{ item.estudiante }}</td>
-                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2" data-label="Concepto">
+                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2 font-mono text-[#64748b]" data-label="ID BD">{{ item.id }}</td>
+                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2 font-bold text-[#172b4d]" data-label="Matrícula ID">{{ item.estudiante }}</td>
+                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2" data-label="Concepto">
                       <span class="inline-block max-w-[260px] align-middle rounded bg-[#f1f4f9] px-2 py-0.5 text-[#475569] whitespace-normal leading-[1.35] max-[600px]:text-xs min-[1400px]:max-w-full">
                         {{ item.concepto }}
                       </span>
                     </td>
-                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2 font-mono font-bold text-[#172b4d]" data-label="Monto Base">
+                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2 font-mono font-bold text-[#172b4d]" data-label="Monto Base">
                       S/ {{ item.monto | number:'1.2-2' }}
                     </td>
-                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2 font-mono font-semibold text-[#805300]" data-label="Saldo Pendiente">
+                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2 font-mono font-semibold text-[#805300]" data-label="Saldo Pendiente">
                       S/ {{ item.saldoPendiente | number:'1.2-2' }}
                     </td>
-                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2 font-mono text-[#34445d]" data-label="Vencimiento">{{ item.fechaVencimiento | uiDatePe }}</td>
-                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2" data-label="Estado en BD">
+                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2 font-mono whitespace-nowrap text-[#34445d]" data-label="Vencimiento">{{ item.fechaVencimiento | uiDatePe }}</td>
+                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2" data-label="Estado en BD">
                       @switch (item.estado) {
                         @case ('PAGADO_TOTAL') {
                           <ui-status-badge tone="success" label="PAGADO" />
@@ -204,8 +204,8 @@ template: `
                         @default { <span class="text-[#34445d]">{{ item.estado }}</span> }
                       }
                     </td>
-                    <td class="px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] min-[1400px]:!py-2" data-label="Comprobante">@if (item.comprobanteNumero) { <span class="inline-flex min-h-7 items-center rounded-lg border border-[#b8dfcc] bg-[#edf9f3] px-2 py-1 text-[11px] font-bold text-[#126943] whitespace-nowrap">{{ item.comprobanteNumero }}</span> } @else { <span class="text-[#59677a] text-[11px]">—</span> }</td>
-                    <td class="sticky right-0 z-[3] px-[5px] py-[14px] min-[601px]:!px-[5px] min-[601px]:!py-[14px] text-right min-w-[170px] bg-white shadow-[-8px_0_12px_rgb(16_36_71_/_10%)] min-[1400px]:static min-[1400px]:z-auto min-[1400px]:!py-2 min-[1400px]:w-[16%] min-[1400px]:min-w-0 min-[1400px]:shadow-none" data-label="Acción">
+                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2" data-label="Comprobante">@if (item.comprobanteNumero) { <span class="inline-flex min-h-7 items-center rounded-lg border border-[#b8dfcc] bg-[#edf9f3] px-2 py-1 text-[11px] font-bold text-[#126943] whitespace-nowrap">{{ item.comprobanteNumero }}</span> } @else { <span class="text-[#59677a] text-[11px]">—</span> }</td>
+                    <td class="sticky right-0 z-[3] px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 text-right min-w-[170px] min-[601px]:min-w-[176px] bg-white shadow-[-8px_0_12px_rgb(16_36_71_/_10%)] min-[1400px]:static min-[1400px]:z-auto min-[1400px]:!py-2 min-[1400px]:w-[16%] min-[1400px]:min-w-0 min-[1400px]:shadow-none" data-label="Acción">
                       @if (item.estado !== 'PAGADO_TOTAL' && item.estado !== 'CANCELADO_POR_TRASLADO' && item.saldoPendiente > 0) {
                         <div class="flex flex-wrap justify-end gap-[7px] max-[600px]:w-full max-[600px]:flex-col max-[600px]:items-stretch">
                           <button
