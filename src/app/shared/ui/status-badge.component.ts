@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 export type UiStatusTone = 'success' | 'warning' | 'error' | 'info';
@@ -5,19 +6,12 @@ export type UiStatusTone = 'success' | 'warning' | 'error' | 'info';
 @Component({
   selector: 'ui-status-badge',
   standalone: true,
+  imports: [NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <span
-      class="ui-status-badge"
-      [class.ui-status-badge--success]="tone === 'success'"
-      [class.ui-status-badge--warning]="tone === 'warning'"
-      [class.ui-status-badge--error]="tone === 'error'"
-      [class.ui-status-badge--info]="tone === 'info'"
-    >
-      <svg class="ui-status-badge__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <circle cx="12" cy="12" r="9"></circle>
-        <path [attr.d]="iconPath"></path>
-      </svg>
+      class="inline-flex min-h-7 items-center gap-1 rounded-full border border-transparent px-2 py-[2px] font-sans text-[13px] leading-[1.25] font-semibold" [ngClass]="toneClasses">
+      <svg class="h-[18px] w-[18px] shrink-0 fill-none stroke-current [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:1.8]" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"></circle><path [attr.d]="iconPath"></path></svg>
       <span>{{ label }}</span>
     </span>
   `,
@@ -25,6 +19,15 @@ export type UiStatusTone = 'success' | 'warning' | 'error' | 'info';
 export class StatusBadgeComponent {
   @Input() label = '';
   @Input() tone: UiStatusTone = 'info';
+
+  get toneClasses(): string {
+    switch (this.tone) {
+      case 'success': return '!border-[#86efac] bg-[#dcfce7] text-[#14532d]';
+      case 'warning': return '!border-[#fcd34d] bg-[#fef3c7] text-[#78350f]';
+      case 'error': return '!border-[#fca5a5] bg-[#fee2e2] text-[#7f1d1d]';
+      default: return '!border-[#93c5fd] bg-[#dbeafe] text-[#1e3a8a]';
+    }
+  }
 
   get iconPath(): string {
     switch (this.tone) {
