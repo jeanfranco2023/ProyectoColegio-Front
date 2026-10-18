@@ -5,6 +5,7 @@ export interface ComunicadoResponseDto {
   remitenteUsuarioId: number;
   fechaPublicacion: string;
   requiereAcuse: boolean;
+  acuseConfirmado?: boolean | null;
 }
 
 export interface BandejaApoderadoResponseDto {

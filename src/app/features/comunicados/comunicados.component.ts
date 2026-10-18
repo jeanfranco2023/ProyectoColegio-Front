@@ -17,6 +17,7 @@ export interface ComunicadoEscolar {
   fechaPublicacion: string;
   autor: string;
   requiereAcuse: boolean;
+  acuseConfirmado: boolean;
 }
 
 @Component({
@@ -109,7 +110,7 @@ template: `
                 <span>{{ item.fechaPublicacion | uiDatePe }}</span>
               </div>
               @if (store.hasRole('APODERADO') && item.requiereAcuse) {
-                <button (click)="confirmarAcuse(item.id)" class="mt-3 p-2 rounded bg-blue-600 text-white text-xs !text-[11px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">Confirmar lectura y acuse</button>
+                <button (click)="confirmarAcuse(item.id)" [disabled]="item.acuseConfirmado" class="mt-3 p-2 rounded bg-blue-600 text-white text-xs !text-[11px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] disabled:cursor-not-allowed disabled:opacity-60">{{ item.acuseConfirmado ? 'Lectura confirmada' : 'Confirmar lectura y acuse' }}</button>
               }
             </div>
           } @empty {
@@ -128,6 +129,7 @@ export class ComunicadosComponent implements OnInit {
   private readonly academicoService = inject(AcademicoService);
   @ViewChild('comunicadoDialog') private comunicadoDialog!: ElementRef<HTMLDialogElement>;
   readonly store = inject(AuthStore);
+  readonly acusesConfirmados = signal<ReadonlySet<number>>(new Set());
   readonly anios = signal<AnioLectivoResponseDto[]>([]);
   readonly publicando = signal(false);
   readonly error = signal<string | null>(null);
@@ -141,6 +143,7 @@ export class ComunicadosComponent implements OnInit {
   readonly comunicados = signal<ComunicadoEscolar[]>([]);
 
   ngOnInit(): void {
+    this.restaurarAcusesConfirmados();
     this.cargarComunicados();
     if (this.store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) {
       this.academicoService.listarAnios().subscribe({ next: anios => { this.anios.set(anios); this.anioLectivoId = anios.find(a => a.abierto)?.id ?? anios[0]?.id ?? 0; } });
@@ -162,11 +165,12 @@ export class ComunicadosComponent implements OnInit {
               id: c.id,
               titulo: c.titulo || 'Sin título',
               resumen: c.contenido || 'Sin contenido adicional',
-              destinatarios: '—',
+              destinatarios: 'Destinatario no informado',
               prioridad: '—',
               fechaPublicacion: c.fechaPublicacion ? String(c.fechaPublicacion).split('T')[0] : '—',
               autor: c.remitenteUsuarioId ? `Usuario #${c.remitenteUsuarioId}` : '—',
-              requiereAcuse: c.requiereAcuse
+              requiereAcuse: c.requiereAcuse,
+              acuseConfirmado: c.acuseConfirmado === true || this.acusesConfirmados().has(c.id)
             }))
           );
         } else {
@@ -203,11 +207,48 @@ export class ComunicadosComponent implements OnInit {
   }
 
   confirmarAcuse(id: number): void {
+    if (this.acusesConfirmados().has(id)) return;
     this.error.set(null);
     this.mensaje.set(null);
     this.comunicadoService.confirmarAcuse(id).subscribe({
-      next: () => this.mensaje.set('Lectura y acuse confirmados.'),
+      next: (respuesta) => {
+        const resultado = respuesta as { acuseConfirmado?: boolean; data?: { acuseConfirmado?: boolean } } | null;
+        const confirmadoPorBackend = resultado?.acuseConfirmado ?? resultado?.data?.acuseConfirmado;
+        if (confirmadoPorBackend === false) {
+          this.error.set('El backend no confirmó la lectura.');
+          return;
+        }
+        this.registrarAcuseConfirmado(id);
+        this.comunicados.update(items => items.map(item => item.id === id ? { ...item, acuseConfirmado: true } : item));
+        this.mensaje.set('Lectura y acuse confirmados.');
+      },
       error: err => this.error.set(err?.error?.message ?? 'No se pudo confirmar el acuse.')
     });
+  }
+
+  private acuseStorageKey(): string {
+    return `shuji.comunicados.acuses.v1.${this.store.user()?.id ?? 'sin-usuario'}`;
+  }
+
+  private restaurarAcusesConfirmados(): void {
+    try {
+      const guardados: unknown = JSON.parse(sessionStorage.getItem(this.acuseStorageKey()) ?? '[]');
+      if (Array.isArray(guardados)) {
+        this.acusesConfirmados.set(new Set(guardados.filter((id): id is number => Number.isSafeInteger(id) && id > 0)));
+      }
+    } catch {
+      this.acusesConfirmados.set(new Set());
+    }
+  }
+
+  private registrarAcuseConfirmado(id: number): void {
+    const actualizados = new Set(this.acusesConfirmados());
+    actualizados.add(id);
+    this.acusesConfirmados.set(actualizados);
+    try {
+      sessionStorage.setItem(this.acuseStorageKey(), JSON.stringify([...actualizados]));
+    } catch {
+      // Keep the confirmed state for the current component even if session storage is unavailable.
+    }
   }
 }
