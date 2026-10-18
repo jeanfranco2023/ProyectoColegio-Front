@@ -52,10 +52,10 @@ template: `
       <section aria-labelledby="resumen-title" [attr.aria-busy]="loading()">
         <div class="mb-4 flex items-end justify-between gap-4">
           <div>
-            <p class="text-[11px] font-extrabold tracking-[0.16em] text-[#9a743d] uppercase">Indicadores clave</p>
+            <p class="text-[11px] font-extrabold tracking-[0.16em] text-[#76551f] uppercase">Indicadores clave</p>
             <h2 id="resumen-title" class="mt-1 text-lg font-semibold text-slate-800">Resumen institucional</h2>
           </div>
-          <span class="hidden text-[11px] text-slate-400 sm:block">Cifras sincronizadas con la plataforma</span>
+          <span class="hidden text-[11px] text-[#59677a] sm:block">Cifras sincronizadas con la plataforma</span>
         </div>
 
         @if (loading()) {
@@ -70,7 +70,7 @@ template: `
             <mat-card-content class="!p-5 sm:!p-6">
               <div class="flex items-start justify-between">
                 <div class="grid size-[42px] place-items-center rounded-[14px] bg-[#eef4ff] text-[#3569bd] [&_svg]:size-5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2m12-13a4 4 0 11-8 0 4 4 0 018 0zm6 13v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
-                <span class="text-[11px] font-extrabold tracking-[0.12em] text-[#9aa5b5]">MATRÍCULA</span>
+                <span class="text-[11px] font-extrabold tracking-[0.12em] text-[#59677a]">MATRÍCULA</span>
               </div>
               <p class="mt-5 text-3xl font-semibold tracking-tight text-slate-900">{{ totalEstudiantes() !== null ? totalEstudiantes() : '—' }}</p>
               <p class="mt-1 text-xs !text-[11px] text-slate-500">Estudiantes registrados</p>
@@ -81,7 +81,7 @@ template: `
             <mat-card-content class="!p-5 sm:!p-6">
               <div class="flex items-start justify-between">
                 <div class="grid size-[42px] place-items-center rounded-[14px] bg-[#eaf7f1] text-[#23815d] [&_svg]:size-5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
-                <span class="text-[11px] font-extrabold tracking-[0.12em] text-[#9aa5b5]">HOY</span>
+                <span class="text-[11px] font-extrabold tracking-[0.12em] text-[#59677a]">HOY</span>
               </div>
               <p class="mt-5 text-3xl font-semibold tracking-tight text-slate-900">{{ asistenciaHoy() !== null ? (asistenciaHoy() + '%') : '—' }}</p>
               <p class="mt-1 text-xs !text-[11px] text-slate-500">Asistencia registrada</p>
@@ -92,7 +92,7 @@ template: `
             <mat-card-content class="!p-5 sm:!p-6">
               <div class="flex items-start justify-between">
                 <div class="grid size-[42px] place-items-center rounded-[14px] bg-[#fbf3e7] text-[#a47737] [&_svg]:size-5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 8c-1.7 0-3 .9-3 2s1.3 2 3 2 3 .9 3 2-1.3 2-3 2m0-8c1.1 0 2.1.4 2.6 1M12 8V7m0 1v8m0 0v1m0-1c-1.1 0-2.1-.4-2.6-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
-                <span class="text-[11px] font-extrabold tracking-[0.12em] text-[#9aa5b5]">TESORERÍA</span>
+                <span class="text-[11px] font-extrabold tracking-[0.12em] text-[#59677a]">TESORERÍA</span>
               </div>
               <p class="mt-5 text-3xl font-semibold tracking-tight text-slate-900">{{ recaudacionMes() !== null ? ('S/ ' + (recaudacionMes() | number:'1.2-2')) : '—' }}</p>
               <p class="mt-1 text-xs !text-[11px] text-slate-500">Recaudación del mes</p>
@@ -103,7 +103,7 @@ template: `
             <mat-card-content class="!p-5 sm:!p-6">
               <div class="flex items-start justify-between">
                 <div class="grid size-[42px] place-items-center rounded-[14px] bg-[#f2efff] text-[#6957b5] [&_svg]:size-5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
-                <span class="text-[11px] font-extrabold tracking-[0.12em] text-[#9aa5b5]">ACOMPAÑAMIENTO</span>
+                <span class="text-[11px] font-extrabold tracking-[0.12em] text-[#59677a]">ACOMPAÑAMIENTO</span>
               </div>
               <p class="mt-5 text-3xl font-semibold tracking-tight text-slate-900">{{ alumnosEnRiesgo() !== null ? alumnosEnRiesgo() : '—' }}</p>
               <p class="mt-1 text-xs !text-[11px] text-slate-500">Estudiantes que requieren refuerzo</p>
@@ -115,7 +115,7 @@ template: `
 
       <section aria-labelledby="modulos-title">
         <div class="mb-4">
-          <p class="text-[11px] font-extrabold tracking-[0.16em] text-[#9a743d] uppercase">Accesos rápidos</p>
+          <p class="text-[11px] font-extrabold tracking-[0.16em] text-[#76551f] uppercase">Accesos rápidos</p>
           <h2 id="modulos-title" class="mt-1 text-lg font-semibold text-slate-800">Continúa con tu trabajo</h2>
         </div>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">

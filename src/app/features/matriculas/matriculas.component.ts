@@ -45,7 +45,7 @@ export interface EstudianteMatriculadoItem {
               <p class="!text-[11px] text-[#047857]">{{ mensajeExito() }}</p>
             </div>
           </div>
-          <button (click)="mensajeExito.set(null)" class="text-[#047857] hover:text-emerald-200 cursor-pointer !text-[11px] font-semibold px-2 py-1 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+          <button (click)="mensajeExito.set(null)" class="text-[#047857] hover:text-[#065f46] cursor-pointer !text-[11px] font-semibold px-2 py-1 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
             ✕
           </button>
         </div>
@@ -64,7 +64,7 @@ export interface EstudianteMatriculadoItem {
               <p class="!text-[11px] text-[#be123c]">{{ error() }}</p>
             </div>
           </div>
-          <button (click)="error.set(null)" class="text-[#be123c] hover:text-rose-200 cursor-pointer !text-[11px] font-semibold px-2 py-1 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+          <button (click)="error.set(null)" class="text-[#be123c] hover:text-[#9f1239] cursor-pointer !text-[11px] font-semibold px-2 py-1 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
             ✕
           </button>
         </div>
@@ -93,7 +93,7 @@ export interface EstudianteMatriculadoItem {
           <button
             id="btn-abrir-registro-alumno"
             (click)="abrirModalNuevoAlumno()"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-[#c49a58] rounded-[10px] bg-[linear-gradient(110deg,#102447_0%,#1d365c_100%)] text-white font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] shadow-[inset_0_-2px_#c49a58] hover:bg-[linear-gradient(110deg,#173156_0%,#284b76_100%)] focus-visible:outline-[3px] focus-visible:outline-[#2864c5] focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-[#c49a58] rounded-[10px] bg-[linear-gradient(110deg,#102447_0%,#1d365c_100%)] text-white font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] shadow-[inset_0_-2px_#c49a58] hover:bg-[linear-gradient(110deg,#173156_0%,#284b76_100%)] focus-visible:outline-[3px] focus-visible:outline-[#2864c5] focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -104,7 +104,7 @@ export interface EstudianteMatriculadoItem {
           <button
             id="btn-abrir-nueva-matricula"
             (click)="abrirModalNuevaMatricula()"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-[#e1e8f1] rounded-[10px] bg-white text-[#102447] font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:bg-[#f4f7fb] focus-visible:outline-[3px] focus-visible:outline-[#2864c5] focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-[#e1e8f1] rounded-[10px] bg-white text-[#102447] font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:bg-[#f4f7fb] focus-visible:outline-[3px] focus-visible:outline-[#2864c5] focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" focusable="false">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -130,9 +130,9 @@ export interface EstudianteMatriculadoItem {
           id="tab-estudiantes"
           (click)="pestanaActiva.set('estudiantes')"
           [class]="pestanaActiva() === 'estudiantes'
-            ? 'px-4 py-3 border-b-2 border-blue-500 text-blue-400 font-bold text-sm flex items-center gap-2 transition cursor-pointer'
+            ? 'px-4 py-3 border-b-2 border-blue-500 text-blue-700 font-bold text-sm flex items-center gap-2 transition cursor-pointer'
             : 'px-4 py-3 border-b-2 border-transparent !text-[#59677a] hover:!text-[#34445d] font-medium text-sm flex items-center gap-2 transition cursor-pointer'"
-         class="max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+         class="max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
@@ -146,9 +146,9 @@ export interface EstudianteMatriculadoItem {
           id="tab-matriculas"
           (click)="pestanaActiva.set('matriculas')"
           [class]="pestanaActiva() === 'matriculas'
-            ? 'px-4 py-3 border-b-2 border-blue-500 text-blue-400 font-bold text-sm flex items-center gap-2 transition cursor-pointer'
+            ? 'px-4 py-3 border-b-2 border-blue-500 text-blue-700 font-bold text-sm flex items-center gap-2 transition cursor-pointer'
             : 'px-4 py-3 border-b-2 border-transparent !text-[#59677a] hover:!text-[#34445d] font-medium text-sm flex items-center gap-2 transition cursor-pointer'"
-         class="max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+         class="max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
@@ -173,7 +173,7 @@ export interface EstudianteMatriculadoItem {
                 </svg>
               </span>
               <input
-                id="input-filtro-estudiante"
+                id="input-filtro-estudiante" aria-label="Buscar estudiante"
                 type="text"
                 [(ngModel)]="busquedaEstudiante"
                 placeholder="Buscar por DNI, Nombres o Apellidos..."
@@ -184,7 +184,7 @@ export interface EstudianteMatriculadoItem {
             <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
               <button
                 (click)="cargarEstudiantes()"
-                class="px-3.5 py-2 rounded-xl bg-[#f1f4f9] hover:bg-slate-700 !text-[#34445d] !text-[11px] font-semibold transition cursor-pointer flex items-center gap-2 border !border-[#e1e8f1] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                class="px-3.5 py-2 rounded-xl bg-[#f1f4f9] hover:bg-slate-700 !text-[#34445d] !text-[11px] font-semibold transition cursor-pointer flex items-center gap-2 border !border-[#e1e8f1] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 !text-[#59677a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -246,7 +246,7 @@ export interface EstudianteMatriculadoItem {
                               Masculino
                             </span>
                           } @else if (est.genero === 'F') {
-                            <span class="px-2 py-0.5 rounded-full !text-[11px] font-medium bg-pink-500/10 text-pink-400 border border-pink-500/20">
+                            <span class="px-2 py-0.5 rounded-full !text-[11px] font-medium bg-pink-500/10 text-pink-700 border border-pink-500/20">
                               Femenino
                             </span>
                           } @else {
@@ -264,7 +264,7 @@ export interface EstudianteMatriculadoItem {
                         <td class="px-5 py-3.5 text-right" data-label="Acciones">
                           <button
                             (click)="prepararMatriculaParaEstudiante(est)"
-                            class="inline-flex min-h-10 w-auto min-w-[104px] items-center justify-center gap-2 px-4 py-2 border border-[#c3d6f5] rounded-[10px] bg-[#eff5ff] text-[#184fae] font-semibold leading-tight text-center no-underline cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:border-[#8fb0e4] hover:bg-[#dce9ff] box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-[14px] !leading-[1.25]"
+                            class="inline-flex min-h-10 w-auto min-w-[104px] items-center justify-center gap-2 px-4 py-2 border border-[#c3d6f5] rounded-[10px] bg-[#eff5ff] text-[#184fae] font-semibold leading-tight text-center no-underline cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:border-[#8fb0e4] hover:bg-[#dce9ff] box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-[14px] !leading-[1.25]"
                           >
                             Matricular
                           </button>
@@ -297,7 +297,7 @@ export interface EstudianteMatriculadoItem {
             <div>
               <label class="block !text-[11px] font-semibold !text-[#59677a] mb-1">Año Lectivo</label>
               <select
-                [(ngModel)]="anioLectivoId"
+                [(ngModel)]="anioLectivoId" aria-label="Año Lectivo"
                 (change)="cargarSecciones()"
                 class="w-full px-3 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] !text-[11px] focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
               >
@@ -310,7 +310,7 @@ export interface EstudianteMatriculadoItem {
             <div>
               <label class="block !text-[11px] font-semibold !text-[#59677a] mb-1">Sección en BD</label>
               <select
-                [(ngModel)]="seccionIdSeleccionada"
+                [(ngModel)]="seccionIdSeleccionada" aria-label="Sección en BD"
                 (change)="cargarMatriculas()"
                 class="w-full px-3 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] !text-[11px] focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
               >
@@ -323,7 +323,7 @@ export interface EstudianteMatriculadoItem {
             <div>
               <label class="block !text-[11px] font-semibold !text-[#59677a] mb-1">Estado de Matrícula</label>
               <select
-                [(ngModel)]="filtroEstado"
+                [(ngModel)]="filtroEstado" aria-label="Estado de Matrícula"
                 class="w-full px-3 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] !text-[11px] focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
               >
                 <option value="TODOS">Todos los Estados</option>
@@ -337,7 +337,7 @@ export interface EstudianteMatriculadoItem {
             <div class="flex items-end">
               <button
                 (click)="cargarMatriculas()"
-                class="w-full py-2 px-3 rounded-xl bg-[#f1f4f9] hover:bg-slate-700 !text-[#34445d] !text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 border !border-[#e1e8f1] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                class="w-full py-2 px-3 rounded-xl bg-[#f1f4f9] hover:bg-slate-700 !text-[#34445d] !text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 border !border-[#e1e8f1] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -389,7 +389,7 @@ export interface EstudianteMatriculadoItem {
                               type="button"
                               (click)="confirmarMatricula(est.id)"
                               [disabled]="confirmandoMatricula() === est.id"
-                              class="mr-2 rounded-lg bg-emerald-600 px-3 py-2 font-semibold text-white transition hover:bg-emerald-500 disabled:cursor-wait disabled:opacity-60 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                              class="mr-2 rounded-lg bg-emerald-600 px-3 py-2 font-semibold text-white transition hover:bg-emerald-500 disabled:cursor-wait disabled:opacity-60 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
                             >
                               {{ confirmandoMatricula() === est.id ? 'Validando pago…' : 'Confirmar matrícula' }}
                             </button>
@@ -397,7 +397,7 @@ export interface EstudianteMatriculadoItem {
                           <button
                             type="button"
                             (click)="verFicha(est.id)"
-                            class="rounded-lg bg-[#f1f4f9] px-3 py-2 font-medium !text-[#34445d] transition hover:bg-slate-700 hover:text-white max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                            class="rounded-lg bg-[#f1f4f9] px-3 py-2 font-medium !text-[#34445d] transition hover:bg-slate-700 hover:text-white max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
                           >
                             Ver Ficha
                           </button>
@@ -455,7 +455,7 @@ export interface EstudianteMatriculadoItem {
                 <div>
                   <label class="block text-xs font-semibold text-[#475569] mb-1">Tipo de Documento *</label>
                   <select
-                    id="nuevo-alumno-tipo-doc"
+                    id="nuevo-alumno-tipo-doc" aria-label="Tipo de Documento *"
                     [(ngModel)]="nuevoAlumno.tipoDocumento"
                     name="tipoDoc"
                     required
@@ -468,7 +468,7 @@ export interface EstudianteMatriculadoItem {
                 <div class="sm:col-span-2">
                   <label class="block text-xs font-semibold text-[#475569] mb-1">Número de Documento *</label>
                   <div class="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2"><input
-                    id="nuevo-alumno-numero-doc"
+                    id="nuevo-alumno-numero-doc" aria-label="Número de Documento *"
                     type="text"
                     [(ngModel)]="nuevoAlumno.numeroDocumento"
                     name="numeroDoc"
@@ -479,7 +479,7 @@ export interface EstudianteMatriculadoItem {
                     placeholder="Ej. 74839201"
                     class="min-w-0 flex-1 px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] !text-[#172b4d] !text-base placeholder-slate-500 focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
                   />
-                  <button type="button" (click)="consultarDni()" [disabled]="consultandoDni() || nuevoAlumno.tipoDocumento !== 'DNI'" class="inline-flex items-center justify-center whitespace-nowrap px-2 py-2.5 rounded-xl bg-blue-600 text-white text-xs !text-[14px] font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ consultandoDni() ? 'Consultando...' : 'Consultar DNI' }}</button></div>
+                  <button type="button" (click)="consultarDni()" [disabled]="consultandoDni() || nuevoAlumno.tipoDocumento !== 'DNI'" class="inline-flex items-center justify-center whitespace-nowrap px-2 py-2.5 rounded-xl bg-blue-600 text-white text-xs !text-[14px] font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ consultandoDni() ? 'Consultando...' : 'Consultar DNI' }}</button></div>
                 </div>
               </div>
 
@@ -493,7 +493,7 @@ export interface EstudianteMatriculadoItem {
                 <div>
                   <label class="block text-xs font-semibold text-[#475569] mb-1">Nombres *</label>
                   <input
-                    id="nuevo-alumno-nombres"
+                    id="nuevo-alumno-nombres" aria-label="Nombres *"
                     type="text"
                     [(ngModel)]="nuevoAlumno.nombres"
                     name="nombres"
@@ -507,7 +507,7 @@ export interface EstudianteMatriculadoItem {
                 <div>
                   <label class="block text-xs font-semibold text-[#475569] mb-1">Apellido Paterno *</label>
                   <input
-                    id="nuevo-alumno-ape-paterno"
+                    id="nuevo-alumno-ape-paterno" aria-label="Apellido Paterno *"
                     type="text"
                     [(ngModel)]="nuevoAlumno.apellidoPaterno"
                     name="apellidoPaterno"
@@ -521,7 +521,7 @@ export interface EstudianteMatriculadoItem {
                 <div>
                   <label class="block text-xs font-semibold text-[#475569] mb-1">Apellido Materno *</label>
                   <input
-                    id="nuevo-alumno-ape-materno"
+                    id="nuevo-alumno-ape-materno" aria-label="Apellido Materno *"
                     type="text"
                     [(ngModel)]="nuevoAlumno.apellidoMaterno"
                     name="apellidoMaterno"
@@ -538,7 +538,7 @@ export interface EstudianteMatriculadoItem {
                 <div>
                   <label class="block text-xs font-semibold text-[#475569] mb-1">Fecha de Nacimiento *</label>
                   <input
-                    id="nuevo-alumno-fecha-nac"
+                    id="nuevo-alumno-fecha-nac" aria-label="Fecha de Nacimiento *"
                     type="date"
                     [(ngModel)]="nuevoAlumno.fechaNacimiento"
                     name="fechaNacimiento"
@@ -550,7 +550,7 @@ export interface EstudianteMatriculadoItem {
                 <div>
                   <label class="block text-xs font-semibold text-[#475569] mb-1">Género *</label>
                   <select
-                    id="nuevo-alumno-genero"
+                    id="nuevo-alumno-genero" aria-label="Género *"
                     [(ngModel)]="nuevoAlumno.genero"
                     name="genero"
                     required
@@ -564,7 +564,7 @@ export interface EstudianteMatriculadoItem {
                 <div>
                   <label class="block text-xs font-semibold text-[#475569] mb-1">Grupo Sanguíneo</label>
                   <select
-                    id="nuevo-alumno-grupo-sang"
+                    id="nuevo-alumno-grupo-sang" aria-label="Grupo Sanguíneo"
                     [(ngModel)]="nuevoAlumno.grupoSanguineo"
                     name="grupoSanguineo"
                     class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] !text-[#172b4d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
@@ -586,7 +586,7 @@ export interface EstudianteMatriculadoItem {
                 <div>
                   <label class="block text-xs font-semibold text-[#475569] mb-1">Cód. Modular SIAGIE</label>
                   <input
-                    id="nuevo-alumno-siagie"
+                    id="nuevo-alumno-siagie" aria-label="Cód. Modular SIAGIE"
                     type="text"
                     [(ngModel)]="nuevoAlumno.codigoEstudianteSiagie"
                     name="codigoSiagie"
@@ -599,7 +599,7 @@ export interface EstudianteMatriculadoItem {
                 <div class="sm:col-span-2">
                   <label class="block text-xs font-semibold text-[#475569] mb-1">Alergias o Condiciones Médicas</label>
                   <input
-                    id="nuevo-alumno-alergias"
+                    id="nuevo-alumno-alergias" aria-label="Alergias o Condiciones Médicas"
                     type="text"
                     [(ngModel)]="nuevoAlumno.alergiasCondiciones"
                     name="alergias"
@@ -616,7 +616,7 @@ export interface EstudianteMatriculadoItem {
                 <button
                   type="button"
                   (click)="cerrarModalNuevoAlumno()"
-                  class="px-4 py-2.5 rounded-xl bg-[#f1f4f9] hover:bg-slate-700 text-[#475569] text-xs !text-[14px] font-semibold transition cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                  class="px-4 py-2.5 rounded-xl bg-[#f1f4f9] hover:bg-slate-700 text-[#475569] text-xs !text-[14px] font-semibold transition cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
                 >
                   Cancelar
                 </button>
@@ -624,7 +624,7 @@ export interface EstudianteMatriculadoItem {
                   id="btn-guardar-alumno"
                   type="submit"
                   [disabled]="guardandoAlumno() || consultandoDni()"
-                  class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs !text-[14px] font-semibold shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer disabled:opacity-50 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                  class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs !text-[14px] font-semibold shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer disabled:opacity-50 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
                 >
                   @if (guardandoAlumno()) {
                     <span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
@@ -648,14 +648,14 @@ export interface EstudianteMatriculadoItem {
           <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col font-sans w-full max-w-lg p-1">
             <div class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 flex items-center justify-between border-b border-[#e5eaf2] pb-4">
               <h3 class="text-lg !leading-7 font-bold text-[#14213d] tracking-[-.025em]">Asignar Solicitud de Matrícula</h3>
-              <button (click)="cerrarSolicitudDialog()" class="inline-flex h-10 min-h-10 w-auto min-w-0 shrink-0 items-center justify-center rounded p-2 text-base font-normal text-[#64748b] hover:text-[#475569]" aria-label="Cerrar diálogo">✕</button>
+              <button (click)="cerrarSolicitudDialog()" class="inline-flex h-11 min-h-11 w-11 min-w-11 shrink-0 items-center justify-center rounded p-2 text-base font-normal text-[#64748b] hover:text-[#475569]" aria-label="Cerrar diálogo">✕</button>
             </div>
 
             <form (ngSubmit)="solicitar()" class="flex min-h-0 flex-[1_1_auto] flex-col space-y-4">
               <div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
               <div>
                 <label class="block text-xs font-semibold text-[#475569] mb-1">Año Lectivo</label>
-                <select [(ngModel)]="anioLectivoId" name="anio" (change)="cargarSecciones()" required class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] text-[#14213d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-[#f5f7fb] !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base">
+                <select [(ngModel)]="anioLectivoId" aria-label="Año Lectivo" name="anio" (change)="cargarSecciones()" required class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] text-[#14213d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-[#f5f7fb] !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base">
                   @for (anio of anios(); track anio.id) {
                     <option [ngValue]="anio.id">{{ anio.anio }} {{ anio.abierto ? '(Vigente)' : '' }}</option>
                   }
@@ -664,7 +664,7 @@ export interface EstudianteMatriculadoItem {
 
               <div>
                 <label class="block text-xs font-semibold text-[#475569] mb-1">Estudiante Registrado *</label>
-                <select [(ngModel)]="nuevoEstudianteId" name="estudiante" required class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] text-[#14213d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-[#f5f7fb] !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base">
+                <select [(ngModel)]="nuevoEstudianteId" aria-label="Estudiante Registrado *" name="estudiante" required class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] text-[#14213d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-[#f5f7fb] !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base">
                   <option [ngValue]="0" disabled>Seleccionar estudiante...</option>
                   @for (est of listaEstudiantes(); track est.id) {
                     <option [ngValue]="est.id">
@@ -676,7 +676,7 @@ export interface EstudianteMatriculadoItem {
 
               <div>
                 <label class="block text-xs font-semibold text-[#475569] mb-1">Sección de Destino *</label>
-                <select [(ngModel)]="seccionIdSeleccionada" name="seccion" required class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] text-[#14213d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-[#f5f7fb] !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base">
+                <select [(ngModel)]="seccionIdSeleccionada" aria-label="Sección de Destino *" name="seccion" required class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] text-[#14213d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-[#f5f7fb] !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base">
                   @for (s of secciones(); track s.id) {
                     <option [ngValue]="s.id">{{ obtenerNombreSeccion(s) }}</option>
                   }
@@ -686,7 +686,7 @@ export interface EstudianteMatriculadoItem {
               <div>
                 <label class="block text-xs font-semibold text-[#475569] mb-1">Observaciones</label>
                 <textarea
-                  [(ngModel)]="nuevasObservaciones"
+                  [(ngModel)]="nuevasObservaciones" aria-label="Observaciones"
                   name="observaciones"
                   maxlength="4000"
                   rows="3"
@@ -697,10 +697,10 @@ export interface EstudianteMatriculadoItem {
 
               </div>
               <div class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto] flex items-center justify-end gap-3 pt-4 border-t !border-[#e1e8f1]">
-                <button type="button" (click)="cerrarSolicitudDialog()" class="px-4 py-2 rounded-xl bg-[#f1f4f9] text-[#475569] text-xs !text-sm font-semibold box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+                <button type="button" (click)="cerrarSolicitudDialog()" class="px-4 py-2 rounded-xl bg-[#f1f4f9] text-[#475569] text-xs !text-sm font-semibold box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
                   Cancelar
                 </button>
-                <button type="submit" [disabled]="guardando()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs !text-sm font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+                <button type="submit" [disabled]="guardando()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs !text-sm font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
                   {{ guardando() ? 'Guardando...' : 'Asignar Matrícula' }}
                 </button>
               </div>
@@ -731,7 +731,7 @@ export interface EstudianteMatriculadoItem {
               </div>
             </div>
             <div class="flex justify-end pt-2">
-              <button (click)="cerrarFichaDialog()" class="px-4 py-2 rounded-xl bg-[#f1f4f9] text-[#334155] text-xs font-semibold box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+              <button (click)="cerrarFichaDialog()" class="px-4 py-2 rounded-xl bg-[#f1f4f9] text-[#334155] text-xs font-semibold box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
                 Cerrar
               </button>
             </div>

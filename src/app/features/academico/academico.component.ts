@@ -36,7 +36,7 @@ export interface NivelItem {
         <div class="flex items-center gap-3">
           <button
             (click)="abrirModalNuevaAula()"
-            class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold !text-[11px] leading-[1.333333] sm:text-sm shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !leading-[1.25]"
+            class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold !text-[11px] leading-[1.333333] sm:text-sm shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !leading-[1.25]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -51,7 +51,7 @@ export interface NivelItem {
         <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col">
           <header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4">
             <div><h3 id="aula-dialog-title" class="tracking-[-.025em]">Registrar aula</h3><p>Completa los datos del ambiente escolar.</p></div>
-            <button type="button" class="min-h-9 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-3 !font-[650] text-[#334155] !grid !h-9 !w-auto !min-h-9 !place-items-center !py-0" (click)="cerrarDialogoAula()" aria-label="Cerrar">✕</button>
+            <button type="button" class="min-h-9 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-3 !font-[650] text-[#334155] !grid !h-11 !w-11 !min-w-11 !min-h-11 !place-items-center !py-0" (click)="cerrarDialogoAula()" aria-label="Cerrar">✕</button>
           </header>
           <form (ngSubmit)="crearAula()" class="flex min-h-0 flex-[1_1_auto] flex-col">
             <div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
@@ -64,8 +64,8 @@ export interface NivelItem {
               </div>
             </div>
             <footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]">
-              <button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogoAula()">Cancelar</button>
-              <button type="submit" [disabled]="guardando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ guardando() ? 'Guardando…' : 'Crear aula' }}</button>
+              <button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogoAula()">Cancelar</button>
+              <button type="submit" [disabled]="guardando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ guardando() ? 'Guardando…' : 'Crear aula' }}</button>
             </footer>
           </form>
         </div>
@@ -113,7 +113,7 @@ export interface NivelItem {
           <h3 class="text-sm font-bold !text-[#172b4d] tracking-[-.025em]">Directorio de Aulas Físicas</h3>
           <button
             (click)="cargarDatos()"
-            class="px-3 py-1.5 rounded-xl !bg-[#f3f6fa] hover:bg-slate-700 !text-[#34445d] !text-[11px] leading-[1.333333] font-semibold cursor-pointer max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !leading-[1.25]"
+            class="px-3 py-1.5 rounded-xl !bg-[#f3f6fa] hover:bg-slate-700 !text-[#34445d] !text-[11px] leading-[1.333333] font-semibold cursor-pointer max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !leading-[1.25]"
           >
             Actualizar BD
           </button>

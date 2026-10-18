@@ -81,7 +81,7 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
               <span class="mt-0.5 block truncate text-[11px] text-[#5d6b7f]">{{ roleLabel }}</span>
             </span>
           </div>
-          <button mat-button type="button" (click)="store.logout()" class="mt-3 w-full !justify-start !rounded-xl !font-[inherit] hover:bg-[#eef2f8] hover:text-[#243954]">
+          <button mat-button type="button" (click)="store.logout()" class="mt-3 w-full !min-h-11 !justify-start !rounded-xl !font-[inherit] hover:bg-[#eef2f8] hover:text-[#243954]">
             <span class="inline-flex items-center gap-2 whitespace-nowrap font-[inherit]"><svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg><span>Cerrar sesión</span></span>
           </button>
         </div>

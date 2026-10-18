@@ -3,16 +3,16 @@
     <div>
       <span class="text-[11px] font-bold tracking-[.12em] text-[#76500a]">ADMISIÓN · CONTROL INTERNO</span>
       <h1 class="mb-[5px] mt-[7px] text-[clamp(24px,3vw,32px)] font-normal tracking-[-.04em] text-[#172944] tracking-[-.025em]">Solicitudes de matrícula</h1>
-      <p class="m-0 max-w-[780px] text-[12px] leading-[1.6] text-[#718096] max-[700px]:text-[11px]">Revisa la documentación, comunica correcciones y consulta el estado del pago antes de incorporar al padrón.</p>
+      <p class="m-0 max-w-[780px] text-[12px] leading-[1.6] text-[#59677a] max-[700px]:text-[11px]">Revisa la documentación, comunica correcciones y consulta el estado del pago antes de incorporar al padrón.</p>
     </div>
-    <button class="inline-flex items-center gap-2 rounded-[11px] border border-[#e0e6ee] bg-white px-[14px] text-[12px] font-bold text-[#38516e] disabled:opacity-55 max-[440px]:w-full max-[440px]:justify-center box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" type="button" (click)="cargar()" [disabled]="cargando()">↻ <span>Actualizar</span></button>
+    <button class="inline-flex items-center gap-2 rounded-[11px] border border-[#e0e6ee] bg-white px-[14px] text-[12px] font-bold text-[#38516e] disabled:opacity-55 max-[440px]:w-full max-[440px]:justify-center box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" type="button" (click)="cargar()" [disabled]="cargando()">↻ <span>Actualizar</span></button>
   </header>
 
   <div class="flex items-start gap-[11px] rounded-[13px] border border-[#dfe8f5] bg-[#f4f8fd] px-[15px] py-[13px] text-[11px] leading-[1.6] text-[#60718a]">
     <span class="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#e3edfc] font-extrabold text-[#315f9b]">i</span>
     <span>Las verificaciones son automáticas: firma digital RENIEC en la partida, contraste de DNI con la API y análisis documental. El pago se habilita cuando los tres documentos cumplen las comprobaciones.</span>
   </div>
-  @if (aviso()) { <p class="m-0 flex justify-between gap-2 rounded-[11px] border border-[#d4f0df] bg-[#effaf4] px-[13px] py-[11px] text-[11px] leading-[1.5] text-[#17694c]" role="status">{{ aviso() }} <button class="border-0 bg-transparent text-[18px] text-inherit box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" type="button" (click)="aviso.set('')">×</button></p> }
+  @if (aviso()) { <p class="m-0 flex justify-between gap-2 rounded-[11px] border border-[#d4f0df] bg-[#effaf4] px-[13px] py-[11px] text-[11px] leading-[1.5] text-[#17694c]" role="status">{{ aviso() }} <button class="border-0 bg-transparent text-[18px] text-inherit box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" type="button" (click)="aviso.set('')">×</button></p> }
   @if (error()) { <p class="m-0 rounded-[11px] border border-[#f5d7d4] bg-[#fff4f3] px-[13px] py-[11px] text-[11px] leading-[1.5] text-[#aa3d32]" role="alert">{{ error() }}</p> }
 
   <section class="grid min-w-0 gap-[13px]" aria-label="Trámites recientes">
@@ -32,7 +32,7 @@
               <p class="mb-0 mt-[5px] text-[13px] text-[#475569]">DNI {{ solicitud.documentoEstudiante }} · Apoderado: {{ solicitud.nombreApoderado }}</p>
               <small class="text-[13px] text-[#59677a]">{{ solicitud.emailApoderado || solicitud.celularApoderado }} · Solicitud {{ solicitud.creadaAt | uiDatePe:true }}</small>
             </div>
-            <div class="shrink-0 rounded-[10px] bg-[#f7f9fc] px-[11px] py-2 text-right text-[12px] leading-[1.6] text-[#586b83] max-[700px]:hidden">Año {{ solicitud.anioLectivoId }}<br><span class="text-[#8491a2]">Sección #{{ solicitud.seccionId }}</span></div>
+            <div class="shrink-0 rounded-[10px] bg-[#f7f9fc] px-[11px] py-2 text-right text-[12px] leading-[1.6] text-[#586b83] max-[700px]:hidden">Año {{ solicitud.anioLectivoId }}<br><span class="text-[#59677a]">Sección #{{ solicitud.seccionId }}</span></div>
           </div>
           <div class="mt-[17px] grid grid-cols-3 gap-[9px] max-[700px]:grid-cols-1">
             @for (doc of solicitud.documentos; track doc.tipo) {
@@ -50,7 +50,7 @@
                     <small class="mt-1 block text-[13px] text-[#59677a]">Análisis auxiliar: {{ doc.iaValida === null ? 'no disponible' : doc.iaValida ? 'compatible' : 'requiere revisión' }}</small>
                     @if (doc.tipo !== 'RECIBO_SERVICIO') { <small class="mt-1 block text-[13px] text-[#59677a]">Consulta DNI: {{ doc.dniApiCoincide === null ? 'pendiente' : doc.dniApiCoincide ? 'coincide' : 'no coincide' }}</small> }
                     <small class="mt-1 block text-[13px] text-[#59677a]">Firma: {{ firmaLabel(doc.estadoFirma) }}. {{ doc.detalleFirma }}</small>
-                    <button type="button" class="mt-2 rounded-[9px] border border-[#e0e6ee] bg-white px-3 text-[11px] font-bold text-[#3d5676] box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="verDocumento(solicitud, doc)">Obtener acceso al archivo</button>
+                    <button type="button" class="mt-2 rounded-[9px] border border-[#e0e6ee] bg-white px-3 text-[11px] font-bold text-[#3d5676] box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="verDocumento(solicitud, doc)">Obtener acceso al archivo</button>
                     @if (urlsDocumentos()[solicitud.id + ':' + doc.tipo]) { <a class="mt-2 block text-[11px] text-[#245dcc] underline" [href]="urlsDocumentos()[solicitud.id + ':' + doc.tipo]" target="_blank" rel="noopener noreferrer">Abrir documento · acceso temporal</a> }
                   }
                 </div>
@@ -61,8 +61,8 @@
             <span>ID {{ solicitud.id }}</span>
             @if (solicitud.estado !== 'MATRICULADA' && solicitud.estado !== 'RECHAZADA') {
               <div class="flex flex-wrap gap-2 max-[600px]:grid max-[600px]:w-full max-[600px]:grid-cols-1">
-                <button type="button" class="rounded-[9px] border border-[#e0e6ee] bg-white px-3 text-[11px] font-bold text-[#3d5676] max-[600px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]" (click)="abrirObservacion(solicitud)">Solicitar corrección</button>
-                <button type="button" class="rounded-[9px] border border-[#f0dbd7] bg-[#fffafa] px-3 text-[11px] font-bold text-[#ad4639] max-[600px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]" (click)="abrirRechazo(solicitud)">Rechazar solicitud</button>
+                <button type="button" class="rounded-[9px] border border-[#e0e6ee] bg-white px-3 text-[11px] font-bold text-[#3d5676] max-[600px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]" (click)="abrirObservacion(solicitud)">Solicitar corrección</button>
+                <button type="button" class="rounded-[9px] border border-[#f0dbd7] bg-[#fffafa] px-3 text-[11px] font-bold text-[#ad4639] max-[600px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]" (click)="abrirRechazo(solicitud)">Rechazar solicitud</button>
               </div>
             } @else if (solicitud.estado === 'MATRICULADA') {<b class="text-[11px] font-bold text-[#18744e]">Estudiante #{{ solicitud.estudianteId }} · Matrícula #{{ solicitud.matriculaId }}</b>}
           </footer>

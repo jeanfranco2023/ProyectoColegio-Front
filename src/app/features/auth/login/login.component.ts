@@ -53,7 +53,7 @@ import { AuthStore } from '../../../core/state/auth.store';
           </div>
         </div>
 
-        <p class="relative z-10 text-[10px] tracking-wide text-blue-100/45">© 2026 I.E.P. Shuji Kitamura · Todos los derechos reservados</p>
+        <p class="relative z-10 text-[10px] tracking-wide text-blue-100/80">© 2026 I.E.P. Shuji Kitamura · Todos los derechos reservados</p>
       </section>
 
       <section class="flex min-h-screen min-w-0 items-center justify-center px-5 py-10 sm:px-8 lg:px-12">
@@ -68,7 +68,7 @@ import { AuthStore } from '../../../core/state/auth.store';
 
           <div class="w-full min-w-0 rounded-[28px] border border-[#e4eaf2] bg-white p-5 shadow-[0_24px_70px_rgba(23,43,77,0.10)] sm:p-9">
             <div class="mb-8">
-              <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#9a743d]">Acceso seguro</p>
+              <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#76551f]">Acceso seguro</p>
               <h2 class="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[#14213d]">Bienvenido de nuevo</h2>
               <p class="mt-2 text-sm leading-6 text-slate-500">Ingresa tus credenciales para continuar al portal escolar.</p>
             </div>
@@ -100,7 +100,7 @@ import { AuthStore } from '../../../core/state/auth.store';
 
               <div class="flex flex-wrap items-center justify-between gap-x-3.5 gap-y-2 py-[3px] pb-3.5">
                 <mat-checkbox [(ngModel)]="rememberMe" name="rememberMe" color="primary" class="text-xs text-[#34445d]">Recordar este equipo</mat-checkbox>
-                <button type="button" (click)="openPasswordHelp(passwordHelp)" class="min-h-10 cursor-pointer border-0 bg-transparent font-[inherit] text-xs font-semibold text-[#184fae] hover:text-[#123d89] hover:underline">¿Olvidaste tu clave?</button>
+                <button type="button" (click)="openPasswordHelp(passwordHelp)" class="min-h-11 cursor-pointer border-0 bg-transparent font-[inherit] text-xs font-semibold text-[#184fae] hover:text-[#123d89] hover:underline">¿Olvidaste tu clave?</button>
               </div>
 
               <button mat-flat-button color="primary" type="submit" [disabled]="store.isLoading() || !username || !password" [attr.aria-busy]="store.isLoading()" class="!h-12 !w-full !rounded-xl !text-sm !font-semibold !shadow-md">
@@ -121,7 +121,7 @@ import { AuthStore } from '../../../core/state/auth.store';
             </div>
           </div>
 
-          <p class="mt-6 text-center text-[10px] tracking-wide text-slate-400">© 2026 I.E.P. Shuji Kitamura · Excelencia, disciplina y saber</p>
+          <p class="mt-6 text-center text-[10px] tracking-wide text-[#59677a]">© 2026 I.E.P. Shuji Kitamura · Excelencia, disciplina y saber</p>
         </div>
       </section>
 

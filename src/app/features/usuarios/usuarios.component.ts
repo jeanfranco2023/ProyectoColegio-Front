@@ -28,7 +28,7 @@ template: `
         <div class="flex items-center gap-3">
           @if (store.hasRole('DIRECCION')) { <button mat-flat-button color="primary"
             (click)="abrirModalCrear()"
-            class="!h-11 !rounded-xl !px-4 !text-xs !font-semibold sm:!text-sm max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] max-[639px]:!leading-4 min-[640px]:!leading-5"
+            class="!h-11 !rounded-xl !px-4 !text-xs !font-semibold sm:!text-sm max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] max-[639px]:!leading-4 min-[640px]:!leading-5"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -45,7 +45,7 @@ template: `
         <div class="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
           <label class="text-xs !text-[11px] font-semibold text-[#59677a]">Filtrar por Rol:</label>
           <select
-            [(ngModel)]="filtroRol"
+            [(ngModel)]="filtroRol" aria-label="Filtrar por Rol"
             (change)="cargarUsuarios()"
             class="px-3 py-1.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] text-[#14213d] text-xs !text-[11px] focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full py-[10px] !border-[#d9e1ec] !bg-[#f5f7fb] !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !min-h-11 !py-[6px] !px-3 !border-[#e5eaf2]"
           >
@@ -59,7 +59,7 @@ template: `
           </select>
           <button
             (click)="cargarUsuarios()"
-            class="px-3 py-1.5 rounded-xl bg-[#f1f4f9] hover:bg-slate-700 text-[#34445d] text-xs !text-[11px] font-semibold cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+            class="px-3 py-1.5 rounded-xl bg-[#f1f4f9] hover:bg-slate-700 text-[#34445d] text-xs !text-[11px] font-semibold cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
           >
             Actualizar BD
           </button>
@@ -123,8 +123,8 @@ template: `
                     <td class="px-5 py-3.5 text-right" data-label="Acción">
                       <button
                         (click)="alternarEstado(user)"
-                        [class]="user.activo ? 'text-red-400 hover:text-red-300' : 'text-emerald-400 hover:text-emerald-300'"
-                        class="px-2.5 py-1 rounded-lg bg-[#f1f4f9] hover:bg-slate-700 transition font-semibold cursor-pointer text-xs !text-[11px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                        [class]="user.activo ? 'text-red-700 hover:text-red-800' : 'text-emerald-700 hover:text-emerald-800'"
+                        class="px-2.5 py-1 rounded-lg bg-[#f1f4f9] hover:bg-slate-700 transition font-semibold cursor-pointer text-xs !text-[11px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
                       >
                         {{ user.activo ? 'Suspender' : 'Activar' }}
                       </button>
@@ -179,7 +179,7 @@ template: `
         </mat-dialog-content>
         <mat-dialog-actions align="end" class="!gap-2 !px-6 !pb-6">
           <button mat-button type="button" mat-dialog-close>Cancelar</button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="creando() || !nuevoUsername.trim() || !nuevoEmail.trim() || nuevoPassword.length < 6" class="box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ creando() ? 'Creando…' : 'Crear cuenta' }}</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="creando() || !nuevoUsername.trim() || !nuevoEmail.trim() || nuevoPassword.length < 6" class="box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ creando() ? 'Creando…' : 'Crear cuenta' }}</button>
         </mat-dialog-actions>
         </form>
       </ng-template>
@@ -193,7 +193,7 @@ template: `
         </mat-dialog-content>
         <mat-dialog-actions align="end" class="!gap-2 !px-6 !pb-6">
           <button mat-button type="button" mat-dialog-close [disabled]="actualizandoEstado()">Cancelar</button>
-          <button mat-flat-button color="primary" type="button" (click)="confirmarCambioEstado()" [disabled]="actualizandoEstado()" class="box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ actualizandoEstado() ? 'Actualizando…' : 'Confirmar' }}</button>
+          <button mat-flat-button color="primary" type="button" (click)="confirmarCambioEstado()" [disabled]="actualizandoEstado()" class="box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ actualizandoEstado() ? 'Actualizando…' : 'Confirmar' }}</button>
         </mat-dialog-actions>
       </ng-template>
     </div>
