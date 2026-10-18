@@ -28,7 +28,7 @@ template: `
         <div class="flex items-center gap-3">
           @if (store.hasRole('DIRECCION')) { <button mat-flat-button color="primary"
             (click)="abrirModalCrear()"
-            class="!h-11 !rounded-xl !px-4 !text-xs !font-semibold sm:!text-sm max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] max-[639px]:!leading-4 min-[640px]:!leading-5"
+            class="!h-11 !rounded-xl !px-4 !text-xs !font-semibold sm:!text-sm max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] max-[639px]:!leading-4 min-[640px]:!leading-5 lg:!min-w-max lg:shrink-0 lg:whitespace-nowrap"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
