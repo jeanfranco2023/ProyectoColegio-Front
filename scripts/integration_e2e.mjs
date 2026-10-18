@@ -65,7 +65,7 @@ try {
   await page.type('#password', password);
   await page.click('button[type="submit"]');
   await page.waitForFunction(() => location.pathname === '/admin/dashboard');
-  await waitForText('Bienvenido');
+  await waitForText('Resumen institucional');
   token = await page.evaluate(() => localStorage.getItem('accessToken'));
   assert.ok(token, 'The login did not persist the access token');
   console.log('OK login -> dashboard');

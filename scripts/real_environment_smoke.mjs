@@ -11,7 +11,7 @@ for (const url of [frontend, backend]) {
 }
 
 const cases = [
-  ['dashboard', 'Bienvenido'],
+  ['dashboard', 'Resumen institucional'],
   ['matriculas', 'Padrón de Estudiantes & Matrículas'],
   ['calificaciones', 'Matriz de Calificaciones CNEB'],
   ['asistencia', 'Control de Asistencia & Biometría'],
