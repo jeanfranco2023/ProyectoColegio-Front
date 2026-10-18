@@ -28,17 +28,17 @@ export interface AlumnoAsistenciaItem {
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t-[3px] border-t-[#c49a58]/50 pt-3">
         <div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight !text-[#172b4d]">Control de Asistencia & Biometría</h2>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight !text-[#172b4d] tracking-[-.025em]">Control de Asistencia & Biometría</h2>
           <p class="text-sm !text-[#59677a] mt-1">
             Consulta de marcas diarias y conciliación con molinetes biométricos de la base de datos.
           </p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <button (click)="abrirDialogoRegistro()" class="px-4 py-2.5 rounded-xl !bg-[#1d4ed8] hover:!bg-[#1e40af] !text-white font-semibold text-xs !text-[11px] sm:text-sm cursor-pointer max-[640px]:w-full">Registrar asistencia</button>
-          <button (click)="abrirDialogoBiometrico()" class="px-4 py-2.5 rounded-xl !bg-[#334155] hover:!bg-[#1f2937] !text-white font-semibold text-xs !text-[11px] sm:text-sm cursor-pointer max-[640px]:w-full">Importar marca</button>
+          <button (click)="abrirDialogoRegistro()" class="px-4 py-2.5 rounded-xl !bg-[#1d4ed8] hover:!bg-[#1e40af] !text-white font-semibold text-xs !text-[11px] sm:text-sm cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">Registrar asistencia</button>
+          <button (click)="abrirDialogoBiometrico()" class="px-4 py-2.5 rounded-xl !bg-[#334155] hover:!bg-[#1f2937] !text-white font-semibold text-xs !text-[11px] sm:text-sm cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">Importar marca</button>
           <button
             (click)="ejecutarConciliacion()"
-            class="px-4 py-2.5 rounded-xl border !border-[#874300] !bg-[#9a4d00] hover:!bg-[#874300] !text-white font-semibold text-xs !text-[11px] sm:text-sm shadow-lg shadow-amber-600/30 transition flex items-center gap-2 cursor-pointer max-[640px]:w-full"
+            class="px-4 py-2.5 rounded-xl border !border-[#874300] !bg-[#9a4d00] hover:!bg-[#874300] !text-white font-semibold text-xs !text-[11px] sm:text-sm shadow-lg shadow-amber-600/30 transition flex items-center gap-2 cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -47,42 +47,42 @@ export interface AlumnoAsistenciaItem {
           </button>
         </div>
       </div>
-      @if (error()) { <p class="text-red-400 text-sm" role="alert">{{ error() }}</p> }
-      @if (mensaje()) { <p class="text-emerald-400 text-sm" role="status">{{ mensaje() }}</p> }
+      @if (error()) { <p class="text-[#b91c1c] text-sm" role="alert">{{ error() }}</p> }
+      @if (mensaje()) { <p class="text-[#047857] text-sm" role="status">{{ mensaje() }}</p> }
 
-      <dialog #registroDialog class="school-native-dialog" aria-labelledby="registro-dialog-title">
-        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="registro-dialog-title">Registrar asistencia</h3><p>Registra una marca manual para la matrícula seleccionada.</p></div><button type="button" class="school-dialog-cancel !h-11 !w-11 !min-w-11 !min-h-11 !shrink-0 !p-0 grid place-items-center" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
-          <form (ngSubmit)="registrarAsistencia()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
-            @if (error()) { <p class="school-dialog-error" role="alert">{{ error() }}</p> }
+      <dialog #registroDialog class="box-border w-[min(680px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden border border-[#e4eaf3] rounded-[22px] bg-white text-[#14213d] p-0 shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px] max-[639px]:w-[calc(100vw-16px)] max-[639px]:max-w-[calc(100vw-16px)] max-[639px]:max-h-[calc(100dvh-16px)] max-[639px]:rounded-[18px]" aria-labelledby="registro-dialog-title">
+        <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col"><header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4"><div><h3 id="registro-dialog-title" class="tracking-[-.025em]">Registrar asistencia</h3><p>Registra una marca manual para la matrícula seleccionada.</p></div><button type="button" class="min-h-11 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] !h-11 !w-11 !min-w-11 !min-h-11 !shrink-0 !p-0 grid place-items-center" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
+          <form (ngSubmit)="registrarAsistencia()" class="flex min-h-0 flex-[1_1_auto] flex-col"><div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
+            @if (error()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-xs text-[#b91c1c]" role="alert">{{ error() }}</p> }
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <label class="school-dialog-field">Matrícula ID *<input type="number" [(ngModel)]="matriculaId" name="matriculaId" min="1" required></label>
-              <label class="school-dialog-field">Fecha *<input type="date" [(ngModel)]="fechaSesionNueva" name="fechaSesion" required></label>
-              <label class="school-dialog-field">Hora *<input type="time" [(ngModel)]="horaRegistro" name="horaRegistro" required></label>
-              <label class="school-dialog-field">Estado<select [(ngModel)]="estadoRegistro" name="estado"><option value="PRESENTE">Presente</option><option value="TARDANZA">Tardanza</option><option value="FALTA_INJUSTIFICADA">Falta injustificada</option></select></label>
+              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Matrícula ID *<input type="number" [(ngModel)]="matriculaId" name="matriculaId" min="1" required class="min-w-0 !min-h-[44px] max-w-full border px-3 py-2 !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"></label>
+              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Fecha *<input type="date" [(ngModel)]="fechaSesionNueva" name="fechaSesion" required class="min-w-0 !min-h-[44px] max-w-full border px-3 py-2 !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"></label>
+              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Hora *<input type="time" [(ngModel)]="horaRegistro" name="horaRegistro" required class="min-w-0 !min-h-[44px] max-w-full border px-3 py-2 !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"></label>
+              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Estado<select [(ngModel)]="estadoRegistro" name="estado" class="min-w-0 !min-h-[44px] max-w-full border px-3 py-2 !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"><option value="PRESENTE">Presente</option><option value="TARDANZA">Tardanza</option><option value="FALTA_INJUSTIFICADA">Falta injustificada</option></select></label>
             </div>
-          </div><footer class="school-dialog-footer"><button type="button" class="school-dialog-cancel max-[640px]:w-full" (click)="cerrarDialogos()">Cancelar</button><button type="submit" [disabled]="operando()" class="school-dialog-submit max-[640px]:w-full">{{ operando() ? 'Guardando…' : 'Guardar asistencia' }}</button></footer></form>
+          </div><footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]"><button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogos()">Cancelar</button><button type="submit" [disabled]="operando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ operando() ? 'Guardando…' : 'Guardar asistencia' }}</button></footer></form>
         </div>
       </dialog>
 
-      <dialog #biometricoDialog class="school-native-dialog" aria-labelledby="biometrico-dialog-title">
-        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="biometrico-dialog-title">Importar marca biométrica</h3><p>Registra una lectura de molinete asociada a un DNI.</p></div><button type="button" class="school-dialog-cancel !h-11 !w-11 !min-w-11 !min-h-11 !shrink-0 !p-0 grid place-items-center" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
-          <form (ngSubmit)="importarMarca()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
-            @if (error()) { <p class="school-dialog-error" role="alert">{{ error() }}</p> }
+      <dialog #biometricoDialog class="box-border w-[min(680px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden border border-[#e4eaf3] rounded-[22px] bg-white text-[#14213d] p-0 shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px] max-[639px]:w-[calc(100vw-16px)] max-[639px]:max-w-[calc(100vw-16px)] max-[639px]:max-h-[calc(100dvh-16px)] max-[639px]:rounded-[18px]" aria-labelledby="biometrico-dialog-title">
+        <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col"><header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4"><div><h3 id="biometrico-dialog-title" class="tracking-[-.025em]">Importar marca biométrica</h3><p>Registra una lectura de molinete asociada a un DNI.</p></div><button type="button" class="min-h-11 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] !h-11 !w-11 !min-w-11 !min-h-11 !shrink-0 !p-0 grid place-items-center" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
+          <form (ngSubmit)="importarMarca()" class="flex min-h-0 flex-[1_1_auto] flex-col"><div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
+            @if (error()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-xs text-[#b91c1c]" role="alert">{{ error() }}</p> }
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <label class="school-dialog-field">DNI *<input [(ngModel)]="dniBiometrico" name="dniBiometrico" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" required placeholder="8 dígitos"></label>
-              <label class="school-dialog-field">Fecha y hora *<input type="datetime-local" [(ngModel)]="fechaHoraBiometrico" name="fechaHoraBiometrico" required></label>
-              <label class="school-dialog-field sm:col-span-2">Código del dispositivo *<input [(ngModel)]="dispositivoCodigo" name="dispositivoCodigo" maxlength="30" required></label>
+              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">DNI *<input [(ngModel)]="dniBiometrico" name="dniBiometrico" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" required placeholder="8 dígitos" class="min-w-0 !min-h-[44px] max-w-full border px-3 py-2 !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"></label>
+              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Fecha y hora *<input type="datetime-local" [(ngModel)]="fechaHoraBiometrico" name="fechaHoraBiometrico" required class="min-w-0 !min-h-[44px] max-w-full border px-3 py-2 !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"></label>
+              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full sm:col-span-2">Código del dispositivo *<input [(ngModel)]="dispositivoCodigo" name="dispositivoCodigo" maxlength="30" required class="min-w-0 !min-h-[44px] max-w-full border px-3 py-2 !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"></label>
             </div>
-          </div><footer class="school-dialog-footer"><button type="button" class="school-dialog-cancel max-[640px]:w-full" (click)="cerrarDialogos()">Cancelar</button><button type="submit" [disabled]="operando()" class="school-dialog-submit max-[640px]:w-full">{{ operando() ? 'Importando…' : 'Registrar marca' }}</button></footer></form>
+          </div><footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]"><button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogos()">Cancelar</button><button type="submit" [disabled]="operando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ operando() ? 'Importando…' : 'Registrar marca' }}</button></footer></form>
         </div>
       </dialog>
 
-      <dialog #justificacionDialog class="school-native-dialog" aria-labelledby="justificacion-dialog-title">
-        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="justificacion-dialog-title">Justificar inasistencia</h3><p>La justificación quedará asociada a la asistencia seleccionada.</p></div><button type="button" class="school-dialog-cancel !h-11 !w-11 !min-w-11 !min-h-11 !shrink-0 !p-0 grid place-items-center" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
-          <form (ngSubmit)="justificarSeleccionada()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
-            @if (error()) { <p class="school-dialog-error" role="alert">{{ error() }}</p> }
-            <label class="school-dialog-field">Motivo de justificación *<textarea [(ngModel)]="motivoJustificacion" name="motivoJustificacion" required maxlength="4000" rows="4" placeholder="Describe brevemente el motivo"></textarea></label>
-          </div><footer class="school-dialog-footer"><button type="button" class="school-dialog-cancel max-[640px]:w-full" (click)="cerrarDialogos()">Cancelar</button><button type="submit" [disabled]="operando()" class="school-dialog-submit max-[640px]:w-full">{{ operando() ? 'Guardando…' : 'Guardar justificación' }}</button></footer></form>
+      <dialog #justificacionDialog class="box-border w-[min(680px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden border border-[#e4eaf3] rounded-[22px] bg-white text-[#14213d] p-0 shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px] max-[639px]:w-[calc(100vw-16px)] max-[639px]:max-w-[calc(100vw-16px)] max-[639px]:max-h-[calc(100dvh-16px)] max-[639px]:rounded-[18px]" aria-labelledby="justificacion-dialog-title">
+        <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col"><header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4"><div><h3 id="justificacion-dialog-title" class="tracking-[-.025em]">Justificar inasistencia</h3><p>La justificación quedará asociada a la asistencia seleccionada.</p></div><button type="button" class="min-h-11 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] !h-11 !w-11 !min-w-11 !min-h-11 !shrink-0 !p-0 grid place-items-center" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
+          <form (ngSubmit)="justificarSeleccionada()" class="flex min-h-0 flex-[1_1_auto] flex-col"><div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
+            @if (error()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-xs text-[#b91c1c]" role="alert">{{ error() }}</p> }
+            <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Motivo de justificación *<textarea [(ngModel)]="motivoJustificacion" name="motivoJustificacion" required maxlength="4000" rows="4" placeholder="Describe brevemente el motivo" class="min-w-0 max-w-full border px-3 py-2 !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base py-[10px] resize-y !min-h-[110px]"></textarea></label>
+          </div><footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]"><button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogos()">Cancelar</button><button type="submit" [disabled]="operando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ operando() ? 'Guardando…' : 'Guardar justificación' }}</button></footer></form>
         </div>
       </dialog>
 
@@ -94,16 +94,16 @@ export interface AlumnoAsistenciaItem {
             type="date"
             [(ngModel)]="fechaSeleccionada"
             (change)="cargarAsistencia()"
-            class="w-full px-3 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] text-xs !text-[11px] focus:outline-none focus:border-blue-500"
+            class="w-full px-3 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] text-xs !text-[11px] focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-2 !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
           />
         </div>
 
-        <div><label class="block text-xs !text-[11px] font-semibold !text-[#59677a] mb-1">Año lectivo para conciliación</label><select [(ngModel)]="anioId" [disabled]="!anios().length" class="w-full px-3 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] text-xs !text-[11px]">@if (!anios().length) { <option [ngValue]="0">Sin años lectivos disponibles</option> } @for (anio of anios(); track anio.id) { <option [ngValue]="anio.id">{{ anio.anio }}</option> }</select></div>
+        <div><label class="block text-xs !text-[11px] font-semibold !text-[#59677a] mb-1">Año lectivo para conciliación</label><select [(ngModel)]="anioId" [disabled]="!anios().length" class="w-full px-3 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] text-xs !text-[11px] min-w-0 !min-h-[44px] max-w-full border px-3 py-2 !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base">@if (!anios().length) { <option [ngValue]="0">Sin años lectivos disponibles</option> } @for (anio of anios(); track anio.id) { <option [ngValue]="anio.id">{{ anio.anio }}</option> }</select></div>
 
         <div class="flex items-end">
           <button
             (click)="cargarAsistencia()"
-            class="w-full py-2 px-3 rounded-xl !bg-[#f1f4f9] hover:!bg-[#f1f4f9] !text-[#34445d] text-xs !text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 max-[640px]:w-full"
+            class="w-full py-2 px-3 rounded-xl !bg-[#f1f4f9] hover:!bg-[#f1f4f9] !text-[#34445d] text-xs !text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
           >
             <span>Actualizar de la BD</span>
           </button>
@@ -131,18 +131,18 @@ export interface AlumnoAsistenciaItem {
       </div>
 
       <!-- Tabs Navigation -->
-      <div class="flex items-center gap-2 border-b border-slate-800">
+      <div class="flex items-center gap-2 border-b border-[#e5eaf2]">
         <button
           (click)="tabActiva.set('AULA')"
           [class]="tabActiva() === 'AULA' ? 'border-blue-500 !text-[#184fae] font-bold' : 'border-transparent !text-[#59677a] hover:!text-[#172b4d]'"
-          class="px-4 py-2.5 border-b-2 text-xs !text-[11px] transition cursor-pointer max-[640px]:w-full"
+          class="px-4 py-2.5 border-b-2 text-xs !text-[11px] transition cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
         >
           Pase de Lista de Aula
         </button>
         <button
           (click)="tabActiva.set('CONCILIACION')"
           [class]="tabActiva() === 'CONCILIACION' ? 'border-amber-500 !text-[#805300] font-bold' : 'border-transparent !text-[#59677a] hover:!text-[#172b4d]'"
-          class="px-4 py-2.5 border-b-2 text-xs !text-[11px] transition cursor-pointer flex items-center gap-2 max-[640px]:w-full"
+          class="px-4 py-2.5 border-b-2 text-xs !text-[11px] transition cursor-pointer flex items-center gap-2 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
         >
           <span>Alertas de Conciliación Biométrica</span>
           <span class="px-1.5 py-0.2 rounded-full text-[10px] !text-[11px] !text-[#704500] !bg-[#fff0c7] border !border-[#edca83]">
@@ -154,8 +154,8 @@ export interface AlumnoAsistenciaItem {
       <!-- Tab Content: Pase de Lista -->
       @if (tabActiva() === 'AULA') {
         <div class="rounded-2xl !bg-white border !border-[#e1e8f1] overflow-hidden shadow-sm">
-          <div class="overflow-x-auto ui-attendance-table-scroll">
-            <table class="w-full min-w-[760px] text-left text-xs !text-[11px] ui-mobile-table-cards">
+          <div class="overflow-x-auto" data-attendance-table-scroll="">
+            <table class="w-full min-w-[760px] text-left text-xs !text-[11px] [&_thead]:!bg-[#f7f9fc] [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-[#f8faff]" data-mobile-table-cards="">
               <thead class="!bg-white border-b !border-[#e1e8f1] !text-[#59677a] uppercase tracking-wider font-semibold">
                 <tr>
                   <th class="px-5 py-3.5">Estudiante</th>
@@ -165,7 +165,7 @@ export interface AlumnoAsistenciaItem {
                   <th class="px-5 py-3.5 text-center">Acciones</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-800/60 !text-[#34445d]">
+              <tbody class="divide-y divide-[#edf0f5] !text-[#34445d]">
                 @if (cargando()) {
                   <tr>
                     <td colspan="5" class="text-center py-10 !text-[#59677a]">
@@ -175,7 +175,7 @@ export interface AlumnoAsistenciaItem {
                   </tr>
                 } @else {
                   @for (item of alumnos(); track item.id) {
-                    <tr class="hover:bg-slate-800/40 transition">
+                    <tr class="!bg-[#f1f4f9] hover:bg-[#f1f4f9] transition">
                       <td class="px-5 py-3.5 font-bold !text-[#172b4d]" data-label="Estudiante">{{ item.estudiante }}</td>
                       <td class="px-5 py-3.5 font-mono !text-[#59677a]" data-label="Fecha">{{ item.fecha | uiDatePe }}</td>
                       <td class="px-5 py-3.5 font-mono !text-[#146c45]" data-label="Molinete Puerta">{{ item.horaMarcacionPuerta || '-' }}</td>
@@ -189,7 +189,7 @@ export interface AlumnoAsistenciaItem {
                       </td>
                       <td class="px-5 py-3.5 text-center" data-label="Acciones">
                         @if (item.estado === 'FALTA_INJUSTIFICADA') {
-                          <button (click)="abrirDialogoJustificacion(item.id)" class="text-blue-600 font-semibold max-[640px]:w-full">Justificar</button>
+                          <button (click)="abrirDialogoJustificacion(item.id)" class="text-blue-600 font-semibold max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[40px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">Justificar</button>
                         }
                       </td>
                     </tr>
@@ -213,8 +213,8 @@ export interface AlumnoAsistenciaItem {
       @if (tabActiva() === 'CONCILIACION') {
         <div class="space-y-4">
           <div class="rounded-2xl !bg-white border !border-[#e1e8f1] overflow-hidden shadow-sm">
-            <div class="overflow-x-auto ui-attendance-table-scroll">
-            <table class="w-full min-w-[760px] text-left text-xs !text-[11px] ui-mobile-table-cards">
+            <div class="overflow-x-auto" data-attendance-table-scroll="">
+            <table class="w-full min-w-[760px] text-left text-xs !text-[11px] [&_thead]:!bg-[#f7f9fc] [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-[#f8faff]" data-mobile-table-cards="">
               <thead class="!bg-white border-b !border-[#e1e8f1] !text-[#59677a] uppercase tracking-wider font-semibold">
                 <tr>
                   <th class="px-5 py-3.5">Estudiante</th>
@@ -222,9 +222,9 @@ export interface AlumnoAsistenciaItem {
                   <th class="px-5 py-3.5">Resultado</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-800/60 !text-[#34445d]">
+              <tbody class="divide-y divide-[#edf0f5] !text-[#34445d]">
                 @for (d of discrepancias(); track $index) {
-                  <tr class="hover:bg-slate-800/40 transition">
+                  <tr class="!bg-[#f1f4f9] hover:bg-[#f1f4f9] transition">
                     <td class="px-5 py-3.5 font-bold !text-[#172b4d]" data-label="Estudiante">Estudiante #{{ d.estudianteId }}</td>
                     <td class="px-5 py-3.5 font-mono !text-[#59677a]" data-label="Fecha">{{ d.fecha | uiDatePe }}</td>
                     <td class="px-5 py-3.5" data-label="Resultado">
