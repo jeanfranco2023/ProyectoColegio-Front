@@ -62,6 +62,8 @@ async function waitForDialogClose() {
 }
 async function setInput(selector, value) {
   await page.$eval(selector, (input, value) => {
+    input.value = '';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
     input.value = value;
     input.dispatchEvent(new Event('input', { bubbles: true }));
     input.dispatchEvent(new Event('change', { bubbles: true }));
@@ -200,17 +202,27 @@ try {
   await page.waitForFunction(() => document.body.innerText.includes('Generar Cronograma en BD'));
   await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.innerText.includes('Generar Cronograma en BD'))?.click());
   await page.waitForSelector('input[name="matricula"]');
-  await page.waitForFunction(() => document.querySelectorAll('select[name="conceptoMatricula"] option').length > 1 && document.querySelectorAll('select[name="conceptoPension"] option').length > 1);
+  await page.waitForFunction(() => {
+    const hasConcept = selector => [...document.querySelectorAll(`${selector} option`)]
+      .some(option => !option.textContent.includes('Sin conceptos disponibles'));
+    return hasConcept('select[name="conceptoMatricula"]') && hasConcept('select[name="conceptoPension"]');
+  });
   await setInput('input[name="matricula"]', String(matricula.id));
   await setInput('input[name="primerVencimiento"]', firstDueDate);
+  await page.waitForFunction((id, date) =>
+    document.querySelector('input[name="matricula"]')?.value === String(id)
+    && document.querySelector('input[name="primerVencimiento"]')?.value === date,
+  {}, matricula.id, firstDueDate);
   const scheduleResponse = page.waitForResponse(response => response.url().endsWith('/tesoreria/obligaciones') && response.request().method() === 'POST');
-  await page.click('form button[type="submit"]');
+  await page.click('dialog[aria-labelledby="cronograma-dialog-title"] form button[type="submit"]');
   assert.equal((await scheduleResponse).status(), 200, 'The payment schedule request failed');
-  await waitForDialogClose();
+  await page.waitForFunction(() => !document.querySelector('dialog[aria-labelledby="cronograma-dialog-title"]')?.open);
   let obligations = await api('GET', `/tesoreria/obligaciones?matriculaId=${matricula.id}`);
-  assert.ok(obligations.length > 0, `El cronograma no generó obligaciones para la matrícula #${matricula.id}`);
-  await page.waitForFunction((id, count) => [...document.querySelectorAll('table tbody tr')].filter(row => row.innerText.includes(`Matrícula #${id}`)).length >= count, {}, matricula.id, obligations.length);
-  console.log(`OK payment schedule -> ${obligations.length} persisted obligations`);
+  assert.equal(obligations.length, 11, `El cronograma debe generar 11 obligaciones para la matrícula #${matricula.id}`);
+  await page.waitForFunction(id => [...document.querySelectorAll('table tbody tr')]
+    .filter(row => row.innerText.includes(`Matrícula #${id}`)).length === 11,
+  {}, matricula.id);
+  console.log(`OK payment schedule -> 11 obligations for matrícula #${matricula.id}`);
 
   const openedPayment = await page.evaluate(id => {
     const row = [...document.querySelectorAll('table tbody tr')].find(item =>
@@ -250,6 +262,8 @@ try {
   console.error('Browser API failures:', browserApiFailures);
   console.error('Browser exceptions:', pageErrors);
   console.error('Visible page:', (await page.evaluate(() => document.body.innerText)).slice(0, 1500));
+  console.error('Open dialog text:', await page.$$eval('dialog[open]', dialogs => dialogs.map(dialog => dialog.innerText).join('\n---\n')).catch(() => '(sin diálogos abiertos)'));
+  console.error('Visible table rows:', await page.$$eval('table tbody tr', rows => rows.map(row => row.innerText).join('\n---\n')).catch(() => '(sin filas visibles)'));
   console.error('CDK overlay text:', await page.$eval('.cdk-overlay-container', element => element.innerText).catch(() => '(sin .cdk-overlay-container)'));
   try {
     await page.screenshot({ path: String.raw`C:\Users\FABRIZIO\.codex\visualizations\2026\10\15\01a13cfb-206e-7d80-9d7f-7f8d7f4d1009\e2e-fallo.png`, fullPage: true });
