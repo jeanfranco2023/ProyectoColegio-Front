@@ -15,7 +15,7 @@ template: `
     <div class="max-w-4xl min-w-0 space-y-8 font-inter text-[#172b4d] [&_button]:min-h-11 [&_input]:min-h-11 [&_:focus-visible]:outline-[3px] [&_:focus-visible]:outline-[#2864c5] [&_:focus-visible]:outline-offset-[3px] [&_.grid>div]:min-w-0 [&_.grid>article]:min-w-0">
       <!-- Header -->
       <div class="border-t-[3px] border-[#c49a58]/50 pt-3">
-        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Mi Perfil Institucional</h2>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#14213d]">Mi Perfil Institucional</h2>
         <p class="text-sm text-[#59677a] mt-1">
           Información de la cuenta de usuario, credenciales de acceso y roles autorizados.
         </p>
@@ -23,19 +23,19 @@ template: `
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- User Info Card -->
-        <div class="md:col-span-1 p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-5 text-center">
+        <div class="md:col-span-1 p-6 rounded-2xl bg-white border border-[#e5eaf2] space-y-5 text-center">
           <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-blue-700 to-indigo-500 p-0.5 shadow-xl flex items-center justify-center">
-            <div class="w-full h-full bg-slate-900 rounded-[22px] flex items-center justify-center font-black text-2xl text-blue-400">
+            <div class="w-full h-full bg-white rounded-[22px] flex items-center justify-center font-black text-2xl text-[#2563eb]">
               {{ (store.user()?.username || 'U').substring(0, 2) | uppercase }}
             </div>
           </div>
 
           <div>
-            <h3 class="text-lg font-bold text-white">{{ store.user()?.username }}</h3>
+            <h3 class="text-lg font-bold text-[#172b4d]">{{ store.user()?.username }}</h3>
             <p class="text-xs !text-[11px] text-[#59677a] font-mono">{{ store.user()?.email }}</p>
           </div>
 
-          <div class="pt-4 border-t border-slate-800 text-left space-y-2">
+          <div class="pt-4 border-t border-[#e5eaf2] text-left space-y-2">
             <span class="text-[11px] font-bold uppercase text-[#59677a] tracking-wider">Roles Asignados</span>
             <div class="flex flex-wrap gap-1.5">
               @for (rol of store.roles(); track rol) {
@@ -48,9 +48,9 @@ template: `
         </div>
 
         <!-- Security / Password Change -->
-        <div class="md:col-span-2 p-6 sm:p-8 rounded-2xl bg-slate-900 border border-slate-800 space-y-6">
+        <div class="md:col-span-2 p-6 sm:p-8 rounded-2xl bg-white border border-[#e5eaf2] space-y-6">
           <div>
-            <h3 class="text-base font-bold text-white">Seguridad de la Cuenta</h3>
+            <h3 class="text-base font-bold text-[#172b4d]">Seguridad de la Cuenta</h3>
             <p class="text-xs !text-[11px] text-[#59677a] mt-0.5">
               Actualice periódicamente su contraseña para preservar la integridad de los datos CNEB.
             </p>
@@ -68,18 +68,18 @@ template: `
             </div>
           }
 
-          <button mat-flat-button color="primary" type="button" (click)="abrirCambioPassword()" class="!rounded-xl !px-5 !text-xs !font-semibold max-[640px]:w-full">Cambiar contraseña</button>
+          <button mat-flat-button color="primary" type="button" (click)="abrirCambioPassword()" class="!rounded-xl !px-5 !text-xs !font-semibold max-[640px]:w-full !h-10 !min-h-10">Cambiar contraseña</button>
         </div>
       </div>
 
-      <dialog #passwordDialog class="school-native-dialog !w-[min(520px,calc(100vw_-_24px))] !max-w-[calc(100vw_-_24px)] !max-h-[calc(100dvh_-_24px)] !overflow-auto" aria-labelledby="password-dialog-title">
-        <div class="school-dialog-shell"><header class="school-dialog-header"><div><h3 id="password-dialog-title">Cambiar contraseña</h3><p>Usa una clave nueva y confirma que ambas coincidan.</p></div><button type="button" class="school-dialog-cancel !grid !h-11 !w-11 !min-h-11 !min-w-11 !flex-none !place-items-center !p-0" (click)="cerrarCambioPassword()" aria-label="Cerrar">✕</button></header>
-          <form (ngSubmit)="cambiarPassword()" class="school-dialog-form"><div class="school-dialog-body space-y-4">
-            @if (mensajeError()) { <p class="school-dialog-error" role="alert">{{ mensajeError() }}</p> }
-            <label class="school-dialog-field">Contraseña actual<input type="password" [(ngModel)]="passwordActual" name="passwordActual" required autocomplete="current-password"></label>
-            <label class="school-dialog-field">Nueva contraseña<input type="password" [(ngModel)]="passwordNuevo" name="passwordNuevo" minlength="6" required autocomplete="new-password" placeholder="Mínimo 6 caracteres"></label>
-            <label class="school-dialog-field">Confirmar nueva contraseña<input type="password" [(ngModel)]="confirmarPassword" name="confirmarPassword" minlength="6" required autocomplete="new-password"></label>
-          </div><footer class="school-dialog-footer"><button type="button" class="school-dialog-cancel max-[640px]:w-full" (click)="cerrarCambioPassword()">Cancelar</button><button type="submit" [disabled]="guardando() || !passwordActual || passwordNuevo.length < 6 || passwordNuevo !== confirmarPassword" class="school-dialog-submit max-[640px]:w-full">{{ guardando() ? 'Actualizando…' : 'Actualizar contraseña' }}</button></footer></form>
+      <dialog #passwordDialog class="box-border !w-[min(520px,calc(100vw_-_24px))] !max-w-[calc(100vw_-_24px)] !max-h-[calc(100dvh_-_24px)] overflow-auto border border-[#e4eaf3] rounded-[22px] bg-white text-[#14213d] p-0 shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px]" aria-labelledby="password-dialog-title">
+        <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col"><header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 max-[639px]:p-4"><div><h3 id="password-dialog-title" class="m-0 text-lg font-[750] text-[#14213d] tracking-[-.025em]">Cambiar contraseña</h3><p class="mb-0 mt-1 text-xs leading-[1.5] text-[#64748b]">Usa una clave nueva y confirma que ambas coincidan.</p></div><button type="button" class="grid h-11 w-11 min-h-11 min-w-11 flex-none place-items-center rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] p-0 text-[#334155] font-semibold" (click)="cerrarCambioPassword()" aria-label="Cerrar">✕</button></header>
+          <form (ngSubmit)="cambiarPassword()" class="flex min-h-0 flex-[1_1_auto] flex-col"><div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
+            @if (mensajeError()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-xs text-[#b91c1c]" role="alert">{{ mensajeError() }}</p> }
+            <label class="block min-w-0 text-xs font-[650] text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full">Contraseña actual<input type="password" [(ngModel)]="passwordActual" name="passwordActual" required autocomplete="current-password" class="mt-[6px] block w-full min-w-0 min-h-[46px] max-w-full rounded-xl border border-[#d9e1ec] bg-white px-3 py-[10px] text-[#14213d] transition-colors placeholder:text-[#94a3b8] focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"></label>
+            <label class="block min-w-0 text-xs font-[650] text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full">Nueva contraseña<input type="password" [(ngModel)]="passwordNuevo" name="passwordNuevo" minlength="6" required autocomplete="new-password" placeholder="Mínimo 6 caracteres" class="mt-[6px] block w-full min-w-0 min-h-[46px] max-w-full rounded-xl border border-[#d9e1ec] bg-white px-3 py-[10px] text-[#14213d] transition-colors placeholder:text-[#94a3b8] focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"></label>
+            <label class="block min-w-0 text-xs font-[650] text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full">Confirmar nueva contraseña<input type="password" [(ngModel)]="confirmarPassword" name="confirmarPassword" minlength="6" required autocomplete="new-password" class="mt-[6px] block w-full min-w-0 min-h-[46px] max-w-full rounded-xl border border-[#d9e1ec] bg-white px-3 py-[10px] text-[#14213d] transition-colors placeholder:text-[#94a3b8] focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"></label>
+          </div><footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3"><button type="button" class="box-border inline-flex min-w-0 min-h-11 items-center justify-center gap-2 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 text-sm font-semibold leading-[1.25] text-center align-middle text-[#334155] max-[640px]:w-full" (click)="cerrarCambioPassword()">Cancelar</button><button type="submit" [disabled]="guardando() || !passwordActual || passwordNuevo.length < 6 || passwordNuevo !== confirmarPassword" class="box-border inline-flex min-w-0 min-h-11 items-center justify-center gap-2 rounded-xl border-0 bg-[#2563eb] px-[18px] text-sm font-bold leading-[1.25] text-center align-middle text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:w-full">{{ guardando() ? 'Actualizando…' : 'Actualizar contraseña' }}</button></footer></form>
         </div>
       </dialog>
     </div>
