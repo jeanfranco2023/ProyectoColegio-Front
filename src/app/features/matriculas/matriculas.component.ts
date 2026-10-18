@@ -647,7 +647,7 @@ export interface EstudianteMatriculadoItem {
       <ng-template #solicitudDialog>
           <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col font-sans w-full max-w-lg p-1">
             <div class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 flex items-center justify-between border-b border-[#e5eaf2] pb-4">
-              <h3 class="text-lg font-bold text-[#14213d] tracking-[-.025em]">Asignar Solicitud de Matrícula</h3>
+              <h3 class="text-lg !leading-7 font-bold text-[#14213d] tracking-[-.025em]">Asignar Solicitud de Matrícula</h3>
               <button (click)="cerrarSolicitudDialog()" class="inline-flex h-10 min-h-10 w-auto min-w-0 shrink-0 items-center justify-center rounded p-2 text-base font-normal text-[#64748b] hover:text-[#475569]" aria-label="Cerrar diálogo">✕</button>
             </div>
 
