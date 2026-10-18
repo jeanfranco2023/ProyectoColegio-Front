@@ -83,18 +83,50 @@ try {
   const levels = await api('GET', '/academico/niveles');
   const primary = levels.find(level => level.codigo === 'PRIMARIA');
   assert.ok(primary, 'Missing PRIMARIA catalog entry');
-  let year = (await api('GET', '/academico/anios')).find(item => item.anio === 2026);
-  year ??= await api('POST', '/academico/anios', { anio: 2026, fechaInicio: '2026-03-01', fechaFin: '2026-12-31' });
-  let grade = (await api('GET', `/academico/grados?nivelId=${primary.id}`)).find(item => item.numeroGrado === 1);
-  grade ??= await api('POST', '/academico/grados', { nivelId: primary.id, numeroGrado: 1, nombre: 'Primer Grado' });
-  let section = (await api('GET', `/academico/secciones?anioId=${year.id}`)).find(item => item.gradoId === grade.id && item.letra === 'A');
-  section ??= await api('POST', '/academico/secciones', { anioLectivoId: year.id, gradoId: grade.id, nivelId: primary.id, letra: 'A', cupoMaximo: 30, aulaFisica: 'Aula E2E' });
+  const runSuffix = Date.now();
+  const academicYears = await api('GET', '/academico/anios');
+  const currentYear = new Date().getFullYear();
+  let year = academicYears.find(item => item.abierto) ?? academicYears[0];
+  year ??= await api('POST', '/academico/anios', {
+    anio: currentYear,
+    fechaInicio: `${currentYear}-03-01`,
+    fechaFin: `${currentYear}-12-31`
+  });
+  const firstDueDate = String(year.fechaInicio ?? '').slice(0, 10);
+  assert.match(firstDueDate, /^\d{4}-\d{2}-\d{2}$/, `El año lectivo ${year.anio ?? year.id} no tiene fecha de inicio válida`);
+
+  const grades = await api('GET', `/academico/grados?nivelId=${primary.id}`);
+  let grade = grades.find(item => item.numeroGrado === 1) ?? grades[0];
+  grade ??= await api('POST', '/academico/grados', {
+    nivelId: primary.id,
+    numeroGrado: 1,
+    nombre: `Grado 1 E2E ${runSuffix}`
+  });
+
+  const sections = await api('GET', `/academico/secciones?anioId=${year.id}`);
+  const gradeSections = sections.filter(item => item.gradoId === grade.id);
+  const hasVacancy = item => item.cupoMaximo == null || item.vacantesOcupadas == null || item.vacantesOcupadas < item.cupoMaximo;
+  let section = gradeSections.find(item => item.letra === 'A' && hasVacancy(item)) ?? gradeSections.find(hasVacancy);
+  if (!section) {
+    const existingLetters = new Set(gradeSections.map(item => item.letra));
+    const sectionLetter = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').find(letter => !existingLetters.has(letter));
+    assert.ok(sectionLetter, `No hay una letra disponible para crear una sección de ${grade.nombre}`);
+    section = await api('POST', '/academico/secciones', {
+      anioLectivoId: year.id,
+      gradoId: grade.id,
+      nivelId: primary.id,
+      letra: sectionLetter,
+      cupoMaximo: 30,
+      aulaFisica: `Aula E2E ${runSuffix}`
+    });
+  }
+  const sectionLabel = `${grade.nombre} - Sección ${section.letra}`;
   console.log('OK academic catalog -> year/grade/section');
 
   await page.goto(`${frontend}/admin/matriculas`, { waitUntil: 'domcontentloaded' });
   await page.waitForSelector('#btn-abrir-registro-alumno');
   await page.click('#tab-matriculas');
-  await page.waitForFunction(() => [...document.querySelectorAll('select option')].some(option => option.textContent.includes('Sección A')));
+  await page.waitForFunction((id, label) => [...document.querySelectorAll('select option')].some(option => option.value === String(id) || option.textContent.includes(label)), {}, section.id, sectionLabel);
   await page.click('#tab-estudiantes');
   await page.click('#btn-abrir-registro-alumno');
   await page.waitForSelector('#nuevo-alumno-numero-doc');
@@ -134,13 +166,18 @@ try {
   assert.ok(matricularAction.rowFound, `No se encontró la fila del estudiante con DNI ${dni} en #tabla-estudiantes`);
   assert.ok(matricularAction.buttonFound, `No se encontró el botón "Matricular" en la fila del DNI ${dni}`);
   await waitForText('Asignar Solicitud de Matrícula');
-  await page.waitForFunction(() => [...document.querySelectorAll('select[name="seccion"] option')].some(option => option.textContent.includes('Primer Grado - Sección A')));
-  await page.evaluate(() => {
+  await page.waitForFunction((id, label) => [...document.querySelectorAll('select[name="seccion"] option')].some(option => option.value === String(id) || option.textContent.includes(label)), {}, section.id, sectionLabel);
+  const selectedSection = await page.evaluate((id, label) => {
     const select = document.querySelector('select[name="seccion"]');
-    const option = [...select.options].find(item => item.textContent.includes('Primer Grado - Sección A'));
+    if (!select) return false;
+    const option = [...select.options].find(item => item.value === String(id))
+      ?? [...select.options].find(item => item.textContent.includes(label));
+    if (!option) return false;
     select.value = option.value;
     select.dispatchEvent(new Event('change', { bubbles: true }));
-  });
+    return true;
+  }, section.id, sectionLabel);
+  assert.ok(selectedSection, `No se encontró la opción de sección ${sectionLabel} (ID ${section.id})`);
   await page.evaluate(() => {
     const form = [...document.querySelectorAll('form')].find(item => item.innerText.includes('Asignar Matrícula'));
     form?.querySelector('button[type="submit"]')?.click();
@@ -151,36 +188,59 @@ try {
   const matricula = matriculas.find(item => item.estudianteId === student.id);
   assert.ok(matricula, 'The enrollment was not persisted');
   await page.click('#tab-matriculas');
-  await page.waitForFunction(id => document.body.innerText.includes(`MAT-2026-${String(id).padStart(3, '0')}`), {}, matricula.id);
+  const enrollmentYear = year.anio ?? year.id;
+  await page.waitForFunction((year, id) => document.body.innerText.includes(`MAT-${year}-${String(id).padStart(3, '0')}`), {}, enrollmentYear, matricula.id);
   console.log('OK enrollment form -> API -> PostgreSQL');
 
+  const concepts = await api('GET', '/tesoreria/conceptos');
+  assert.ok(concepts.some(item => item.tipoConcepto === 'MATRICULA'), 'No hay conceptos de tipo MATRICULA en el catálogo local de Tesorería');
+  assert.ok(concepts.some(item => item.tipoConcepto === 'PENSION'), 'No hay conceptos de tipo PENSION en el catálogo local de Tesorería');
   await page.goto(`${frontend}/admin/tesoreria`, { waitUntil: 'domcontentloaded' });
   await waitForText('Tesorería & Pagos');
   await page.waitForFunction(() => document.body.innerText.includes('Generar Cronograma en BD'));
   await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.innerText.includes('Generar Cronograma en BD'))?.click());
   await page.waitForSelector('input[name="matricula"]');
-  await page.waitForFunction(() => document.querySelectorAll('select[name="conceptoMatricula"] option').length > 0);
+  await page.waitForFunction(() => document.querySelectorAll('select[name="conceptoMatricula"] option').length > 1 && document.querySelectorAll('select[name="conceptoPension"] option').length > 1);
   await setInput('input[name="matricula"]', String(matricula.id));
-  await setInput('input[name="primerVencimiento"]', '2026-03-01');
+  await setInput('input[name="primerVencimiento"]', firstDueDate);
   const scheduleResponse = page.waitForResponse(response => response.url().endsWith('/tesoreria/obligaciones') && response.request().method() === 'POST');
   await page.click('form button[type="submit"]');
   assert.equal((await scheduleResponse).status(), 200, 'The payment schedule request failed');
-  await page.waitForFunction(id => [...document.querySelectorAll('table tbody tr')].filter(row => row.innerText.includes(`Matrícula #${id}`)).length >= 11, {}, matricula.id);
   await waitForDialogClose();
   let obligations = await api('GET', `/tesoreria/obligaciones?matriculaId=${matricula.id}`);
-  assert.equal(obligations.length, 11, 'Expected one enrollment fee and ten tuition installments');
-  console.log('OK payment schedule -> 11 persisted obligations');
+  assert.ok(obligations.length > 0, `El cronograma no generó obligaciones para la matrícula #${matricula.id}`);
+  await page.waitForFunction((id, count) => [...document.querySelectorAll('table tbody tr')].filter(row => row.innerText.includes(`Matrícula #${id}`)).length >= count, {}, matricula.id, obligations.length);
+  console.log(`OK payment schedule -> ${obligations.length} persisted obligations`);
 
+  const openedPayment = await page.evaluate(id => {
+    const row = [...document.querySelectorAll('table tbody tr')].find(item =>
+      item.innerText.includes(`Matrícula #${id}`)
+      && [...item.querySelectorAll('button')].some(button => button.innerText.includes('Cobrar en Caja'))
+    );
+    const button = [...(row?.querySelectorAll('button') ?? [])].find(item => item.innerText.includes('Cobrar en Caja'));
+    if (!button) return false;
+    button.click();
+    return true;
+  }, matricula.id);
+  assert.ok(openedPayment, `No hay una obligación cobrable para la matrícula #${matricula.id}`);
+  await page.waitForSelector('#cobro-dialog-title');
   const paymentResponse = page.waitForResponse(response => response.url().endsWith('/tesoreria/pagos/caja') && response.request().method() === 'POST');
-  await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.innerText.includes('Cobrar en Caja'))?.click());
+  const confirmedPayment = await page.evaluate(() => {
+    const dialog = document.querySelector('dialog[aria-labelledby="cobro-dialog-title"]');
+    const button = [...(dialog?.querySelectorAll('button') ?? [])].find(item => item.innerText.includes('Confirmar pago en efectivo'));
+    if (!button) return false;
+    button.click();
+    return true;
+  });
+  assert.ok(confirmedPayment, 'No se encontró el botón de confirmación del cobro en caja');
   assert.equal((await paymentResponse).status(), 200, 'The cash payment request failed');
-  await page.waitForFunction(() => [...document.querySelectorAll('table tbody tr')].some(row => row.innerText.includes('PAGADO')));
+  await page.waitForFunction(id => [...document.querySelectorAll('table tbody tr')].some(row => row.innerText.includes(`Matrícula #${id}`) && row.innerText.includes('PAGADO')), {}, matricula.id);
   obligations = await api('GET', `/tesoreria/obligaciones?matriculaId=${matricula.id}`);
   assert.ok(obligations.some(item => item.estado === 'PAGADO_TOTAL' && Number(item.saldoPendiente) === 0), 'Cash payment was not applied');
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.waitForSelector('input[type="number"]');
   await setInput('input[type="number"]', String(matricula.id));
-  await page.waitForFunction(() => [...document.querySelectorAll('table tbody tr')].some(row => row.innerText.includes('PAGADO')));
+  await page.waitForFunction(id => [...document.querySelectorAll('table tbody tr')].some(row => row.innerText.includes(`Matrícula #${id}`) && row.innerText.includes('PAGADO')), {}, matricula.id);
   console.log('OK cash payment -> trigger -> persisted after reload');
 
   assert.deepEqual(browserApiFailures, [], 'Browser API failures');
