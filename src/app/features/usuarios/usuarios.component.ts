@@ -173,6 +173,7 @@ template: `
                 <mat-option value="AUXILIAR">Auxiliar</mat-option>
                 <mat-option value="TUTOR">Tutor</mat-option>
                 <mat-option value="DIRECCION">Dirección</mat-option>
+                <mat-option value="APODERADO">Apoderado</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
