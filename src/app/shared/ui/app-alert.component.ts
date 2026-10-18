@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 export type UiAlertTone = 'success' | 'warning' | 'error' | 'info';
@@ -5,27 +6,13 @@ export type UiAlertTone = 'success' | 'warning' | 'error' | 'info';
 @Component({
   selector: 'ui-app-alert',
   standalone: true,
+  imports: [NgClass],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section
-      class="ui-alert"
-      [class.ui-alert--success]="tone === 'success'"
-      [class.ui-alert--warning]="tone === 'warning'"
-      [class.ui-alert--error]="tone === 'error'"
-      [class.ui-alert--info]="tone === 'info'"
-      [attr.role]="tone === 'error' ? 'alert' : 'status'"
-      [attr.aria-live]="tone === 'error' ? 'assertive' : 'polite'"
-    >
-      <svg class="ui-alert__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <circle cx="12" cy="12" r="9"></circle>
-        <path [attr.d]="iconPath"></path>
-      </svg>
-      <div class="ui-alert__content">
-        @if (title) {
-          <h3 class="ui-alert__title">{{ title }}</h3>
-        }
-        <p class="ui-alert__message">{{ message }}</p>
-      </div>
+      class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6" [ngClass]="toneClasses" [attr.role]="tone === 'error' ? 'alert' : 'status'" [attr.aria-live]="tone === 'error' ? 'assertive' : 'polite'">
+      <svg class="mt-0.5 h-[18px] w-[18px] shrink-0 fill-none stroke-current [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:1.8]" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"></circle><path [attr.d]="iconPath"></path></svg>
+      <div class="min-w-0">@if (title) { <h3 class="mb-1 mt-0 font-bold">{{ title }}</h3> }<p class="m-0">{{ message }}</p></div>
     </section>
   `,
 })
@@ -33,6 +20,15 @@ export class AppAlertComponent {
   @Input() title = '';
   @Input() message = '';
   @Input() tone: UiAlertTone = 'info';
+
+  get toneClasses(): string {
+    switch (this.tone) {
+      case 'success': return '!border-[#86efac] bg-[#dcfce7] text-[#14532d]';
+      case 'warning': return '!border-[#fcd34d] bg-[#fef3c7] text-[#78350f]';
+      case 'error': return '!border-[#fca5a5] bg-[#fee2e2] text-[#7f1d1d]';
+      default: return '!border-[#93c5fd] bg-[#dbeafe] text-[#1e3a8a]';
+    }
+  }
 
   get iconPath(): string {
     switch (this.tone) {
