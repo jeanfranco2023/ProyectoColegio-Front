@@ -25,8 +25,23 @@ const page = await browser.newPage();
 page.setDefaultTimeout(30000);
 const browserApiFailures = [];
 const pageErrors = [];
+const paymentApiTraffic = [];
+let currentMatriculaId = null;
 page.on('pageerror', error => pageErrors.push(error.message));
 page.on('response', response => {
+  if (response.url().includes('/tesoreria/pagos/caja')) {
+    const record = {
+      type: 'response',
+      status: response.status(),
+      method: response.request().method(),
+      url: response.url(),
+      body: '(leyendo respuesta)'
+    };
+    paymentApiTraffic.push(record);
+    void response.text()
+      .then(body => { record.body = body.slice(0, 1200); })
+      .catch(error => { record.body = `No se pudo leer el cuerpo: ${error.message}`; });
+  }
   if (response.url().startsWith(backend) && response.status() >= 400) {
     browserApiFailures.push(`${response.status()} ${response.request().method()} ${response.url()}`);
   }
@@ -35,6 +50,14 @@ page.on('dialog', dialog => dialog.accept());
 await page.setRequestInterception(true);
 page.on('request', request => {
   const url = request.url();
+  if (url.includes('/tesoreria/pagos/caja')) {
+    paymentApiTraffic.push({
+      type: 'request',
+      method: request.method(),
+      url,
+      body: request.postData()?.slice(0, 1200) ?? null
+    });
+  }
   if (url.startsWith('http://localhost:8080/api/v1')) {
     request.continue({ url: backend + url.slice('http://localhost:8080/api/v1'.length) });
   } else {
@@ -189,6 +212,7 @@ try {
   const matriculas = await api('GET', `/matriculas/seccion/${section.id}`);
   const matricula = matriculas.find(item => item.estudianteId === student.id);
   assert.ok(matricula, 'The enrollment was not persisted');
+  currentMatriculaId = matricula.id;
   await page.click('#tab-matriculas');
   const enrollmentYear = year.anio ?? year.id;
   await page.waitForFunction((year, id) => document.body.innerText.includes(`MAT-${year}-${String(id).padStart(3, '0')}`), {}, enrollmentYear, matricula.id);
@@ -250,8 +274,15 @@ try {
   obligations = await api('GET', `/tesoreria/obligaciones?matriculaId=${matricula.id}`);
   assert.ok(obligations.some(item => item.estado === 'PAGADO_TOTAL' && Number(item.saldoPendiente) === 0), 'Cash payment was not applied');
   await page.reload({ waitUntil: 'domcontentloaded' });
-  await page.waitForSelector('input[type="number"]');
-  await setInput('input[type="number"]', String(matricula.id));
+  await page.waitForSelector('input[aria-label="Matrícula ID:"]');
+  const refreshedObligations = page.waitForResponse(response => {
+    const url = new URL(response.url());
+    return url.pathname.endsWith('/tesoreria/obligaciones')
+      && response.request().method() === 'GET'
+      && url.searchParams.get('matriculaId') === String(matricula.id);
+  });
+  await setInput('input[aria-label="Matrícula ID:"]', String(matricula.id));
+  assert.equal((await refreshedObligations).status(), 200, `No se recargaron las obligaciones de la matrícula #${matricula.id}`);
   await page.waitForFunction(id => [...document.querySelectorAll('table tbody tr')].some(row => row.innerText.includes(`Matrícula #${id}`) && row.innerText.includes('PAGADO')), {}, matricula.id);
   console.log('OK cash payment -> trigger -> persisted after reload');
 
@@ -263,7 +294,10 @@ try {
   console.error('Browser exceptions:', pageErrors);
   console.error('Visible page:', (await page.evaluate(() => document.body.innerText)).slice(0, 1500));
   console.error('Open dialog text:', await page.$$eval('dialog[open]', dialogs => dialogs.map(dialog => dialog.innerText).join('\n---\n')).catch(() => '(sin diálogos abiertos)'));
+  console.error('Cobro dialog:', await page.$eval('dialog[aria-labelledby="cobro-dialog-title"]', dialog => `open=${dialog.open}\n${dialog.innerText}`).catch(() => '(sin diálogo de cobro en el DOM)'));
   console.error('Visible table rows:', await page.$$eval('table tbody tr', rows => rows.map(row => row.innerText).join('\n---\n')).catch(() => '(sin filas visibles)'));
+  console.error(`Rows for Matrícula #${currentMatriculaId ?? 'desconocida'}:`, await page.$$eval('table tbody tr', (rows, id) => rows.filter(row => id == null || row.innerText.includes(`Matrícula #${id}`)).map(row => row.innerText).join('\n---\n'), currentMatriculaId).catch(() => '(no se pudieron leer las filas)'));
+  console.error('Network /tesoreria/pagos/caja:', JSON.stringify(paymentApiTraffic, null, 2));
   console.error('CDK overlay text:', await page.$eval('.cdk-overlay-container', element => element.innerText).catch(() => '(sin .cdk-overlay-container)'));
   try {
     await page.screenshot({ path: String.raw`C:\Users\FABRIZIO\.codex\visualizations\2026\10\15\01a13cfb-206e-7d80-9d7f-7f8d7f4d1009\e2e-fallo.png`, fullPage: true });
