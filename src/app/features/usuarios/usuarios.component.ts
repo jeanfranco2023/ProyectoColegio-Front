@@ -180,7 +180,7 @@ template: `
         </mat-dialog-content>
         <mat-dialog-actions align="end" class="!gap-2 !px-6 !pb-6">
           <button mat-button type="button" mat-dialog-close>Cancelar</button>
-          <button mat-flat-button color="primary" type="submit" [disabled]="creando() || !nuevoUsername.trim() || !nuevoEmail.trim() || nuevoPassword.length < 6" class="box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ creando() ? 'Creando…' : 'Crear cuenta' }}</button>
+          <button mat-flat-button color="primary" type="submit" [disabled]="creando() || !nuevoUsername.trim() || !nuevoEmail.trim() || nuevoPassword.length < 6" class="box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ creando() ? 'Creando…' : 'Crear Cuenta en BD' }}</button>
         </mat-dialog-actions>
         </form>
       </ng-template>
