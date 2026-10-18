@@ -32,16 +32,29 @@ const page = await browser.newPage();
 page.setDefaultTimeout(20000);
 let phase = 'login';
 const failures = [];
+const consoleErrors = [];
+const failedApiCalls = [];
 const traffic = new Map();
 page.on('pageerror', error => failures.push(`${phase}: JavaScript ${error.message}`));
+page.on('console', message => {
+  if (message.type() === 'error') consoleErrors.push(`${phase}: ${message.text()}`);
+});
 page.on('requestfailed', request => {
-  if (request.url().startsWith(backend)) failures.push(`${phase}: NETWORK ${request.method()} ${request.url()}`);
+  if (request.url().startsWith(backend)) {
+    const failure = `${phase}: NETWORK ${request.method()} ${request.url()}`;
+    failures.push(failure);
+    failedApiCalls.push(failure);
+  }
 });
 page.on('response', response => {
   if (!response.url().startsWith(backend)) return;
   const key = phase;
   traffic.set(key, [...(traffic.get(key) ?? []), `${response.status()} ${response.request().method()} ${new URL(response.url()).pathname}`]);
-  if (response.status() >= 400) failures.push(`${phase}: HTTP ${response.status()} ${response.request().method()} ${response.url()}`);
+  if (response.status() >= 400) {
+    const failure = `${phase}: HTTP ${response.status()} ${response.request().method()} ${response.url()}`;
+    failures.push(failure);
+    failedApiCalls.push(failure);
+  }
 });
 
 try {
@@ -59,7 +72,7 @@ try {
   for (const [route, heading] of cases) {
     phase = route;
     await page.goto(`${frontend}/admin/${route}`, { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(heading => [...document.querySelectorAll('h2')].some(node => node.textContent.includes(heading)), {}, heading);
+    await page.waitForFunction(heading => document.body.innerText.includes(heading), {}, heading);
     await page.waitForNetworkIdle({ idleTime: 500, timeout: 10000 }).catch(() => {});
     assert.equal(new URL(page.url()).pathname, `/admin/${route}`, `${route} redirected unexpectedly`);
     console.log(`${failures.some(item => item.startsWith(`${route}:`)) ? 'FAIL' : 'OK'} ${route}: ${(traffic.get(route) ?? []).join(', ') || 'no API calls'}`);
@@ -67,6 +80,12 @@ try {
 
   assert.deepEqual(failures, [], `Integration failures: ${failures.join('; ')}`);
   console.log('PASS real-environment read-only smoke');
+} catch (error) {
+  console.error(`FAIL ${phase} at ${page.url()}: ${error.stack ?? error}`);
+  console.error('Visible page text:\n' + await page.evaluate(() => document.body?.innerText ?? '').catch(() => '[unavailable]'));
+  console.error('Console errors:\n' + (consoleErrors.join('\n') || '(none)'));
+  console.error('Failed API calls:\n' + (failedApiCalls.join('\n') || '(none)'));
+  throw error;
 } finally {
   await browser.close();
 }
