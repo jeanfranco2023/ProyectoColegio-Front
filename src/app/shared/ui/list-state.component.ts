@@ -8,39 +8,36 @@ export type UiListState = 'loading' | 'empty' | 'error';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <section
-      class="ui-list-state"
-      [class.ui-list-state--loading]="state === 'loading'"
-      [class.ui-list-state--empty]="state === 'empty'"
-      [class.ui-list-state--error]="state === 'error'"
+      class="grid justify-items-center gap-3 rounded-2xl border border-[#e2e8f0] bg-white p-8 text-center text-[#1e293b]"
       [attr.aria-busy]="state === 'loading'"
       [attr.role]="state === 'error' ? 'alert' : 'status'"
       [attr.aria-live]="state === 'error' ? 'assertive' : 'polite'"
     >
       @if (state === 'loading') {
-        <span class="ui-sr-only">{{ resolvedTitle }}</span>
-        <div class="ui-list-state__skeleton" aria-hidden="true">
-          <span class="ui-skeleton ui-skeleton--wide"></span>
-          <span class="ui-skeleton ui-skeleton--medium"></span>
-          <span class="ui-skeleton ui-skeleton--short"></span>
+        <span class="sr-only">{{ resolvedTitle }}</span>
+        <div class="grid w-full gap-3" aria-hidden="true">
+          <span class="block h-4 w-full rounded-full bg-[linear-gradient(90deg,#e8edf5_25%,#f5f7fb_50%,#e8edf5_75%)] bg-[length:200%_100%] [animation:skeleton-shimmer_1.4s_ease-in-out_infinite]"></span>
+          <span class="block h-4 w-[72%] rounded-full bg-[linear-gradient(90deg,#e8edf5_25%,#f5f7fb_50%,#e8edf5_75%)] bg-[length:200%_100%] [animation:skeleton-shimmer_1.4s_ease-in-out_infinite]"></span>
+          <span class="block h-4 w-[44%] rounded-full bg-[linear-gradient(90deg,#e8edf5_25%,#f5f7fb_50%,#e8edf5_75%)] bg-[length:200%_100%] [animation:skeleton-shimmer_1.4s_ease-in-out_infinite]"></span>
         </div>
       } @else {
         @if (state === 'empty') {
-          <svg class="ui-list-state__icon ui-list-state__illustration" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+          <svg class="h-[52px] w-[52px] fill-none stroke-[#c49a58] [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:1.8]" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
             <path d="M7 11.5c5.5-2 11.2-1.4 17 1.8v25c-5.8-3.2-11.5-3.8-17-1.8z"></path>
             <path d="M41 11.5c-5.5-2-11.2-1.4-17 1.8v25c5.8-3.2 11.5-3.8 17-1.8z"></path>
             <path d="M24 13.3v25"></path>
             <path d="M12 17.5c2.4-.4 4.8-.1 7.2.8M12 22c2.4-.4 4.8-.1 7.2.8M29 18.3c2.4-.9 4.8-1.2 7.2-.8M29 22.8c2.4-.9 4.8-1.2 7.2-.8"></path>
           </svg>
         } @else {
-          <svg class="ui-list-state__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <svg class="h-[18px] w-[18px] fill-none stroke-current [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:1.8]" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
             <circle cx="12" cy="12" r="9"></circle>
             <path [attr.d]="iconPath"></path>
           </svg>
         }
-        <h3 class="ui-list-state__title">{{ resolvedTitle }}</h3>
-        <p class="ui-list-state__message">{{ message || resolvedMessage }}</p>
+        <h3 class="m-0 font-sans text-lg leading-[1.35] font-semibold">{{ resolvedTitle }}</h3>
+        <p class="m-0 max-w-[48ch] font-sans text-base leading-6 text-[#64748b]">{{ message || resolvedMessage }}</p>
         @if (state === 'error') {
-          <button class="ui-button ui-button--secondary" type="button" (click)="retry.emit()">
+          <button class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[#e2e8f0] bg-white px-4 py-2 text-center font-sans text-[14px] leading-[1.2] font-semibold text-[#102447] no-underline transition-colors hover:bg-[#f4f6fb] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-[#e2e8f0] disabled:bg-[#f1f5f9] disabled:text-[#64748b]" type="button" (click)="retry.emit()">
             {{ retryLabel }}
           </button>
         }
