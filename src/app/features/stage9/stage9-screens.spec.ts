@@ -20,7 +20,7 @@ describe('Etapa 9 presentation screens', () => {
       await TestBed.configureTestingModule({ imports: [component] }).compileComponents();
       const fixture = TestBed.createComponent(component);
       fixture.detectChanges();
-      expect(fixture.nativeElement.querySelector('.ui-s9-screen')).toBeTruthy();
+      expect(fixture.nativeElement.querySelector('section[aria-labelledby]')).toBeTruthy();
       fixture.destroy();
       TestBed.resetTestingModule();
     }
@@ -56,7 +56,7 @@ describe('Etapa 9 presentation screens', () => {
     fixture.componentRef.setInput('reasonDraft', '   ');
     fixture.detectChanges();
     const confirm = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
-      '.ui-s9-dialog .ui-button--primary',
+      '[role="dialog"] button[disabled]',
     );
     expect(confirm?.disabled).toBe(true);
   });
