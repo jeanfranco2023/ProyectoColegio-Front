@@ -14,7 +14,13 @@ for (const url of [frontend, backend]) {
 }
 
 const chrome = process.env.E2E_CHROME ?? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const browser = await puppeteer.launch({ executablePath: chrome, headless: true, args: ['--no-sandbox', '--disable-dev-shm-usage'] });
+const headed = process.env.E2E_HEADED === '1';
+const browser = await puppeteer.launch({
+  executablePath: chrome,
+  headless: !headed,
+  ...(headed ? { slowMo: 80 } : {}),
+  args: ['--no-sandbox', '--disable-dev-shm-usage']
+});
 const page = await browser.newPage();
 page.setDefaultTimeout(30000);
 const browserApiFailures = [];
@@ -49,6 +55,10 @@ async function api(method, path, body) {
 }
 async function waitForText(text) {
   await page.waitForFunction(text => document.body.innerText.includes(text), {}, text);
+}
+async function waitForDialogClose() {
+  await page.waitForFunction(() => !document.querySelector('mat-dialog-container'));
+  await new Promise(r => setTimeout(r, 400));
 }
 async function setInput(selector, value) {
   await page.$eval(selector, (input, value) => {
@@ -96,6 +106,7 @@ try {
   await page.click('#btn-guardar-alumno');
   await waitForText('registrado exitosamente');
   await page.waitForFunction(dni => document.querySelector('#tabla-estudiantes')?.innerText.includes(dni), {}, dni);
+  await waitForDialogClose();
   const students = await api('GET', '/estudiantes');
   const student = students.find(item => item.numeroDocumento === dni);
   assert.ok(student, 'The student was not persisted');
@@ -111,10 +122,17 @@ try {
   assert.ok((await api('GET', '/estudiantes')).find(item => item.numeroDocumento === secondDni), 'The second student without SIAGIE was not persisted');
   console.log('OK two student forms without SIAGIE -> API -> PostgreSQL');
 
-  await page.evaluate(dni => {
+  await waitForDialogClose();
+  const matricularAction = await page.evaluate(dni => {
     const row = [...document.querySelectorAll('#tabla-estudiantes tbody tr')].find(item => item.innerText.includes(dni));
-    row?.querySelector('button')?.click();
+    if (!row) return { rowFound: false, buttonFound: false };
+    const button = [...row.querySelectorAll('button')].find(item => item.innerText.trim() === 'Matricular');
+    if (!button) return { rowFound: true, buttonFound: false };
+    button.click();
+    return { rowFound: true, buttonFound: true };
   }, dni);
+  assert.ok(matricularAction.rowFound, `No se encontró la fila del estudiante con DNI ${dni} en #tabla-estudiantes`);
+  assert.ok(matricularAction.buttonFound, `No se encontró el botón "Matricular" en la fila del DNI ${dni}`);
   await waitForText('Asignar Solicitud de Matrícula');
   await page.waitForFunction(() => [...document.querySelectorAll('select[name="seccion"] option')].some(option => option.textContent.includes('Primer Grado - Sección A')));
   await page.evaluate(() => {
@@ -128,6 +146,7 @@ try {
     form?.querySelector('button[type="submit"]')?.click();
   });
   await waitForText('solicitada exitosamente');
+  await waitForDialogClose();
   const matriculas = await api('GET', `/matriculas/seccion/${section.id}`);
   const matricula = matriculas.find(item => item.estudianteId === student.id);
   assert.ok(matricula, 'The enrollment was not persisted');
@@ -147,6 +166,7 @@ try {
   await page.click('form button[type="submit"]');
   assert.equal((await scheduleResponse).status(), 200, 'The payment schedule request failed');
   await page.waitForFunction(id => [...document.querySelectorAll('table tbody tr')].filter(row => row.innerText.includes(`Matrícula #${id}`)).length >= 11, {}, matricula.id);
+  await waitForDialogClose();
   let obligations = await api('GET', `/tesoreria/obligaciones?matriculaId=${matricula.id}`);
   assert.equal(obligations.length, 11, 'Expected one enrollment fee and ten tuition installments');
   console.log('OK payment schedule -> 11 persisted obligations');
@@ -170,6 +190,13 @@ try {
   console.error('Browser API failures:', browserApiFailures);
   console.error('Browser exceptions:', pageErrors);
   console.error('Visible page:', (await page.evaluate(() => document.body.innerText)).slice(0, 1500));
+  console.error('CDK overlay text:', await page.$eval('.cdk-overlay-container', element => element.innerText).catch(() => '(sin .cdk-overlay-container)'));
+  try {
+    await page.screenshot({ path: String.raw`C:\Users\FABRIZIO\.codex\visualizations\2026\10\15\01a13cfb-206e-7d80-9d7f-7f8d7f4d1009\e2e-fallo.png`, fullPage: true });
+    console.error('Failure screenshot saved to the requested visualization path.');
+  } catch (screenshotError) {
+    console.error('Failure screenshot could not be saved:', screenshotError.message);
+  }
   throw error;
 } finally {
   await browser.close();
