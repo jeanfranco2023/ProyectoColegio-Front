@@ -119,7 +119,7 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
         </header>
 
         <div class="mx-auto w-full max-w-[1560px] p-4 sm:p-6 xl:p-9">
-          <div class="app-content"><router-outlet /></div>
+          <div class="min-h-[calc(100vh-140px)] w-full min-w-0 max-[639px]:min-h-[calc(100dvh-136px)] [&>router-outlet+*]:block [&>router-outlet+*]:min-w-0"><router-outlet /></div>
         </div>
         <footer class="px-5 pb-5 text-center text-[11px] tracking-wide text-[#59677a]">© 2026 I.E.P. Shuji Kitamura · Excelencia, disciplina y saber</footer>
       </main>
