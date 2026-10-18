@@ -98,6 +98,14 @@ router-outlet + * { animation: screen-enter 360ms cubic-bezier(.2, .7, .2, 1) bo
 .mat-mdc-dialog-surface { display: flex !important; flex-direction: column; max-height: calc(100dvh - 24px) !important; overflow: hidden !important; border-radius: 22px !important; box-shadow: 0 28px 90px rgb(15 31 57 / 24%) !important; }
 .mat-mdc-dialog-content { min-height: 0; max-height: none; overflow: auto; overscroll-behavior: contain; }
 .mat-mdc-dialog-actions { position: sticky; bottom: 0; z-index: 1; flex: 0 0 auto; background: #fff; }
+
+.mat-mdc-dialog-actions .mat-mdc-button-base {
+  min-height: 44px !important;
+  height: 44px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+}
 .mat-mdc-button-base { letter-spacing: 0 !important; }
 .mat-mdc-dialog-container,
 .mat-mdc-dialog-container *,
