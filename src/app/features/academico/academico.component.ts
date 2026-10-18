@@ -4,6 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { AcademicoService } from '../../core/services/academico.service';
 import { AulaResponseDto, NivelResponseDto } from '../../core/models/academico.model';
 
+const AULA_CODE_PREFIXES: Record<string, string> = {
+  INIC: 'AULA_I_',
+  PRIM: 'AULA_P_',
+  SEC: 'AULA_S_'
+};
+
 export interface AulaItem {
   id: number;
   codigo: string;
@@ -244,11 +250,13 @@ export class AcademicoComponent implements OnInit {
   }
 
   contarAulasPorFiltro(codigoPrefix: string): number {
-    return this.aulas().filter(a => a.codigo && a.codigo.toUpperCase().includes(codigoPrefix)).length;
+    const prefix = AULA_CODE_PREFIXES[codigoPrefix] ?? codigoPrefix;
+    return this.aulas().filter(a => a.codigo && a.codigo.toUpperCase().startsWith(prefix)).length;
   }
 
   contarCapacidadPorFiltro(codigoPrefix: string): number | null {
-    const aulas = this.aulas().filter(a => a.codigo && a.codigo.toUpperCase().includes(codigoPrefix));
+    const prefix = AULA_CODE_PREFIXES[codigoPrefix] ?? codigoPrefix;
+    const aulas = this.aulas().filter(a => a.codigo && a.codigo.toUpperCase().startsWith(prefix));
     if (aulas.some(a => a.capacidad == null)) return null;
     return aulas.reduce((sum, a) => sum + (a.capacidad as number), 0);
   }
