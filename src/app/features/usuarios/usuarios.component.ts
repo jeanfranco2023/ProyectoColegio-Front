@@ -273,7 +273,7 @@ export class UsuariosComponent implements OnInit {
       next: () => {
         this.creando.set(false);
         this.dialogRef?.close();
-        this.cargarUsuarios();
+        queueMicrotask(() => this.cargarUsuarios());
       },
       error: (err) => {
         this.creando.set(false);
@@ -305,7 +305,8 @@ export class UsuariosComponent implements OnInit {
     this.usuarioService.cambiarEstado(user.id, nuevoEstado).subscribe({
       next: (actualizado) => {
         this.actualizandoEstado.set(false);
-        user.activo = actualizado ? actualizado.activo : nuevoEstado;
+        const activo = actualizado ? actualizado.activo : nuevoEstado;
+        this.usuarios.update(lista => lista.map(u => u.id === user.id ? { ...u, activo } : u));
         this.estadoDialogRef?.close();
       },
       error: (err) => {
