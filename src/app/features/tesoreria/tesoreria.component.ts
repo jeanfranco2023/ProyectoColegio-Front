@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, computed, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, computed, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AppAlertComponent } from '../../shared/ui/app-alert.component';
@@ -6,7 +6,6 @@ import { StatusBadgeComponent } from '../../shared/ui/status-badge.component';
 import { TesoreriaService } from '../../core/services/tesoreria.service';
 import { ConceptoCobroResponseDto } from '../../core/models/tesoreria.model';
 import { AuthStore } from '../../core/state/auth.store';
-import { environment } from '../../../environments/environment';
 import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
 
 export type EstadoPago = 'PAGADO_TOTAL' | 'PAGADO_PARCIAL' | 'PENDIENTE' | 'VENCIDO' | 'CANCELADO_POR_TRASLADO';
@@ -65,9 +64,10 @@ template: `
       @if (error()) { <p class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#fca5a5] bg-[#fee2e2] text-[#7f1d1d]" role="alert">{{ error() }}</p> }
       @if (checkoutUrl()) {
         <div class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#93c5fd] bg-[#dbeafe] text-[#1e3a8a] !grid gap-[10px] m-0" role="status">
-          <p>Preferencia de prueba creada para la obligación #{{ checkoutObligacionId() }}. El pago solo se registrará cuando Mercado Pago confirme la operación.</p>
-          <a [href]="checkoutUrl()" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-[#e2e8f0] disabled:bg-[#f1f5f9] disabled:text-[#64748b] aria-disabled:cursor-not-allowed aria-disabled:border-[#e2e8f0] aria-disabled:bg-[#f1f5f9] aria-disabled:text-[#64748b] bg-[#2563eb] text-white hover:bg-[#1d4ed8]">Abrir checkout de prueba</a>
-          <p class="m-0 text-[#34445d] text-xs">Usa una cuenta compradora de prueba distinta de la vendedora. Después, vuelve aquí y actualiza las obligaciones.</p>
+          <p>Pago preparado para la obligación #{{ checkoutObligacionId() }}. El pago solo se registrará cuando Mercado Pago confirme la operación.</p>
+          <a [href]="checkoutUrl()" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-[#e2e8f0] disabled:bg-[#f1f5f9] disabled:text-[#64748b] aria-disabled:cursor-not-allowed aria-disabled:border-[#e2e8f0] aria-disabled:bg-[#f1f5f9] aria-disabled:text-[#64748b] bg-[#2563eb] text-white hover:bg-[#1d4ed8]">Abrir Mercado Pago</a>
+          <p class="m-0 text-[#34445d] text-xs">Selecciona Yape, tarjeta o PagoEfectivo para pagar con CIP por los canales bancarios disponibles. La confirmación se consulta automáticamente.</p>
+          <button type="button" (click)="confirmarPago()" [disabled]="verificandoPago()" class="min-h-11 rounded-lg border px-4 py-2">{{ verificandoPago() ? 'Verificando…' : 'Consultar pago' }}</button>
         </div>
       }
       @if (mensaje()) { <p class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#86efac] bg-[#dcfce7] text-[#14532d]" role="status">{{ mensaje() }}</p> }
@@ -85,9 +85,9 @@ template: `
         </dialog>
         <dialog #cobroDialog class="box-border w-[min(680px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden border border-[#e4eaf3] rounded-[22px] bg-white text-[#14213d] p-0 shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px] max-[639px]:w-[calc(100vw-16px)] max-[639px]:max-w-[calc(100vw-16px)] max-[639px]:max-h-[calc(100dvh-16px)] max-[639px]:rounded-[18px] !w-[min(600px,calc(100vw-24px))] !max-w-[calc(100vw-24px)] !max-h-[calc(100dvh-24px)] !overflow-hidden !rounded-[18px] !border-[#e1e8f1] !bg-white !p-0 !text-[#172b4d] font-sans !shadow-[0_24px_72px_rgb(15_31_57_/_24%)] backdrop:!bg-[rgb(15_31_57_/_48%)] backdrop:!backdrop-blur-[3px]" aria-labelledby="cobro-dialog-title">
           @if (cobroSeleccionado(); as obligacion) {
-            <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col max-h-[calc(100dvh-24px)] overflow-auto bg-white"><header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 bg-white"><div><h3 id="cobro-dialog-title" class="!text-[#172b4d] !text-[19px] font-[750] !leading-[28.5px] tracking-[-.025em]">Confirmar cobro en caja</h3><p class="text-[#59677a]">Verifica el monto antes de registrar el pago en efectivo.</p></div><button type="button" class="min-h-9 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-3 !font-[650] text-[#334155] !h-9 !w-auto !min-h-9 !py-0 font-sans" (click)="cerrarCobro()" aria-label="Cerrar">✕</button></header>
-              <div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-3 bg-white text-[#34445d] text-sm"><p><span class="font-semibold">Obligación:</span> #{{ obligacion.id }} · {{ obligacion.concepto }}</p><p><span class="font-semibold">Saldo a registrar:</span> S/ {{ obligacion.saldoPendiente | number:'1.2-2' }}</p>@if (error()) { <p class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#fca5a5] bg-[#fee2e2] text-[#7f1d1d]" role="alert">{{ error() }}</p> }</div>
-              <footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto] border-t border-[#e5eaf2] bg-white max-[600px]:!flex-col-reverse"><button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarCobro()">Cancelar</button><button type="button" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" [disabled]="cobrandoId() !== null" (click)="confirmarCobro(obligacion)">{{ cobrandoId() === obligacion.id ? 'Registrando…' : 'Confirmar pago en efectivo' }}</button></footer>
+            <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col max-h-[calc(100dvh-24px)] overflow-auto bg-white"><header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 bg-white"><div><h3 id="cobro-dialog-title" class="!text-[#172b4d] !text-[19px] font-[750] !leading-[28.5px] tracking-[-.025em]">Confirmar cobro en caja</h3><p class="text-[#59677a]">Registra efectivo recibido o una transferencia ya verificada en el banco.</p></div><button type="button" class="min-h-9 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-3 !font-[650] text-[#334155] !h-9 !w-auto !min-h-9 !py-0 font-sans" (click)="cerrarCobro()" aria-label="Cerrar">✕</button></header>
+              <div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-3 bg-white text-[#34445d] text-sm"><label class="grid gap-2">Medio de pago<select [(ngModel)]="metodoCaja" class="min-h-11 rounded-lg border p-2"><option value="EFECTIVO">Efectivo recibido</option><option value="TRANSFERENCIA">Transferencia bancaria verificada</option></select></label>@if (metodoCaja === "TRANSFERENCIA") { <label class="grid gap-2">Banco y número de operación<input [(ngModel)]="referenciaTransferencia" maxlength="80" class="min-h-11 rounded-lg border p-2" autocomplete="off" /></label><p>Confirma primero el abono en la cuenta del colegio. Una captura no acredita el pago.</p> }<p><span class="font-semibold">Obligación:</span> #{{ obligacion.id }} · {{ obligacion.concepto }}</p><p><span class="font-semibold">Saldo a registrar:</span> S/ {{ obligacion.saldoPendiente | number:'1.2-2' }}</p>@if (error()) { <p class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#fca5a5] bg-[#fee2e2] text-[#7f1d1d]" role="alert">{{ error() }}</p> }</div>
+              <footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto] border-t border-[#e5eaf2] bg-white max-[600px]:!flex-col-reverse"><button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarCobro()">Cancelar</button><button type="button" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" [disabled]="cobrandoId() !== null" (click)="confirmarCobro(obligacion)">{{ cobrandoId() === obligacion.id ? 'Registrando…' : 'Registrar pago verificado' }}</button></footer>
             </div>
           }
         </dialog>
@@ -242,19 +242,23 @@ template: `
     </div>
   `
 })
-export class TesoreriaComponent implements OnInit {
+export class TesoreriaComponent implements OnInit, OnDestroy {
   private readonly tesoreriaService = inject(TesoreriaService);
   private readonly authStore = inject(AuthStore);
   @ViewChild('cronogramaDialog') private cronogramaDialog?: ElementRef<HTMLDialogElement>;
   @ViewChild('cobroDialog') private cobroDialog?: ElementRef<HTMLDialogElement>;
   readonly esAdministrativo = computed(() => this.authStore.hasAnyRole(['DIRECCION', 'SECRETARIA']));
   readonly cobroSeleccionado = signal<ObligacionCobro | null>(null);
+  metodoCaja: 'EFECTIVO' | 'TRANSFERENCIA' = 'EFECTIVO';
+  referenciaTransferencia = '';
   readonly mensaje = signal<string | null>(null);
   private readonly clavesPago = new Map<number, string>();
   readonly cobrandoId = signal<number | null>(null);
   readonly pagandoId = signal<number | null>(null);
   readonly checkoutUrl = signal<string | null>(null);
   readonly checkoutObligacionId = signal<number | null>(null);
+  readonly verificandoPago = signal(false);
+  private seguimientoPago: ReturnType<typeof setInterval> | null = null;
 
   matriculaId = 1;
   readonly error = signal<string | null>(null);
@@ -334,6 +338,7 @@ export class TesoreriaComponent implements OnInit {
   pagarConMercadoPago(item: ObligacionCobro): void {
     if (item.saldoPendiente <= 0 || this.pagandoId() !== null || this.cobrandoId() !== null) return;
     this.error.set(null);
+    this.ngOnDestroy();
     this.checkoutUrl.set(null);
     this.checkoutObligacionId.set(null);
     this.pagandoId.set(item.id);
@@ -346,7 +351,7 @@ export class TesoreriaComponent implements OnInit {
     }).subscribe({
       next: preferencia => {
         this.pagandoId.set(null);
-        const enlace = environment.mercadoPagoSandbox ? preferencia.sandboxInitPoint : preferencia.initPoint;
+        const enlace = preferencia.initPoint;
         try {
           const url = new URL(enlace);
           const dominio = url.hostname.toLowerCase();
@@ -355,6 +360,8 @@ export class TesoreriaComponent implements OnInit {
           }
           this.checkoutObligacionId.set(item.id);
           this.checkoutUrl.set(url.toString());
+          if (this.seguimientoPago) clearInterval(this.seguimientoPago);
+          this.seguimientoPago = setInterval(() => this.confirmarPago(), 10000);
         } catch {
           this.error.set('Mercado Pago devolvió un enlace de pago no válido.');
         }
@@ -366,22 +373,59 @@ export class TesoreriaComponent implements OnInit {
     });
   }
 
+  confirmarPago(): void {
+    const id = this.checkoutObligacionId();
+    const enlace = this.checkoutUrl();
+    if (!id || this.verificandoPago()) return;
+    this.verificandoPago.set(true);
+    this.tesoreriaService.confirmarPago(id).subscribe({
+      next: pago => {
+        this.verificandoPago.set(false);
+        if (this.checkoutUrl() !== enlace) return;
+        if (!pago) return;
+        this.ngOnDestroy();
+        this.checkoutUrl.set(null);
+        this.checkoutObligacionId.set(null);
+        this.mensaje.set('Pago confirmado y boleta registrada.');
+        this.cargarObligaciones();
+      },
+      error: err => {
+        this.verificandoPago.set(false);
+        if (this.checkoutUrl() !== enlace) return;
+        this.ngOnDestroy();
+        this.error.set(err?.error?.message ?? 'No se pudo verificar el pago. Puedes volver a consultar.');
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.seguimientoPago) clearInterval(this.seguimientoPago);
+    this.seguimientoPago = null;
+  }
+
   cobrar(item: ObligacionCobro): void {
     if (item.saldoPendiente <= 0 || this.cobrandoId() !== null) return;
     this.error.set(null);
+    this.metodoCaja = 'EFECTIVO';
+    this.referenciaTransferencia = '';
     this.cobroSeleccionado.set(item);
     this.cobroDialog?.nativeElement.showModal();
   }
 
   confirmarCobro(item: ObligacionCobro): void {
     if (item.saldoPendiente <= 0 || this.cobrandoId() !== null) return;
-    const clave = this.clavesPago.get(item.id) ?? `CAJA-${crypto.randomUUID()}`;
+    if (this.metodoCaja === 'TRANSFERENCIA' && !this.referenciaTransferencia.trim()) {
+      this.error.set('Indica banco y número de operación verificados.'); return;
+    }
+    const clave = this.metodoCaja === 'TRANSFERENCIA'
+      ? `BANCO-${this.referenciaTransferencia.trim().toUpperCase()}`
+      : this.clavesPago.get(item.id) ?? `CAJA-${crypto.randomUUID()}`;
     this.clavesPago.set(item.id, clave);
     this.cobrandoId.set(item.id);
     const payload = {
       obligacionPagoId: item.id,
       montoPagado: item.saldoPendiente,
-      metodoPago: 'EFECTIVO' as const,
+      metodoPago: this.metodoCaja,
       pasarelaTransaccionId: clave
     };
 

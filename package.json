@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:render": "ng serve --proxy-config proxy.render.conf.json",
     "build": "ng build",
     "test:integration": "node scripts/integration_e2e.mjs",
     "test:modules:isolated": "node scripts/module_integration_e2e.mjs",

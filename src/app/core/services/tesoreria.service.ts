@@ -46,4 +46,8 @@ export class TesoreriaService {
       payload
     );
   }
+
+  confirmarPago(id: number): Observable<TransaccionResponseDto | null> {
+    return this.http.post<TransaccionResponseDto | null>(`${this.baseUrl}/obligaciones/${id}/confirmar-pago`, {});
+  }
 }

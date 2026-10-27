@@ -56,6 +56,10 @@ export class MatriculaPublicaService {
     });
   }
 
+  consultarPago(id: string, token: string): Observable<SolicitudMatriculaPublicaDto> {
+    return this.http.post<SolicitudMatriculaPublicaDto>(`${this.baseUrl}/public/${id}/consultar-pago`, {}, { headers: this.tokenHeaders(token) });
+  }
+
   confirmarPago(id: string, token: string, paymentId: string): Observable<SolicitudMatriculaPublicaDto> {
     return this.http.post<SolicitudMatriculaPublicaDto>(
       `${this.baseUrl}/public/${encodeURIComponent(id)}/confirmar-pago`,

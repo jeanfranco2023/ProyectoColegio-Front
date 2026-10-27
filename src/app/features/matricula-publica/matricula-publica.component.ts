@@ -4,6 +4,7 @@ import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { finalize, firstValueFrom, Subscription } from 'rxjs';
+import { edadAlCorteMatricula, fechaActualEnPeru, fechaNacimientoValida } from '../../core/utils/fecha-nacimiento';
 import { MatriculaPublicaService } from '../../core/services/matricula-publica.service';
 import { CommunityGalleryComponent } from '../../shared/ui/community-gallery.component';
 import {
@@ -53,6 +54,10 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   readonly seccionId = signal<number | null>(null);
   readonly mensajeDni = signal('');
 
+  get fechaNacimientoMaxima(): string {
+    return fechaActualEnPeru();
+  }
+
   nombresEstudiante = '';
   apellidoPaternoEstudiante = '';
   apellidoMaternoEstudiante = '';
@@ -83,6 +88,21 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   get seccionesDisponibles() {
     const year = this.anioId();
     return this.catalogo().secciones.filter(s => s.anioLectivoId === year);
+  }
+
+  get advertenciaEdad(): string {
+    if (!this.nacimientoEstudiante || !this.seccionId()) return '';
+    const seccion = this.seccionesDisponibles.find(s => s.id === this.seccionId());
+    const anio = this.catalogo().anios.find(a => a.id === this.anioId());
+    if (!seccion || !anio) return 'Selecciona una sección disponible del año lectivo.';
+    if (!Number.isInteger(seccion.edadMinimaAlCorte) || !Number.isInteger(seccion.edadMaximaAlCorte)
+      || seccion.edadMinimaAlCorte > seccion.edadMaximaAlCorte) {
+      return 'No se pudo comprobar el rango de edad. Vuelve a cargar la página antes de continuar.';
+    }
+    const edad = edadAlCorteMatricula(this.nacimientoEstudiante, anio.anio);
+    if (edad === null) return 'Ingresa una fecha de nacimiento válida.';
+    if (edad >= seccion.edadMinimaAlCorte && edad <= seccion.edadMaximaAlCorte) return '';
+    return `La edad al 31 de marzo de ${anio.anio} debe estar entre ${seccion.edadMinimaAlCorte} y ${seccion.edadMaximaAlCorte} años. Los casos excepcionales requieren autorización institucional.`;
   }
 
   ngOnInit(): void {
@@ -121,9 +141,9 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     const input = event.target as HTMLInputElement;
     const archivo = input.files?.[0] ?? null;
     if (!archivo) return;
-    const permitidos = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
-    if (archivo.size > 5 * 1024 * 1024 || !permitidos.includes(archivo.type)) {
-      this.error.set('El archivo debe ser PDF, JPG, PNG o WebP y pesar hasta 5 MB.');
+    if (archivo.size === 0 || archivo.size > 5 * 1024 * 1024 || archivo.type !== 'application/pdf') {
+      this.archivos[tipo] = null;
+      this.error.set('Los tres documentos deben ser PDF y pesar hasta 5 MB cada uno.');
       input.value = '';
       return;
     }
@@ -316,10 +336,10 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       this.enlacePago.set(pago.enlacePago);
       this.montoPago.set(pago.monto);
       this.modal.set('pago');
-      this.estadoPago.set('Completa el pago de prueba y luego vuelve aquí para consultar la confirmación.');
+      this.estadoPago.set('Completa el pago y luego vuelve aquí para consultar la confirmación.');
       this.iniciarSeguimientoPago();
     } catch (error: unknown) {
-      this.error.set(this.mensajeError(error, 'No se pudo preparar el pago de prueba.'));
+      this.error.set(this.mensajeError(error, 'No se pudo preparar el pago.'));
     } finally {
       this.procesando.set(false);
     }
@@ -331,7 +351,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     if (!solicitud || !token) return;
     this.estadoPago.set('Consultando confirmación segura del pago…');
     try {
-      const actualizada = await firstValueFrom(this.api.consultar(solicitud.id, token));
+      const actualizada = await firstValueFrom(this.api.consultarPago(solicitud.id, token));
       this.solicitud.set(actualizada);
       if (actualizada.estado === 'MATRICULADA') this.mostrarExito(actualizada);
       else this.estadoPago.set('Aún no recibimos confirmación del pago. Espera un momento y vuelve a consultar.');
@@ -361,8 +381,16 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   }
 
   documentosAprobados(): boolean {
-    return this.solicitud()?.documentos.length === 3
-      && this.solicitud()!.documentos.every(d => d.estado === 'VALIDADO');
+    const documentos = this.solicitud()?.documentos ?? [];
+    return documentos.length === 3 && this.documentTypes.every(tipo => {
+      const doc = documentos.find(d => d.tipo === tipo);
+      if (!doc || doc.estado !== 'VALIDADO' || doc.iaValida !== true) return false;
+      if (tipo === 'RECIBO_SERVICIO') return true;
+      if (doc.dniApiCoincide !== true) return false;
+      return tipo === 'PARTIDA_NACIMIENTO'
+        ? doc.estadoFirma === 'VALIDA' && doc.vinculoParentalCoincide === true
+        : doc.estadoFirma === 'VALIDA' || doc.estadoFirma === 'NO_APLICA';
+    });
   }
 
   actualizarRevision(): void {
@@ -404,6 +432,16 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       this.nombresApoderado, this.apellidoPaternoApoderado, this.apellidoMaternoApoderado,
       this.celularApoderado, this.direccionApoderado, this.ubigeoApoderado];
     if (required.some(value => !value.trim())) return this.error.set('Completa todos los campos obligatorios.'), false;
+    if (!fechaNacimientoValida(this.nacimientoEstudiante)) {
+      return this.error.set('La fecha de nacimiento debe ser válida y anterior al día de hoy.'), false;
+    }
+    if (this.advertenciaEdad) return this.error.set(this.advertenciaEdad), false;
+    if ([this.nombresEstudiante, this.apellidoPaternoEstudiante, this.apellidoMaternoEstudiante,
+      this.nombresApoderado, this.apellidoPaternoApoderado, this.apellidoMaternoApoderado]
+      .some(value => value.trim().length > 20)
+      || this.emailApoderado.trim().length > 50 || this.direccionApoderado.trim().length > 150) {
+      return this.error.set('Revisa la longitud de los nombres (20), correo (50) o dirección (150 caracteres).'), false;
+    }
     if (!/^\d{8}$/.test(this.documentoEstudiante) || !/^\d{8}$/.test(this.documentoApoderado)) {
       return this.error.set('Los DNI deben tener 8 dígitos.'), false;
     }
@@ -412,6 +450,9 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     }
     if (this.emailApoderado.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.emailApoderado.trim())) {
       return this.error.set('Ingresa un correo electrónico válido o deja el campo vacío.'), false;
+    }
+    if (this.parentesco !== 'PADRE' && this.parentesco !== 'MADRE') {
+      return this.error.set('Por ahora la solicitud admite únicamente al padre o a la madre.'), false;
     }
     if (!this.consentimientoGemini) return this.error.set('Autoriza el procesamiento de documentos para continuar.'), false;
     if (this.documentTypes.some(type => !this.archivos[type])) return this.error.set('Adjunta los tres documentos requeridos.'), false;
@@ -442,7 +483,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
           return;
         }
         if (solicitud.estado === 'MATRICULADA') this.mostrarExito(solicitud);
-        else if (solicitud.estado === 'PAGO_PENDIENTE' && solicitud.enlacePago) {
+        else if (solicitud.estado === 'PAGO_PENDIENTE' && solicitud.enlacePago && this.documentosAprobados()) {
           this.enlacePago.set(solicitud.enlacePago);
           this.montoPago.set(solicitud.montoPago);
           this.modal.set('pago');
@@ -468,10 +509,15 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
         this.iniciarNuevaSolicitud();
         return;
       case 'PAGO_PENDIENTE':
+        if (!this.documentosAprobados()) {
+          this.detenerSeguimientoPago();
+          this.modal.set('documentos');
+          return;
+        }
         this.enlacePago.set(solicitud.enlacePago ?? '');
         this.montoPago.set(solicitud.montoPago);
         this.modal.set('pago');
-        this.estadoPago.set('Completa el pago de prueba o consulta su confirmación.');
+        this.estadoPago.set('Completa el pago o consulta su confirmación.');
         this.iniciarSeguimientoPago();
         return;
       case 'DOCUMENTOS_VALIDADOS':

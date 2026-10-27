@@ -1,6 +1,6 @@
 export type EstadoObligacion = 'PENDIENTE' | 'PAGADO_TOTAL' | 'PAGADO_PARCIAL' | 'VENCIDO' | 'CANCELADO_POR_TRASLADO';
 export type TipoConcepto = 'MATRICULA' | 'PENSION' | 'CERTIFICADO' | 'OTRO';
-export type MetodoPago = 'EFECTIVO' | 'TRANSFERENCIA' | 'TARJETA_CREDITO' | 'TARJETA_DEBITO' | 'YAPE' | 'PLIN';
+export type MetodoPago = 'EFECTIVO' | 'TRANSFERENCIA' | 'TARJETA_CREDITO' | 'TARJETA_DEBITO' | 'YAPE' | 'PLIN' | 'PAGO_EFECTIVO';
 export type EstadoPago = 'APROBADO' | 'RECHAZADO' | 'REVERTIDO';
 export type PasarelaProveedor = 'CULQI' | 'NIUBIZ' | 'MERCADO_PAGO' | 'CAJA_EFECTIVO' | 'TRANSFERENCIA';
 export type TipoComprobante = 'BOLETA' | 'RECIBO_INTERNO';

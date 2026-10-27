@@ -19,6 +19,7 @@ export interface DocumentoSolicitudDto {
   dniApiCoincide: boolean | null;
   estadoFirma: EstadoFirmaDigital | null;
   detalleFirma: string | null;
+  vinculoParentalCoincide: boolean | null;
 }
 
 export interface AnioLectivoPublicoDto {
@@ -36,6 +37,8 @@ export interface SeccionMatriculaPublicaDto {
   grado: string;
   letra: string;
   vacantesDisponibles: number;
+  edadMinimaAlCorte: number;
+  edadMaximaAlCorte: number;
 }
 
 export interface CatalogoMatriculaPublicaDto {
@@ -67,7 +70,7 @@ export interface CrearSolicitudMatriculaPublicaDto {
   emailApoderado: string | null;
   direccionApoderado: string;
   ubigeoApoderado: string;
-  parentesco: 'PADRE' | 'MADRE' | 'TUTOR_LEGAL' | 'ABUELO_A' | 'OTRO';
+  parentesco: 'PADRE' | 'MADRE';
   consentimientoGemini: true;
 }
 

@@ -16,6 +16,8 @@ export interface Stage9GradeRow {
   areaName: string;
   grade: 'AD' | 'A' | 'B' | 'C';
   conclusion?: string | null;
+  competenciaId?: number;
+  competenciaName?: string;
 }
 
 export interface Stage9Payment {

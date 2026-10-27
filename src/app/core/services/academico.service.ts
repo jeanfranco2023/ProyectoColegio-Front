@@ -19,6 +19,10 @@ export class AcademicoService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/academico`;
 
+  listarAreas(nivelId: number): Observable<Array<{id: number; nombre: string}>> {
+    return this.http.get<Array<{id: number; nombre: string}>>(`${environment.apiUrl}/curriculo/areas`, {params: {nivelId}});
+  }
+
   listarAsignaciones(): Observable<AsignacionDocenteResponseDto[]> {
     return this.http.get<AsignacionDocenteResponseDto[]>(`${environment.apiUrl}/curriculo/asignaciones`);
   }

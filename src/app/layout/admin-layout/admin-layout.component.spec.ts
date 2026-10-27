@@ -49,7 +49,20 @@ const expectedMenuByRole = {
 
 describe('admin menu by role', () => {
   it.each(Object.entries(expectedMenuByRole))('shows the reference menu for %s', (role, expectedItems) => {
-    const actualItems = visibleAdminMenuItems([role]).map(({ label, route }) => [label, route]);
+    const nuevasRutas = ['/admin/horarios','/admin/refuerzos','/admin/tutoria','/admin/observaciones-conductuales','/admin/portal-apoderado','/admin/suplencias','/admin/aprobacion-suplencias'];
+    const actualItems = visibleAdminMenuItems([role]).filter(item => !nuevasRutas.includes(item.route)).map(({ label, route }) => [label, route]);
     expect(actualItems).toEqual(expectedItems);
+  });
+
+  it('permite solicitar suplentes al apoderado y reserva la aprobación a gestión', () => {
+    const familia = visibleAdminMenuItems(['APODERADO']).map(item => item.route);
+    expect(familia).toContain('/admin/portal-apoderado');
+    expect(familia).toContain('/admin/suplencias');
+    expect(familia).not.toContain('/admin/aprobacion-suplencias');
+    expect(familia).not.toContain('/admin/tutoria');
+    expect(visibleAdminMenuItems(['DIRECCION']).some(item => item.route === '/admin/aprobacion-suplencias')).toBe(true);
+    expect(visibleAdminMenuItems(['DOCENTE']).some(item => item.route === '/admin/horarios')).toBe(true);
+    expect(visibleAdminMenuItems(['DOCENTE']).some(item => item.route === '/admin/refuerzos')).toBe(true);
+    expect(familia).not.toContain('/admin/refuerzos');
   });
 });

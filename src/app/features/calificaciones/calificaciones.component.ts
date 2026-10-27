@@ -1,6 +1,8 @@
 import { Component, ElementRef, inject, signal, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
+import { CargaPlanillaComponent } from '../../shared/ui/carga-planilla.component';
 import { EvaluacionService } from '../../core/services/evaluacion.service';
 import { AcademicoService } from '../../core/services/academico.service';
 import { AsignacionDocenteResponseDto, CompetenciaResponseDto, PeriodoResponseDto } from '../../core/models/academico.model';
@@ -17,12 +19,13 @@ export interface EvaluacionAlumno {
   conclusionDescriptiva: string;
   requiereRefuerzo: boolean | null;
   competenciaId: number;
+  sugerenciaIaUtilizada?: boolean;
 }
 
 @Component({
   selector: 'app-calificaciones',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CargaPlanillaComponent],
 template: `
     <main class="grid min-w-0 gap-[22px] text-[#172b4d] max-[600px]:gap-4 max-[600px]:pb-1" aria-labelledby="calificaciones-title">
       <header class="flex items-end justify-between gap-6 border-t-[3px] border-[rgb(196_154_88_/_50%)] pt-3 max-[600px]:items-stretch max-[600px]:flex-col max-[600px]:gap-[14px]">
@@ -49,6 +52,8 @@ template: `
       @if (error()) {
         <div class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#fca5a5] bg-[#fee2e2] text-[#7f1d1d] m-0 text-[13px]" role="alert">{{ error() }}</div>
       }
+
+      <app-carga-planilla [asignacionId]="+asignacionId" [periodoId]="+periodoId" [seccionId]="seccionActualId" [competenciaId]="+competenciaId" (completada)="cargarCalificaciones()" />
 
       <section class="grid min-w-0 grid-cols-[minmax(160px,.9fr)_minmax(240px,1.25fr)_minmax(310px,1.55fr)_minmax(150px,.8fr)] items-end gap-4 rounded-2xl border border-[#e1e8f1] bg-white !p-[18px] shadow-[0_5px_16px_rgb(23_43_77_/_5%)] max-[1399px]:grid-cols-2 max-[600px]:grid-cols-1 max-[600px]:gap-[13px] max-[600px]:!p-[15px]" aria-label="Filtros de calificaciones">
         <div class="grid gap-1 font-sans text-base leading-6 text-[#1e293b] min-w-0 m-0">
@@ -162,6 +167,11 @@ template: `
           </header>
           <form (ngSubmit)="aplicarEdicion()" class="flex min-h-0 flex-1 flex-col overflow-hidden">
             <div class="grid min-h-0 flex-1 gap-[18px] overflow-auto px-6 py-[22px] max-[600px]:px-4">
+              <label class="grid gap-2 text-sm">Evidencia de aprendizaje, sin nombres ni DNI
+                <textarea [(ngModel)]="evidenciaObservada" name="evidencia" maxlength="300" rows="2" class="rounded-lg border p-3"></textarea>
+              </label>
+              <button type="button" class="min-h-11 rounded-lg border border-indigo-200 bg-indigo-50 p-2 text-indigo-800 disabled:opacity-50" (click)="sugerirConclusionConIa()" [disabled]="generandoIa() || notaEditada === '-' || !evidenciaObservada.trim()">{{ generandoIa() ? 'Generando sugerencia…' : 'Sugerir conclusión con IA' }}</button>
+              <p role="status" class="text-sm">{{ mensajeIa() }}</p>
               <label class="grid gap-1 font-sans text-base leading-6 text-[#1e293b] m-0 gap-[7px]">
                 <span class="font-sans text-[13px] leading-[1.4] font-medium text-[#1e293b]">Calificación CNEB *</span>
                 <select [(ngModel)]="notaEditada" name="nota" required class="box-border min-h-11 w-full rounded-lg border border-[#e2e8f0] bg-white px-3 py-2 font-sans text-base leading-6 text-[#1e293b] placeholder:text-[#64748b] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 aria-[invalid=true]:border-[#7f1d1d] box-border min-h-11 w-full rounded-lg border border-[#e2e8f0] bg-white px-3 py-2 font-sans text-base leading-6 text-[#1e293b] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 aria-[invalid=true]:border-[#7f1d1d] !min-h-[46px] !text-sm max-[600px]:!text-base min-w-0 !min-h-[46px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !py-2">
@@ -195,6 +205,12 @@ export class CalificacionesComponent implements OnInit {
   readonly alumnoEditando = signal<EvaluacionAlumno | null>(null);
   notaEditada: NotaCNEB = '-';
   conclusionEditada = '';
+  evidenciaObservada = '';
+  sugerenciaIaEditada = false;
+  readonly generandoIa = signal(false);
+  readonly mensajeIa = signal('');
+  readonly areas = signal<Array<{id: number; nombre: string}>>([]);
+  private solicitudIa = 0;
 
   periodoId = 0;
   asignacionId = 0;
@@ -207,21 +223,56 @@ export class CalificacionesComponent implements OnInit {
   cargando = signal(false);
 
   readonly alumnos = signal<EvaluacionAlumno[]>([]);
+  get seccionActualId(): number { return this.asignaciones().find(a => a.id === Number(this.asignacionId))?.seccionId ?? 0; }
 
   abrirEdicion(alumno: EvaluacionAlumno): void {
     this.alumnoEditando.set(alumno);
     this.notaEditada = alumno.c1;
     this.conclusionEditada = alumno.conclusionDescriptiva;
+    this.sugerenciaIaEditada = alumno.sugerenciaIaUtilizada ?? false;
+    this.evidenciaObservada = '';
+    this.mensajeIa.set('');
+    this.generandoIa.set(false);
+    this.solicitudIa++;
     this.edicionDialog.nativeElement.showModal();
   }
 
-  cerrarEdicion(): void { this.edicionDialog.nativeElement.close(); this.alumnoEditando.set(null); }
+  cerrarEdicion(): void { this.solicitudIa++; this.edicionDialog.nativeElement.close(); this.alumnoEditando.set(null); }
+
+  sugerirConclusionConIa(): void {
+    const alumno = this.alumnoEditando();
+    const asignacion = this.asignaciones().find(a => a.id === Number(this.asignacionId));
+    const competencia = this.competencias().find(c => c.id === Number(this.competenciaId));
+    const area = this.areas().find(a => a.id === asignacion?.areaCurricularId);
+    if (!alumno || !competencia || !area || this.notaEditada === '-' || !this.evidenciaObservada.trim()) {
+      this.mensajeIa.set('Selecciona una calificación e indica evidencia concreta de aprendizaje.'); return;
+    }
+    const solicitud = ++this.solicitudIa;
+    const nota = this.notaEditada;
+    const textoAntes = this.conclusionEditada;
+    this.generandoIa.set(true); this.mensajeIa.set('');
+    this.evaluacionService.sugerirConclusion({areaCurricular: area.nombre,
+      competenciaDescripcion: competencia.nombre, nivelLogro: nota, desempenoObservado: this.evidenciaObservada.trim()}).subscribe({
+      next: respuesta => {
+        if (solicitud !== this.solicitudIa) return;
+        this.generandoIa.set(false);
+        if (nota !== this.notaEditada || textoAntes !== this.conclusionEditada) {
+          this.mensajeIa.set('La evaluación cambió durante la consulta. Solicita una nueva sugerencia.'); return;
+        }
+        this.conclusionEditada = `${respuesta.conclusionDescriptiva}\nAspecto por mejorar: ${respuesta.aspectoMejora}\nRecomendación: ${respuesta.recomendacionApoderado}`;
+        this.sugerenciaIaEditada = respuesta.generadoPorIa;
+        this.mensajeIa.set('Sugerencia recibida. Revísala y ajústala antes de aplicar los cambios.');
+      },
+      error: err => { if (solicitud !== this.solicitudIa) return;
+        this.generandoIa.set(false); this.mensajeIa.set(err?.error?.message ?? 'No se pudo generar la sugerencia. Puedes redactar la conclusión.'); }
+    });
+  }
 
   aplicarEdicion(): void {
     const seleccionado = this.alumnoEditando();
     if (!seleccionado || this.notaEditada === '-') return;
     this.alumnos.update(lista => lista.map(alumno => alumno.matriculaId === seleccionado.matriculaId
-      ? { ...alumno, c1: this.notaEditada, conclusionDescriptiva: this.conclusionEditada.trim(), requiereRefuerzo: this.notaEditada === 'C' }
+      ? { ...alumno, c1: this.notaEditada, conclusionDescriptiva: this.conclusionEditada.trim(), requiereRefuerzo: this.notaEditada === 'C', sugerenciaIaUtilizada: this.sugerenciaIaEditada }
       : alumno));
     this.cerrarEdicion();
     this.guardadoExitoso.set(false);
@@ -245,6 +296,7 @@ export class CalificacionesComponent implements OnInit {
     this.competenciaId = 0;
     this.alumnos.set([]);
     this.error.set(null);
+    this.academicoService.listarAreas(asignacion.nivelId).subscribe({next: areas => this.areas.set(areas), error: () => this.areas.set([])});
     this.academicoService.listarCompetencias(asignacion.areaCurricularId).subscribe({
       next: competencias => { this.competencias.set(competencias); this.competenciaId = competencias[0]?.id ?? 0; this.cargarCalificaciones(); },
       error: () => this.error.set('No se pudieron consultar las competencias.')
@@ -258,8 +310,10 @@ export class CalificacionesComponent implements OnInit {
   cargarCalificaciones(): void {
     this.cargando.set(true);
     if (!this.asignacionId || !this.periodoId || !this.competenciaId) { this.cargando.set(false); return; }
-    this.evaluacionService.listarMatriz(Number(this.asignacionId), Number(this.periodoId), Number(this.competenciaId)).subscribe({
-      next: (res) => {
+    forkJoin({matriz: this.evaluacionService.listarMatriz(Number(this.asignacionId), Number(this.periodoId), Number(this.competenciaId)),
+      notas: this.evaluacionService.listarCalificaciones(Number(this.asignacionId), Number(this.periodoId))}).subscribe({
+      next: ({matriz: res, notas}) => {
+        const origenIa = new Map(notas.map(n => [`${n.matriculaId}/${n.competenciaId}`, n.sugerenciaIaUtilizada ?? false]));
         this.cargando.set(false);
         if (Array.isArray(res)) {
           this.alumnos.set(
@@ -273,6 +327,7 @@ export class CalificacionesComponent implements OnInit {
               conclusionDescriptiva: c.conclusionDescriptiva || '',
               requiereRefuerzo: c.requiereRefuerzo ?? null,
               competenciaId: c.competenciaId
+              ,sugerenciaIaUtilizada: origenIa.get(`${c.matriculaId}/${c.competenciaId}`) ?? false
             }))
           );
         } else {
@@ -299,7 +354,7 @@ export class CalificacionesComponent implements OnInit {
         competenciaId: a.competenciaId,
         calificacionCualitativa: a.c1 as 'AD' | 'A' | 'B' | 'C',
         conclusionDescriptiva: a.conclusionDescriptiva,
-        sugerenciaIaUtilizada: false
+        sugerenciaIaUtilizada: a.sugerenciaIaUtilizada ?? false
       }))
     };
 

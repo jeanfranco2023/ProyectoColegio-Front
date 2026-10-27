@@ -144,7 +144,7 @@
   </section>
 
   <section class="documents-section" aria-labelledby="documents-prep-title">
-    <div class="documents-copy"><span class="eyebrow">TENLOS A LA MANO</span><h2 id="documents-prep-title">Una solicitud más fácil<br>empieza por prepararte.</h2><p>Reúne estos archivos antes de abrir el formulario para completar tu solicitud con tranquilidad.</p><div class="documents-format"><span class="format-icon">↑</span><span>PDF, JPG, PNG o WebP<small>Máximo 5 MB por documento</small></span></div></div>
+    <div class="documents-copy"><span class="eyebrow">TENLOS A LA MANO</span><h2 id="documents-prep-title">Una solicitud más fácil<br>empieza por prepararte.</h2><p>Reúne estos archivos antes de abrir el formulario para completar tu solicitud con tranquilidad.</p><div class="documents-format"><span class="format-icon">↑</span><span>PDF<small>Máximo 5 MB por documento</small></span></div></div>
     <div class="documents-checklist"><div><span>01</span><b>Partida de nacimiento</b><i>✓</i></div><div><span>02</span><b>DNI o C4 del estudiante</b><i>✓</i></div><div><span>03</span><b>Recibo de luz o agua</b><i>✓</i></div><small>Los documentos se revisan de uno en uno para cuidar la disponibilidad del servicio.</small></div>
   </section>
   }
@@ -155,7 +155,7 @@
     <div class="faq-heading"><span class="eyebrow">¿TIENES DUDAS?</span><h2 id="faq-title">Antes de empezar</h2><p>Información breve para acompañarte durante la solicitud.</p><a [routerLink]="['/matricula', 'admision']">Ver los pasos de admisión <span>→</span></a></div>
     <div class="faq-list">
       <details><summary>¿Necesito crear una cuenta para solicitar matrícula?<span>+</span></summary><p>No. Puedes iniciar la solicitud pública sin crear una cuenta ni iniciar sesión.</p></details>
-      <details><summary>¿Qué documentos debo preparar?<span>+</span></summary><p>Partida de nacimiento, DNI o C4 del estudiante y un recibo de luz o agua. Se aceptan PDF, JPG, PNG o WebP de hasta 5 MB cada uno.</p></details>
+      <details><summary>¿Qué documentos debo preparar?<span>+</span></summary><p>Partida de nacimiento, DNI o C4 del estudiante y un recibo de luz o agua. Se aceptan PDF de hasta 5 MB cada uno.</p></details>
       <details><summary>¿Cuánto demora la revisión de documentos?<span>+</span></summary><p>Los documentos se procesan uno por uno y la espera puede variar según la disponibilidad del servicio.</p></details>
       <details><summary>¿Cuándo queda confirmada la matrícula?<span>+</span></summary><p>Después de que el sistema verifica que el pago fue aprobado. En ese momento se confirma el proceso y se registra la matrícula.</p></details>
     </div>
@@ -204,11 +204,12 @@
               <label>Año lectivo <span class="required-mark" aria-hidden="true">*</span><select [ngModel]="anioId()" (ngModelChange)="anioId.set(+$event); seccionId.set(null)" name="anioLectivo" required><option [ngValue]="null">Selecciona</option>@for (anio of catalogo().anios; track anio.id) {<option [ngValue]="anio.id">{{ anio.anio }}</option>}</select></label>
               <label>Grado y sección <span class="required-mark" aria-hidden="true">*</span><select [ngModel]="seccionId()" (ngModelChange)="seccionId.set(+$event)" name="seccion" required><option [ngValue]="null">Selecciona</option>@for (seccion of seccionesDisponibles; track seccion.id) {<option [ngValue]="seccion.id">{{ seccion.nivel }} · {{ seccion.grado }} · {{ seccion.letra }} ({{ seccion.vacantesDisponibles}} vacantes)</option>}</select></label>
               <div class="dni-lookup span-2"><label>DNI del estudiante <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="documentoEstudiante" name="documentoEstudiante" inputmode="numeric" maxlength="8" minlength="8" placeholder="8 dígitos" required></label><button class="button button-quiet" type="button" (click)="consultarDni('estudiante')" [disabled]="consultandoDniEstudiante()">{{ consultandoDniEstudiante() ? 'Consultando…' : 'Consultar DNI' }}</button></div>
-              <label class="span-2">Nombres <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="nombresEstudiante" name="nombresEstudiante" autocomplete="given-name" maxlength="100" required></label>
-              <label>Apellido paterno <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="apellidoPaternoEstudiante" name="apellidoPaternoEstudiante" autocomplete="family-name" maxlength="80" required></label>
-              <label>Apellido materno <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="apellidoMaternoEstudiante" name="apellidoMaternoEstudiante" maxlength="80" required></label>
+              <label class="span-2">Nombres <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="nombresEstudiante" name="nombresEstudiante" autocomplete="given-name" maxlength="20" required></label>
+              <label>Apellido paterno <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="apellidoPaternoEstudiante" name="apellidoPaternoEstudiante" autocomplete="family-name" maxlength="20" required></label>
+              <label>Apellido materno <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="apellidoMaternoEstudiante" name="apellidoMaternoEstudiante" maxlength="20" required></label>
               <p class="span-2 form-hint">La consulta solo completa nombres y apellidos. Fecha de nacimiento y género deben coincidir con la partida.</p>
-              <label>Fecha de nacimiento <span class="required-mark" aria-hidden="true">*</span><input type="date" [(ngModel)]="nacimientoEstudiante" name="nacimientoEstudiante" required></label>
+              <label>Fecha de nacimiento <span class="required-mark" aria-hidden="true">*</span><input type="date" [(ngModel)]="nacimientoEstudiante" name="nacimientoEstudiante" [max]="fechaNacimientoMaxima" [attr.aria-invalid]="advertenciaEdad ? true : null" aria-describedby="aviso-edad" required></label>
+              <p id="aviso-edad" role="status">{{ advertenciaEdad }}</p>
               <label>Género<select [(ngModel)]="generoEstudiante" name="genero"><option value="M">Masculino</option><option value="F">Femenino</option></select></label>
               </div>
             </details>
@@ -216,22 +217,22 @@
               <summary><span class="form-step-number">2</span><span><b>Datos del apoderado</b><small>Contacto responsable para la comunicación institucional.</small></span></summary>
               <div class="form-grid form-step-content">
               <div class="dni-lookup span-2"><label>DNI del apoderado <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="documentoApoderado" name="documentoApoderado" inputmode="numeric" maxlength="8" minlength="8" placeholder="8 dígitos" required></label><button class="button button-quiet" type="button" (click)="consultarDni('apoderado')" [disabled]="consultandoDniApoderado()">{{ consultandoDniApoderado() ? 'Consultando…' : 'Consultar DNI' }}</button></div>
-              <label>Nombres <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="nombresApoderado" name="nombresApoderado" maxlength="100" required></label>
-              <label>Apellido paterno <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="apellidoPaternoApoderado" name="apellidoPaternoApoderado" maxlength="80" required></label>
-              <label>Apellido materno <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="apellidoMaternoApoderado" name="apellidoMaternoApoderado" maxlength="80" required></label>
+              <label>Nombres <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="nombresApoderado" name="nombresApoderado" maxlength="20" required></label>
+              <label>Apellido paterno <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="apellidoPaternoApoderado" name="apellidoPaternoApoderado" maxlength="20" required></label>
+              <label>Apellido materno <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="apellidoMaternoApoderado" name="apellidoMaternoApoderado" maxlength="20" required></label>
               <label>Celular <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="celularApoderado" name="celularApoderado" inputmode="tel" maxlength="9" placeholder="9 dígitos" required></label>
-              <label>Correo electrónico<input type="email" [(ngModel)]="emailApoderado" name="emailApoderado" maxlength="100"></label>
-              <label>Parentesco<select [(ngModel)]="parentesco" name="parentesco"><option value="MADRE">Madre</option><option value="PADRE">Padre</option><option value="TUTOR_LEGAL">Tutor legal</option><option value="ABUELO_A">Abuelo/a</option><option value="OTRO">Otro</option></select></label>
+              <label>Correo electrónico<input type="email" [(ngModel)]="emailApoderado" name="emailApoderado" maxlength="50"></label>
+              <label>Parentesco<select [(ngModel)]="parentesco" name="parentesco"><option value="MADRE">Madre</option><option value="PADRE">Padre</option></select></label>
               <label>Ubigeo INEI <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="ubigeoApoderado" name="ubigeo" inputmode="numeric" maxlength="6" minlength="6" placeholder="6 dígitos" required></label>
-              <label class="span-2">Dirección <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="direccionApoderado" name="direccion" maxlength="200" required></label>
+              <label class="span-2">Dirección <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="direccionApoderado" name="direccion" maxlength="150" required></label>
               </div>
               @if (mensajeDni()) { <p class="form-hint" role="status">{{ mensajeDni() }}</p> }
-              <label class="consent-row"><input type="checkbox" [(ngModel)]="consentimientoGemini" name="consentimientoGemini"><span>Autorizo guardar estos archivos en almacenamiento privado de la institución y enviarlos a Google Gemini para revisar tipo, legibilidad y coherencia. La revisión automática no sustituye la validación oficial. <span class="required-mark" aria-hidden="true">*</span></span></label>
+              <label class="consent-row"><input type="checkbox" [(ngModel)]="consentimientoGemini" name="consentimientoGemini"><span>Autorizo guardar estos archivos en almacenamiento privado de la institución y enviarlos a Google Gemini para revisar tipo, legibilidad y coherencia, y extraer de la partida los datos del padre y la madre para contrastarlos. Autorizo consultar la identidad del estudiante y del progenitor con el proveedor de DNI configurado. La revisión automática no sustituye la validación oficial. <span class="required-mark" aria-hidden="true">*</span></span></label>
             </details>
           }
 
           <details class="form-step" name="ui-public-form-steps" [open]="!!solicitud()">
-            <summary><span class="form-step-number">3</span><span><b>Documentos del estudiante</b><small>Sube una imagen nítida, completa y sin reflejos.</small></span></summary>
+            <summary><span class="form-step-number">3</span><span><b>Documentos del estudiante</b><small>Adjunta los tres PDF completos y legibles; la partida debe ser el original firmado por RENIEC.</small></span></summary>
             <div class="form-step-content">
               <div class="review-estimate"><span>◷</span><p><b>Revisión secuencial</b><small>Se procesa un documento a la vez. Los documentos ya validados no se vuelven a enviar.</small></p></div>
               <div class="upload-grid">
@@ -240,7 +241,7 @@
                 <span class="upload-glyph">{{ estadoDocumento(tipo)?.estado === 'VALIDADO' ? '✓' : '↑' }}</span>
                 <b>{{ etiquetaDocumento(tipo) }} <span class="required-mark" aria-hidden="true">*</span></b>
                 <small>{{ estadoDocumento(tipo)?.estado === 'OBSERVADO' ? estadoDocumento(tipo)?.observacion : estadoDocumento(tipo)?.estado === 'VALIDADO' ? 'Validado · no requiere reemplazo' : archivos[tipo]?.name || 'Seleccionar archivo' }}</small>
-                <input type="file" [attr.accept]="tipo === 'PARTIDA_NACIMIENTO' ? 'application/pdf' : 'application/pdf,image/jpeg,image/png,image/webp'" (change)="seleccionarArchivo(tipo, $event)" [disabled]="estadoDocumento(tipo)?.estado === 'VALIDADO'" [attr.aria-label]="'Adjuntar ' + etiquetaDocumento(tipo)">
+                <input type="file" accept="application/pdf" (change)="seleccionarArchivo(tipo, $event)" [disabled]="estadoDocumento(tipo)?.estado === 'VALIDADO'" [attr.aria-label]="'Adjuntar ' + etiquetaDocumento(tipo)">
               </label>
             }
               </div>
@@ -282,8 +283,8 @@
 
     @if (modal() === 'pago') {
       <section class="enrollment-modal compact-modal " role="dialog" aria-modal="true" aria-labelledby="payment-title" cdkTrapFocus cdkTrapFocusAutoCapture (click)="$event.stopPropagation()">
-        <header class="modal-header"><div><span class="eyebrow">ETAPA 3 DE 3</span><h2 id="payment-title">Derecho de matrícula</h2><p>Entorno de prueba. No se realizará un cobro real.</p></div><button type="button" class="icon-close" aria-label="Cerrar" (click)="cerrarModal()">×</button></header>
-        <div class="modal-body payment-body"><div class="payment-total"><span>Total de prueba</span><strong>S/ {{ montoPago() | number:'1.2-2' }}</strong><small>Mercado Pago · Soles peruanos (PEN)</small></div><p class="payment-notice">Tu solicitud todavía no es una matrícula. Se confirmará y aparecerá en el padrón únicamente cuando el backend verifique el pago aprobado.</p><a class="button button-primary payment-link" [href]="enlacePago()">Abrir Mercado Pago de prueba <span>↗</span></a><p class="payment-poll">Al terminar, Mercado Pago te devolverá a esta página para verificar el resultado. {{ estadoPago() }}</p>@if (error()) { <p class="form-error" role="alert">{{ error() }}</p> }</div>
+        <header class="modal-header"><div><span class="eyebrow">ETAPA 3 DE 3</span><h2 id="payment-title">Derecho de matrícula</h2><p>Paga con los medios disponibles en Mercado Pago.</p></div><button type="button" class="icon-close" aria-label="Cerrar" (click)="cerrarModal()">×</button></header>
+        <div class="modal-body payment-body"><div class="payment-total"><span>Total</span><strong>S/ {{ montoPago() | number:'1.2-2' }}</strong><small>Mercado Pago · Soles peruanos (PEN)</small></div><p class="payment-notice">Tu solicitud todavía no es una matrícula. Se confirmará y aparecerá en el padrón únicamente cuando el backend verifique el pago aprobado.</p><a class="button button-primary payment-link" [href]="enlacePago()" target="_blank" rel="noopener noreferrer">Pagar con Mercado Pago <span>↗</span></a><p class="payment-poll">Al terminar, Vuelve a esta página para consultar la confirmación segura del pago. {{ estadoPago() }}</p>@if (error()) { <p class="form-error" role="alert">{{ error() }}</p> }</div>
         <footer class="modal-footer"><button type="button" class="button button-quiet" (click)="actualizarEstadoPago()">Ya pagué · consultar estado</button></footer>
       </section>
     }

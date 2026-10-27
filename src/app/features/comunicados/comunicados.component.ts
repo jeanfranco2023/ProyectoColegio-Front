@@ -109,7 +109,7 @@ template: `
                 <span>Publicado por: {{ item.autor }}</span>
                 <span>{{ item.fechaPublicacion | uiDatePe }}</span>
               </div>
-              @if (store.hasRole('APODERADO') && item.requiereAcuse) {
+              @if (esSoloApoderado() && item.requiereAcuse) {
                 <button (click)="confirmarAcuse(item.id)" [disabled]="item.acuseConfirmado" class="mt-3 p-2 rounded bg-blue-600 text-white text-xs !text-[11px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] disabled:cursor-not-allowed disabled:opacity-60">{{ item.acuseConfirmado ? 'Lectura confirmada' : 'Confirmar lectura y acuse' }}</button>
               }
             </div>
@@ -153,7 +153,7 @@ export class ComunicadosComponent implements OnInit {
   cargarComunicados(): void {
     this.error.set(null);
     this.cargando.set(true);
-    const consulta = this.store.hasRole('APODERADO')
+    const consulta = this.esSoloApoderado()
       ? this.comunicadoService.consultarBandeja(0, 20).pipe(map(res => res.comunicados))
       : this.comunicadoService.listarPublicados();
     consulta.subscribe({
@@ -192,6 +192,10 @@ export class ComunicadosComponent implements OnInit {
     this.contenido = '';
     this.requiereAcuse = false;
     this.comunicadoDialog.nativeElement.showModal();
+  }
+
+  esSoloApoderado(): boolean {
+    return this.store.hasRole('APODERADO') && !this.store.hasAnyRole(['DIRECCION', 'SECRETARIA']);
   }
 
   cerrarDialogo(): void { this.comunicadoDialog.nativeElement.close(); }
