@@ -12,7 +12,7 @@ import { MatInputModule } from '@angular/material/input';
   standalone: true,
   imports: [CommonModule, FormsModule, MatButtonModule, MatFormFieldModule, MatInputModule],
 template: `
-    <div class="max-w-4xl min-w-0 space-y-8 font-inter text-[#172b4d] [&_button]:min-h-11 [&_input]:min-h-11 [&_:focus-visible]:outline-[3px] [&_:focus-visible]:outline-[#2864c5] [&_:focus-visible]:outline-offset-[3px] [&_.grid>div]:min-w-0 [&_.grid>article]:min-w-0">
+    <div class="max-w-4xl min-w-0 space-y-8 font-sans text-ui-text [&_button]:min-h-11 [&_input]:min-h-11 [&_:focus-visible]:outline-[3px] [&_:focus-visible]:outline-[#2864c5] [&_:focus-visible]:outline-offset-[3px] [&_.grid>div]:min-w-0 [&_.grid>article]:min-w-0">
       <!-- Header -->
       <div class="border-t-[3px] border-[#c49a58]/50 pt-3">
         <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#14213d]">Mi Perfil Institucional</h2>

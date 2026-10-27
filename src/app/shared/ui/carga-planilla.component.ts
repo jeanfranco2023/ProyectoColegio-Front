@@ -3,7 +3,7 @@ import { Subscription } from 'rxjs';
 import { EvaluacionService, ImportacionCneb } from '../../core/services/evaluacion.service';
 @Component({
     selector: 'app-carga-planilla', standalone: true,
-    template: `<section class="grid gap-3 rounded-xl border border-slate-200 bg-white p-4" aria-label="Importar planilla CNEB">
+    template: `<section class="grid gap-3 rounded-xl border border-ui-border bg-ui-surface p-4 font-sans text-ui-text" aria-label="Importar planilla CNEB">
     <h2 class="font-semibold">Importar calificaciones CSV o Excel</h2>
     <p class="text-sm">Descarga la plantilla de la competencia seleccionada. Conserva el DNI como texto para mantener sus ocho dígitos.</p>
     <div class="flex flex-wrap items-center gap-3">
@@ -12,14 +12,14 @@ import { EvaluacionService, ImportacionCneb } from '../../core/services/evaluaci
         <input type="file" accept=".csv,.xlsx" [disabled]="!contextoValido || procesando()" (change)="seleccionar($event)" class="min-h-11" />
       </label>
       <button type="button" class="min-h-11 rounded-lg border p-2" [disabled]="!archivo || procesando()" (click)="enviar(false)">Validar y previsualizar</button>
-      <button type="button" class="min-h-11 rounded-lg bg-blue-700 p-2 text-white disabled:opacity-50" [disabled]="!vista() || procesando()" (click)="enviar(true)">Confirmar carga</button>
+      <button type="button" class="min-h-11 rounded-lg bg-ui-accent px-3 py-2 font-sans font-semibold text-ui-accent-text disabled:opacity-50" [disabled]="!vista() || procesando()" (click)="enviar(true)">Confirmar carga</button>
     </div>
     <p role="status">{{ procesando() ? 'Procesando planilla…' : mensaje() }}</p>
-    @for (error of errores(); track error.campo) { <p role="alert" class="text-sm text-red-800">{{ error.campo }}: {{ error.mensaje }}</p> }
+    @for (error of errores(); track error.campo) { <p role="alert" class="text-sm text-ui-error-text">{{ error.campo }}: {{ error.mensaje }}</p> }
     @if (vista(); as datos) {
       <p>{{ datos.filasValidadas }} filas validadas. Todavía no se guardaron cambios.</p>
       <div class="max-h-80 overflow-auto"><table class="w-full text-left text-sm"><thead><tr><th>Fila</th><th>DNI</th><th>Estudiante</th><th>Competencia</th><th>Nota</th><th>Conclusión</th></tr></thead><tbody>
-        @for (fila of datos.filas; track fila.fila) { <tr class="border-t"><td class="p-2">{{ fila.fila }}</td><td>{{ fila.dni }}</td><td>{{ fila.estudiante }}</td><td>{{ fila.competenciaId }}</td><td>{{ fila.nota }}</td><td>{{ fila.conclusion }}</td></tr> }
+        @for (fila of datos.filas; track fila.fila) { <tr class="border-t border-ui-border"><td class="p-2">{{ fila.fila }}</td><td>{{ fila.dni }}</td><td>{{ fila.estudiante }}</td><td>{{ fila.competenciaId }}</td><td>{{ fila.nota }}</td><td>{{ fila.conclusion }}</td></tr> }
       </tbody></table></div>
     }
   </section>`
