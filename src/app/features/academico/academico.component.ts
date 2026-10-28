@@ -42,7 +42,7 @@ export interface NivelItem {
         <div class="flex items-center gap-3">
           <button
             (click)="abrirModalNuevaAula()"
-            class="px-4 py-2.5 rounded-xl bg-ui-accent hover:bg-ui-accent/90 text-ui-accent-text font-semibold !text-[11px] leading-[1.333333] sm:text-sm shadow-[var(--ui-card-shadow)] transition flex items-center gap-2 cursor-pointer max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !leading-[1.25]"
+            class="px-4 py-2.5 rounded-xl bg-ui-action hover:bg-ui-action/90 text-ui-action-text font-semibold !text-[11px] leading-[1.333333] sm:text-sm shadow-[var(--ui-card-shadow)] transition flex items-center gap-2 cursor-pointer max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !leading-[1.25]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -71,7 +71,7 @@ export interface NivelItem {
             </div>
             <footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-ui-divider bg-ui-surface px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]">
               <button type="button" class="rounded-xl border border-ui-divider bg-ui-surface-soft px-4 font-semibold text-ui-action max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogoAula()">Cancelar</button>
-              <button type="submit" [disabled]="guardando()" class="rounded-xl bg-ui-accent px-[18px] font-bold text-ui-accent-text shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ guardando() ? 'Guardando…' : 'Crear aula' }}</button>
+              <button type="submit" [disabled]="guardando()" class="rounded-xl bg-ui-action px-[18px] font-bold text-ui-action-text shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ guardando() ? 'Guardando…' : 'Crear aula' }}</button>
             </footer>
           </form>
         </div>
@@ -179,7 +179,7 @@ export interface NivelItem {
         </div>
         @if (!cargando() && !error() && aulas().length === 0) {
           <div class="relative grid justify-items-center gap-2 w-full px-5 pt-[62px] pb-9 !text-ui-muted text-center whitespace-normal [overflow-wrap:anywhere]" data-illustration="crest">
-            <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="var(--ui-action)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute top-3 left-1/2 h-[42px] w-[42px] -translate-x-1/2"><path d="M24 5 39 11v11c0 10-6.5 16-15 21C15.5 38 9 32 9 22V11z"/><path d="M15 18c3-1 6-.5 9 1.5v13c-3-2-6-2.5-9-1.5zM33 18c-3-1-6-.5-9 1.5v13c3-2 6-2.5 9-1.5z" stroke="var(--ui-accent)"/></svg>
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="var(--ui-action)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute top-3 left-1/2 h-[42px] w-[42px] -translate-x-1/2"><path d="M24 5 39 11v11c0 10-6.5 16-15 21C15.5 38 9 32 9 22V11z"/><path d="M15 18c3-1 6-.5 9 1.5v13c-3-2-6-2.5-9-1.5zM33 18c-3-1-6-.5-9 1.5v13c3-2 6-2.5 9-1.5z" stroke="var(--ui-action)"/></svg>
             <p class="m-0 max-w-full font-medium !text-ui-muted">No se encontraron aulas físicas en la base de datos.</p>
             <p class="text-[11px] !text-ui-muted">Configure los pabellones y aulas escolares en PostgreSQL para visualizar el directorio.</p>
           </div>

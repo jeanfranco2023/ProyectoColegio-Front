@@ -22,7 +22,7 @@ export type UiListState = 'loading' | 'empty' | 'error';
         </div>
       } @else {
         @if (state === 'empty') {
-          <svg class="h-[52px] w-[52px] fill-none stroke-ui-accent [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:1.8]" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+          <svg class="h-[52px] w-[52px] fill-none stroke-ui-action [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:1.8]" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
             <path d="M7 11.5c5.5-2 11.2-1.4 17 1.8v25c-5.8-3.2-11.5-3.8-17-1.8z"></path>
             <path d="M41 11.5c-5.5-2-11.2-1.4-17 1.8v25c5.8-3.2 11.5-3.8 17-1.8z"></path>
             <path d="M24 13.3v25"></path>

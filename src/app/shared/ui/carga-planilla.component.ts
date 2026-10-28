@@ -12,7 +12,7 @@ import { EvaluacionService, ImportacionCneb } from '../../core/services/evaluaci
         <input type="file" accept=".csv,.xlsx" [disabled]="!contextoValido || procesando()" (change)="seleccionar($event)" class="min-h-11" />
       </label>
       <button type="button" class="min-h-11 rounded-lg border p-2" [disabled]="!archivo || procesando()" (click)="enviar(false)">Validar y previsualizar</button>
-      <button type="button" class="min-h-11 rounded-lg bg-ui-accent px-3 py-2 font-sans font-semibold text-ui-accent-text disabled:opacity-50" [disabled]="!vista() || procesando()" (click)="enviar(true)">Confirmar carga</button>
+      <button type="button" class="min-h-11 rounded-lg bg-ui-action px-3 py-2 font-sans font-semibold text-ui-action-text disabled:opacity-50" [disabled]="!vista() || procesando()" (click)="enviar(true)">Confirmar carga</button>
     </div>
     <p role="status">{{ procesando() ? 'Procesando planilla…' : mensaje() }}</p>
     @for (error of errores(); track error.campo) { <p role="alert" class="text-sm text-ui-error-text">{{ error.campo }}: {{ error.mensaje }}</p> }

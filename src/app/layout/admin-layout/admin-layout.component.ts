@@ -73,7 +73,7 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
             @if (i === 0 || visibleMenuItems[i - 1].section !== item.section) {
               <p class="mt-[19px] mb-[6px] px-3 text-[11px] font-bold leading-[1.4] tracking-[0.11em] text-ui-muted uppercase">{{ item.section }}</p>
             }
-            <a [routerLink]="item.route" routerLinkActive="border-ui-accent bg-ui-surface-soft !text-ui-accent font-bold" class="flex min-h-11 items-center gap-3 rounded-[10px] border-l-2 border-transparent px-3 text-[13px] font-medium text-ui-muted no-underline transition-colors duration-[140ms] hover:bg-ui-surface-soft hover:text-ui-text focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2" [attr.aria-label]="item.label">
+            <a [routerLink]="item.route" routerLinkActive="border-ui-action bg-ui-surface-soft !text-ui-action font-bold" class="flex min-h-11 items-center gap-3 rounded-[10px] border-l-2 border-transparent px-3 text-[13px] font-medium text-ui-muted no-underline transition-colors duration-[140ms] hover:bg-ui-surface-soft hover:text-ui-text focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2" [attr.aria-label]="item.label">
               <svg class="h-[19px] w-[19px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" [attr.d]="item.icon" /></svg>
               <span>{{ item.label }}</span>
             </a>
@@ -82,13 +82,13 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
 
         <div class="mx-4 mb-4 rounded-2xl border border-ui-border bg-ui-surface-soft p-3.5">
           <div class="flex items-center gap-3">
-            <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ui-accent text-[13px] font-bold text-ui-accent-text">{{ firstInitial }}</span>
+            <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ui-action text-[13px] font-bold text-ui-action-text">{{ firstInitial }}</span>
             <span class="min-w-0 flex-1">
               <span class="block truncate text-xs font-semibold text-ui-text">{{ store.user()?.username || 'Usuario' }}</span>
               <span class="mt-0.5 block truncate text-[11px] text-ui-muted">{{ roleLabel }}</span>
             </span>
           </div>
-          <button mat-button type="button" (click)="store.logout()" class="mt-3 w-full !min-h-11 !justify-start !rounded-xl !font-[inherit] !text-ui-text [&_.mdc-button__label]:!text-ui-text hover:bg-ui-surface hover:text-ui-accent">
+          <button mat-button type="button" (click)="store.logout()" class="mt-3 w-full !min-h-11 !justify-start !rounded-xl !font-[inherit] !text-ui-text [&_.mdc-button__label]:!text-ui-text hover:bg-ui-surface hover:text-ui-action">
             <span class="inline-flex items-center gap-2 whitespace-nowrap font-[inherit]"><svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg><span>Cerrar sesión</span></span>
           </button>
         </div>
@@ -102,7 +102,7 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
             </button>
             <mat-menu #mobileNav="matMenu" class="admin-mobile-nav-panel mt-3 max-h-[calc(100dvh-24px)] overflow-y-auto" xPosition="after" yPosition="below">
               @for (item of visibleMenuItems; track item.route) {
-                <a mat-menu-item class="admin-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 border-l-2 border-transparent px-3 text-[13px] leading-[1.35] text-ui-muted no-underline" [routerLink]="item.route" routerLinkActive="border-ui-accent bg-ui-surface-soft !text-ui-accent font-bold" [attr.aria-label]="item.label">
+                <a mat-menu-item class="admin-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 border-l-2 border-transparent px-3 text-[13px] leading-[1.35] text-ui-muted no-underline" [routerLink]="item.route" routerLinkActive="border-ui-action bg-ui-surface-soft !text-ui-action font-bold" [attr.aria-label]="item.label">
                   <svg class="h-[19px] w-[19px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" [attr.d]="item.icon" /></svg>
                   <span>{{ item.label }}</span>
                 </a>
@@ -120,7 +120,7 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
           </div>
 
           <a routerLink="/admin/perfil" class="flex min-h-11 items-center gap-2.5 rounded-full border border-ui-border bg-ui-surface px-3 py-2 text-xs font-medium text-ui-muted no-underline hover:border-ui-control-border hover:bg-ui-surface-soft focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2 max-[639px]:w-[112px] max-[639px]:max-w-[112px] max-[639px]:shrink-0 max-[639px]:gap-1.5 max-[639px]:py-2 max-[639px]:pr-[7px] max-[639px]:pl-1">
-            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ui-accent text-[13px] font-bold text-ui-accent-text max-[639px]:h-7 max-[639px]:w-7">{{ firstInitial }}</span>
+            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ui-action text-[13px] font-bold text-ui-action-text max-[639px]:h-7 max-[639px]:w-7">{{ firstInitial }}</span>
             <span class="flex min-w-0 flex-col"><span class="block max-w-[180px] truncate font-semibold text-ui-text max-[639px]:max-w-[58px] max-[639px]:text-[11px]">{{ store.user()?.username || 'Usuario' }}</span><span class="block max-w-[180px] truncate text-[11px] text-ui-muted max-[639px]:max-w-[58px]">{{ roleLabel }}</span></span>
           </a>
         </header>

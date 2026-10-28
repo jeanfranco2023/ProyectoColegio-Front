@@ -33,7 +33,7 @@ export interface EstudianteMatriculadoItem {
     <div class="space-y-6 min-w-0 text-ui-text max-[640px]:text-[13px] [&_*:focus-visible]:outline-[3px] [&_*:focus-visible]:outline-[#2864c5] [&_*:focus-visible]:outline-offset-[3px]">
       <!-- Top Banner / Alert -->
       @if (mensajeExito()) {
-        <div class="p-4 rounded-2xl border-t-[3px] border-t-ui-accent/50 pt-3 bg-emerald-500/10 border border-emerald-500/30 text-[#047857] flex items-center justify-between shadow-lg shadow-emerald-950/20">
+        <div class="p-4 rounded-2xl border-t-[3px] border-t-ui-action/50 pt-3 bg-emerald-500/10 border border-emerald-500/30 text-[#047857] flex items-center justify-between shadow-lg shadow-emerald-950/20">
           <div class="flex items-center gap-3">
             <span class="p-1.5 rounded-lg bg-emerald-500/20 text-[#047857]">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -52,7 +52,7 @@ export interface EstudianteMatriculadoItem {
       }
 
       @if (error()) {
-        <div class="p-4 rounded-2xl border-t-[3px] border-t-ui-accent/50 pt-3 bg-rose-500/10 border border-rose-500/30 text-[#be123c] flex items-center justify-between shadow-lg shadow-rose-950/20">
+        <div class="p-4 rounded-2xl border-t-[3px] border-t-ui-action/50 pt-3 bg-rose-500/10 border border-rose-500/30 text-[#be123c] flex items-center justify-between shadow-lg shadow-rose-950/20">
           <div class="flex items-center gap-3">
             <span class="p-1.5 rounded-lg bg-rose-500/20 text-[#be123c]">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,7 +71,7 @@ export interface EstudianteMatriculadoItem {
       }
 
       <!-- Page Header -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-t-[3px] border-t-ui-accent/50 pt-3">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-t-[3px] border-t-ui-action/50 pt-3">
         <div>
           <div class="flex items-center gap-2 mb-1">
             <span class="px-2.5 py-0.5 rounded-full border border-ui-divider bg-ui-surface-soft text-[11px] font-semibold text-ui-muted">
@@ -93,7 +93,7 @@ export interface EstudianteMatriculadoItem {
           <button
             id="btn-abrir-registro-alumno"
             (click)="abrirModalNuevoAlumno()"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-ui-accent rounded-[10px] bg-ui-accent text-white font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] shadow-none hover:bg-ui-accent/90 focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-ui-action rounded-[10px] bg-ui-action text-white font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] shadow-none hover:bg-ui-action/90 focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -130,7 +130,7 @@ export interface EstudianteMatriculadoItem {
           id="tab-estudiantes"
           (click)="pestanaActiva.set('estudiantes')"
           [class]="pestanaActiva() === 'estudiantes'
-            ? 'px-4 py-3 border-b-2 border-ui-accent text-ui-accent font-bold text-sm flex items-center gap-2 transition cursor-pointer'
+            ? 'px-4 py-3 border-b-2 border-ui-action text-ui-action font-bold text-sm flex items-center gap-2 transition cursor-pointer'
             : 'px-4 py-3 border-b-2 border-transparent !text-[#59677a] hover:!text-ui-text font-medium text-sm flex items-center gap-2 transition cursor-pointer'"
          class="max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -146,7 +146,7 @@ export interface EstudianteMatriculadoItem {
           id="tab-matriculas"
           (click)="pestanaActiva.set('matriculas')"
           [class]="pestanaActiva() === 'matriculas'
-            ? 'px-4 py-3 border-b-2 border-ui-accent text-ui-accent font-bold text-sm flex items-center gap-2 transition cursor-pointer'
+            ? 'px-4 py-3 border-b-2 border-ui-action text-ui-action font-bold text-sm flex items-center gap-2 transition cursor-pointer'
             : 'px-4 py-3 border-b-2 border-transparent !text-[#59677a] hover:!text-ui-text font-medium text-sm flex items-center gap-2 transition cursor-pointer'"
          class="max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -177,7 +177,7 @@ export interface EstudianteMatriculadoItem {
                 type="text"
                 [(ngModel)]="busquedaEstudiante"
                 placeholder="Buscar por DNI, Nombres o Apellidos..."
-                class="w-full !pl-11 pr-4 py-2 rounded-xl !bg-ui-surface border !border-ui-border !text-ui-text !text-[11px] placeholder:text-ui-muted focus:outline-none focus:border-ui-accent transition min-w-0 !min-h-[44px] max-w-full px-3 py-[10px] !border-ui-control-border transition-colors focus:border-ui-accent focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base !pr-3 !py-2"
+                class="w-full !pl-11 pr-4 py-2 rounded-xl !bg-ui-surface border !border-ui-border !text-ui-text !text-[11px] placeholder:text-ui-muted focus:outline-none focus:border-ui-action transition min-w-0 !min-h-[44px] max-w-full px-3 py-[10px] !border-ui-control-border transition-colors focus:border-ui-action focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base !pr-3 !py-2"
               />
             </div>
 
@@ -215,7 +215,7 @@ export interface EstudianteMatriculadoItem {
                   @if (cargandoEstudiantes()) {
                     <tr>
                       <td colspan="9" class="text-center py-12 !text-ui-muted">
-                        <span class="inline-block w-6 h-6 border-2 border-ui-accent/30 border-t-ui-accent rounded-full animate-spin mb-2"></span>
+                        <span class="inline-block w-6 h-6 border-2 border-ui-action/30 border-t-ui-action rounded-full animate-spin mb-2"></span>
                         <p class="font-medium !text-[11px]">Consultando estudiantes registrados en la base de datos...</p>
                       </td>
                     </tr>
@@ -299,7 +299,7 @@ export interface EstudianteMatriculadoItem {
               <select
                 [(ngModel)]="anioLectivoId" aria-label="Año Lectivo"
                 (change)="cargarSecciones()"
-                class="w-full px-3 py-2 rounded-xl !bg-ui-surface border !border-ui-border !text-ui-text !text-[11px] focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
+                class="w-full px-3 py-2 rounded-xl !bg-ui-surface border !border-ui-border !text-ui-text !text-[11px] focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
               >
                 @for (anio of anios(); track anio.id) {
                   <option [ngValue]="anio.id">{{ anio.anio }} {{ anio.abierto ? '(Activo)' : '' }}</option>
@@ -312,7 +312,7 @@ export interface EstudianteMatriculadoItem {
               <select
                 [(ngModel)]="seccionIdSeleccionada" aria-label="Sección en BD"
                 (change)="cargarMatriculas()"
-                class="w-full px-3 py-2 rounded-xl !bg-ui-surface border !border-ui-border !text-ui-text !text-[11px] focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
+                class="w-full px-3 py-2 rounded-xl !bg-ui-surface border !border-ui-border !text-ui-text !text-[11px] focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
               >
                 @for (seccion of secciones(); track seccion.id) {
                   <option [ngValue]="seccion.id">{{ obtenerNombreSeccion(seccion) }}</option>
@@ -324,7 +324,7 @@ export interface EstudianteMatriculadoItem {
               <label class="block !text-[11px] font-semibold !text-ui-muted mb-1">Estado de Matrícula</label>
               <select
                 [(ngModel)]="filtroEstado" aria-label="Estado de Matrícula"
-                class="w-full px-3 py-2 rounded-xl !bg-ui-surface border !border-ui-border !text-ui-text !text-[11px] focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
+                class="w-full px-3 py-2 rounded-xl !bg-ui-surface border !border-ui-border !text-ui-text !text-[11px] focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
               >
                 <option value="TODOS">Todos los Estados</option>
                 <option value="MATRICULADO">Matriculado</option>
@@ -366,7 +366,7 @@ export interface EstudianteMatriculadoItem {
                   @if (cargando()) {
                     <tr>
                       <td colspan="7" class="text-center py-10 !text-ui-muted">
-                        <span class="inline-block w-5 h-5 border-2 border-ui-accent/30 border-t-ui-accent rounded-full animate-spin mb-2"></span>
+                        <span class="inline-block w-5 h-5 border-2 border-ui-action/30 border-t-ui-action rounded-full animate-spin mb-2"></span>
                         <p>Consultando matrículas en la base de datos...</p>
                       </td>
                     </tr>
@@ -378,7 +378,7 @@ export interface EstudianteMatriculadoItem {
                         <td class="px-5 py-3.5 font-mono !text-ui-text" data-label="Estudiante ID">Estudiante #{{ est.estudianteId }}</td>
                         <td class="px-5 py-3.5 !text-ui-muted font-mono" data-label="Fecha Registro">{{ est.fechaMatricula | uiDatePe }}</td>
                         <td class="px-5 py-3.5" data-label="Estado en BD">
-                          <span class="px-2 py-1 rounded-full !text-[11px] font-bold !bg-ui-surface-soft !text-ui-accent border !border-ui-accent/30">
+                          <span class="px-2 py-1 rounded-full !text-[11px] font-bold !bg-ui-surface-soft !text-ui-action border !border-ui-action/30">
                             {{ est.estado }}
                           </span>
                         </td>
@@ -428,7 +428,7 @@ export interface EstudianteMatriculadoItem {
             <!-- Modal Header -->
             <div class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-ui-border px-6 py-5 [&_h3]:m-0 [&_h3]:text-ui-text [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-ui-muted [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 flex items-center justify-between border-b !border-ui-border pb-4">
               <div class="flex items-center gap-3">
-                <div class="p-2.5 rounded-xl bg-ui-accent/10 text-ui-accent border border-ui-accent/30">
+                <div class="p-2.5 rounded-xl bg-ui-action/10 text-ui-action border border-ui-action/30">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                   </svg>
@@ -459,7 +459,7 @@ export interface EstudianteMatriculadoItem {
                     [(ngModel)]="nuevoAlumno.tipoDocumento"
                     name="tipoDoc"
                     required
-                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   >
                     <option value="DNI">DNI (Perú)</option>
                   </select>
@@ -477,7 +477,7 @@ export interface EstudianteMatriculadoItem {
                     inputmode="numeric"
                     pattern="[0-9]{8}"
                     placeholder="Ej. 74839201"
-                    class="min-w-0 flex-1 px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
+                    class="min-w-0 flex-1 px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
                   <button type="button" (click)="consultarDni()" [disabled]="consultandoDni() || nuevoAlumno.tipoDocumento !== 'DNI'" class="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-xl border border-ui-divider bg-ui-surface-soft px-3 py-2.5 text-center font-sans text-sm font-semibold leading-[1.25] text-ui-text transition-colors hover:bg-ui-surface focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] disabled:opacity-50">{{ consultandoDni() ? 'Consultando...' : 'Consultar DNI' }}</button></div>
                 </div>
@@ -500,7 +500,7 @@ export interface EstudianteMatriculadoItem {
                     required
                     maxlength="100"
                     placeholder="Ej. Mateo Alejandro"
-                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
                 </div>
 
@@ -514,7 +514,7 @@ export interface EstudianteMatriculadoItem {
                     required
                     maxlength="80"
                     placeholder="Ej. Quispe"
-                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
                 </div>
 
@@ -528,7 +528,7 @@ export interface EstudianteMatriculadoItem {
                     required
                     maxlength="80"
                     placeholder="Ej. Mendoza"
-                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
                 </div>
               </div>
@@ -543,7 +543,7 @@ export interface EstudianteMatriculadoItem {
                     [(ngModel)]="nuevoAlumno.fechaNacimiento"
                     name="fechaNacimiento"
                     required
-                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
                 </div>
 
@@ -554,7 +554,7 @@ export interface EstudianteMatriculadoItem {
                     [(ngModel)]="nuevoAlumno.genero"
                     name="genero"
                     required
-                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   >
                     <option value="M">Masculino</option>
                     <option value="F">Femenino</option>
@@ -567,7 +567,7 @@ export interface EstudianteMatriculadoItem {
                     id="nuevo-alumno-grupo-sang" aria-label="Grupo Sanguíneo"
                     [(ngModel)]="nuevoAlumno.grupoSanguineo"
                     name="grupoSanguineo"
-                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   >
                     <option value="O+">O+</option>
                     <option value="O-">O-</option>
@@ -592,7 +592,7 @@ export interface EstudianteMatriculadoItem {
                     name="codigoSiagie"
                     maxlength="14"
                     placeholder="Ej. 2026-74839201"
-                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
                 </div>
 
@@ -605,7 +605,7 @@ export interface EstudianteMatriculadoItem {
                     name="alergias"
                     maxlength="4000"
                     placeholder="Ej. Ninguna alergia conocida / Alérgico a penicilina"
-                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
                 </div>
               </div>
@@ -624,7 +624,7 @@ export interface EstudianteMatriculadoItem {
                   id="btn-guardar-alumno"
                   type="submit"
                   [disabled]="guardandoAlumno() || consultandoDni()"
-                  class="px-5 py-2.5 rounded-xl bg-ui-accent hover:bg-ui-accent/90 text-white text-xs !text-[14px] font-semibold shadow-lg shadow-none transition flex items-center gap-2 cursor-pointer disabled:opacity-50 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                  class="px-5 py-2.5 rounded-xl bg-ui-action hover:bg-ui-action/90 text-white text-xs !text-[14px] font-semibold shadow-lg shadow-none transition flex items-center gap-2 cursor-pointer disabled:opacity-50 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
                 >
                   @if (guardandoAlumno()) {
                     <span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
@@ -655,7 +655,7 @@ export interface EstudianteMatriculadoItem {
               <div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
               <div>
                 <label class="block text-xs font-semibold text-ui-muted mb-1">Año Lectivo</label>
-                <select [(ngModel)]="anioLectivoId" aria-label="Año Lectivo" name="anio" (change)="cargarSecciones()" required class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border text-ui-text !text-base focus:outline-none focus:border-ui-accent min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface-soft !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base">
+                <select [(ngModel)]="anioLectivoId" aria-label="Año Lectivo" name="anio" (change)="cargarSecciones()" required class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface-soft !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base">
                   @for (anio of anios(); track anio.id) {
                     <option [ngValue]="anio.id">{{ anio.anio }} {{ anio.abierto ? '(Vigente)' : '' }}</option>
                   }
@@ -664,7 +664,7 @@ export interface EstudianteMatriculadoItem {
 
               <div>
                 <label class="block text-xs font-semibold text-ui-muted mb-1">Estudiante Registrado *</label>
-                <select [(ngModel)]="nuevoEstudianteId" aria-label="Estudiante Registrado *" name="estudiante" required class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border text-ui-text !text-base focus:outline-none focus:border-ui-accent min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface-soft !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base">
+                <select [(ngModel)]="nuevoEstudianteId" aria-label="Estudiante Registrado *" name="estudiante" required class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface-soft !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base">
                   <option [ngValue]="0" disabled>Seleccionar estudiante...</option>
                   @for (est of listaEstudiantes(); track est.id) {
                     <option [ngValue]="est.id">
@@ -676,7 +676,7 @@ export interface EstudianteMatriculadoItem {
 
               <div>
                 <label class="block text-xs font-semibold text-ui-muted mb-1">Sección de Destino *</label>
-                <select [(ngModel)]="seccionIdSeleccionada" aria-label="Sección de Destino *" name="seccion" required class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border text-ui-text !text-base focus:outline-none focus:border-ui-accent min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface-soft !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base">
+                <select [(ngModel)]="seccionIdSeleccionada" aria-label="Sección de Destino *" name="seccion" required class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface-soft !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base">
                   @for (s of secciones(); track s.id) {
                     <option [ngValue]="s.id">{{ obtenerNombreSeccion(s) }}</option>
                   }
@@ -691,7 +691,7 @@ export interface EstudianteMatriculadoItem {
                   maxlength="4000"
                   rows="3"
                   placeholder="Observaciones de la matrícula..."
-                  class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border text-ui-text text-xs placeholder:text-ui-muted focus:outline-none focus:border-ui-accent min-w-0 max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface-soft !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base py-[10px] resize-y !min-h-[100px]"
+                  class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border text-ui-text text-xs placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface-soft !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base py-[10px] resize-y !min-h-[100px]"
                 ></textarea>
               </div>
 
@@ -700,7 +700,7 @@ export interface EstudianteMatriculadoItem {
                 <button type="button" (click)="cerrarSolicitudDialog()" class="px-4 py-2 rounded-xl bg-ui-surface-soft text-ui-muted text-xs !text-sm font-semibold box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
                   Cancelar
                 </button>
-                <button type="submit" [disabled]="guardando()" class="px-5 py-2 rounded-xl bg-ui-accent hover:bg-ui-accent/90 text-white text-xs !text-sm font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+                <button type="submit" [disabled]="guardando()" class="px-5 py-2 rounded-xl bg-ui-action hover:bg-ui-action/90 text-white text-xs !text-sm font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
                   {{ guardando() ? 'Guardando...' : 'Asignar Matrícula' }}
                 </button>
               </div>
@@ -720,7 +720,7 @@ export interface EstudianteMatriculadoItem {
             </div>
             <div class="space-y-3 text-xs text-ui-muted">
               <div class="p-3.5 rounded-xl bg-ui-surface-soft border border-ui-border space-y-1">
-                <p class="font-semibold text-ui-accent">Datos del Estudiante:</p>
+                <p class="font-semibold text-ui-action">Datos del Estudiante:</p>
                 <p>{{ ficha()!.estudiante.apellidoPaterno }} {{ ficha()!.estudiante.apellidoMaterno }}, {{ ficha()!.estudiante.nombres }}</p>
                 <p class="text-ui-muted">Doc: {{ ficha()!.estudiante.numeroDocumento }} · F. Nac: {{ ficha()!.estudiante.fechaNacimiento | uiDatePe }}</p>
               </div>
