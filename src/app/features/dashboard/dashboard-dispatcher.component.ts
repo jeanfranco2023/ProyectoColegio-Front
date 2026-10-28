@@ -61,14 +61,18 @@ template: `
           </div>
         } @else {
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <article class="min-h-[174px] min-w-0 border border-ui-border border-l-4 border-l-ui-accent bg-ui-surface p-5 shadow-sm sm:p-6">
+            <article class="min-h-[174px] min-w-0 border border-ui-border bg-ui-surface p-5 shadow-sm sm:p-6" [class.border-l-4]="alumnosEnRiesgo() !== null && alumnosEnRiesgo()! > 0" [class.border-l-ui-accent]="alumnosEnRiesgo() !== null && alumnosEnRiesgo()! > 0">
               <div class="flex items-start justify-between gap-4">
                 <div class="flex items-center gap-3">
-                  <svg class="h-6 w-6 shrink-0 text-ui-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 9v4m0 4h.01M10.3 3.9 2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3l-7.5-13.1a2 2 0 0 0-3.4 0Z"/></svg>
+                  @if (alumnosEnRiesgo() !== null && alumnosEnRiesgo()! > 0) {
+                    <svg class="h-6 w-6 shrink-0 text-ui-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 9v4m0 4h.01M10.3 3.9 2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3l-7.5-13.1a2 2 0 0 0-3.4 0Z"/></svg>
+                  } @else {
+                    <svg class="h-6 w-6 shrink-0 text-ui-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M4 19h16M7 15l3-4 3 2 5-7"/></svg>
+                  }
                   <span class="text-[11px] font-semibold uppercase tracking-[.12em] text-ui-muted">Acompañamiento</span>
                 </div>
                 @if (alumnosEnRiesgo() === null) {
-                  <span class="inline-flex min-h-7 items-center border border-ui-divider bg-ui-surface-soft px-2 text-[10px] font-semibold text-ui-muted whitespace-nowrap">Sin dato</span>
+                  <span class="inline-flex min-h-7 items-center border border-ui-divider bg-ui-surface-soft px-2 text-[10px] font-semibold text-ui-muted whitespace-nowrap">Sin datos todavía</span>
                 } @else if (alumnosEnRiesgo()! > 0) {
                   <span class="inline-flex min-h-7 items-center border border-ui-accent/40 bg-ui-accent/10 px-2 text-[10px] font-semibold text-ui-accent">Requiere atención</span>
                 } @else {
@@ -77,7 +81,9 @@ template: `
               </div>
               <div class="mt-5 flex items-end gap-4">
                 <p class="m-0 font-display text-5xl font-medium leading-none tracking-tight text-ui-text">{{ alumnosEnRiesgo() !== null ? alumnosEnRiesgo() : '—' }}</p>
-                <p class="mb-1 max-w-[240px] text-xs leading-5 text-ui-muted">Estudiantes que requieren refuerzo</p>
+                @if (alumnosEnRiesgo() !== null) {
+                  <p class="mb-1 max-w-[240px] text-xs leading-5 text-ui-muted">{{ alumnosEnRiesgo()! > 0 ? 'Estudiantes que requieren refuerzo' : 'No hay estudiantes que requieran refuerzo' }}</p>
+                }
               </div>
             </article>
 
@@ -115,7 +121,7 @@ template: `
         </div>
         <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
           <a routerLink="/admin/matriculas" class="group flex min-h-[156px] flex-col border border-ui-divider bg-ui-surface p-5 text-left text-ui-text no-underline transition-colors hover:border-ui-accent focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ui-focus sm:p-6">
-            <svg class="h-6 w-6 text-ui-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M7 3.8h7l4 4V20H7a2 2 0 0 1-2-2V5.8a2 2 0 0 1 2-2Zm7 0v4h4M8 12h7M8 16h7"/></svg>
+            <svg class="h-6 w-6 text-ui-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M7 3.8h7l4 4V20H7a2 2 0 0 1-2-2V5.8a2 2 0 0 1 2-2Zm7 0v4h4M8 12h7M8 16h7"/></svg>
             <span class="mt-4 text-sm font-semibold">Matrículas y estudiantes</span>
             <span class="mt-2 text-[11px] leading-5 text-ui-muted">Expedientes, solicitudes y fichas únicas.</span>
             <span class="mt-auto flex w-full items-center justify-between pt-4 text-[11px] font-semibold text-ui-action">Abrir módulo <span aria-hidden="true" class="transition-transform group-hover:translate-x-1">→</span></span>

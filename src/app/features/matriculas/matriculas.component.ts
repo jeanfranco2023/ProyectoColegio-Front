@@ -74,7 +74,7 @@ export interface EstudianteMatriculadoItem {
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-t-[3px] border-t-ui-accent/50 pt-3">
         <div>
           <div class="flex items-center gap-2 mb-1">
-            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-ui-accent/10 text-ui-accent border border-ui-accent/20">
+            <span class="px-2.5 py-0.5 rounded-full border border-ui-divider bg-ui-surface-soft text-[11px] font-semibold text-ui-muted">
               Módulo Académico
             </span>
             <span class="!text-[11px] !text-ui-muted">•</span>
@@ -93,7 +93,7 @@ export interface EstudianteMatriculadoItem {
           <button
             id="btn-abrir-registro-alumno"
             (click)="abrirModalNuevoAlumno()"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-ui-accent rounded-[10px] bg-ui-accent text-white font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] shadow-[inset_0_-2px_var(--ui-accent)] hover:bg-[linear-gradient(110deg,#173156_0%,#284b76_100%)] focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-ui-accent rounded-[10px] bg-ui-accent text-white font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] shadow-none hover:bg-ui-accent/90 focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -227,7 +227,7 @@ export interface EstudianteMatriculadoItem {
                           <span class="px-2 py-0.5 rounded !text-[11px] font-bold bg-ui-surface-soft !text-ui-text border !border-ui-border mr-1.5">
                             {{ est.tipoDocumento || 'DNI' }}
                           </span>
-                          <span class="text-ui-accent font-semibold">{{ est.numeroDocumento }}</span>
+                          <span class="text-ui-action font-semibold">{{ est.numeroDocumento }}</span>
                         </td>
                         <td class="px-5 py-3.5" data-label="Apellidos y Nombres">
                           <div class="font-semibold !text-ui-text">
@@ -242,11 +242,11 @@ export interface EstudianteMatriculadoItem {
                         <td class="px-5 py-3.5 !text-ui-muted font-mono" data-label="F. Nacimiento">{{ est.fechaNacimiento | uiDatePe }}</td>
                         <td class="px-5 py-3.5" data-label="Género">
                           @if (est.genero === 'M') {
-                            <span class="px-2 py-0.5 rounded-full !text-[11px] font-medium bg-ui-accent/10 text-ui-accent border border-ui-accent/20">
+                            <span class="px-2 py-0.5 rounded-full border border-ui-divider bg-ui-surface-soft !text-[11px] font-medium text-ui-muted">
                               Masculino
                             </span>
                           } @else if (est.genero === 'F') {
-                            <span class="px-2 py-0.5 rounded-full !text-[11px] font-medium bg-ui-accent/10 text-ui-accent border border-ui-accent/20">
+                            <span class="px-2 py-0.5 rounded-full border border-ui-divider bg-ui-surface-soft !text-[11px] font-medium text-ui-muted">
                               Femenino
                             </span>
                           } @else {
@@ -264,7 +264,7 @@ export interface EstudianteMatriculadoItem {
                         <td class="px-5 py-3.5 text-right" data-label="Acciones">
                           <button
                             (click)="prepararMatriculaParaEstudiante(est)"
-                            class="inline-flex min-h-10 w-auto min-w-[104px] items-center justify-center gap-2 px-4 py-2 border border-ui-accent/30 rounded-[10px] bg-ui-surface-soft text-ui-accent font-semibold leading-tight text-center no-underline cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:border-ui-accent/30 hover:bg-ui-surface-soft box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-[14px] !leading-[1.25]"
+                            class="inline-flex min-h-[44px] w-auto min-w-[104px] items-center justify-center gap-2 rounded-[10px] border border-ui-divider bg-ui-surface-soft px-4 py-2 text-center font-sans text-sm font-semibold leading-[1.25] text-ui-action no-underline transition-colors hover:border-ui-control-border hover:bg-ui-surface focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] max-[639px]:!min-h-[44px] !text-[14px] !leading-[1.25]"
                           >
                             Matricular
                           </button>
@@ -374,7 +374,7 @@ export interface EstudianteMatriculadoItem {
                     @for (est of estudiantesFiltrados(); track est.id) {
                       <tr class="!bg-ui-surface-soft hover:bg-ui-surface-soft transition">
                         <td class="px-5 py-3.5 font-mono !text-ui-muted" data-label="ID BD">#{{ est.id }}</td>
-                        <td class="px-5 py-3.5 font-mono text-ui-accent font-semibold" data-label="Matrícula">{{ est.codigoMatricula }}</td>
+                        <td class="px-5 py-3.5 font-mono text-ui-action font-semibold" data-label="Matrícula">{{ est.codigoMatricula }}</td>
                         <td class="px-5 py-3.5 font-mono !text-ui-text" data-label="Estudiante ID">Estudiante #{{ est.estudianteId }}</td>
                         <td class="px-5 py-3.5 !text-ui-muted font-mono" data-label="Fecha Registro">{{ est.fechaMatricula | uiDatePe }}</td>
                         <td class="px-5 py-3.5" data-label="Estado en BD">
@@ -479,7 +479,7 @@ export interface EstudianteMatriculadoItem {
                     placeholder="Ej. 74839201"
                     class="min-w-0 flex-1 px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-accent min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-accent focus:outline-none focus:shadow-[0_0_0_3px_rgb(179_67_59_/_14%)] max-[639px]:text-base"
                   />
-                  <button type="button" (click)="consultarDni()" [disabled]="consultandoDni() || nuevoAlumno.tipoDocumento !== 'DNI'" class="inline-flex items-center justify-center whitespace-nowrap px-2 py-2.5 rounded-xl bg-ui-accent text-white text-xs !text-[14px] font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ consultandoDni() ? 'Consultando...' : 'Consultar DNI' }}</button></div>
+                  <button type="button" (click)="consultarDni()" [disabled]="consultandoDni() || nuevoAlumno.tipoDocumento !== 'DNI'" class="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-xl border border-ui-divider bg-ui-surface-soft px-3 py-2.5 text-center font-sans text-sm font-semibold leading-[1.25] text-ui-text transition-colors hover:bg-ui-surface focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] disabled:opacity-50">{{ consultandoDni() ? 'Consultando...' : 'Consultar DNI' }}</button></div>
                 </div>
               </div>
 

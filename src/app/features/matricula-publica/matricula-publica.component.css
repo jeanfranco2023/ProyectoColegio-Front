@@ -41,7 +41,7 @@
 .admission-page .hero-secondary b { border-color: var(--ui-control-border) !important; color: var(--ui-text) !important; }
 .admission-page .hero-trust { gap: 9px 18px !important; margin-top: 24px !important; color: var(--ui-muted) !important; }
 .admission-page .hero-trust i { color: var(--ui-accent) !important; }
-.admission-page .public-motto { color: var(--ui-text) !important; font-family: var(--font-sans) !important; font-size: 13px !important; font-weight: 600 !important; }
+.admission-page .public-motto { margin-top: 22px; color: var(--ui-text) !important; font-family: var(--font-sans) !important; font-size: 13px !important; font-weight: 600 !important; }
 .admission-page .hero-art { min-height: 0 !important; display: grid !important; grid-template-rows: auto auto !important; justify-items: center; align-content: center; gap: 16px !important; }
 .admission-page .hero-art-ring, .admission-page .hero-art-spark, .admission-page .hero-art-year { display: none !important; }
 .admission-page .hero-emblem-card {
@@ -81,7 +81,7 @@
   .admission-page .hero-actions .button { width: 100%; }
   .admission-page .hero-secondary { justify-content: center; min-height: 44px; }
   .admission-page .hero-trust { display: grid !important; grid-template-columns: 1fr 1fr; }
-  .admission-page .public-motto { margin-top: 10px; }
+  .admission-page .public-motto { margin-top: 22px; }
   .admission-page .hero-emblem-card { min-height: 310px !important; padding: 45px 18px 24px !important; }
   .admission-page .hero-emblem-card strong { font-size: 23px !important; }
   .admission-page .emblem-image-wrap { width: 92px !important; height: 92px !important; }
