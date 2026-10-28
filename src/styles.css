@@ -39,6 +39,7 @@
   :root {
     color-scheme: dark;
     --ui-canvas: #152124;
+    --ui-workspace: #152124;
     --ui-surface: #1f2d31;
     --ui-surface-soft: #293a3d;
     --ui-text: #f2f6f3;
