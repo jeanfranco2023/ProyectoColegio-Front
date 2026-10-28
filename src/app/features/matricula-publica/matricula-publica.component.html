@@ -76,10 +76,10 @@
   <section class="admission-hero">
     <div class="hero-copy">
       <span class="hero-kicker"><i></i> ADMISIÓN · CICLO ESCOLAR</span>
-      <h1 class="admission-title">Aprender hoy.<br><em class="!text-[#e2c68f]">Crecer sin límites.</em></h1>
+      <h1 class="admission-title">Cada expediente<br>abre una etapa.</h1>
       <p class="admission-lead">Una comunidad educativa para descubrir talentos, fortalecer conocimientos y construir con confianza el camino de cada estudiante.</p>
       <div class="hero-actions">
-        <button class="button button-gold !bg-[#18385f] !text-white hover:!bg-[#244a77]" type="button" (click)="abrirSolicitud()" [disabled]="cargandoCatalogo()">{{ cargandoCatalogo() ? 'Cargando vacantes…' : solicitud()?.estado === 'MATRICULADA' || solicitud()?.estado === 'RECHAZADA' ? 'Iniciar otra solicitud' : solicitud() ? 'Continuar mi trámite' : 'Iniciar matrícula' }} <span aria-hidden="true">→</span></button>
+        <button class="button button-gold" type="button" (click)="abrirSolicitud()" [disabled]="cargandoCatalogo()">{{ cargandoCatalogo() ? 'Cargando vacantes…' : solicitud()?.estado === 'MATRICULADA' || solicitud()?.estado === 'RECHAZADA' ? 'Iniciar otra solicitud' : solicitud() ? 'Continuar mi trámite' : 'Iniciar matrícula' }} <span aria-hidden="true">→</span></button>
         <a class="hero-secondary" [routerLink]="['/matricula', 'propuesta']"><span>Conoce nuestra propuesta</span><b aria-hidden="true">→</b></a>
       </div>
       <div class="hero-trust"><span><i>✓</i> Solicitud en línea</span><span><i>✓</i> Sin crear una cuenta</span><span><i>✓</i> Seguimiento privado</span></div>
@@ -88,22 +88,20 @@
       @if (error() && !modal()) { <p class="inline-error">{{ error() }}</p> }
     </div>
     <div class="hero-art" aria-label="Identidad de la Institución Educativa Shuji Kitamura">
-      <div class="hero-art-ring hero-art-ring-one"></div><div class="hero-art-ring hero-art-ring-two"></div>
-      <div class="hero-art-spark hero-art-spark-one">✳</div><div class="hero-art-spark hero-art-spark-two">✦</div>
-      <div class="hero-emblem-card">
-        <span class="emblem-caption">NUESTRA COMUNIDAD</span>
+      <article class="hero-emblem-card">
+        <span class="emblem-caption">I.E.P. SHUJI KITAMURA</span>
         <div class="emblem-image-wrap"><img src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de la I.E.P. Shuji Kitamura"></div>
-        <strong>Una educación<br>con propósito</strong>
+        <span class="archive-seal" aria-hidden="true">ADMISIÓN</span>
+        <strong>Expediente<br>de ingreso</strong>
         <span class="emblem-divider"></span>
         <small>INICIAL&nbsp; · &nbsp;PRIMARIA&nbsp; · &nbsp;SECUNDARIA</small>
-      </div>
-      <div class="hero-art-note"><span class="note-star">✦</span><span><b>Un camino para cada etapa</b><small>Conoce el proceso de admisión</small></span><a [routerLink]="['/matricula', 'admision']" aria-label="Ver pasos de admisión">→</a></div>
-      <div class="hero-art-year"><span>SK</span><small>SHUJI<br>KITAMURA</small></div>
+      </article>
+      <div class="hero-art-note"><span class="archive-note-mark" aria-hidden="true">→</span><span><b>Proceso de admisión</b><small>Consulta sus pasos y documentos</small></span><a [routerLink]="['/matricula', 'admision']" aria-label="Ver pasos de admisión">→</a></div>
     </div>
     <a [routerLink]="['/matricula', 'niveles']" class="scroll-cue"><span></span> DESCUBRE SHUJI KITAMURA</a>
   </section>
 
-  <section class="intro-strip" aria-label="Niveles educativos"><span class="intro-strip-label">ACOMPAÑAMOS SU CRECIMIENTO</span><div><b>Inicial</b><i>✦</i><b>Primaria</b><i>✦</i><b>Secundaria</b></div><a [routerLink]="['/matricula', 'niveles']">Explorar niveles <span>→</span></a></section>
+  <section class="intro-strip" aria-label="Niveles educativos"><span class="intro-strip-label">ACOMPAÑAMOS SU CRECIMIENTO</span><div><b>Inicial</b><span class="level-divider" aria-hidden="true"></span><b>Primaria</b><span class="level-divider" aria-hidden="true"></span><b>Secundaria</b></div><a [routerLink]="['/matricula', 'niveles']">Explorar niveles <span>→</span></a></section>
   <ui-community-gallery />
   }
 
@@ -138,7 +136,7 @@
     <div class="process-intro"><span class="eyebrow">ADMISIÓN CLARA Y ACOMPAÑADA</span><h2 id="process-title">Tres pasos para<br><em>comenzar esta historia.</em></h2><p>Prepara tus documentos y avanza con calma. El sistema te guiará durante todo el proceso.</p><button class="button button-primary" type="button" (click)="abrirSolicitud()" [disabled]="cargandoCatalogo()">{{ cargandoCatalogo() ? 'Cargando vacantes…' : solicitud()?.estado === 'MATRICULADA' || solicitud()?.estado === 'RECHAZADA' ? 'Iniciar otra solicitud' : solicitud() ? 'Continuar mi trámite' : 'Iniciar matrícula' }} <span>→</span></button></div>
     <div class="process-list">
       <article class="process-item"><span class="process-number">01</span><div><h3>Presenta tus documentos</h3><p>Completa la información del estudiante y su apoderado, y adjunta los archivos requeridos.</p><small>Partida de nacimiento · DNI o C4 · Recibo de luz o agua</small></div><span class="process-icon">↗</span></article>
-      <article class="process-item process-item-review"><span class="process-number">02</span><div><h3>Revisión documental</h3><p>Se verifica el tipo, la legibilidad y la coherencia básica de cada documento. Si alguno requiere corrección, podrás reemplazarlo.</p><small class="process-time"><i>◷</i> Revisión secuencial · el tiempo depende de la disponibilidad del servicio</small></div><span class="process-icon">✦</span></article>
+      <article class="process-item process-item-review"><span class="process-number">02</span><div><h3>Revisión documental</h3><p>Se verifica el tipo, la legibilidad y la coherencia básica de cada documento. Si alguno requiere corrección, podrás reemplazarlo.</p><small class="process-time"><i>◷</i> Revisión secuencial · el tiempo depende de la disponibilidad del servicio</small></div><span class="process-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M7 3h7l4 4v14H7zM14 3v5h5M9 13h7M9 17h7"/></svg></span></article>
       <article class="process-item"><span class="process-number">03</span><div><h3>Pago y confirmación</h3><p>Revisa el monto antes de pagar. La matrícula se confirma solo cuando el sistema verifica el pago aprobado.</p><small>Sin pago aprobado no se registra una matrícula</small></div><span class="process-icon">✓</span></article>
     </div>
   </section>
@@ -163,7 +161,7 @@
   }
   }
 
-  <section class="final-cta"><img src="/images/shuji-kitamura-emblema.jpg" alt="" aria-hidden="true"><div><span>EL PRÓXIMO PASO COMIENZA AQUÍ</span><h2>Estamos listos para acompañarte.</h2><p>Inicia tu solicitud cuando tengas los documentos preparados.</p></div><button class="button button-gold !bg-[#18385f] !text-white hover:!bg-[#244a77]" type="button" (click)="abrirSolicitud()" [disabled]="cargandoCatalogo()">{{ cargandoCatalogo() ? 'Cargando vacantes…' : solicitud()?.estado === 'MATRICULADA' || solicitud()?.estado === 'RECHAZADA' ? 'Iniciar otra solicitud' : solicitud() ? 'Continuar mi trámite' : 'Iniciar matrícula' }} <span>→</span></button></section>
+  <section class="final-cta"><img src="/images/shuji-kitamura-emblema.jpg" alt="" aria-hidden="true"><div><span>EL PRÓXIMO PASO COMIENZA AQUÍ</span><h2>Estamos listos para acompañarte.</h2><p>Inicia tu solicitud cuando tengas los documentos preparados.</p></div><button class="button button-primary" type="button" (click)="abrirSolicitud()" [disabled]="cargandoCatalogo()">{{ cargandoCatalogo() ? 'Cargando vacantes…' : solicitud()?.estado === 'MATRICULADA' || solicitud()?.estado === 'RECHAZADA' ? 'Iniciar otra solicitud' : solicitud() ? 'Continuar mi trámite' : 'Iniciar matrícula' }} <span>→</span></button></section>
 
   <footer class="public-footer"><a class="footer-brand" [routerLink]="['/matricula', 'inicio']"><img src="/images/shuji-kitamura-emblema.jpg" alt=""><span><b>I.E.P. Shuji Kitamura</b><small>Institución educativa</small></span></a><span>Admisión y matrícula · La solicitud no requiere crear una cuenta.</span><a [routerLink]="['/matricula', 'inicio']">Volver al inicio ↑</a></footer>
 </main>
@@ -194,9 +192,10 @@
         max-[600px]:[&_.modal-footer_>_.button]:![font-size:11px] max-[600px]:[&_.modal-footer_>_.button]:[white-space:nowrap]
       " (click)="cerrarModal()" (keydown.escape)="cerrarModal()">
     @if (modal() === 'documentos') {
-      <section class="enrollment-modal wide-modal " role="dialog" aria-modal="true" aria-labelledby="documents-title" cdkTrapFocus cdkTrapFocusAutoCapture (click)="$event.stopPropagation()">
-        <header class="modal-header"><div><span class="eyebrow">FORMULARIO · TRES PASOS</span><h2 id="documents-title">{{ solicitud() ? 'Corrige tus documentos' : 'Datos y documentos' }}</h2><p>Completa la solicitud una sola vez. No se crea una matrícula hasta confirmar el pago.</p></div><button type="button" class="icon-close" aria-label="Cerrar" (click)="cerrarModal()">×</button></header>
-        <div class="modal-body">
+      <section class="enrollment-modal wide-modal ui-admission-wizard" role="dialog" aria-modal="true" aria-labelledby="documents-title" cdkTrapFocus cdkTrapFocusAutoCapture (click)="$event.stopPropagation()">
+        <header class="modal-header ui-wizard-header"><div><span class="eyebrow">FORMULARIO · TRES PASOS</span><h2 id="documents-title">{{ solicitud() ? 'Corrige tus documentos' : 'Datos y documentos' }}</h2><p>Completa la solicitud una sola vez. No se crea una matrícula hasta confirmar el pago.</p></div><button type="button" class="icon-close" aria-label="Cerrar" (click)="cerrarModal()">×</button></header>
+        <nav class="ui-form-progress" aria-label="Pasos del formulario de matrícula"><ol><li><span>1</span><b>Estudiante</b></li><li><span>2</span><b>Apoderado</b></li><li><span>3</span><b>Documentos</b></li></ol></nav>
+        <div class="modal-body ui-wizard-body">
           @if (!solicitud()) {
             <details class="form-step" name="ui-public-form-steps" open>
               <summary><span class="form-step-number">1</span><span><b>Datos del estudiante</b><small>Información que se contrastará con los documentos.</small></span></summary>

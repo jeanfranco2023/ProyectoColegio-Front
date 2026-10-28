@@ -1,0 +1,65 @@
+:host { display: block; min-height: 100vh; color: var(--ui-text); background: var(--ui-canvas); }
+.ui-login-page { display: grid; grid-template-columns: minmax(0, 1.06fr) minmax(400px, .94fr); min-height: 100vh; color: var(--ui-text); background: var(--ui-canvas); font-family: var(--font-sans); }
+.ui-login-cover { position: relative; display: flex; flex-direction: column; justify-content: space-between; min-width: 0; padding: clamp(28px, 5vw, 72px); overflow: hidden; border-right: 1px solid var(--ui-divider); background: var(--ui-surface-soft) !important; color: var(--ui-text) !important; }
+.ui-login-cover::before { position: absolute; top: 0; left: clamp(28px, 5vw, 72px); width: 74px; height: 5px; background: var(--ui-accent); content: ''; }
+.ui-login-brand { position: relative; z-index: 1; display: inline-flex; width: fit-content; align-items: center; gap: 12px; color: var(--ui-text) !important; text-decoration: none; }
+.ui-login-brand img { width: 48px; height: 48px; flex: 0 0 48px; padding: 3px; border: 1px solid var(--ui-divider) !important; border-radius: 50%; background: #fff; object-fit: contain; }
+.ui-login-brand strong, .ui-login-brand small { display: block; }
+.ui-login-brand strong { color: var(--ui-text) !important; font-size: 14px; font-weight: 600; }
+.ui-login-brand small { margin-top: 4px; color: var(--ui-muted) !important; font-size: 10px; font-weight: 600; letter-spacing: .1em; }
+.ui-login-cover-copy { position: relative; z-index: 1; width: min(100%, 620px); margin: 64px 0; }
+.ui-login-kicker, .ui-login-eyebrow { margin: 0; color: var(--ui-accent) !important; font-size: 11px !important; font-weight: 600 !important; letter-spacing: .12em !important; text-transform: uppercase; }
+.ui-login-cover-title { max-width: 570px !important; margin: 20px 0 15px !important; color: var(--ui-text) !important; font-family: var(--font-display) !important; font-size: clamp(36px, 4vw, 58px) !important; font-weight: 500 !important; line-height: 1.04 !important; letter-spacing: -.035em !important; text-wrap: balance; }
+.ui-login-cover-description { max-width: 450px !important; margin: 0 !important; color: var(--ui-muted) !important; font-size: 14px !important; line-height: 1.75 !important; }
+.ui-login-motto-row { margin-top: 24px !important; gap: 13px !important; }
+.ui-login-motto-row > span { background: var(--ui-accent) !important; }
+.ui-login-motto-row p { margin: 0 !important; color: var(--ui-text) !important; font-size: 12px !important; font-weight: 600 !important; letter-spacing: .06em !important; }
+.ui-login-cover > p:last-child { position: relative; z-index: 1; margin: 0; color: var(--ui-muted) !important; font-size: 10px !important; }
+.ui-login-content { display: flex; min-width: 0; flex-direction: column; align-items: center; justify-content: center; padding: 40px clamp(24px, 5vw, 76px); background: var(--ui-canvas); }
+.ui-login-content-inner { width: min(100%, 430px) !important; }
+.ui-login-brand-mobile { display: none !important; }
+.ui-login-card { width: 100% !important; padding: clamp(22px, 3vw, 38px) !important; border: 1px solid var(--ui-divider) !important; border-radius: 5px 20px 5px 5px !important; background: var(--ui-surface) !important; box-shadow: 0 8px 22px rgb(36 55 61 / 6%) !important; }
+.ui-login-card > div:first-child { margin-bottom: 26px !important; }
+.ui-login-card h2 { margin: 10px 0 8px !important; color: var(--ui-text) !important; font-family: var(--font-display) !important; font-size: 32px !important; font-weight: 500 !important; letter-spacing: -.025em !important; }
+.ui-login-card-heading + p, .ui-login-card > div:first-child > p:last-child { color: var(--ui-muted) !important; font-size: 14px !important; line-height: 1.65 !important; }
+.ui-login-form { display: grid; gap: 8px; }
+.ui-login-field { width: 100%; font-family: var(--font-sans) !important; }
+.ui-login-field, .ui-login-field *, .ui-login-options, .ui-login-options *, .ui-login-card .mat-mdc-button { font-family: var(--font-sans) !important; }
+.ui-login-options { display: flex; min-height: 44px; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; padding: 2px 0 8px; color: var(--ui-text); font-size: 12px; }
+.ui-login-help { min-height: 44px; padding: 8px 0 8px 8px; border: 0; background: transparent; color: var(--ui-action) !important; font: 600 12px/1.2 var(--font-sans); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.ui-login-submit { width: 100%; min-height: 48px !important; border-radius: 3px !important; background: var(--ui-accent) !important; color: var(--ui-accent-text) !important; font: 600 14px/1.2 var(--font-sans) !important; }
+.ui-login-submit:hover:not(:disabled) { background: #91352f !important; }
+.ui-login-submit .mdc-button__label { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.ui-login-privacy { display: flex; align-items: flex-start; gap: 12px; margin-top: 24px !important; padding: 14px !important; border: 1px solid var(--ui-divider); background: var(--ui-surface-soft) !important; }
+.ui-login-privacy-icon { display: grid; width: 32px; height: 32px; flex: 0 0 32px; place-items: center; border: 1px solid var(--ui-control-border); color: var(--ui-text); }
+.ui-login-privacy-icon svg { width: 17px; height: 17px; }
+.ui-login-privacy p { margin: 0 !important; color: var(--ui-muted) !important; font-size: 11px !important; line-height: 1.6 !important; }
+.ui-login-privacy strong { display: block; margin-bottom: 2px; color: var(--ui-text) !important; font-size: 12px !important; }
+.ui-login-footer { margin: 18px 0 0 !important; color: var(--ui-muted) !important; font-size: 10px !important; text-align: center; }
+.ui-login-page :where(a, button, input):focus-visible { outline: 3px solid var(--ui-focus); outline-offset: 2px; }
+@media (max-width: 850px) {
+  .ui-login-page { grid-template-columns: minmax(0, 1fr); }
+  .ui-login-cover { display: none !important; }
+  .ui-login-content { align-items: stretch; justify-content: flex-start; padding: 22px 18px 28px !important; }
+  .ui-login-brand-mobile { display: inline-flex !important; margin: 0 auto 24px 0 !important; }
+  .ui-login-card { width: min(100%, 480px) !important; align-self: center; margin-inline: auto; }
+  .ui-login-footer { margin-bottom: 0 !important; }
+}
+@media (max-width: 420px) {
+  .ui-login-content { padding-inline: 14px !important; }
+  .ui-login-card { padding: 20px 16px !important; }
+  .ui-login-options { align-items: flex-start; }
+}
+@media (prefers-color-scheme: dark) { .ui-login-brand img { background: #fff; } }
+@media (prefers-reduced-motion: reduce) { .ui-login-page *, .ui-login-page *::before, .ui-login-page *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+.ui-login-kicker-dot { background: var(--ui-accent) !important; }
+.ui-login-brand-label { color: var(--ui-muted) !important; }
+.ui-login-field { --mdc-outlined-text-field-outline-color: var(--ui-control-border); --mdc-outlined-text-field-hover-outline-color: var(--ui-action); --mdc-outlined-text-field-focus-outline-color: var(--ui-accent); --mdc-outlined-text-field-focus-label-text-color: var(--ui-accent); --mdc-outlined-text-field-label-text-color: var(--ui-muted); --mdc-outlined-text-field-input-text-color: var(--ui-text); }
+.ui-login-options mat-checkbox { --mdc-checkbox-selected-icon-color: var(--ui-accent); --mdc-checkbox-selected-hover-icon-color: var(--ui-accent); --mdc-checkbox-selected-focus-icon-color: var(--ui-accent); --mdc-checkbox-selected-pressed-icon-color: var(--ui-accent); --mdc-checkbox-unselected-icon-color: var(--ui-control-border); }
+:host ::ng-deep .ui-login-options .mdc-checkbox--selected .mdc-checkbox__background,
+:host ::ng-deep .ui-login-options .mdc-checkbox--indeterminate .mdc-checkbox__background { background-color: var(--ui-accent) !important; border-color: var(--ui-accent) !important; }
+:host ::ng-deep .ui-login-options .mdc-checkbox--selected .mdc-checkbox__checkmark { color: var(--ui-accent-text) !important; }
+:host ::ng-deep .ui-login-options .mdc-checkbox { --mdc-checkbox-selected-icon-color: var(--ui-accent); --mdc-checkbox-selected-focus-icon-color: var(--ui-accent); --mdc-checkbox-selected-hover-icon-color: var(--ui-accent); --mdc-checkbox-selected-pressed-icon-color: var(--ui-accent); --mdc-checkbox-selected-checkmark-color: var(--ui-accent-text); --mdc-checkbox-unselected-icon-color: var(--ui-control-border); }
+:host ::ng-deep .ui-login-options .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background,
+:host ::ng-deep .ui-login-options .mdc-checkbox__native-control:indeterminate ~ .mdc-checkbox__background { background-color: var(--ui-accent) !important; border-color: var(--ui-accent) !important; }
+:host ::ng-deep .ui-login-options .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background .mdc-checkbox__checkmark { color: var(--ui-accent-text) !important; }

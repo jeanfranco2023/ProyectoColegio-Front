@@ -1,0 +1,132 @@
+:host { display: block; }
+.admission-page {
+  --admission-ink: var(--ui-text);
+  --admission-navy: var(--ui-action);
+  --admission-muted: var(--ui-muted);
+  --admission-gold: var(--ui-accent);
+  --admission-paper: var(--ui-canvas);
+  color: var(--ui-text) !important;
+  background: var(--ui-canvas) !important;
+}
+.admission-page .public-nav { background: var(--ui-canvas) !important; border-color: var(--ui-divider) !important; }
+.admission-page .public-brand, .admission-page .public-brand strong { color: var(--ui-text) !important; }
+.admission-page .public-brand small, .admission-page .admission-topline { color: var(--ui-muted) !important; }
+.admission-page .nav-apply { background: var(--ui-action) !important; color: var(--ui-action-text) !important; box-shadow: none !important; }
+.admission-page .nav-apply:hover:not(:disabled) { background: var(--ui-accent) !important; color: var(--ui-accent-text) !important; }
+.admission-page .admission-nav-links a:hover, .admission-page .admission-nav-links a.is-active { color: var(--ui-accent) !important; }
+.admission-page .admission-hero {
+  min-height: 0 !important; grid-template-columns: minmax(0, 1.02fr) minmax(300px, .98fr) !important;
+  gap: clamp(26px, 4vw, 64px) !important; align-items: center !important; padding: clamp(28px, 5vw, 68px) !important;
+  border: 1px solid var(--ui-divider) !important; border-radius: 9px 56px 9px 9px !important;
+  background: var(--ui-surface-soft) !important; box-shadow: 0 12px 28px rgb(36 55 61 / 7%) !important;
+}
+.admission-page .admission-hero::before, .admission-page .admission-hero::after { content: none !important; display: none !important; }
+.admission-page .hero-copy { max-width: 590px !important; z-index: 1; }
+.admission-page .hero-kicker { color: var(--ui-accent) !important; letter-spacing: .11em !important; }
+.admission-page .hero-kicker i { background: var(--ui-accent) !important; box-shadow: none !important; }
+.admission-page .hero-copy .admission-title {
+  max-width: 680px; margin: 20px 0 18px !important; color: var(--ui-text) !important;
+  font-family: var(--font-display) !important; font-size: clamp(44px, 5.3vw, 74px) !important;
+  font-weight: 500 !important; line-height: .99 !important; letter-spacing: -.045em !important; text-wrap: balance;
+}
+.admission-page .hero-copy .admission-title em { color: var(--ui-text) !important; font-style: normal; font-weight: 500; }
+.admission-page .hero-copy .admission-lead { max-width: 490px !important; color: var(--ui-muted) !important; font-size: 15px !important; line-height: 1.75 !important; }
+.admission-page .hero-actions { gap: 20px !important; margin-top: 24px !important; }
+.admission-page .button-gold {
+  min-height: 48px !important; border-radius: 4px !important; padding: 0 21px !important;
+  background: var(--ui-accent) !important; color: var(--ui-accent-text) !important; box-shadow: none !important;
+}
+.admission-page .button-gold:hover:not(:disabled) { background: #91352f !important; color: #fff !important; }
+.admission-page .hero-secondary { color: var(--ui-text) !important; }
+.admission-page .hero-secondary b { border-color: var(--ui-control-border) !important; color: var(--ui-text) !important; }
+.admission-page .hero-trust { gap: 9px 18px !important; margin-top: 24px !important; color: var(--ui-muted) !important; }
+.admission-page .hero-trust i { color: var(--ui-accent) !important; }
+.admission-page .public-motto { color: var(--ui-text) !important; font-family: var(--font-sans) !important; font-size: 13px !important; font-weight: 600 !important; }
+.admission-page .hero-art { min-height: 0 !important; display: grid !important; grid-template-rows: auto auto !important; justify-items: center; align-content: center; gap: 16px !important; }
+.admission-page .hero-art-ring, .admission-page .hero-art-spark, .admission-page .hero-art-year { display: none !important; }
+.admission-page .hero-emblem-card {
+  position: relative !important; width: min(100%, 438px) !important; min-height: 370px !important;
+  display: flex !important; align-items: center !important; justify-content: center !important; gap: 14px !important;
+  padding: 32px 28px !important; border: 1px solid var(--ui-divider) !important;
+  border-radius: 3px 28px 3px 3px !important; background: var(--ui-surface) !important;
+  box-shadow: 10px 12px 0 var(--ui-canvas), 11px 13px 0 var(--ui-divider) !important; transform: none !important;
+}
+.admission-page .emblem-caption { color: var(--ui-muted) !important; font-family: var(--font-sans) !important; font-size: 10px !important; letter-spacing: .15em !important; }
+.admission-page .emblem-image-wrap { width: 112px !important; height: 112px !important; border: 1px solid var(--ui-divider) !important; border-radius: 50% !important; background: #fff !important; box-shadow: none !important; }
+.admission-page .emblem-image-wrap img { width: 100% !important; height: 100% !important; object-fit: contain !important; }
+.admission-page .archive-seal { position: absolute; top: 22px; right: 22px; display: grid; place-items: center; min-width: 76px; min-height: 32px; border: 1.5px solid var(--ui-accent); border-radius: 50%; color: var(--ui-accent); font: 700 9px/1 var(--font-sans); letter-spacing: .12em; transform: rotate(7deg); }
+.admission-page .hero-emblem-card strong { color: var(--ui-text) !important; font-family: var(--font-display) !important; font-size: 27px !important; font-weight: 500 !important; line-height: 1.15 !important; text-align: center; }
+.admission-page .emblem-divider { width: 40px !important; height: 1px !important; background: var(--ui-accent) !important; }
+.admission-page .hero-emblem-card small { color: var(--ui-muted) !important; font-family: var(--font-sans) !important; font-size: 10px !important; letter-spacing: .08em !important; }
+.admission-page .hero-art-note { position: relative !important; inset: auto !important; width: min(90%, 340px) !important; min-height: 58px; padding: 10px 12px !important; gap: 12px !important; border: 1px solid var(--ui-divider) !important; border-left: 3px solid var(--ui-accent) !important; border-radius: 3px !important; background: var(--ui-canvas) !important; box-shadow: none !important; }
+.admission-page .archive-note-mark { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 30px; color: var(--ui-accent); border: 1px solid var(--ui-divider); }
+.admission-page .hero-art-note b { color: var(--ui-text) !important; }
+.admission-page .hero-art-note small { color: var(--ui-muted) !important; }
+.admission-page .hero-art-note a { color: var(--ui-accent) !important; }
+.admission-page .scroll-cue { color: var(--ui-muted) !important; }
+.admission-page .scroll-cue span { background: var(--ui-accent) !important; }
+.admission-page .intro-strip { border-color: var(--ui-divider) !important; }
+.admission-page .intro-strip-label { color: var(--ui-muted) !important; }
+.admission-page .intro-strip div b, .admission-page .intro-strip a { color: var(--ui-text) !important; }
+.admission-page .intro-strip i { color: var(--ui-accent) !important; }
+.admission-page .button-primary { background: var(--ui-action) !important; color: var(--ui-action-text) !important; }
+.admission-page .button-quiet { border-color: var(--ui-divider) !important; background: var(--ui-surface-soft) !important; color: var(--ui-text) !important; }
+.admission-page :where(a, button, summary, input, select, textarea):focus-visible { outline-color: var(--ui-focus) !important; }
+@media (max-width: 760px) {
+  .admission-page { padding-inline: 14px !important; }
+  .admission-page .admission-hero { grid-template-columns: minmax(0, 1fr) !important; gap: 24px !important; margin-top: 14px !important; padding: 26px 20px 24px !important; border-radius: 5px 32px 5px 5px !important; }
+  .admission-page .hero-copy .admission-title { margin: 16px 0 13px !important; font-size: clamp(42px, 12vw, 58px) !important; }
+  .admission-page .hero-copy .admission-lead { font-size: 14px !important; }
+  .admission-page .hero-actions { align-items: stretch; flex-direction: column; gap: 12px !important; }
+  .admission-page .hero-actions .button { width: 100%; }
+  .admission-page .hero-secondary { justify-content: center; min-height: 44px; }
+  .admission-page .hero-trust { display: grid !important; grid-template-columns: 1fr 1fr; }
+  .admission-page .public-motto { margin-top: 10px; }
+  .admission-page .hero-emblem-card { min-height: 310px !important; padding: 45px 18px 24px !important; }
+  .admission-page .hero-emblem-card strong { font-size: 23px !important; }
+  .admission-page .emblem-image-wrap { width: 92px !important; height: 92px !important; }
+  .admission-page .hero-art-note { width: 100% !important; }
+}
+@media (prefers-color-scheme: dark) {
+  .admission-page .emblem-image-wrap { background: #fff !important; }
+  .admission-page .hero-emblem-card { box-shadow: 7px 9px 0 var(--ui-canvas), 8px 10px 0 var(--ui-divider) !important; }
+}
+@media (prefers-reduced-motion: reduce) { .admission-page *, .admission-page *::before, .admission-page *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* El modal vive fuera del main para cubrir la página; estas reglas lo alcanzan por su propio ancla. */
+.modal-backdrop .ui-admission-wizard { width: min(840px, 100%) !important; max-height: min(92dvh, 900px) !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; border-color: var(--ui-divider) !important; border-radius: 5px 24px 5px 5px !important; }
+.modal-backdrop .ui-wizard-header { background: var(--ui-surface-soft) !important; border-bottom: 1px solid var(--ui-divider) !important; }
+.modal-backdrop .ui-wizard-header .eyebrow { color: var(--ui-accent) !important; }
+.modal-backdrop .ui-wizard-header h2 { color: var(--ui-text) !important; font-family: var(--font-display) !important; }
+.modal-backdrop .ui-wizard-header p { color: var(--ui-muted) !important; }
+.modal-backdrop .ui-form-progress { padding: 12px 20px; border-bottom: 1px solid var(--ui-divider); background: var(--ui-canvas); }
+.modal-backdrop .ui-form-progress ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.modal-backdrop .ui-form-progress li { display: flex; min-width: 0; align-items: center; gap: 8px; color: var(--ui-text); font: 600 11px/1.25 var(--font-sans); }
+.modal-backdrop .ui-form-progress li > span { display: grid; width: 28px; height: 28px; flex: 0 0 28px; place-items: center; border: 1px solid var(--ui-control-border); background: var(--ui-surface); color: var(--ui-text); }
+.modal-backdrop .ui-wizard-body { padding: 18px !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; }
+.modal-backdrop .form-step { border-color: var(--ui-divider) !important; border-radius: 4px !important; background: var(--ui-surface) !important; }
+.modal-backdrop .form-step + .form-step { margin-top: 10px !important; }
+.modal-backdrop .form-step > summary, .modal-backdrop .form-step > summary b { color: var(--ui-text) !important; }
+.modal-backdrop .form-step > summary small { color: var(--ui-muted) !important; }
+.modal-backdrop .form-step-number { border-color: var(--ui-control-border) !important; background: var(--ui-surface-soft) !important; color: var(--ui-text) !important; }
+.modal-backdrop .form-step[open] > summary .form-step-number { background: var(--ui-accent) !important; border-color: var(--ui-accent) !important; color: var(--ui-accent-text) !important; }
+.modal-backdrop .form-step-content label { color: var(--ui-text) !important; }
+.modal-backdrop .form-step-content input, .modal-backdrop .form-step-content select, .modal-backdrop .form-step-content textarea { border-color: var(--ui-control-border) !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; }
+.modal-backdrop .form-step:focus-within > summary { outline-color: var(--ui-focus) !important; }
+.modal-backdrop .form-hint, .modal-backdrop .consent-row { color: var(--ui-muted) !important; }
+.modal-backdrop .consent-row { background: var(--ui-surface-soft) !important; border-color: var(--ui-divider) !important; }
+.modal-backdrop .button-primary { background: var(--ui-action) !important; color: var(--ui-action-text) !important; box-shadow: none !important; }
+.modal-backdrop .button-quiet { border-color: var(--ui-divider) !important; background: var(--ui-surface-soft) !important; color: var(--ui-text) !important; }
+.modal-backdrop :where(button, summary, input, select, textarea):focus-visible { outline: 3px solid var(--ui-focus) !important; outline-offset: 2px; }
+.admission-page .final-cta { border-color: var(--ui-divider) !important; background: var(--ui-surface-soft) !important; color: var(--ui-text) !important; }
+.admission-page .final-cta > div > span { color: var(--ui-accent) !important; }
+.admission-page .final-cta h2 { color: var(--ui-text) !important; }
+.admission-page .final-cta p { color: var(--ui-muted) !important; }
+.admission-page .public-footer { border-color: var(--ui-divider) !important; color: var(--ui-muted) !important; }
+.admission-page .footer-brand b, .admission-page .footer-brand small { color: var(--ui-text) !important; }
+.admission-page .public-footer > a:last-child { color: var(--ui-accent) !important; }
+.admission-page .intro-strip .level-divider { width: 4px; height: 4px; border-radius: 50%; background: var(--ui-control-border); }
+.admission-page .process-icon svg { width: 19px; height: 19px; }
+.modal-backdrop .ui-admission-wizard .modal-footer { border-top: 1px solid var(--ui-divider) !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; }
+@media (max-width: 600px) { .modal-backdrop .ui-form-progress { padding: 10px 12px; } .modal-backdrop .ui-form-progress ol { gap: 5px; } .modal-backdrop .ui-form-progress li { gap: 5px; font-size: 11px; } .modal-backdrop .ui-form-progress li > span { width: 24px; height: 24px; flex-basis: 24px; } .modal-backdrop .ui-wizard-body { padding: 12px !important; } }
+@media (prefers-color-scheme: dark) { .modal-backdrop .ui-admission-wizard { background: var(--ui-surface) !important; } }

@@ -25,6 +25,7 @@ type VistaMatricula = 'inicio' | 'propuesta' | 'niveles' | 'admision' | 'pregunt
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, A11yModule, CommunityGalleryComponent],
   templateUrl: './matricula-publica.component.html',
+  styleUrl: './matricula-publica.component.css',
   host: { class: 'block' }
 })
 export class MatriculaPublicaComponent implements OnInit, OnDestroy {
