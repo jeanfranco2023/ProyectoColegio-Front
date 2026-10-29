@@ -34,11 +34,12 @@ template: `
         <div>
           <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#14213d] tracking-[-.025em]">Tesorería & Pagos</h2>
           <p class="text-sm text-[#64748b] mt-0">
-            @if (esAdministrativo()) { Gestión de pensiones escolares, conciliación de caja y pagos digitales. }
+            @if (esSecretaria()) { Operación de caja, cronogramas y pagos digitales. }
+            @else if (esAdministrativo()) { Consulta de obligaciones y estados de cuenta. }
             @else { Consulta tus obligaciones escolares y paga de forma segura con Mercado Pago. }
           </p>
         </div>
-        @if (esAdministrativo()) {
+        @if (esSecretaria()) {
         <div class="flex items-center gap-3">
           <button
             (click)="abrirModalEmitir()"
@@ -55,9 +56,9 @@ template: `
 
       @if (!esAdministrativo()) {
         <ui-app-alert
-          tone="warning"
-          title="Pendiente de habilitación"
-          message="El selector de estudiante, el estado de cuenta detallado y el reporte de notas estarán disponibles cuando el backend habilite la consulta vinculada al apoderado."
+          tone="info"
+          title="Obligaciones vinculadas"
+          message="Aquí se muestran únicamente las obligaciones de estudiantes para quienes tienes responsabilidad económica registrada."
         />
       }
 
@@ -71,7 +72,7 @@ template: `
         </div>
       }
       @if (mensaje()) { <p class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#86efac] bg-[#dcfce7] text-[#14532d]" role="status">{{ mensaje() }}</p> }
-      @if (esAdministrativo()) {
+      @if (esSecretaria()) {
         <dialog #cronogramaDialog class="box-border w-[min(680px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden border border-[#e4eaf3] rounded-[22px] bg-white text-[#14213d] p-0 shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px] max-[639px]:w-[calc(100vw-16px)] max-[639px]:max-w-[calc(100vw-16px)] max-[639px]:max-h-[calc(100dvh-16px)] max-[639px]:rounded-[18px] !w-[min(600px,calc(100vw-24px))] !max-w-[calc(100vw-24px)] !max-h-[calc(100dvh-24px)] !overflow-hidden !rounded-[18px] !border-[#e1e8f1] !bg-white !p-0 !text-[#172b4d] font-sans !shadow-[0_24px_72px_rgb(15_31_57_/_24%)] backdrop:!bg-[rgb(15_31_57_/_48%)] backdrop:!backdrop-blur-[3px]" aria-labelledby="cronograma-dialog-title">
           <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col max-h-[calc(100dvh-24px)] overflow-auto bg-white"><header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 bg-white"><div><h3 id="cronograma-dialog-title" class="!text-[#172b4d] !text-[19px] font-[750] !leading-[28.5px] tracking-[-.025em]">Generar cronograma de cobros</h3><p class="text-[#59677a]">Confirma matrícula, conceptos y fecha del primer vencimiento.</p></div><button type="button" class="min-h-9 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-3 !font-[650] text-[#334155] !h-9 !w-auto !min-h-9 !py-0 font-sans" (click)="cerrarCronograma()" aria-label="Cerrar">✕</button></header>
             <form (ngSubmit)="generarCronograma()" class="flex min-h-0 flex-[1_1_auto] flex-col"><div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4 bg-white text-[#34445d]">
@@ -208,13 +209,13 @@ template: `
                     <td class="sticky right-0 z-[3] px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 text-right min-w-[170px] min-[601px]:min-w-[176px] bg-white shadow-[-8px_0_12px_rgb(16_36_71_/_10%)] min-[1400px]:static min-[1400px]:z-auto min-[1400px]:!py-2 min-[1400px]:w-[16%] min-[1400px]:min-w-0 min-[1400px]:shadow-none" data-label="Acción">
                       @if (item.estado !== 'PAGADO_TOTAL' && item.estado !== 'CANCELADO_POR_TRASLADO' && item.saldoPendiente > 0) {
                         <div class="flex flex-wrap justify-end gap-[7px] max-[600px]:w-full max-[600px]:flex-col max-[600px]:items-stretch">
-                          <button
+                          @if (puedeEjecutarPagos()) { <button
                             (click)="pagarConMercadoPago(item)"
                             [disabled]="pagandoId() !== null || cobrandoId() !== null"
                             [attr.aria-label]="pagandoId() === item.id ? 'Preparando pago con Mercado Pago' : 'Pagar con Mercado Pago'"
                             class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-[#e2e8f0] disabled:bg-[#f1f5f9] disabled:text-[#64748b] aria-disabled:cursor-not-allowed aria-disabled:border-[#e2e8f0] aria-disabled:bg-[#f1f5f9] aria-disabled:text-[#64748b] bg-[#2563eb] text-white hover:bg-[#1d4ed8] !min-h-10 !px-[10px] !py-2 !text-[11px] !font-normal whitespace-nowrap max-[600px]:!min-h-11 max-[600px]:!w-full box-border inline-flex min-w-0 min-h-10 items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:min-h-11 !leading-[1.4]"
-                          ><span>{{ pagandoId() === item.id ? 'Preparando...' : 'Pagar' }}</span><span class="sr-only"> con Mercado Pago</span></button>
-                          @if (esAdministrativo()) {
+                          ><span>{{ pagandoId() === item.id ? 'Preparando...' : 'Pagar' }}</span><span class="sr-only"> con Mercado Pago</span></button> }
+                          @if (esSecretaria()) {
                             <button
                               (click)="cobrar(item)"
                               [disabled]="cobrandoId() !== null || pagandoId() !== null"
@@ -248,6 +249,8 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
   @ViewChild('cronogramaDialog') private cronogramaDialog?: ElementRef<HTMLDialogElement>;
   @ViewChild('cobroDialog') private cobroDialog?: ElementRef<HTMLDialogElement>;
   readonly esAdministrativo = computed(() => this.authStore.hasAnyRole(['DIRECCION', 'SECRETARIA']));
+  readonly esSecretaria = computed(() => this.authStore.hasRole('SECRETARIA'));
+  readonly puedeEjecutarPagos = computed(() => this.authStore.hasAnyRole(['SECRETARIA', 'APODERADO']));
   readonly cobroSeleccionado = signal<ObligacionCobro | null>(null);
   metodoCaja: 'EFECTIVO' | 'TRANSFERENCIA' = 'EFECTIVO';
   referenciaTransferencia = '';
@@ -260,7 +263,7 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
   readonly verificandoPago = signal(false);
   private seguimientoPago: ReturnType<typeof setInterval> | null = null;
 
-  matriculaId = 1;
+  matriculaId = 0;
   readonly error = signal<string | null>(null);
   readonly guardando = signal(false);
   readonly conceptosMatricula = signal<ConceptoCobroResponseDto[]>([]);
@@ -314,7 +317,7 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
             res.map(o => ({
               id: o.id,
               matriculaId: o.matriculaId,
-              estudiante: `Matrícula #${o.matriculaId}`,
+              estudiante: o.nombreEstudiante || 'Estudiante sin datos',
               concepto: o.descripcion || `Cuota #${o.numeroCuota || 1}`,
               monto: Number(o.montoBase || 0),
               saldoPendiente: Number(o.saldoPendiente || 0),
@@ -336,6 +339,7 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
   }
 
   pagarConMercadoPago(item: ObligacionCobro): void {
+    if (!this.puedeEjecutarPagos()) return;
     if (item.saldoPendiente <= 0 || this.pagandoId() !== null || this.cobrandoId() !== null) return;
     this.error.set(null);
     this.ngOnDestroy();
@@ -374,6 +378,7 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
   }
 
   confirmarPago(): void {
+    if (!this.puedeEjecutarPagos()) return;
     const id = this.checkoutObligacionId();
     const enlace = this.checkoutUrl();
     if (!id || this.verificandoPago()) return;
@@ -404,6 +409,7 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
   }
 
   cobrar(item: ObligacionCobro): void {
+    if (!this.esSecretaria()) return;
     if (item.saldoPendiente <= 0 || this.cobrandoId() !== null) return;
     this.error.set(null);
     this.metodoCaja = 'EFECTIVO';
@@ -413,6 +419,7 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
   }
 
   confirmarCobro(item: ObligacionCobro): void {
+    if (!this.esSecretaria()) return;
     if (item.saldoPendiente <= 0 || this.cobrandoId() !== null) return;
     if (this.metodoCaja === 'TRANSFERENCIA' && !this.referenciaTransferencia.trim()) {
       this.error.set('Indica banco y número de operación verificados.'); return;
@@ -445,6 +452,7 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
   }
 
   abrirModalEmitir(): void {
+    if (!this.esSecretaria()) return;
     this.error.set(null);
     this.mensaje.set(null);
     this.primerVencimiento = '';
@@ -455,6 +463,7 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
   cerrarCobro(): void { this.cobroDialog?.nativeElement.close(); this.cobroSeleccionado.set(null); }
 
   generarCronograma(): void {
+    if (!this.esSecretaria()) return;
     if (!this.matriculaId || !this.conceptoMatriculaId || !this.conceptoPensionId || !this.primerVencimiento) { this.error.set('Complete todos los campos del cronograma.'); return; }
     this.guardando.set(true); this.error.set(null);
     this.tesoreriaService.generarCronograma({ matriculaId: this.matriculaId, conceptoMatriculaId: this.conceptoMatriculaId, conceptoPensionId: this.conceptoPensionId, primerVencimiento: this.primerVencimiento }).subscribe({

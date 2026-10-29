@@ -12,7 +12,8 @@ import { vistaSuplencia } from './suplencia-view';
 @Component({ selector: 'app-suplente-apoderado-page', standalone: true, imports: [FormsModule, RouterLink, SuplenteApoderadoComponent], template: `
   @if(apoderado()){
     <form class="mb-4 grid gap-3 rounded-xl border bg-white p-5 md:grid-cols-2" (ngSubmit)="solicitar()" aria-label="Solicitar suplencia temporal">
-      <h1 class="text-xl font-bold md:col-span-2">Designar suplente temporal</h1>
+      <h1 class="text-xl font-bold md:col-span-2">Autorizar recojo temporal</h1>
+      <p class="text-sm text-slate-600 md:col-span-2">Registra a un adulto autorizado para recoger al estudiante durante las fechas indicadas. No es una suplencia docente ni reemplaza la tutela legal. Dirección revisará y aprobará la solicitud.</p>
       <label class="grid gap-1">Estudiante<select name="estudiante" [(ngModel)]="draft.estudianteId" class="min-h-11 rounded-lg border p-2" required><option [ngValue]="0">Selecciona</option>@for(h of hijosUnicos();track h.estudianteId){<option [ngValue]="h.estudianteId">{{ h.nombres }} {{ h.apellidoPaterno }} {{ h.apellidoMaterno }}</option>}</select></label>
       <label class="grid gap-1">DNI del suplente<input class="min-h-11 rounded-lg border p-2" name="dni" [(ngModel)]="draft.numeroDocumento" pattern="[0-9]{8}" maxlength="8" inputmode="numeric" required /></label>
       <label class="grid gap-1">Nombres<input class="min-h-11 rounded-lg border p-2" name="nombres" [(ngModel)]="draft.nombres" maxlength="20" required /></label>

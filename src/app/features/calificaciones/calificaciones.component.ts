@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, signal, computed, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { forkJoin } from 'rxjs';
@@ -6,6 +6,7 @@ import { CargaPlanillaComponent } from '../../shared/ui/carga-planilla.component
 import { EvaluacionService } from '../../core/services/evaluacion.service';
 import { AcademicoService } from '../../core/services/academico.service';
 import { AsignacionDocenteResponseDto, CompetenciaResponseDto, PeriodoResponseDto } from '../../core/models/academico.model';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 type NotaCNEB = 'AD' | 'A' | 'B' | 'C' | '-';
 
@@ -25,7 +26,7 @@ export interface EvaluacionAlumno {
 @Component({
   selector: 'app-calificaciones',
   standalone: true,
-  imports: [CommonModule, FormsModule, CargaPlanillaComponent],
+  imports: [CommonModule, FormsModule, CargaPlanillaComponent, MatPaginatorModule],
 template: `
     <main class="grid min-w-0 gap-[22px] text-[#172b4d] max-[600px]:gap-4 max-[600px]:pb-1" aria-labelledby="calificaciones-title">
       <header class="flex items-end justify-between gap-6 border-t-[3px] border-[rgb(196_154_88_/_50%)] pt-3 max-[600px]:items-stretch max-[600px]:flex-col max-[600px]:gap-[14px]">
@@ -95,6 +96,15 @@ template: `
         </div>
 
         <p class="" data-grade-scroll-hint="">Desliza horizontalmente para consultar Conclusión, Refuerzo y Acciones.</p>
+        <div class="flex flex-wrap items-end gap-3 border-b border-[#e1e8f1] bg-white p-4">
+          <label class="grid min-w-[240px] flex-1 gap-1 text-xs font-semibold text-[#475569]">Buscar estudiante
+            <input [(ngModel)]="busquedaAlumno" (ngModelChange)="pagina.set(0)" name="buscarCalificacion" type="search" placeholder="Nombre o apellido" class="min-h-11 rounded-xl border border-[#d9e1ec] px-3 text-sm font-normal text-[#172b4d]" />
+          </label>
+          <label class="grid min-w-[170px] gap-1 text-xs font-semibold text-[#475569]">Calificación
+            <select [(ngModel)]="filtroNota" (ngModelChange)="pagina.set(0)" name="filtroNotaCalificacion" class="min-h-11 rounded-xl border border-[#d9e1ec] bg-white px-3 text-sm font-normal text-[#172b4d]"><option value="TODOS">Todas</option><option value="SIN_CALIFICAR">Sin calificar</option><option value="AD">AD</option><option value="A">A</option><option value="B">B</option><option value="C">C</option></select>
+          </label>
+          <span class="pb-3 text-xs text-[#59677a]">{{ alumnosFiltrados().length }} estudiantes</span>
+        </div>
         <div class="max-w-full overflow-x-auto rounded-2xl border border-[#e2e8f0] bg-white min-w-0 overflow-x-auto">
           <table class="w-full border-collapse text-left font-sans text-base leading-6 text-[#1e293b] [&_th]:px-4 [&_th]:py-3 [&_th]:align-middle [&_th]:border-b [&_th]:border-[#e2e8f0] [&_td]:px-4 [&_td]:py-3 [&_td]:align-middle [&_td]:border-b [&_td]:border-[#e2e8f0] [&_th]:bg-[#f4f6fb] [&_th]:text-[13px] [&_th]:leading-[1.5] [&_th]:font-semibold [&_tr:last-child_td]:border-b-0 min-w-[790px] [&_thead]:!bg-[#f7f9fc] [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-[#f8faff]" data-mobile-table-scroll="">
             <thead>
@@ -119,7 +129,7 @@ template: `
                   </td>
                 </tr>
               } @else {
-                @for (alumno of alumnos(); track alumno.matriculaId) {
+                @for (alumno of alumnosPagina(); track alumno.matriculaId) {
                   <tr [ngClass]="alumno.c1 === '-' ? '[&>td]:bg-[#fffaf0] [&>td:first-child]:shadow-[inset_3px_0_#d4a239] [&>td:last-child]:bg-[#fffaf0]' : ''">
                     <td class="w-16 text-center text-[#64748b] tabular-nums" data-label="N°">{{ alumno.numeroOrden }}</td>
                     <td data-label="Estudiante / Matrícula"><span class="inline-flex min-h-8 items-center rounded-[9px] border border-[#dfe7f2] bg-[#f7f9fc] px-[9px] py-[5px] text-xs font-bold text-[#34445d] whitespace-nowrap">{{ alumno.estudiante }}</span></td>
@@ -157,6 +167,7 @@ template: `
             </tbody>
           </table>
         </div>
+        <mat-paginator [length]="alumnosFiltrados().length" [pageIndex]="pagina()" [pageSize]="10" [pageSizeOptions]="[10, 25, 50]" (page)="cambiarPagina($event)" aria-label="Paginación de calificaciones" />
       </section>
 
       <dialog #edicionDialog class="fixed inset-0 m-auto w-[min(620px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden rounded-[20px] border border-[#e1e8f1] bg-white p-0 text-[#172b4d] font-sans shadow-[0_24px_72px_rgb(15_31_57_/_24%)] backdrop:bg-[rgb(15_31_57_/_48%)] backdrop:backdrop-blur-[3px]" aria-labelledby="calificacion-dialog-title">
@@ -223,6 +234,16 @@ export class CalificacionesComponent implements OnInit {
   cargando = signal(false);
 
   readonly alumnos = signal<EvaluacionAlumno[]>([]);
+  busquedaAlumno = '';
+  filtroNota = 'TODOS';
+  readonly pagina = signal(0);
+  readonly alumnosFiltrados = computed(() => {
+    const texto = this.busquedaAlumno.trim().toLocaleLowerCase('es-PE');
+    return this.alumnos().filter(alumno =>
+      (!texto || alumno.estudiante.toLocaleLowerCase('es-PE').includes(texto)) &&
+      (this.filtroNota === 'TODOS' || (this.filtroNota === 'SIN_CALIFICAR' ? alumno.c1 === '-' : alumno.c1 === this.filtroNota)));
+  });
+  readonly alumnosPagina = computed(() => this.alumnosFiltrados().slice(this.pagina() * 10, this.pagina() * 10 + 10));
   get seccionActualId(): number { return this.asignaciones().find(a => a.id === Number(this.asignacionId))?.seccionId ?? 0; }
 
   abrirEdicion(alumno: EvaluacionAlumno): void {
@@ -295,6 +316,7 @@ export class CalificacionesComponent implements OnInit {
     this.periodoId = 0;
     this.competenciaId = 0;
     this.alumnos.set([]);
+    this.pagina.set(0);
     this.error.set(null);
     this.academicoService.listarAreas(asignacion.nivelId).subscribe({next: areas => this.areas.set(areas), error: () => this.areas.set([])});
     this.academicoService.listarCompetencias(asignacion.areaCurricularId).subscribe({
@@ -316,11 +338,12 @@ export class CalificacionesComponent implements OnInit {
         const origenIa = new Map(notas.map(n => [`${n.matriculaId}/${n.competenciaId}`, n.sugerenciaIaUtilizada ?? false]));
         this.cargando.set(false);
         if (Array.isArray(res)) {
+          this.pagina.set(0);
           this.alumnos.set(
             res.map((c, idx) => ({
               matriculaId: c.matriculaId,
               numeroOrden: idx + 1,
-              estudiante: `Matrícula #${c.matriculaId}`,
+              estudiante: c.nombreEstudiante || 'Estudiante sin datos',
               c1: c.calificacionCualitativa ?? '-',
               c2: '-',
               c3: '-',
@@ -341,6 +364,8 @@ export class CalificacionesComponent implements OnInit {
       }
     });
   }
+
+  cambiarPagina(event: PageEvent): void { this.pagina.set(event.pageIndex); }
 
   guardarCalificaciones(): void {
     if (this.alumnos().length === 0 || !this.asignacionId || !this.competenciaId || !this.periodoId) return;

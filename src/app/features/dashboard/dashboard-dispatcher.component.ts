@@ -35,14 +35,25 @@ template: `
               Hola, {{ (store.user()?.username || 'equipo').split(' ')[0] }}
             </h1>
             <p class="mt-3 max-w-xl text-sm leading-6 text-blue-100/75">
-              Este es el resumen de actividad de tu comunidad escolar. Los indicadores se actualizan desde el sistema institucional.
+              @if (store.hasRole('DIRECCION')) {
+                Consulta el estado institucional, revisa solicitudes y supervisa la operación escolar.
+              } @else if (store.hasRole('SECRETARIA')) {
+                Gestiona matrículas, expedientes, vacantes, asistencia administrativa y tesorería.
+              } @else {
+                Este es el resumen de actividad de tu comunidad escolar.
+              }
             </p>
           </div>
           <div class="grid grid-cols-1 gap-3 sm:flex sm:flex-wrap sm:items-center">
-            @if (store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) {
+            @if (store.hasRole('SECRETARIA')) {
               <a mat-flat-button routerLink="/admin/matriculas" class="!flex !h-11 !min-h-11 !w-full !min-w-0 !max-w-full !shrink-0 !items-center !justify-center !gap-2 !rounded-xl !bg-[#d4ad70] !px-[18px] !text-[#182846] !text-sm !font-bold !leading-none !shadow-[0_10px_22px_rgb(0_0_0_/_12%)] !whitespace-nowrap sm:!w-max sm:!min-w-max [&_.mdc-button__label]:!w-max [&_.mdc-button__label]:!max-w-full [&_.mdc-button__label]:!whitespace-nowrap [&_svg]:!size-[18px] [&_svg]:!shrink-0 [&_svg]:!m-0">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 5v14m-7-7h14"/></svg>
                 <span>Nueva matrícula</span>
+              </a>
+            }
+            @if (store.hasRole('DIRECCION')) {
+              <a mat-flat-button routerLink="/admin/solicitudes-matricula" class="!flex !h-11 !min-h-11 !w-full !min-w-0 !max-w-full !shrink-0 !items-center !justify-center !gap-2 !rounded-xl !bg-[#d4ad70] !px-[18px] !text-[#182846] !text-sm !font-bold !leading-none !shadow-[0_10px_22px_rgb(0_0_0_/_12%)] !whitespace-nowrap sm:!w-max sm:!min-w-max [&_.mdc-button__label]:!w-max [&_.mdc-button__label]:!max-w-full [&_.mdc-button__label]:!whitespace-nowrap [&_svg]:!size-[18px] [&_svg]:!shrink-0 [&_svg]:!m-0">
+                <span>Revisar solicitudes</span>
               </a>
             }
           </div>
@@ -99,6 +110,7 @@ template: `
             </mat-card-content>
           </mat-card>
 
+          @if (store.hasRole('DIRECCION')) {
           <mat-card class="min-h-[154px] min-w-0 overflow-hidden !rounded-[20px] !border !border-[#e7ebf2] !bg-white !shadow-[0_5px_18px_rgb(23_43_77_/_4%)] transition-[transform,box-shadow] duration-[180ms] hover:-translate-y-0.5 hover:!shadow-[0_14px_32px_rgb(23_43_77_/_8%)]">
             <mat-card-content class="!p-5 sm:!p-6">
               <div class="flex items-start justify-between">
@@ -109,6 +121,7 @@ template: `
               <p class="mt-1 text-xs !text-[11px] text-slate-500">Estudiantes que requieren refuerzo</p>
             </mat-card-content>
           </mat-card>
+          }
         </div>
         }
       </section>
@@ -119,18 +132,27 @@ template: `
           <h2 id="modulos-title" class="mt-1 text-lg font-semibold text-slate-800">Continúa con tu trabajo</h2>
         </div>
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <a routerLink="/admin/matriculas" class="flex min-h-[190px] flex-col items-start rounded-[20px] border border-[#e6ebf2] bg-white p-[22px] text-left no-underline shadow-[0_5px_18px_rgb(23_43_77_/_4%)] transition-[transform,border-color,box-shadow] duration-[180ms] hover:-translate-y-[3px] hover:border-[#cdd9eb] hover:shadow-[0_15px_34px_rgb(23_43_77_/_9%)] max-[639px]:min-h-[160px] group">
+          <a [routerLink]="store.hasRole('SECRETARIA') ? '/admin/matriculas' : '/admin/solicitudes-matricula'" class="flex min-h-[190px] flex-col items-start rounded-[20px] border border-[#e6ebf2] bg-white p-[22px] text-left no-underline shadow-[0_5px_18px_rgb(23_43_77_/_4%)] transition-[transform,border-color,box-shadow] duration-[180ms] hover:-translate-y-[3px] hover:border-[#cdd9eb] hover:shadow-[0_15px_34px_rgb(23_43_77_/_9%)] max-[639px]:min-h-[160px] group">
             <span class="grid size-11 place-items-center rounded-[15px] bg-[#eef4ff] text-[#3569bd] [&_svg]:size-[21px]"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M8 5H6a2 2 0 00-2 2v13h14v-2M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5zm8 7h6m-3-3v6m-9-2h3m-3 4h6"/></svg></span>
-            <span class="mt-5 block text-sm font-semibold text-slate-800">Matrículas y estudiantes</span>
-            <span class="mt-2 block text-[11px] leading-5 text-slate-500">Expedientes, solicitudes y fichas únicas.</span>
+            <span class="mt-5 block text-sm font-semibold text-slate-800">{{ store.hasRole('SECRETARIA') ? 'Matrículas y expedientes' : 'Solicitudes de matrícula' }}</span>
+            <span class="mt-2 block text-[11px] leading-5 text-slate-500">{{ store.hasRole('SECRETARIA') ? 'Registra estudiantes y gestiona las vacantes.' : 'Revisa el avance de admisión y documentos.' }}</span>
             <span class="mt-auto flex w-full items-center justify-between pt-[18px] text-[11px] font-bold text-[#315fa8] [&_span]:transition-transform [&_span]:duration-[150ms] group-hover:[&_span]:translate-x-[3px]">Abrir módulo <span aria-hidden="true">→</span></span>
           </a>
-          <a routerLink="/admin/calificaciones" class="flex min-h-[190px] flex-col items-start rounded-[20px] border border-[#e6ebf2] bg-white p-[22px] text-left no-underline shadow-[0_5px_18px_rgb(23_43_77_/_4%)] transition-[transform,border-color,box-shadow] duration-[180ms] hover:-translate-y-[3px] hover:border-[#cdd9eb] hover:shadow-[0_15px_34px_rgb(23_43_77_/_9%)] max-[639px]:min-h-[160px] group">
+          @if (store.hasRole('DIRECCION')) {
+          <a routerLink="/admin/academico" class="flex min-h-[190px] flex-col items-start rounded-[20px] border border-[#e6ebf2] bg-white p-[22px] text-left no-underline shadow-[0_5px_18px_rgb(23_43_77_/_4%)] transition-[transform,border-color,box-shadow] duration-[180ms] hover:-translate-y-[3px] hover:border-[#cdd9eb] hover:shadow-[0_15px_34px_rgb(23_43_77_/_9%)] max-[639px]:min-h-[160px] group">
             <span class="grid size-11 place-items-center rounded-[15px] bg-[#eaf7f1] text-[#23815d] [&_svg]:size-[21px]"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M8 4h8a2 2 0 012 2v15H6V6a2 2 0 012-2zm1 5h6m-6 4h6m-6 4h3"/></svg></span>
-            <span class="mt-5 block text-sm font-semibold text-slate-800">Calificaciones CNEB</span>
-            <span class="mt-2 block text-[11px] leading-5 text-slate-500">Registro y consulta del progreso académico.</span>
+            <span class="mt-5 block text-sm font-semibold text-slate-800">Aulas y organización académica</span>
+            <span class="mt-2 block text-[11px] leading-5 text-slate-500">Configura la estructura académica institucional.</span>
             <span class="mt-auto flex w-full items-center justify-between pt-[18px] text-[11px] font-bold text-[#315fa8] [&_span]:transition-transform [&_span]:duration-[150ms] group-hover:[&_span]:translate-x-[3px]">Abrir módulo <span aria-hidden="true">→</span></span>
           </a>
+          } @else if (store.hasRole('SECRETARIA')) {
+          <a routerLink="/admin/tesoreria" class="flex min-h-[190px] flex-col items-start rounded-[20px] border border-[#e6ebf2] bg-white p-[22px] text-left no-underline shadow-[0_5px_18px_rgb(23_43_77_/_4%)] transition-[transform,border-color,box-shadow] duration-[180ms] hover:-translate-y-[3px] hover:border-[#cdd9eb] hover:shadow-[0_15px_34px_rgb(23_43_77_/_9%)] max-[639px]:min-h-[160px] group">
+            <span class="grid size-11 place-items-center rounded-[15px] bg-[#fbf3e7] text-[#a47737]">S/</span>
+            <span class="mt-5 block text-sm font-semibold text-slate-800">Tesorería y pagos</span>
+            <span class="mt-2 block text-[11px] leading-5 text-slate-500">Consulta obligaciones y operaciones registradas.</span>
+            <span class="mt-auto flex w-full items-center justify-between pt-[18px] text-[11px] font-bold text-[#315fa8]">Abrir módulo <span aria-hidden="true">→</span></span>
+          </a>
+          }
           <a routerLink="/admin/asistencia" class="flex min-h-[190px] flex-col items-start rounded-[20px] border border-[#e6ebf2] bg-white p-[22px] text-left no-underline shadow-[0_5px_18px_rgb(23_43_77_/_4%)] transition-[transform,border-color,box-shadow] duration-[180ms] hover:-translate-y-[3px] hover:border-[#cdd9eb] hover:shadow-[0_15px_34px_rgb(23_43_77_/_9%)] max-[639px]:min-h-[160px] group">
             <span class="grid size-11 place-items-center rounded-[15px] bg-[#fbf3e7] text-[#a47737] [&_svg]:size-[21px]"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke-width="1.7"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" d="M12 7v5l3 2"/></svg></span>
             <span class="mt-5 block text-sm font-semibold text-slate-800">Asistencia y biometría</span>

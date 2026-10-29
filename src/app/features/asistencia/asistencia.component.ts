@@ -7,6 +7,8 @@ import { AnioLectivoResponseDto } from '../../core/models/academico.model';
 import { DiscrepanciaAlertaResponseDto, TipoDiscrepancia } from '../../core/models/asistencia.model';
 import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
 import { StatusBadgeComponent, UiStatusTone } from '../../shared/ui/status-badge.component';
+import { AuthStore } from '../../core/state/auth.store';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 export type EstadoAsistencia = 'PRESENTE' | 'TARDANZA' | 'FALTA_JUSTIFICADA' | 'FALTA_INJUSTIFICADA';
 
@@ -16,13 +18,14 @@ export interface AlumnoAsistenciaItem {
   estado: EstadoAsistencia;
   fecha: string;
   horaMarcacionPuerta?: string;
+  tieneDocumentoSustento?: boolean;
 }
 
 
 @Component({
   selector: 'app-asistencia',
   standalone: true,
-  imports: [CommonModule, FormsModule, UiDatePePipe, StatusBadgeComponent],
+  imports: [CommonModule, FormsModule, UiDatePePipe, StatusBadgeComponent, MatPaginatorModule],
   template: `
     <div class="space-y-6 min-w-0 font-sans text-[#172b4d] [&_*:focus-visible]:outline-[3px] [&_*:focus-visible]:outline-[#2864c5] [&_*:focus-visible]:outline-offset-[3px] [&_button]:min-h-11 [&_input]:min-h-11 [&_select]:min-h-11">
       <!-- Header -->
@@ -34,7 +37,10 @@ export interface AlumnoAsistenciaItem {
           </p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <button (click)="abrirDialogoRegistro()" class="px-4 py-2.5 rounded-xl !bg-[#1d4ed8] hover:!bg-[#1e40af] !text-white font-semibold text-xs !text-[11px] sm:text-sm cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">Registrar asistencia</button>
+          @if (puedeRegistrar()) {
+          <button (click)="abrirDialogoRegistro()" [disabled]="esDocente() && matriculasDocente().length === 0" class="px-4 py-2.5 rounded-xl !bg-[#1d4ed8] hover:!bg-[#1e40af] !text-white font-semibold text-xs !text-[11px] sm:text-sm cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">Registrar asistencia</button>
+          }
+          @if (puedeGestionarBiometria()) {
           <button (click)="abrirDialogoBiometrico()" class="px-4 py-2.5 rounded-xl !bg-[#334155] hover:!bg-[#1f2937] !text-white font-semibold text-xs !text-[11px] sm:text-sm cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">Importar marca</button>
           <button
             (click)="ejecutarConciliacion()"
@@ -45,6 +51,7 @@ export interface AlumnoAsistenciaItem {
             </svg>
             <span>Ejecutar Conciliación en BD</span>
           </button>
+          }
         </div>
       </div>
       @if (error()) { <p class="text-[#b91c1c] text-sm" role="alert">{{ error() }}</p> }
@@ -55,7 +62,11 @@ export interface AlumnoAsistenciaItem {
           <form (ngSubmit)="registrarAsistencia()" class="flex min-h-0 flex-[1_1_auto] flex-col"><div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
             @if (error()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-xs text-[#b91c1c]" role="alert">{{ error() }}</p> }
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Matrícula ID *<input type="number" [(ngModel)]="matriculaId" name="matriculaId" min="1" required class="min-w-0 !min-h-[46px] max-w-full border px-3 !py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
+              @if (esDocente()) {
+                <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569]">Estudiante asignado *<select [(ngModel)]="matriculaId" name="matriculaId" required class="mt-[6px] block w-full min-h-[46px] rounded-xl border border-[#d9e1ec] bg-white px-3 text-[#172b4d]"><option [ngValue]="0" disabled>Seleccione estudiante</option>@for (matricula of matriculasDocente(); track matricula.matriculaId) { <option [ngValue]="matricula.matriculaId">{{ matricula.estudiante }}</option> }</select></label>
+              } @else {
+                <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Matrícula ID *<input type="number" [(ngModel)]="matriculaId" name="matriculaId" min="1" required class="min-w-0 !min-h-[46px] max-w-full border px-3 !py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
+              }
               <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Fecha *<input type="date" [(ngModel)]="fechaSesionNueva" name="fechaSesion" required class="min-w-0 !min-h-[46px] max-w-full border px-3 !py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
               <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Hora *<input type="time" [(ngModel)]="horaRegistro" name="horaRegistro" required class="min-w-0 !min-h-[46px] max-w-full border px-3 !py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
               <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Estado<select [(ngModel)]="estadoRegistro" name="estado" class="min-w-0 !min-h-[46px] max-w-full border px-3 !py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"><option value="PRESENTE">Presente</option><option value="TARDANZA">Tardanza</option><option value="FALTA_INJUSTIFICADA">Falta injustificada</option></select></label>
@@ -72,6 +83,11 @@ export interface AlumnoAsistenciaItem {
               <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">DNI *<input [(ngModel)]="dniBiometrico" name="dniBiometrico" inputmode="numeric" pattern="[0-9]{8}" maxlength="8" required placeholder="8 dígitos" class="min-w-0 !min-h-[46px] max-w-full border px-3 !py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
               <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Fecha y hora *<input type="datetime-local" [(ngModel)]="fechaHoraBiometrico" name="fechaHoraBiometrico" required class="min-w-0 !min-h-[46px] max-w-full border px-3 !py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
               <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full sm:col-span-2">Código del dispositivo *<input [(ngModel)]="dispositivoCodigo" name="dispositivoCodigo" maxlength="30" required class="min-w-0 !min-h-[46px] max-w-full border px-3 !py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
+              <div class="sm:col-span-2 rounded-xl border border-[#d9e1ec] bg-[#f8fafc] p-4 space-y-3">
+                <p class="m-0 text-xs text-[#475569]">Carga masiva: CSV UTF-8 o XLSX de hasta 10 000 filas, con cabecera <code>dni,fechaHora,dispositivoCodigo</code> y fecha ISO-8601 con zona horaria. En XLSX, conserva DNI y fecha como texto.</p>
+                <input type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" aria-label="Archivo CSV o XLSX biométrico" (change)="seleccionarCsvBiometrico($event)" class="block w-full text-sm text-[#334155] file:mr-3 file:min-h-10 file:rounded-lg file:border-0 file:bg-[#e8eef8] file:px-3 file:font-semibold file:text-[#1d4ed8]">
+                <button type="button" (click)="importarCsvBiometrico()" [disabled]="operando() || !archivoBiometrico" class="rounded-xl bg-[#334155] px-4 font-semibold text-white disabled:opacity-50 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center">{{ operando() ? 'Procesando…' : 'Validar e importar CSV' }}</button>
+              </div>
             </div>
           </div><footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]"><button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogos()">Cancelar</button><button type="submit" [disabled]="operando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ operando() ? 'Importando…' : 'Registrar marca' }}</button></footer></form>
         </div>
@@ -82,6 +98,7 @@ export interface AlumnoAsistenciaItem {
           <form (ngSubmit)="justificarSeleccionada()" class="flex min-h-0 flex-[1_1_auto] flex-col"><div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
             @if (error()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-xs text-[#b91c1c]" role="alert">{{ error() }}</p> }
             <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Motivo de justificación *<textarea [(ngModel)]="motivoJustificacion" name="motivoJustificacion" required maxlength="4000" rows="4" placeholder="Describe brevemente el motivo" class="min-w-0 max-w-full border px-3 !py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base py-[10px] resize-y !min-h-[110px] !font-[650]"></textarea></label>
+            <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569]">Sustento médico o institucional en PDF *<input type="file" accept="application/pdf,.pdf" required aria-label="Sustento PDF privado" (change)="seleccionarSustento($event)" class="mt-2 block w-full text-sm"></label>
           </div><footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]"><button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogos()">Cancelar</button><button type="submit" [disabled]="operando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ operando() ? 'Guardando…' : 'Guardar justificación' }}</button></footer></form>
         </div>
       </dialog>
@@ -131,7 +148,7 @@ export interface AlumnoAsistenciaItem {
       </div>
 
       <!-- Tabs Navigation -->
-      <div class="flex items-center gap-2 border-b border-[#e5eaf2]">
+      @if (!esDocente()) { <div class="flex items-center gap-2 border-b border-[#e5eaf2]">
         <button
           (click)="tabActiva.set('AULA')"
           [class]="tabActiva() === 'AULA' ? 'border-blue-500 !text-[#184fae] font-bold' : 'border-transparent !text-[#59677a] hover:!text-[#172b4d]'"
@@ -149,11 +166,22 @@ export interface AlumnoAsistenciaItem {
             {{ discrepancias().length }}
           </span>
         </button>
-      </div>
+      </div> }
 
       <!-- Tab Content: Pase de Lista -->
       @if (tabActiva() === 'AULA') {
         <div class="rounded-2xl !bg-white border !border-[#e1e8f1] overflow-hidden shadow-sm">
+          <div class="flex flex-wrap items-end gap-3 border-b border-[#e1e8f1] bg-white p-4">
+            <label class="grid min-w-[220px] flex-1 gap-1 text-xs font-semibold text-[#475569]">Buscar estudiante
+              <input [(ngModel)]="busquedaAsistencia" (ngModelChange)="paginaAsistencia.set(0)" name="buscarAsistencia" type="search" placeholder="Nombre o apellido" class="min-h-11 rounded-xl border border-[#d9e1ec] px-3 text-sm font-normal text-[#172b4d]" />
+            </label>
+            <label class="grid min-w-[180px] gap-1 text-xs font-semibold text-[#475569]">Estado
+              <select [(ngModel)]="estadoFiltro" (ngModelChange)="paginaAsistencia.set(0)" name="filtroEstadoAsistencia" class="min-h-11 rounded-xl border border-[#d9e1ec] bg-white px-3 text-sm font-normal text-[#172b4d]">
+                <option value="TODOS">Todos</option><option value="PRESENTE">Presente</option><option value="TARDANZA">Tardanza</option><option value="FALTA_JUSTIFICADA">Falta justificada</option><option value="FALTA_INJUSTIFICADA">Falta injustificada</option>
+              </select>
+            </label>
+            <span class="pb-3 text-xs text-[#59677a]">{{ alumnosFiltrados().length }} registros</span>
+          </div>
           <div class="overflow-x-auto" data-attendance-table-scroll="">
             <table class="w-full min-w-[760px] text-left text-xs !text-[11px] [&_thead]:!bg-[#f7f9fc] [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-[#f8faff]" data-mobile-table-cards="">
               <thead class="!bg-white border-b !border-[#e1e8f1] !text-[#59677a] uppercase tracking-wider font-semibold">
@@ -174,7 +202,7 @@ export interface AlumnoAsistenciaItem {
                     </td>
                   </tr>
                 } @else {
-                  @for (item of alumnos(); track item.id) {
+                  @for (item of alumnosPagina(); track item.id) {
                     <tr class="!bg-[#f1f4f9] hover:bg-[#f1f4f9] transition">
                       <td class="px-5 py-3.5 font-bold !text-[#172b4d]" data-label="Estudiante">{{ item.estudiante }}</td>
                       <td class="px-5 py-3.5 font-mono !text-[#59677a]" data-label="Fecha">{{ item.fecha | uiDatePe }}</td>
@@ -188,8 +216,11 @@ export interface AlumnoAsistenciaItem {
                         }
                       </td>
                       <td class="px-5 py-3.5 text-center" data-label="Acciones">
-                        @if (item.estado === 'FALTA_INJUSTIFICADA') {
+                        @if (puedeJustificar() && item.estado === 'FALTA_INJUSTIFICADA') {
                           <button (click)="abrirDialogoJustificacion(item.id)" class="text-blue-600 font-semibold max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">Justificar</button>
+                        }
+                        @if (puedeDescargarSustento() && item.tieneDocumentoSustento) {
+                          <button (click)="descargarSustento(item.id)" class="text-slate-700 font-semibold max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center">Ver sustento privado</button>
                         }
                       </td>
                     </tr>
@@ -206,6 +237,7 @@ export interface AlumnoAsistenciaItem {
               </tbody>
             </table>
           </div>
+          <mat-paginator [length]="alumnosFiltrados().length" [pageIndex]="paginaAsistencia()" [pageSize]="10" [pageSizeOptions]="[10, 25, 50]" (page)="cambiarPaginaAsistencia($event)" aria-label="Paginación de asistencias" />
         </div>
       }
 
@@ -225,7 +257,7 @@ export interface AlumnoAsistenciaItem {
               <tbody class="divide-y divide-[#edf0f5] !text-[#34445d]">
                 @for (d of discrepancias(); track $index) {
                   <tr class="!bg-[#f1f4f9] hover:bg-[#f1f4f9] transition">
-                    <td class="px-5 py-3.5 font-bold !text-[#172b4d]" data-label="Estudiante">Estudiante #{{ d.estudianteId }}</td>
+                    <td class="px-5 py-3.5 font-bold !text-[#172b4d]" data-label="Estudiante">{{ d.nombreEstudiante || 'Estudiante sin datos' }}</td>
                     <td class="px-5 py-3.5 font-mono !text-[#59677a]" data-label="Fecha">{{ d.fecha | uiDatePe }}</td>
                     <td class="px-5 py-3.5" data-label="Resultado">
                       <ui-status-badge [label]="resultadoDiscrepancia(d.tipoDiscrepancia)" [tone]="tonoDiscrepancia(d.tipoDiscrepancia)" />
@@ -252,6 +284,13 @@ export interface AlumnoAsistenciaItem {
 export class AsistenciaComponent implements OnInit {
   private readonly asistenciaService = inject(AsistenciaService);
   private readonly academicoService = inject(AcademicoService);
+  private readonly auth = inject(AuthStore);
+  readonly esDocente = computed(() => this.auth.hasRole('DOCENTE'));
+  readonly puedeRegistrar = computed(() => this.auth.hasAnyRole(['DOCENTE', 'TUTOR', 'AUXILIAR']));
+  readonly puedeGestionarBiometria = computed(() => this.auth.hasAnyRole(['SECRETARIA', 'AUXILIAR']));
+  readonly puedeJustificar = computed(() => this.auth.hasAnyRole(['SECRETARIA', 'AUXILIAR', 'TUTOR']));
+  readonly puedeDescargarSustento = computed(() => this.auth.hasRole('DIRECCION') || this.auth.hasRole('SECRETARIA'));
+  readonly matriculasDocente = signal<{ matriculaId: number; estudiante: string }[]>([]);
   readonly anios = signal<AnioLectivoResponseDto[]>([]);
   @ViewChild('registroDialog') private registroDialog!: ElementRef<HTMLDialogElement>;
   @ViewChild('biometricoDialog') private biometricoDialog!: ElementRef<HTMLDialogElement>;
@@ -271,11 +310,23 @@ export class AsistenciaComponent implements OnInit {
   horaRegistro = '08:00';
   estadoRegistro: EstadoAsistencia = 'PRESENTE';
   motivoJustificacion = '';
+  archivoSustento: File | null = null;
   dniBiometrico = '';
   fechaHoraBiometrico = '';
   dispositivoCodigo = 'PUERTA-1';
+  archivoBiometrico: File | null = null;
 
   readonly alumnos = signal<AlumnoAsistenciaItem[]>([]);
+  busquedaAsistencia = '';
+  estadoFiltro: EstadoAsistencia | 'TODOS' = 'TODOS';
+  readonly paginaAsistencia = signal(0);
+  readonly alumnosFiltrados = computed(() => {
+    const texto = this.busquedaAsistencia.trim().toLocaleLowerCase('es-PE');
+    return this.alumnos().filter(alumno =>
+      (!texto || alumno.estudiante.toLocaleLowerCase('es-PE').includes(texto)) &&
+      (this.estadoFiltro === 'TODOS' || alumno.estado === this.estadoFiltro));
+  });
+  readonly alumnosPagina = computed(() => this.alumnosFiltrados().slice(this.paginaAsistencia() * 10, this.paginaAsistencia() * 10 + 10));
   readonly discrepancias = signal<DiscrepanciaAlertaResponseDto[]>([]);
 
   readonly totalPresentes = computed(() => this.alumnos().filter(a => a.estado === 'PRESENTE').length);
@@ -284,6 +335,17 @@ export class AsistenciaComponent implements OnInit {
   readonly totalInjustificadas = computed(() => this.alumnos().filter(a => a.estado === 'FALTA_INJUSTIFICADA').length);
 
   ngOnInit(): void {
+    if (this.esDocente()) {
+      this.asistenciaService.obtenerMatriculasDocente().subscribe({
+        next: matriculas => {
+          this.matriculasDocente.set(matriculas);
+          this.matriculaId = matriculas[0]?.matriculaId ?? 0;
+        },
+        error: () => this.error.set('No se pudieron cargar sus estudiantes asignados.')
+      });
+      this.cargarAsistencia();
+      return;
+    }
     this.academicoService.listarAnios().subscribe({
       next: anios => { this.anios.set(anios); this.anioId = anios.find(a => a.abierto)?.id ?? anios[0]?.id ?? 0; },
       error: () => this.error.set('No se pudieron consultar los años lectivos.')
@@ -294,6 +356,27 @@ export class AsistenciaComponent implements OnInit {
   cargarAsistencia(): void {
     this.error.set(null);
     this.cargando.set(true);
+    if (this.esDocente()) {
+      this.asistenciaService.obtenerReporteDocente(this.fechaSeleccionada).subscribe({
+        next: res => {
+          this.cargando.set(false);
+          this.alumnos.set(res.map(a => ({
+            id: a.id,
+            estudiante: a.estudiante,
+            fecha: a.fechaSesion,
+            estado: a.estado as EstadoAsistencia,
+            horaMarcacionPuerta: a.horaRegistro || '-'
+          })));
+          this.discrepancias.set([]);
+        },
+        error: () => {
+          this.cargando.set(false);
+          this.alumnos.set([]);
+          this.error.set('No se pudo cargar la asistencia de sus secciones asignadas.');
+        }
+      });
+      return;
+    }
     this.asistenciaService.obtenerReporteDiario(this.fechaSeleccionada).subscribe({
       next: (res) => {
         this.cargando.set(false);
@@ -301,10 +384,11 @@ export class AsistenciaComponent implements OnInit {
           this.alumnos.set(
             res.asistencias.map(a => ({
               id: a.id,
-              estudiante: `Matrícula #${a.matriculaId}`,
+              estudiante: a.nombreEstudiante || 'Estudiante sin datos',
               fecha: a.fechaSesion,
               estado: a.estado as EstadoAsistencia,
-              horaMarcacionPuerta: a.horaRegistro || '-'
+              horaMarcacionPuerta: a.horaRegistro || '-',
+              tieneDocumentoSustento: a.tieneDocumentoSustento
             }))
           );
         } else {
@@ -332,6 +416,8 @@ export class AsistenciaComponent implements OnInit {
       }
     });
   }
+
+  cambiarPaginaAsistencia(event: PageEvent): void { this.paginaAsistencia.set(event.pageIndex); }
 
   resultadoDiscrepancia(tipo: TipoDiscrepancia): string {
     switch (tipo) {
@@ -365,11 +451,25 @@ export class AsistenciaComponent implements OnInit {
   }
 
   justificar(asistenciaId: number): void {
-    if (!this.motivoJustificacion.trim()) { this.error.set('Indique el motivo de justificación.'); return; }
+    if (!this.motivoJustificacion.trim() || !this.archivoSustento) { this.error.set('Indique el motivo y adjunte el sustento PDF.'); return; }
     this.error.set(null); this.mensaje.set(null); this.operando.set(true);
-    this.asistenciaService.justificarInasistencia({ asistenciaId, motivo: this.motivoJustificacion.trim() }).subscribe({
-      next: () => { this.operando.set(false); this.cerrarDialogos(); this.justificacionId.set(null); this.motivoJustificacion = ''; this.mensaje.set('Falta justificada en la base de datos.'); this.cargarAsistencia(); },
+    this.asistenciaService.justificarInasistencia({ asistenciaId, motivo: this.motivoJustificacion.trim() }, this.archivoSustento).subscribe({
+      next: () => { this.operando.set(false); this.cerrarDialogos(); this.justificacionId.set(null); this.motivoJustificacion = ''; this.archivoSustento = null; this.mensaje.set('Falta justificada y sustento privado guardado.'); this.cargarAsistencia(); },
       error: err => { this.operando.set(false); this.error.set(err?.error?.message ?? 'No se pudo justificar la falta.'); }
+    });
+  }
+
+  seleccionarSustento(event: Event): void {
+    const archivo = (event.target as HTMLInputElement).files?.[0] ?? null;
+    this.archivoSustento = archivo?.type === 'application/pdf' && archivo.size <= 5 * 1024 * 1024 ? archivo : null;
+    if (archivo && !this.archivoSustento) this.error.set('Adjunta un archivo PDF de hasta 5 MB.');
+    else this.error.set(null);
+  }
+
+  descargarSustento(asistenciaId: number): void {
+    this.asistenciaService.obtenerUrlSustentoPrivado(asistenciaId).subscribe({
+      next: ({ url }) => { window.location.assign(url); },
+      error: err => this.error.set(err?.error?.message ?? 'No se pudo abrir el sustento privado.')
     });
   }
 
@@ -382,6 +482,27 @@ export class AsistenciaComponent implements OnInit {
     this.asistenciaService.importarLoteBiometrico({ nombreArchivo: `marca-ui-${this.dniBiometrico}-${Date.now()}.json`, marcas: [{ dniLeido: this.dniBiometrico, fechaHora, dispositivoCodigo: this.dispositivoCodigo.trim() }] }).subscribe({
       next: res => { this.operando.set(false); this.cerrarDialogos(); this.mensaje.set(`Marca importada: ${res.marcasValidas} válida(s), ${res.marcasErroneas} errónea(s).`); this.cargarAsistencia(); },
       error: err => { this.operando.set(false); this.error.set(err?.error?.message ?? 'No se pudo importar la marca biométrica.'); }
+    });
+  }
+
+  seleccionarCsvBiometrico(event: Event): void {
+    const archivo = (event.target as HTMLInputElement).files?.[0] ?? null;
+    this.archivoBiometrico = archivo && /\.(csv|xlsx)$/i.test(archivo.name) && archivo.size <= 5 * 1024 * 1024 ? archivo : null;
+    if (archivo && !this.archivoBiometrico) this.error.set('Selecciona un CSV o XLSX de hasta 5 MB.');
+    else this.error.set(null);
+  }
+
+  importarCsvBiometrico(): void {
+    const archivo = this.archivoBiometrico;
+    if (!archivo) return;
+    this.error.set(null); this.mensaje.set(null); this.operando.set(true);
+    this.asistenciaService.importarArchivoBiometrico(archivo).subscribe({
+      next: res => {
+        this.operando.set(false); this.cerrarDialogos(); this.archivoBiometrico = null;
+        this.mensaje.set(`Archivo importado: ${res.marcasValidas} válida(s), ${res.marcasErroneas} duplicada(s) o no identificada(s).`);
+        this.cargarAsistencia();
+      },
+      error: err => { this.operando.set(false); this.error.set(err?.error?.message ?? 'No se pudo importar el CSV biométrico.'); }
     });
   }
 
@@ -418,6 +539,7 @@ export class AsistenciaComponent implements OnInit {
     this.error.set(null);
     this.mensaje.set(null);
     this.motivoJustificacion = '';
+    this.archivoSustento = null;
     this.justificacionId.set(id);
     this.justificacionDialog.nativeElement.showModal();
   }

@@ -4,6 +4,7 @@ export type EstadoIncidencia = 'ABIERTA' | 'ATENDIDA' | 'CERRADA';
 export interface IncidenciaResponseDto {
   id: number;
   matriculaId: number;
+  nombreEstudiante: string;
   fechaIncidencia: string;
   tipoFalta: TipoFalta;
   descripcion: string;

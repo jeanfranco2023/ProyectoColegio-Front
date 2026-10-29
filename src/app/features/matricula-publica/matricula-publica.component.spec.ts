@@ -24,15 +24,18 @@ describe('Documentos PDF y vínculo parental', () => {
       seccionesDisponibles: [seccion], catalogo: () => ({anios: [{id: 2, anio: 2026}]})
     };
     const aviso = Object.getOwnPropertyDescriptor(MatriculaPublicaComponent.prototype, 'advertenciaEdad')!.get!;
-    expect(aviso.call(contexto)).toContain('entre 6 y 8');
+    const error = Object.getOwnPropertyDescriptor(MatriculaPublicaComponent.prototype, 'errorEdad')!.get!;
+    expect(aviso.call(contexto)).toContain('fuera del rango ordinario (6–8)');
+    expect(error.call(contexto)).toBe('');
     contexto.nacimientoEstudiante = '2020-03-31';
     expect(aviso.call(contexto)).toBe('');
     contexto.nacimientoEstudiante = '2018-03-31';
     expect(aviso.call(contexto)).toBe('');
     contexto.nacimientoEstudiante = '2017-03-31';
-    expect(aviso.call(contexto)).toContain('entre 6 y 8');
+    expect(aviso.call(contexto)).toContain('fuera del rango ordinario (6–8)');
     Object.assign(seccion, {edadMinimaAlCorte: undefined});
     expect(aviso.call(contexto)).toContain('No se pudo comprobar');
+    expect(error.call(contexto)).toContain('No se pudo comprobar');
   });
 
   it('permite continuar cuando los tres documentos y el vínculo están validados', () => {

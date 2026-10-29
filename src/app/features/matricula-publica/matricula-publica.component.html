@@ -208,7 +208,7 @@
               <label>Apellido paterno <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="apellidoPaternoEstudiante" name="apellidoPaternoEstudiante" autocomplete="family-name" maxlength="20" required></label>
               <label>Apellido materno <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="apellidoMaternoEstudiante" name="apellidoMaternoEstudiante" maxlength="20" required></label>
               <p class="span-2 form-hint">La consulta solo completa nombres y apellidos. Fecha de nacimiento y género deben coincidir con la partida.</p>
-              <label>Fecha de nacimiento <span class="required-mark" aria-hidden="true">*</span><input type="date" [(ngModel)]="nacimientoEstudiante" name="nacimientoEstudiante" [max]="fechaNacimientoMaxima" [attr.aria-invalid]="advertenciaEdad ? true : null" aria-describedby="aviso-edad" required></label>
+              <label>Fecha de nacimiento <span class="required-mark" aria-hidden="true">*</span><input type="date" [(ngModel)]="nacimientoEstudiante" name="nacimientoEstudiante" [max]="fechaNacimientoMaxima" [attr.aria-invalid]="errorEdad ? true : null" aria-describedby="aviso-edad" required></label>
               <p id="aviso-edad" role="status">{{ advertenciaEdad }}</p>
               <label>Género<select [(ngModel)]="generoEstudiante" name="genero"><option value="M">Masculino</option><option value="F">Femenino</option></select></label>
               </div>
@@ -272,12 +272,13 @@
                 <div class="review-item"><span class="review-state" [class.good]="doc.estado === 'VALIDADO'" [class.bad]="doc.estado === 'OBSERVADO'">{{ doc.estado === 'VALIDADO' ? '✓' : doc.estado === 'OBSERVADO' ? '!' : '·' }}</span><div><b>{{ etiquetaDocumento(doc.tipo) }}</b><small>{{ doc.observacion || 'Pendiente de revisión' }}</small></div></div>
               }
             </div>
-            @if (documentosAprobados()) { <div class="notice-success">Los tres documentos completaron las verificaciones automáticas. Puedes continuar al pago.</div> }
+            @if (documentosAprobados() && solicitud()?.estado === 'AUTORIZACION_EDAD_PENDIENTE') { <div class="notice-warning">Los documentos están validados. Dirección debe revisar y autorizar la excepción de edad antes de habilitar el siguiente paso.</div> }
+            @else if (documentosAprobados()) { <div class="notice-success">Los tres documentos completaron las verificaciones automáticas.</div> }
             @else { <div class="notice-warning">Hay comprobaciones pendientes o documentos observados. La partida requiere el PDF original firmado digitalmente por RENIEC.</div> }
             @if (error()) { <p class="form-error" role="alert">{{ error() }}</p> }
           }
         </div>
-        @if (!procesando()) { <footer class="modal-footer"><button type="button" class="button button-quiet" (click)="modal.set('documentos')">Ver documentos</button><button type="button" class="button button-quiet" (click)="actualizarRevision()">Actualizar revisión</button>@if (documentosAprobados()) {<button type="button" class="button button-primary" (click)="continuarAlPago()" [disabled]="procesando()">Continuar al pago <span>→</span></button>}</footer> }
+        @if (!procesando()) { <footer class="modal-footer"><button type="button" class="button button-quiet" (click)="modal.set('documentos')">Ver documentos</button><button type="button" class="button button-quiet" (click)="actualizarRevision()">Actualizar revisión</button>@if (documentosAprobados() && solicitud()?.estado === 'DOCUMENTOS_VALIDADOS') {<button type="button" class="button button-primary" (click)="continuarAlPago()" [disabled]="procesando()">Continuar al pago <span>→</span></button>}</footer> }
       </section>
     }
 

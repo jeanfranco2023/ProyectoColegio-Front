@@ -6,6 +6,7 @@ export type EstadoSolicitudMatriculaPublica =
   | 'DOCUMENTOS_EN_VALIDACION'
   | 'DOCUMENTOS_OBSERVADOS'
   | 'DOCUMENTOS_VALIDADOS'
+  | 'AUTORIZACION_EDAD_PENDIENTE'
   | 'PAGO_PENDIENTE'
   | 'MATRICULADA'
   | 'RECHAZADA';
@@ -101,4 +102,8 @@ export interface SolicitudMatriculaPublicaAdminDto extends Omit<SolicitudMatricu
   anioLectivoId: number;
   seccionId: number;
   creadaAt: string;
+  requiereAutorizacionEdad: boolean;
+  motivoAutorizacionEdad: string | null;
+  autorizadoPorUsuarioId: number | null;
+  fechaAutorizacionEdad: string | null;
 }

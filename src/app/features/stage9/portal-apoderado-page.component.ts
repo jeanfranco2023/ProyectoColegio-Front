@@ -75,7 +75,7 @@ export class PortalApoderadoPageComponent implements OnInit {
         this.pagos.set([]);
         this.asistencias.set([]);
         this.aviso.set('');
-        const obligaciones = this.store.hasAnyRole(['DIRECCION', 'SECRETARIA']) ? this.tesoreria.listarObligaciones(id) : this.tesoreria.listarMisObligaciones();
+        const obligaciones = this.store.hasAnyRole(['DIRECCION']) ? this.tesoreria.listarObligaciones(id) : this.tesoreria.listarMisObligaciones();
         forkJoin({ notas: this.portal.calificaciones(id), periodos: this.portal.periodos(id), asistencias: this.portal.asistencia(id), obligaciones }).subscribe({ next: datos => {
                 if (revision !== this.revision)
                     return;

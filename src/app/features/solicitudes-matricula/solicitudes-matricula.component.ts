@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { StatusBadgeComponent } from '../../shared/ui/status-badge.component';
 import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
 import { MatriculaPublicaService } from '../../core/services/matricula-publica.service';
+import { AuthStore } from '../../core/state/auth.store';
 import {
   DocumentoSolicitudDto,
   SolicitudMatriculaPublicaAdminDto,
@@ -19,6 +20,7 @@ import {
 })
 export class SolicitudesMatriculaComponent implements OnInit {
   private readonly api = inject(MatriculaPublicaService);
+  readonly auth = inject(AuthStore);
   readonly solicitudes = signal<SolicitudMatriculaPublicaAdminDto[]>([]);
   readonly cargando = signal(false);
   readonly error = signal('');
@@ -29,6 +31,7 @@ export class SolicitudesMatriculaComponent implements OnInit {
   readonly confirmandoRechazo = signal(false);
   readonly guardando = signal(false);
   readonly urlsDocumentos = signal<Record<string, string>>({});
+  readonly motivosEdad = signal<Record<string, string>>({});
 
   ngOnInit(): void { this.cargar(); }
 
@@ -97,6 +100,36 @@ export class SolicitudesMatriculaComponent implements OnInit {
     });
   }
 
+  actualizarMotivoEdad(id: string, motivo: string): void {
+    this.motivosEdad.update(current => ({ ...current, [id]: motivo }));
+  }
+
+  motivoEdad(solicitudId: string): string {
+    return this.motivosEdad()[solicitudId] ?? '';
+  }
+
+  autorizarExcepcionEdad(solicitud: SolicitudMatriculaPublicaAdminDto): void {
+    const motivo = this.motivosEdad()[solicitud.id]?.trim() ?? '';
+    if (motivo.length < 10 || motivo.length > 500) {
+      this.error.set('Registra una justificación institucional de 10 a 500 caracteres.');
+      return;
+    }
+    this.guardando.set(true);
+    this.api.autorizarExcepcionEdad(solicitud.id, motivo).subscribe({
+      next: updated => {
+        this.solicitudes.update(current => current.map(s => s.id === updated.id ? updated : s));
+        this.aviso.set('La excepción quedó autorizada por Dirección y registrada en el expediente.');
+        this.motivosEdad.update(current => ({ ...current, [solicitud.id]: '' }));
+        this.error.set('');
+        this.guardando.set(false);
+      },
+      error: err => {
+        this.error.set(err?.error?.message || 'No se pudo autorizar la excepción. Verifica los documentos y vuelve a intentar.');
+        this.guardando.set(false);
+      }
+    });
+  }
+
   etiquetaDocumento(tipo: TipoDocumentoSolicitud): string {
     return tipo === 'PARTIDA_NACIMIENTO' ? 'Partida de nacimiento'
       : tipo === 'DNI_C4' ? 'DNI o C4' : 'Recibo de luz o agua';
@@ -111,6 +144,7 @@ export class SolicitudesMatriculaComponent implements OnInit {
     const labels: Record<SolicitudMatriculaPublicaAdminDto['estado'], string> = {
       DOCUMENTOS_PENDIENTES: 'Documentos pendientes', DOCUMENTOS_OBSERVADOS: 'Corrección solicitada',
       DOCUMENTOS_EN_VALIDACION: 'En verificación automática',
+      AUTORIZACION_EDAD_PENDIENTE: 'Autorización de edad pendiente',
       DOCUMENTOS_VALIDADOS: 'Documentos validados', PAGO_PENDIENTE: 'Pago pendiente',
       MATRICULADA: 'Matriculada', RECHAZADA: 'Rechazada'
     };

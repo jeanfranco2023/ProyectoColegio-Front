@@ -4,11 +4,11 @@ import { environment } from '../../../environments/environment';
 export interface HorarioDto {
     id: number;
     anioLectivoId: number;
-    seccionId: number;
-    docenteUsuarioId: number;
-    asignacionDocenteId: number;
+    gradoId: number;
+    areaCurricularId: number;
     diaSemana: number;
     bloqueHorarioId: number;
+    activo: boolean;
 }
 export interface BloqueHorarioDto {
     id: number;
@@ -25,6 +25,8 @@ export interface AsignacionHorarioOpcionDto {
     anioLectivoId: number;
     anio: number;
     seccionId: number;
+    nivelId: number;
+    gradoId: number;
     nivel: string;
     grado: string;
     letra: string;
@@ -39,13 +41,18 @@ export type DiaHorario = 'LUNES' | 'MARTES' | 'MIERCOLES' | 'JUEVES' | 'VIERNES'
 export class HorarioService {
     private readonly http = inject(HttpClient);
     private readonly url = `${environment.apiUrl}/horarios`;
-    obtenerPorSeccion(id: number, anioId: number) { return this.http.get<MallaHorariaDto>(`${this.url}/seccion/${id}`, { params: { anioId } }); }
-    obtenerPorDocente(id: number, anioId: number) { return this.http.get<MallaHorariaDto>(`${this.url}/docente/${id}`, { params: { anioId } }); }
+    obtenerPorGrado(id: number, anioId: number) { return this.http.get<HorarioDto[]>(`${this.url}/grado/${id}`, { params: { anioId } }); }
     bloques() { return this.http.get<BloqueHorarioDto[]>(`${environment.apiUrl}/curriculo/bloques`); }
     catalogo() { return this.http.get<AsignacionHorarioOpcionDto[]>(`${this.url}/catalogo`); }
     programar(payload: {
-        asignacionDocenteId: number;
+        anioLectivoId: number;
+        gradoId: number;
+        areaCurricularId: number;
         diaSemana: DiaHorario;
         bloqueHorarioId: number;
-    }) { return this.http.post<HorarioDto>(this.url, payload); }
+    }) { return this.http.post<HorarioDto>(`${this.url}/grado`, payload); }
+    actualizar(id: number, payload: { anioLectivoId: number; gradoId: number; areaCurricularId: number; diaSemana: DiaHorario; bloqueHorarioId: number }) {
+        return this.http.put<HorarioDto>(`${this.url}/grado/${id}`, payload);
+    }
+    retirar(id: number) { return this.http.delete<HorarioDto>(`${this.url}/grado/${id}`); }
 }

@@ -7,6 +7,7 @@ import {
   AnioLectivoResponseDto,
   CompetenciaResponseDto,
   AulaResponseDto,
+  GradoResponseDto,
   NivelResponseDto,
   PeriodoResponseDto,
   SeccionResponseDto
@@ -64,9 +65,9 @@ export class AcademicoService {
     return this.http.post<AnioLectivoResponseDto>(`${this.baseUrl}/anios`, payload);
   }
 
-  listarGrados(nivelId: number): Observable<any[]> {
+  listarGrados(nivelId: number): Observable<GradoResponseDto[]> {
     const params = new HttpParams().set('nivelId', nivelId.toString());
-    return this.http.get<any[]>(`${this.baseUrl}/grados`, { params });
+    return this.http.get<GradoResponseDto[]>(`${this.baseUrl}/grados`, { params });
   }
 
   crearGrado(payload: { nivelId: number; numeroGrado: number; nombre: string }): Observable<any> {

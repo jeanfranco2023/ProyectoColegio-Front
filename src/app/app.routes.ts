@@ -29,13 +29,13 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./layout/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
     children: [
-      {path:'horarios',canActivate:[roleGuard(['DIRECCION','SECRETARIA','DOCENTE'])],loadComponent:()=>import('./features/horarios/horarios.component').then(m=>m.HorariosComponent)},
-      {path:'refuerzos',canActivate:[roleGuard(['DIRECCION','SECRETARIA','DOCENTE'])],loadComponent:()=>import('./features/refuerzos/refuerzos.component').then(m=>m.RefuerzosComponent)},
-      { path: 'tutoria', canActivate: [roleGuard(['DIRECCION', 'SECRETARIA', 'TUTOR', 'AUXILIAR'])], loadComponent: () => import('./features/stage9/seguimiento-tutoria-page.component').then(m => m.SeguimientoTutoriaPageComponent) },
-      { path: 'observaciones-conductuales', canActivate: [roleGuard(['DIRECCION', 'SECRETARIA', 'TUTOR', 'AUXILIAR'])], loadComponent: () => import('./features/stage9/observaciones-faltas-page.component').then(m => m.ObservacionesFaltasPageComponent) },
-      { path: 'suplencias', canActivate: [roleGuard(['APODERADO', 'DIRECCION', 'SECRETARIA'])], loadComponent: () => import('./features/stage9/suplente-apoderado-page.component').then(m => m.SuplenteApoderadoPageComponent) },
-      { path: 'aprobacion-suplencias', canActivate: [roleGuard(['DIRECCION', 'SECRETARIA'])], loadComponent: () => import('./features/stage9/aprobacion-suplencias-page.component').then(m => m.AprobacionSuplenciasPageComponent) },
-      { path: 'portal-apoderado', canActivate: [roleGuard(['APODERADO', 'DIRECCION', 'SECRETARIA'])], loadComponent: () => import('./features/stage9/portal-apoderado-page.component').then(m => m.PortalApoderadoPageComponent) },
+      {path:'horarios',canActivate:[roleGuard(['DIRECCION','DOCENTE'])],loadComponent:()=>import('./features/horarios/horarios.component').then(m=>m.HorariosComponent)},
+      {path:'refuerzos',canActivate:[roleGuard(['DIRECCION','DOCENTE'])],loadComponent:()=>import('./features/refuerzos/refuerzos.component').then(m=>m.RefuerzosComponent)},
+      { path: 'tutoria', canActivate: [roleGuard(['TUTOR'])], loadComponent: () => import('./features/stage9/seguimiento-tutoria-page.component').then(m => m.SeguimientoTutoriaPageComponent) },
+      { path: 'observaciones-conductuales', canActivate: [roleGuard(['DIRECCION', 'TUTOR', 'AUXILIAR'])], loadComponent: () => import('./features/stage9/observaciones-faltas-page.component').then(m => m.ObservacionesFaltasPageComponent) },
+      { path: 'suplencias', canActivate: [roleGuard(['APODERADO'])], loadComponent: () => import('./features/stage9/suplente-apoderado-page.component').then(m => m.SuplenteApoderadoPageComponent) },
+      { path: 'aprobacion-suplencias', canActivate: [roleGuard(['DIRECCION'])], loadComponent: () => import('./features/stage9/aprobacion-suplencias-page.component').then(m => m.AprobacionSuplenciasPageComponent) },
+      { path: 'portal-apoderado', canActivate: [roleGuard(['APODERADO'])], loadComponent: () => import('./features/stage9/portal-apoderado-page.component').then(m => m.PortalApoderadoPageComponent) },
       {
         path: '',
         pathMatch: 'full',
@@ -61,13 +61,13 @@ export const routes: Routes = [
       },
       {
         path: 'calificaciones',
-        canActivate: [roleGuard(['DIRECCION', 'SECRETARIA', 'DOCENTE'])],
+        canActivate: [roleGuard(['DIRECCION', 'DOCENTE'])],
         loadComponent: () =>
           import('./features/calificaciones/calificaciones.component').then(m => m.CalificacionesComponent)
       },
       {
         path: 'asistencia',
-        canActivate: [roleGuard(['DIRECCION', 'SECRETARIA', 'AUXILIAR', 'TUTOR'])],
+        canActivate: [roleGuard(['DIRECCION', 'SECRETARIA', 'AUXILIAR', 'TUTOR', 'DOCENTE'])],
         loadComponent: () =>
           import('./features/asistencia/asistencia.component').then(m => m.AsistenciaComponent)
       },
@@ -79,13 +79,13 @@ export const routes: Routes = [
       },
       {
         path: 'academico',
-        canActivate: [roleGuard(['DIRECCION', 'SECRETARIA'])],
+        canActivate: [roleGuard(['DIRECCION'])],
         loadComponent: () =>
           import('./features/academico/academico.component').then(m => m.AcademicoComponent)
       },
       {
         path: 'convivencia',
-        canActivate: [roleGuard(['DIRECCION', 'SECRETARIA', 'AUXILIAR', 'TUTOR'])],
+        canActivate: [roleGuard(['DIRECCION', 'AUXILIAR', 'TUTOR'])],
         loadComponent: () =>
           import('./features/convivencia/convivencia.component').then(m => m.ConvivenciaComponent)
       },
@@ -97,7 +97,7 @@ export const routes: Routes = [
       },
       {
         path: 'usuarios',
-        canActivate: [roleGuard(['DIRECCION', 'SECRETARIA'])],
+        canActivate: [roleGuard(['DIRECCION'])],
         loadComponent: () =>
           import('./features/usuarios/usuarios.component').then(m => m.UsuariosComponent)
       },

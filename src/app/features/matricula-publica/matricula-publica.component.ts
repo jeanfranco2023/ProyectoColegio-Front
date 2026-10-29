@@ -102,7 +102,21 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     const edad = edadAlCorteMatricula(this.nacimientoEstudiante, anio.anio);
     if (edad === null) return 'Ingresa una fecha de nacimiento válida.';
     if (edad >= seccion.edadMinimaAlCorte && edad <= seccion.edadMaximaAlCorte) return '';
-    return `La edad al 31 de marzo de ${anio.anio} debe estar entre ${seccion.edadMinimaAlCorte} y ${seccion.edadMaximaAlCorte} años. Los casos excepcionales requieren autorización institucional.`;
+    return `La edad al 31 de marzo de ${anio.anio} está fuera del rango ordinario (${seccion.edadMinimaAlCorte}–${seccion.edadMaximaAlCorte}). Puedes presentar la solicitud; Dirección evaluará la excepción después de validar los documentos.`;
+  }
+
+  get errorEdad(): string {
+    if (!this.nacimientoEstudiante || !this.seccionId()) return '';
+    const section = this.seccionesDisponibles.find(s => s.id === this.seccionId());
+    if (!section || !Number.isInteger(section.edadMinimaAlCorte)
+      || !Number.isInteger(section.edadMaximaAlCorte)
+      || section.edadMinimaAlCorte > section.edadMaximaAlCorte) {
+      return 'No se pudo comprobar el rango de edad. Vuelve a cargar la página antes de continuar.';
+    }
+    const anio = this.catalogo().anios.find(a => a.id === this.anioId())?.anio;
+    if (!anio) return 'No se pudo comprobar el año lectivo. Vuelve a cargar la página antes de continuar.';
+    return edadAlCorteMatricula(this.nacimientoEstudiante, anio) === null
+      ? 'Ingresa una fecha de nacimiento válida.' : '';
   }
 
   ngOnInit(): void {
@@ -410,6 +424,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       DOCUMENTOS_EN_VALIDACION: 'En verificación automática',
       DOCUMENTOS_OBSERVADOS: 'Requiere correcciones',
       DOCUMENTOS_VALIDADOS: 'Documentos validados',
+      AUTORIZACION_EDAD_PENDIENTE: 'Autorización institucional de edad pendiente',
       PAGO_PENDIENTE: 'Pago pendiente',
       MATRICULADA: 'Matrícula confirmada',
       RECHAZADA: 'Solicitud rechazada'
@@ -435,7 +450,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     if (!fechaNacimientoValida(this.nacimientoEstudiante)) {
       return this.error.set('La fecha de nacimiento debe ser válida y anterior al día de hoy.'), false;
     }
-    if (this.advertenciaEdad) return this.error.set(this.advertenciaEdad), false;
+    if (this.errorEdad) return this.error.set(this.errorEdad), false;
     if ([this.nombresEstudiante, this.apellidoPaternoEstudiante, this.apellidoMaternoEstudiante,
       this.nombresApoderado, this.apellidoPaternoApoderado, this.apellidoMaternoApoderado]
       .some(value => value.trim().length > 20)
@@ -523,6 +538,9 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       case 'DOCUMENTOS_VALIDADOS':
       case 'DOCUMENTOS_EN_VALIDACION':
         this.modal.set('validacion');
+        return;
+      case 'AUTORIZACION_EDAD_PENDIENTE':
+        this.modal.set(this.documentosAprobados() ? 'validacion' : 'documentos');
         return;
       default:
         this.modal.set('documentos');

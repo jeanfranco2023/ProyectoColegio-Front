@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { RouterLink } from '@angular/router';
 import { MatriculaService } from '../../core/services/matricula.service';
 import {
@@ -15,6 +16,7 @@ import {
 import { AcademicoService } from '../../core/services/academico.service';
 import { AnioLectivoResponseDto, SeccionResponseDto } from '../../core/models/academico.model';
 import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
+import { AuthStore } from '../../core/state/auth.store';
 
 export interface EstudianteMatriculadoItem {
   id: number;
@@ -28,7 +30,7 @@ export interface EstudianteMatriculadoItem {
 @Component({
   selector: 'app-matriculas',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatDialogModule, MatButtonModule, RouterLink, UiDatePePipe],
+  imports: [CommonModule, FormsModule, MatDialogModule, MatButtonModule, MatPaginatorModule, RouterLink, UiDatePePipe],
   template: `
     <div class="space-y-6 min-w-0 text-[#172b4d] max-[640px]:text-[13px] [&_*:focus-visible]:outline-[3px] [&_*:focus-visible]:outline-[#2864c5] [&_*:focus-visible]:outline-offset-[3px]">
       <!-- Top Banner / Alert -->
@@ -90,6 +92,7 @@ export interface EstudianteMatriculadoItem {
 
         <!-- Action Buttons -->
         <div class="flex flex-wrap items-center gap-3">
+          @if (auth.hasRole('SECRETARIA')) {
           <button
             id="btn-abrir-registro-alumno"
             (click)="abrirModalNuevoAlumno()"
@@ -111,6 +114,7 @@ export interface EstudianteMatriculadoItem {
             </svg>
             <span>Asignar Matrícula</span>
           </button>
+          }
           <a
             routerLink="/admin/solicitudes-matricula"
             class="inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 border border-[#e1e8f1] rounded-[10px] bg-white text-[#102447] font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:bg-[#f4f7fb] focus-visible:outline-[3px] focus-visible:outline-[#2864c5] focus-visible:outline-offset-[3px] max-[640px]:w-full"
@@ -176,6 +180,7 @@ export interface EstudianteMatriculadoItem {
                 id="input-filtro-estudiante" aria-label="Buscar estudiante"
                 type="text"
                 [(ngModel)]="busquedaEstudiante"
+                (ngModelChange)="paginaPadron = 0"
                 placeholder="Buscar por DNI, Nombres o Apellidos..."
                 class="w-full !pl-11 pr-4 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] !text-[11px] placeholder-slate-500 focus:outline-none focus:border-blue-500 transition min-w-0 !min-h-[44px] max-w-full px-3 py-[10px] !border-[#d9e1ec] transition-colors focus:border-[#5b83d6] focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !pr-3 !py-2"
               />
@@ -283,6 +288,16 @@ export interface EstudianteMatriculadoItem {
                 </tbody>
               </table>
             </div>
+            <mat-paginator
+              aria-label="Paginación del padrón de estudiantes"
+              [length]="estudiantesFiltradosPadron().length"
+              [pageIndex]="paginaPadron"
+              [pageSize]="tamanoPaginaPadron"
+              [pageSizeOptions]="[10]"
+              (page)="cambiarPaginaPadron($event)"
+              hidePageSize
+              showFirstLastButtons
+            />
           </div>
         </div>
       }
@@ -293,7 +308,7 @@ export interface EstudianteMatriculadoItem {
       @if (pestanaActiva() === 'matriculas') {
         <div class="space-y-4">
           <!-- Filters Bar -->
-          <div class="p-4 rounded-2xl !bg-white border !border-[#e1e8f1] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="p-4 rounded-2xl !bg-white border !border-[#e1e8f1] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div>
               <label class="block !text-[11px] font-semibold !text-[#59677a] mb-1">Año Lectivo</label>
               <select
@@ -324,6 +339,7 @@ export interface EstudianteMatriculadoItem {
               <label class="block !text-[11px] font-semibold !text-[#59677a] mb-1">Estado de Matrícula</label>
               <select
                 [(ngModel)]="filtroEstado" aria-label="Estado de Matrícula"
+                (ngModelChange)="paginaMatriculas = 0"
                 class="w-full px-3 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] !text-[11px] focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
               >
                 <option value="TODOS">Todos los Estados</option>
@@ -332,6 +348,18 @@ export interface EstudianteMatriculadoItem {
                 <option value="SOLICITADA">Solicitada</option>
                 <option value="TRASLADADO">Trasladado</option>
               </select>
+            </div>
+
+            <div>
+              <label class="block !text-[11px] font-semibold !text-[#59677a] mb-1">Buscar matrícula o estudiante</label>
+              <input
+                type="search"
+                [(ngModel)]="busqueda"
+                (ngModelChange)="paginaMatriculas = 0"
+                aria-label="Buscar por nombre, documento o código de matrícula"
+                placeholder="Nombre, DNI o código…"
+                class="w-full px-3 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] !text-[11px] focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px]"
+              />
             </div>
 
             <div class="flex items-end">
@@ -355,7 +383,7 @@ export interface EstudianteMatriculadoItem {
                   <tr>
                     <th class="px-5 py-3.5">ID BD</th>
                     <th class="px-5 py-3.5">Matrícula</th>
-                    <th class="px-5 py-3.5">Estudiante ID</th>
+                    <th class="px-5 py-3.5">Estudiante</th>
                     <th class="px-5 py-3.5">Fecha Registro</th>
                     <th class="px-5 py-3.5">Estado en BD</th>
                     <th class="px-5 py-3.5">Observaciones</th>
@@ -375,7 +403,10 @@ export interface EstudianteMatriculadoItem {
                       <tr class="!bg-[#f1f4f9] hover:bg-[#f1f4f9] transition">
                         <td class="px-5 py-3.5 font-mono !text-[#59677a]" data-label="ID BD">#{{ est.id }}</td>
                         <td class="px-5 py-3.5 font-mono text-[#2563eb] font-semibold" data-label="Matrícula">{{ est.codigoMatricula }}</td>
-                        <td class="px-5 py-3.5 font-mono !text-[#34445d]" data-label="Estudiante ID">Estudiante #{{ est.estudianteId }}</td>
+                        <td class="px-5 py-3.5 !text-[#172b4d]" data-label="Estudiante">
+                          <div class="font-semibold">{{ nombreEstudiante(est.estudianteId) }}</div>
+                          <div class="mt-0.5 font-mono text-[11px] !text-[#59677a]">DNI {{ documentoEstudiante(est.estudianteId) || '—' }}</div>
+                        </td>
                         <td class="px-5 py-3.5 !text-[#59677a] font-mono" data-label="Fecha Registro">{{ est.fechaMatricula | uiDatePe }}</td>
                         <td class="px-5 py-3.5" data-label="Estado en BD">
                           <span class="px-2 py-1 rounded-full !text-[11px] font-bold !bg-[#eff5ff] !text-[#184fae] border !border-[#c3d6f5]">
@@ -416,6 +447,16 @@ export interface EstudianteMatriculadoItem {
                 </tbody>
               </table>
             </div>
+            <mat-paginator
+              aria-label="Paginación de matrículas por sección"
+              [length]="estudiantesFiltrados().length"
+              [pageIndex]="paginaMatriculas"
+              [pageSize]="tamanoPaginaMatriculas"
+              [pageSizeOptions]="[10]"
+              (page)="cambiarPaginaMatriculas($event)"
+              hidePageSize
+              showFirstLastButtons
+            />
           </div>
         </div>
       }
@@ -742,6 +783,7 @@ export interface EstudianteMatriculadoItem {
   `
 })
 export class MatriculasComponent implements OnInit {
+  readonly auth = inject(AuthStore);
   private readonly dialog = inject(MatDialog);
   private readonly matriculaService = inject(MatriculaService);
   private readonly academicoService = inject(AcademicoService);
@@ -773,9 +815,14 @@ export class MatriculasComponent implements OnInit {
 
   readonly listaEstudiantes = signal<EstudianteResponseDto[]>([]);
   readonly estudiantes = signal<EstudianteMatriculadoItem[]>([]);
+  private estudiantesPorId = new Map<number, EstudianteResponseDto>();
 
   busqueda = '';
   busquedaEstudiante = '';
+  paginaPadron = 0;
+  tamanoPaginaPadron = 10;
+  paginaMatriculas = 0;
+  tamanoPaginaMatriculas = 10;
   seccionIdSeleccionada = 0;
   anioLectivoId = 0;
   nuevoEstudianteId = 0;
@@ -810,16 +857,26 @@ export class MatriculasComponent implements OnInit {
     return `${nombreGrado} - Sección ${s.letra}${aula}${vacantes}`;
   }
 
-  estudiantesPaginados(): EstudianteResponseDto[] {
+  estudiantesFiltradosPadron(): EstudianteResponseDto[] {
     const q = this.busquedaEstudiante.toLowerCase().trim();
     if (!q) return this.listaEstudiantes();
 
-    return this.listaEstudiantes().filter(e =>
-      e.numeroDocumento?.toLowerCase().includes(q) ||
-      e.nombres?.toLowerCase().includes(q) ||
-      e.apellidoPaterno?.toLowerCase().includes(q) ||
-      e.apellidoMaterno?.toLowerCase().includes(q)
-    );
+    return this.listaEstudiantes().filter(e => {
+      const nombreCompleto = `${e.apellidoPaterno} ${e.apellidoMaterno}, ${e.nombres}`.toLowerCase();
+      return e.numeroDocumento?.toLowerCase().includes(q) ||
+        e.codigoEstudianteSiagie?.toLowerCase().includes(q) ||
+        nombreCompleto.includes(q);
+    });
+  }
+
+  estudiantesPaginados(): EstudianteResponseDto[] {
+    const inicio = this.paginaPadron * this.tamanoPaginaPadron;
+    return this.estudiantesFiltradosPadron().slice(inicio, inicio + this.tamanoPaginaPadron);
+  }
+
+  cambiarPaginaPadron(evento: PageEvent): void {
+    this.paginaPadron = evento.pageIndex;
+    this.tamanoPaginaPadron = evento.pageSize;
   }
 
   estudiantesFiltrados(): EstudianteMatriculadoItem[] {
@@ -827,13 +884,32 @@ export class MatriculasComponent implements OnInit {
     const estado = this.filtroEstado;
 
     return this.estudiantes().filter(e => {
+      const datosEstudiante = this.estudiantesPorId.get(e.estudianteId);
       const matchQ =
         !q ||
         String(e.estudianteId).includes(q) ||
-        (e.codigoMatricula && e.codigoMatricula.toLowerCase().includes(q));
+        (e.codigoMatricula && e.codigoMatricula.toLowerCase().includes(q)) ||
+        Boolean(datosEstudiante?.numeroDocumento?.includes(q)) ||
+        this.nombreEstudiante(e.estudianteId).toLowerCase().includes(q);
       const matchEstado = estado === 'TODOS' || e.estado === estado;
       return matchQ && matchEstado;
     });
+  }
+
+  nombreEstudiante(estudianteId: number): string {
+    const estudiante = this.estudiantesPorId.get(estudianteId);
+    return estudiante
+      ? `${estudiante.apellidoPaterno} ${estudiante.apellidoMaterno}, ${estudiante.nombres}`
+      : 'Estudiante no disponible';
+  }
+
+  documentoEstudiante(estudianteId: number): string {
+    return this.estudiantesPorId.get(estudianteId)?.numeroDocumento ?? '';
+  }
+
+  cambiarPaginaMatriculas(evento: PageEvent): void {
+    this.paginaMatriculas = evento.pageIndex;
+    this.tamanoPaginaMatriculas = evento.pageSize;
   }
 
   ngOnInit(): void {
@@ -865,7 +941,10 @@ export class MatriculasComponent implements OnInit {
     this.matriculaService.listarEstudiantes().subscribe({
       next: (estudiantes) => {
         this.cargandoEstudiantes.set(false);
-        this.listaEstudiantes.set(estudiantes || []);
+        const registros = estudiantes || [];
+        this.estudiantesPorId = new Map(registros.map(estudiante => [estudiante.id, estudiante]));
+        this.listaEstudiantes.set(registros);
+        this.paginaPadron = 0;
       },
       error: () => {
         this.cargandoEstudiantes.set(false);
@@ -890,6 +969,7 @@ export class MatriculasComponent implements OnInit {
 
   cargarMatriculas(): void {
     this.error.set(null);
+    this.paginaMatriculas = 0;
     if (!this.seccionIdSeleccionada) {
       this.estudiantes.set([]);
       return;

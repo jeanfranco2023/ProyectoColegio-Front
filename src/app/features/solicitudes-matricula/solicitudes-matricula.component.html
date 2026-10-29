@@ -27,7 +27,7 @@
               <div class="flex flex-wrap items-center gap-[9px]">
                 <h2 class="m-0 text-[14px] font-normal text-[#172b4d] tracking-[-.025em]">{{ solicitud.nombreEstudiante }}</h2>
                 @if (solicitud.estado === 'DOCUMENTOS_PENDIENTES') {<ui-status-badge [label]="estadoLabel(solicitud.estado)" tone="warning" />}
-                @else {<span class="inline-flex items-center rounded-full bg-[#f0f3f7] px-2 py-[5px] text-[11px] font-bold text-[#617086]" [class.bg-emerald-100]="solicitud.estado === 'MATRICULADA'" [class.text-emerald-800]="solicitud.estado === 'MATRICULADA'" [class.bg-amber-100]="solicitud.estado === 'PAGO_PENDIENTE' || solicitud.estado === 'DOCUMENTOS_VALIDADOS'" [class.text-amber-900]="solicitud.estado === 'PAGO_PENDIENTE' || solicitud.estado === 'DOCUMENTOS_VALIDADOS'" [class.bg-rose-100]="solicitud.estado === 'DOCUMENTOS_OBSERVADOS' || solicitud.estado === 'RECHAZADA'" [class.text-rose-800]="solicitud.estado === 'DOCUMENTOS_OBSERVADOS' || solicitud.estado === 'RECHAZADA'">{{ estadoLabel(solicitud.estado) }}</span>}
+                @else {<span class="inline-flex items-center rounded-full bg-[#f0f3f7] px-2 py-[5px] text-[11px] font-bold text-[#617086]" [class.bg-emerald-100]="solicitud.estado === 'MATRICULADA'" [class.text-emerald-800]="solicitud.estado === 'MATRICULADA'" [class.bg-amber-100]="solicitud.estado === 'PAGO_PENDIENTE' || solicitud.estado === 'DOCUMENTOS_VALIDADOS' || solicitud.estado === 'AUTORIZACION_EDAD_PENDIENTE'" [class.text-amber-900]="solicitud.estado === 'PAGO_PENDIENTE' || solicitud.estado === 'DOCUMENTOS_VALIDADOS' || solicitud.estado === 'AUTORIZACION_EDAD_PENDIENTE'" [class.bg-rose-100]="solicitud.estado === 'DOCUMENTOS_OBSERVADOS' || solicitud.estado === 'RECHAZADA'" [class.text-rose-800]="solicitud.estado === 'DOCUMENTOS_OBSERVADOS' || solicitud.estado === 'RECHAZADA'">{{ estadoLabel(solicitud.estado) }}</span>}
               </div>
               <p class="mb-0 mt-[5px] text-[13px] text-[#475569]">DNI {{ solicitud.documentoEstudiante }} · Apoderado: {{ solicitud.nombreApoderado }}</p>
               <small class="text-[13px] text-[#59677a]">{{ solicitud.emailApoderado || solicitud.celularApoderado }} · Solicitud {{ solicitud.creadaAt | uiDatePe:true }}</small>
@@ -57,9 +57,18 @@
               </div>
             }
           </div>
+          @if (auth.hasRole('DIRECCION') && solicitud.estado === 'AUTORIZACION_EDAD_PENDIENTE' && solicitud.requiereAutorizacionEdad) {
+            <section class="mt-4 grid gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3" aria-label="Autorización excepcional de edad">
+              <p class="m-0 text-sm font-semibold text-amber-950">La edad está fuera del rango ordinario. Confirma que los tres documentos aparecen validados antes de decidir.</p>
+              <label class="grid gap-1 text-xs font-semibold text-amber-950">Justificación institucional (10–500 caracteres)
+                <textarea class="min-h-20 rounded-lg border border-amber-300 bg-white p-2 text-sm" [ngModel]="motivoEdad(solicitud.id)" (ngModelChange)="actualizarMotivoEdad(solicitud.id, $event)" maxlength="500" rows="3"></textarea>
+              </label>
+              <button type="button" class="w-fit rounded-lg border border-amber-800 bg-amber-800 px-4 py-2 font-semibold text-white disabled:opacity-50" (click)="autorizarExcepcionEdad(solicitud)" [disabled]="guardando() || motivoEdad(solicitud.id).trim().length < 10">Autorizar excepción de edad</button>
+            </section>
+          }
           <footer class="mt-[14px] flex flex-wrap items-center justify-between gap-2 border-t border-[#eff2f6] pt-[13px] text-[13px] text-[#59677a] max-[600px]:items-start">
             <span>ID {{ solicitud.id }}</span>
-            @if (solicitud.estado !== 'MATRICULADA' && solicitud.estado !== 'RECHAZADA') {
+            @if (auth.hasRole('SECRETARIA') && solicitud.estado !== 'MATRICULADA' && solicitud.estado !== 'RECHAZADA') {
               <div class="flex flex-wrap gap-2 max-[600px]:grid max-[600px]:w-full max-[600px]:grid-cols-1">
                 <button type="button" class="rounded-[9px] border border-[#e0e6ee] bg-white px-3 text-[11px] font-bold text-[#3d5676] max-[600px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]" (click)="abrirObservacion(solicitud)">Solicitar corrección</button>
                 <button type="button" class="rounded-[9px] border border-[#f0dbd7] bg-[#fffafa] px-3 text-[11px] font-bold text-[#ad4639] max-[600px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]" (click)="abrirRechazo(solicitud)">Rechazar solicitud</button>

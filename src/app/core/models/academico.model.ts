@@ -17,6 +17,13 @@ export interface NivelResponseDto {
   nombre: string;
 }
 
+export interface GradoResponseDto {
+  id: number;
+  nivelId: number;
+  numeroGrado: number;
+  nombre: string;
+}
+
 export interface SeccionResponseDto {
   id: number;
   anioLectivoId: number;

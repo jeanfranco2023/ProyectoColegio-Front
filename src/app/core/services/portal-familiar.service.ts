@@ -27,6 +27,11 @@ export interface CalificacionPortalDto {
     nota: 'AD' | 'A' | 'B' | 'C';
     conclusion: string | null;
 }
+export interface CalificacionRiesgoTutorDto {
+    matriculaId: number;
+    periodoId: number;
+    nota: 'B' | 'C';
+}
 @Injectable({ providedIn: 'root' })
 export class PortalFamiliarService {
     private readonly http = inject(HttpClient);
@@ -34,6 +39,7 @@ export class PortalFamiliarService {
     hijos() { return this.http.get<HijoPortalDto[]>(`${this.url}/hijos`); }
     hijosPropios() { return this.http.get<HijoPortalDto[]>(`${this.url}/hijos-propios`); }
     alumnosSeguimiento() { return this.http.get<HijoPortalDto[]>(`${this.url}/alumnos-seguimiento`); }
+    calificacionesRiesgoTutor() { return this.http.get<CalificacionRiesgoTutorDto[]>(`${this.url}/seguimiento/riesgo-calificaciones`); }
     periodos(id: number) { return this.http.get<PeriodoResponseDto[]>(`${this.url}/matriculas/${id}/periodos`); }
     periodosSeguimiento(anioId: number) { return this.http.get<PeriodoResponseDto[]>(`${this.url}/periodos-seguimiento`, { params: { anioId } }); }
     asistencia(id: number) { return this.http.get<AsistenciaAulaResponseDto[]>(`${this.url}/matriculas/${id}/asistencia`); }

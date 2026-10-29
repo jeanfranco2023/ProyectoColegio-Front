@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConvivenciaService } from '../../core/services/convivencia.service';
 import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
+import { AuthStore } from '../../core/state/auth.store';
 
 export interface IncidenciaEscolar {
   id: number;
   matriculaId: number;
+  nombreEstudiante?: string;
   fecha: string;
   tipoFalta: string;
   descripcion: string;
@@ -29,7 +31,7 @@ template: `
             Libro de incidencias, seguimiento formativo de estudiantes y citaciones registradas en la base de datos.
           </p>
         </div>
-        <div class="flex items-center gap-3">
+        @if (puedeGestionar()) { <div class="flex items-center gap-3">
           <button
             (click)="nuevaIncidencia()"
             class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs !text-[11px] sm:!text-[11px] shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
@@ -39,7 +41,7 @@ template: `
             </svg>
             <span>Registrar Incidencia en BD</span>
           </button>
-        </div>
+        </div> } @else { <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600">Consulta</span> }
       </div>
 
       @if (error()) { <p class="text-[#b91c1c] text-sm" role="alert">{{ error() }}</p> }
@@ -96,7 +98,7 @@ template: `
                 @for (item of incidencias(); track item.id) {
                   <tr class="!bg-[#f1f4f9] hover:bg-[#f1f4f9] transition">
                     <td class="px-5 py-3.5 font-mono text-[#59677a]" data-label="ID BD">{{ item.id }}</td>
-                    <td class="px-5 py-3.5 font-bold text-[#14213d]" data-label="Matrícula ID">Matrícula #{{ item.matriculaId }}</td>
+                    <td class="px-5 py-3.5 font-bold text-[#14213d]" data-label="Estudiante">{{ item.nombreEstudiante || 'Estudiante sin datos' }}</td>
                     <td class="px-5 py-3.5 font-mono !text-[#59677a]" data-label="Fecha">{{ item.fecha | uiDatePe }}</td>
                     <td class="px-5 py-3.5" data-label="Tipo Falta">
                       <span class="px-2 py-0.5 rounded bg-[#f3f6fa] text-[#34445d]">
@@ -138,6 +140,7 @@ template: `
 })
 export class ConvivenciaComponent implements OnInit {
   private readonly convivenciaService = inject(ConvivenciaService);
+  private readonly auth = inject(AuthStore);
   @ViewChild('incidenciaDialog') private incidenciaDialog!: ElementRef<HTMLDialogElement>;
   readonly error = signal<string | null>(null);
   readonly mensaje = signal<string | null>(null);
@@ -150,6 +153,7 @@ export class ConvivenciaComponent implements OnInit {
 
   cargando = signal(false);
   readonly incidencias = signal<IncidenciaEscolar[]>([]);
+  puedeGestionar(): boolean { return this.auth.hasRole('TUTOR'); }
 
   ngOnInit(): void {
     this.cargarIncidencias();
@@ -166,6 +170,7 @@ export class ConvivenciaComponent implements OnInit {
             res.map(i => ({
               id: i.id,
               matriculaId: i.matriculaId,
+              nombreEstudiante: i.nombreEstudiante,
               fecha: i.fechaIncidencia ? String(i.fechaIncidencia) : '-',
               tipoFalta: i.tipoFalta || '—',
               descripcion: i.descripcion || '',
@@ -187,6 +192,7 @@ export class ConvivenciaComponent implements OnInit {
   }
 
   nuevaIncidencia(): void {
+    if (!this.puedeGestionar()) return;
     this.error.set(null);
     this.mensaje.set(null);
     this.matriculaId = 0;
