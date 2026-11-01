@@ -8,6 +8,7 @@ import { MatriculaPublicaService } from '../../core/services/matricula-publica.s
 import { AuthStore } from '../../core/state/auth.store';
 import {
   DocumentoSolicitudDto,
+  SeccionMatriculaPublicaDto,
   SolicitudMatriculaPublicaAdminDto,
   TipoDocumentoSolicitud
 } from '../../core/models/matricula-publica.model';
@@ -22,6 +23,8 @@ export class SolicitudesMatriculaComponent implements OnInit {
   private readonly api = inject(MatriculaPublicaService);
   readonly auth = inject(AuthStore);
   readonly solicitudes = signal<SolicitudMatriculaPublicaAdminDto[]>([]);
+  readonly seccionesDisponibles = signal<SeccionMatriculaPublicaDto[]>([]);
+  readonly seccionesSeleccionadas = signal<Record<string, number>>({});
   readonly cargando = signal(false);
   readonly error = signal('');
   readonly aviso = signal('');
@@ -37,9 +40,48 @@ export class SolicitudesMatriculaComponent implements OnInit {
 
   cargar(): void {
     this.cargando.set(true);
+    this.api.catalogo().subscribe({
+      next: catalogo => this.seccionesDisponibles.set(catalogo.secciones),
+      error: () => this.seccionesDisponibles.set([])
+    });
     this.api.listarAdmin().subscribe({
       next: values => { this.solicitudes.set(values); this.cargando.set(false); },
       error: err => { this.error.set(err?.error?.message || 'No se pudieron cargar las solicitudes.'); this.cargando.set(false); }
+    });
+  }
+
+  seccionesDelGrado(solicitud: SolicitudMatriculaPublicaAdminDto): SeccionMatriculaPublicaDto[] {
+    return this.seccionesDisponibles().filter(seccion =>
+      seccion.anioLectivoId === solicitud.anioLectivoId && seccion.gradoId === solicitud.gradoId);
+  }
+
+  seleccionarSeccion(id: string, seccionId: number): void {
+    this.seccionesSeleccionadas.update(actual => ({ ...actual, [id]: seccionId }));
+  }
+
+  asignarSeccion(solicitud: SolicitudMatriculaPublicaAdminDto): void {
+    const seccionId = this.seccionesSeleccionadas()[solicitud.id];
+    if (!seccionId) { this.error.set('Selecciona una sección disponible del grado solicitado.'); return; }
+    this.guardando.set(true);
+    this.api.asignarSeccion(solicitud.id, seccionId).subscribe({
+      next: actualizada => {
+        this.solicitudes.update(actuales => actuales.map(item => item.id === actualizada.id ? actualizada : item));
+        this.aviso.set('Aula asignada. La matrícula pasó a completada y la vacante quedó actualizada.');
+        this.guardando.set(false);
+        this.cargarCatalogo();
+      },
+      error: err => {
+        this.error.set(err?.error?.message || 'No se pudo asignar la sección. Actualiza la lista de vacantes.');
+        this.guardando.set(false);
+        this.cargarCatalogo();
+      }
+    });
+  }
+
+  private cargarCatalogo(): void {
+    this.api.catalogo().subscribe({
+      next: catalogo => this.seccionesDisponibles.set(catalogo.secciones),
+      error: () => this.seccionesDisponibles.set([])
     });
   }
 
@@ -146,7 +188,8 @@ export class SolicitudesMatriculaComponent implements OnInit {
       DOCUMENTOS_EN_VALIDACION: 'En verificación automática',
       AUTORIZACION_EDAD_PENDIENTE: 'Autorización de edad pendiente',
       DOCUMENTOS_VALIDADOS: 'Documentos validados', PAGO_PENDIENTE: 'Pago pendiente',
-      MATRICULADA: 'Matriculada', RECHAZADA: 'Rechazada'
+      PAGO_CONFIRMADO_PENDIENTE_ASIGNACION: 'Pagada · aula pendiente',
+      MATRICULADA: 'Aula asignada · matrícula completa', RECHAZADA: 'Rechazada'
     };
     return labels[estado];
   }

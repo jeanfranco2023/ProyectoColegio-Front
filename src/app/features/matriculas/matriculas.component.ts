@@ -8,6 +8,7 @@ import { RouterLink } from '@angular/router';
 import { MatriculaService } from '../../core/services/matricula.service';
 import {
   FichaMatriculaResponseDto,
+  MatriculaResponseDto,
   EstudianteResponseDto,
   RegistrarEstudianteRequestDto,
   TipoDocumento,
@@ -148,7 +149,7 @@ export interface EstudianteMatriculadoItem {
 
         <button
           id="tab-matriculas"
-          (click)="pestanaActiva.set('matriculas')"
+          (click)="pestanaActiva.set('matriculas'); cargarSecciones(true)"
           [class]="pestanaActiva() === 'matriculas'
             ? 'px-4 py-3 border-b-2 border-blue-500 text-blue-700 font-bold text-sm flex items-center gap-2 transition cursor-pointer'
             : 'px-4 py-3 border-b-2 border-transparent !text-[#59677a] hover:!text-[#34445d] font-medium text-sm flex items-center gap-2 transition cursor-pointer'"
@@ -205,12 +206,12 @@ export interface EstudianteMatriculadoItem {
               <table id="tabla-estudiantes" class="w-full min-w-[1080px] text-left text-xs !text-[11px] [&>thead>tr>th:last-child]:static [&>tbody>tr>td:last-child]:static [&>thead>tr>th:last-child]:shadow-none [&>tbody>tr>td:last-child]:shadow-none [&>thead>tr>th:last-child]:px-3 [&>tbody>tr>td:last-child]:px-3 [&_thead]:!bg-[#f7f9fc] [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-[#f8faff]" data-mobile-table-cards="">
                 <thead class="bg-[#f5f7fb] border-b !border-[#e1e8f1] !text-[#59677a] uppercase tracking-wider font-semibold">
                   <tr>
-                    <th class="px-5 py-3.5">ID</th>
+                    <th class="px-5 py-3.5">Código interno</th>
                     <th class="px-5 py-3.5">Documento</th>
                     <th class="px-5 py-3.5">Apellidos y Nombres</th>
                     <th class="px-5 py-3.5">F. Nacimiento</th>
                     <th class="px-5 py-3.5">Género</th>
-                    <th class="px-5 py-3.5">Cód. SIAGIE</th>
+                    <th class="px-5 py-3.5">SIAGIE oficial</th>
                     <th class="px-5 py-3.5">Grupo Sang.</th>
                     <th class="px-5 py-3.5">Estado BD</th>
                     <th class="px-5 py-3.5 text-right">Acciones</th>
@@ -227,7 +228,10 @@ export interface EstudianteMatriculadoItem {
                   } @else {
                     @for (est of estudiantesPaginados(); track est.id) {
                       <tr class="!bg-[#f1f4f9] hover:bg-[#f1f4f9] transition group">
-                        <td class="px-5 py-3.5 font-mono !text-[#59677a] font-semibold" data-label="ID">#{{ est.id }}</td>
+                        <td class="px-5 py-3.5 font-mono font-semibold" data-label="Código interno">
+                          <span class="text-[#172b4d]">{{ est.codigoInterno || codigoInterno(est.id) }}</span>
+                          <span class="ml-1 text-[10px] font-normal text-[#718096]">ID #{{ est.id }}</span>
+                        </td>
                         <td class="px-5 py-3.5 font-mono" data-label="Documento">
                           <span class="px-2 py-0.5 rounded !text-[11px] font-bold bg-[#f1f4f9] !text-[#34445d] border !border-[#e1e8f1] mr-1.5">
                             {{ est.tipoDocumento || 'DNI' }}
@@ -258,7 +262,7 @@ export interface EstudianteMatriculadoItem {
                             <span class="!text-[#59677a]">-</span>
                           }
                         </td>
-                        <td class="px-5 py-3.5 font-mono !text-[#59677a]" data-label="Cód. SIAGIE">{{ est.codigoEstudianteSiagie || 'No asignado' }}</td>
+                        <td class="px-5 py-3.5 font-mono !text-[#59677a]" data-label="SIAGIE oficial">{{ est.codigoEstudianteSiagie || 'Pendiente de asignación' }}</td>
                         <td class="px-5 py-3.5 font-mono !text-[#34445d]" data-label="Grupo Sang.">{{ est.grupoSanguineo || '-' }}</td>
                         <td class="px-5 py-3.5" data-label="Estado BD">
                           <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full !text-[11px] font-bold !bg-[#edf9f3] !text-[#126943] border !border-[#b8dfcc]">
@@ -267,12 +271,23 @@ export interface EstudianteMatriculadoItem {
                           </span>
                         </td>
                         <td class="px-5 py-3.5 text-right" data-label="Acciones">
+                          @if (cargandoMatriculasAnio() || !matriculasAnioVerificadas()) {
+                            <button type="button" disabled class="inline-flex min-h-10 items-center justify-center rounded-[10px] border border-[#e1e8f1] bg-[#f1f4f9] px-4 text-sm font-semibold text-[#64748b]">
+                              {{ cargandoMatriculasAnio() ? 'Verificando...' : 'No disponible' }}
+                            </button>
+                          } @else if (estaMatriculadoEnAnio(est.id)) {
+                            <span class="inline-flex min-h-10 items-center justify-center rounded-[10px] border border-[#b8dfcc] bg-[#edf9f3] px-3 text-xs font-semibold text-[#126943]">
+                              Matrícula registrada
+                            </span>
+                          } @else {
                           <button
+                            type="button"
                             (click)="prepararMatriculaParaEstudiante(est)"
                             class="inline-flex min-h-10 w-auto min-w-[104px] items-center justify-center gap-2 px-4 py-2 border border-[#c3d6f5] rounded-[10px] bg-[#eff5ff] text-[#184fae] font-semibold leading-tight text-center no-underline cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:border-[#8fb0e4] hover:bg-[#dce9ff] box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-[14px] !leading-[1.25]"
                           >
                             Matricular
                           </button>
+                          }
                         </td>
                       </tr>
                     } @empty {
@@ -325,10 +340,11 @@ export interface EstudianteMatriculadoItem {
             <div>
               <label class="block !text-[11px] font-semibold !text-[#59677a] mb-1">Sección en BD</label>
               <select
-                [(ngModel)]="seccionIdSeleccionada" aria-label="Sección en BD"
+                [(ngModel)]="filtroSeccionId" aria-label="Sección en BD"
                 (change)="cargarMatriculas()"
                 class="w-full px-3 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] !text-[11px] focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
               >
+                <option [ngValue]="0">Todas las secciones</option>
                 @for (seccion of secciones(); track seccion.id) {
                   <option [ngValue]="seccion.id">{{ obtenerNombreSeccion(seccion) }}</option>
                 }
@@ -347,6 +363,8 @@ export interface EstudianteMatriculadoItem {
                 <option value="RESERVADA_TEMPORAL">Reserva temporal</option>
                 <option value="SOLICITADA">Solicitada</option>
                 <option value="TRASLADADO">Trasladado</option>
+                <option value="RETIRADO">Retirado</option>
+                <option value="CANCELADA">Cancelada</option>
               </select>
             </div>
 
@@ -399,7 +417,7 @@ export interface EstudianteMatriculadoItem {
                       </td>
                     </tr>
                   } @else {
-                    @for (est of estudiantesFiltrados(); track est.id) {
+                    @for (est of estudiantesPaginadosMatriculas(); track est.id) {
                       <tr class="!bg-[#f1f4f9] hover:bg-[#f1f4f9] transition">
                         <td class="px-5 py-3.5 font-mono !text-[#59677a]" data-label="ID BD">#{{ est.id }}</td>
                         <td class="px-5 py-3.5 font-mono text-[#2563eb] font-semibold" data-label="Matrícula">{{ est.codigoMatricula }}</td>
@@ -622,22 +640,9 @@ export interface EstudianteMatriculadoItem {
                 </div>
               </div>
 
-              <!-- Grid Row 4: Codigo SIAGIE & Alergias -->
+              <!-- Grid Row 4: Alergias -->
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label class="block text-xs font-semibold text-[#475569] mb-1">Cód. Modular SIAGIE</label>
-                  <input
-                    id="nuevo-alumno-siagie" aria-label="Cód. Modular SIAGIE"
-                    type="text"
-                    [(ngModel)]="nuevoAlumno.codigoEstudianteSiagie"
-                    name="codigoSiagie"
-                    maxlength="14"
-                    placeholder="Ej. 2026-74839201"
-                    class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] !text-[#172b4d] !text-base placeholder-slate-500 focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
-                  />
-                </div>
-
-                <div class="sm:col-span-2">
+                <div class="sm:col-span-3">
                   <label class="block text-xs font-semibold text-[#475569] mb-1">Alergias o Condiciones Médicas</label>
                   <input
                     id="nuevo-alumno-alergias" aria-label="Alergias o Condiciones Médicas"
@@ -707,7 +712,16 @@ export interface EstudianteMatriculadoItem {
                 <label class="block text-xs font-semibold text-[#475569] mb-1">Estudiante Registrado *</label>
                 <select [(ngModel)]="nuevoEstudianteId" aria-label="Estudiante Registrado *" name="estudiante" required class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] text-[#14213d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-[#f5f7fb] !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base">
                   <option [ngValue]="0" disabled>Seleccionar estudiante...</option>
-                  @for (est of listaEstudiantes(); track est.id) {
+                  @if (cargandoMatriculasAnio()) {
+                    <option [ngValue]="0" disabled>Verificando matrículas del año...</option>
+                  } @else if (!matriculasAnioVerificadas()) {
+                    <option [ngValue]="0" disabled>
+                      {{ errorCargaMatriculasAnio() ? 'No se pudieron verificar las matrículas' : 'Matrículas aún no disponibles' }}
+                    </option>
+                  } @else if (!listaEstudiantesDisponibles().length) {
+                    <option [ngValue]="0" disabled>No hay estudiantes disponibles para este año</option>
+                  }
+                  @for (est of listaEstudiantesDisponibles(); track est.id) {
                     <option [ngValue]="est.id">
                       #{{ est.id }} - {{ est.numeroDocumento }} · {{ est.apellidoPaterno }} {{ est.apellidoMaterno }}, {{ est.nombres }}
                     </option>
@@ -753,34 +767,93 @@ export interface EstudianteMatriculadoItem {
       <!-- MODAL: FICHA DE MATRICULA DETALLADA                            -->
       <!-- ============================================================== -->
       <ng-template #fichaDialog>
-          @if (ficha()) {
-          <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col font-sans w-full max-w-xl p-1">
-            <div class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 flex justify-between items-center border-b border-[#e5eaf2] pb-3">
-              <h3 class="font-bold text-[#14213d] text-base tracking-[-.025em]">Ficha Oficial de Matrícula #{{ ficha()!.matricula.id }}</h3>
-              <button (click)="cerrarFichaDialog()" class="grid h-11 w-11 min-h-11 min-w-11 flex-none place-items-center rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] p-0 text-[#64748b] hover:bg-[#f1f4f9]" aria-label="Cerrar ficha">✕</button>
-            </div>
-            <div class="space-y-3 text-xs text-[#475569]">
-              <div class="p-3.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] space-y-1">
-                <p class="font-semibold text-[#2563eb]">Datos del Estudiante:</p>
-                <p>{{ ficha()!.estudiante.apellidoPaterno }} {{ ficha()!.estudiante.apellidoMaterno }}, {{ ficha()!.estudiante.nombres }}</p>
-                <p class="text-[#64748b]">Doc: {{ ficha()!.estudiante.numeroDocumento }} · F. Nac: {{ ficha()!.estudiante.fechaNacimiento | uiDatePe }}</p>
+        @if (ficha(); as actual) {
+          <div class="flex max-h-[calc(100dvh-24px)] min-h-0 w-full max-w-4xl flex-col bg-white font-sans text-[#172b4d]">
+            <div class="flex shrink-0 items-start justify-between gap-4 border-b border-[#e1e8f1] px-6 py-4 max-[639px]:px-4">
+              <div>
+                <p class="m-0 text-xs font-bold tracking-[.12em] text-[#a27a35]">I.E.P. SHUJI KITAMURA</p>
+                <h3 class="mb-0 mt-1 text-xl font-extrabold tracking-[-.03em] text-[#14213d]">Ficha de matrícula</h3>
+                <p class="mb-0 mt-1 text-xs text-[#64748b]">Registro académico del estudiante</p>
               </div>
-              <div class="p-3.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] space-y-1">
-                <p class="font-semibold text-[#047857]">Datos de la Matrícula:</p>
-                <p>Sección ID: {{ ficha()!.matricula.seccionId }} · Estado: <span class="font-bold text-[#14213d]">{{ ficha()!.matricula.estadoMatricula }}</span></p>
-                <p class="text-[#64748b]">Fecha: {{ ficha()!.matricula.fechaMatricula | uiDatePe }}</p>
-              </div>
+              <button (click)="cerrarFichaDialog()" class="grid h-11 w-11 min-h-11 min-w-11 flex-none place-items-center rounded-xl border border-[#e1e8f1] bg-[#f7f9fc] p-0 text-[#64748b] hover:bg-[#eef3fa]" aria-label="Cerrar ficha">✕</button>
             </div>
-            <div class="flex justify-end pt-2">
-              <button (click)="cerrarFichaDialog()" class="px-4 py-2 rounded-xl bg-[#f1f4f9] text-[#334155] text-xs font-semibold box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
-                Cerrar
+
+            <div class="min-h-0 flex-1 overflow-y-auto px-6 py-5 max-[639px]:px-4">
+              <div class="mb-5 flex flex-wrap items-center justify-between gap-3 border-b-2 border-[#c6a15b] pb-4">
+                <div>
+                  <p class="m-0 text-[10px] font-bold uppercase tracking-[.14em] text-[#718096]">Código de matrícula</p>
+                  <p class="mb-0 mt-1 font-mono text-lg font-bold text-[#14213d]">{{ codigoFicha(actual) }}</p>
+                </div>
+                <span class="rounded-full border border-[#d7e1ef] bg-[#f4f7fb] px-3 py-1.5 text-xs font-bold text-[#34445d]">{{ estadoFicha(actual.matricula.estadoMatricula) }}</span>
+              </div>
+
+              <section class="mb-5">
+                <h4 class="mb-3 mt-0 border-l-[3px] border-[#c6a15b] pl-3 text-sm font-extrabold text-[#14213d]">Identificación del estudiante</h4>
+                <div class="grid grid-cols-2 gap-x-6 gap-y-4 rounded-xl border border-[#e1e8f1] p-4 max-[639px]:grid-cols-1">
+                  <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Apellidos y nombres</p><p class="ficha-value">{{ actual.estudiante.apellidoPaterno }} {{ actual.estudiante.apellidoMaterno }}, {{ actual.estudiante.nombres }}</p></div>
+                  <div><p class="ficha-label">Documento de identidad</p><p class="ficha-value">{{ actual.estudiante.tipoDocumento || 'DNI' }} {{ actual.estudiante.numeroDocumento }}</p></div>
+                  <div><p class="ficha-label">Fecha de nacimiento</p><p class="ficha-value">{{ actual.estudiante.fechaNacimiento | uiDatePe }}</p></div>
+                  <div><p class="ficha-label">Género</p><p class="ficha-value">{{ actual.estudiante.genero === 'F' ? 'Femenino' : actual.estudiante.genero === 'M' ? 'Masculino' : 'No registrado' }}</p></div>
+                  <div><p class="ficha-label">Código interno</p><p class="ficha-value font-mono">{{ actual.estudiante.codigoInterno || codigoInterno(actual.estudiante.id) }}</p></div>
+                  <div><p class="ficha-label">Código SIAGIE oficial</p><p class="ficha-value">{{ actual.estudiante.codigoEstudianteSiagie || 'Pendiente de asignación' }}</p></div>
+                  <div><p class="ficha-label">Validación de identidad</p><p class="ficha-value">{{ actual.estudiante.validadoReniec ? 'Validada mediante RENIEC' : 'Pendiente o registro manual' }}</p></div>
+                  <div><p class="ficha-label">Grupo sanguíneo</p><p class="ficha-value">{{ actual.estudiante.grupoSanguineo || 'No registrado' }}</p></div>
+                </div>
+              </section>
+
+              <section class="mb-5">
+                <h4 class="mb-3 mt-0 border-l-[3px] border-[#c6a15b] pl-3 text-sm font-extrabold text-[#14213d]">Datos de matrícula</h4>
+                <div class="grid grid-cols-2 gap-x-6 gap-y-4 rounded-xl border border-[#e1e8f1] p-4 max-[639px]:grid-cols-1">
+                  <div><p class="ficha-label">Año lectivo</p><p class="ficha-value">{{ anioDeFicha(actual) }}</p></div>
+                  <div><p class="ficha-label">Grado y sección</p><p class="ficha-value">{{ seccionDeFicha(actual) }}</p></div>
+                  <div><p class="ficha-label">Aula</p><p class="ficha-value">{{ aulaDeFicha(actual) }}</p></div>
+                  <div><p class="ficha-label">Fecha de registro</p><p class="ficha-value">{{ actual.matricula.fechaMatricula | uiDatePe }}</p></div>
+                  <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Observaciones</p><p class="ficha-value whitespace-pre-wrap">{{ actual.matricula.observaciones || 'Sin observaciones registradas' }}</p></div>
+                </div>
+              </section>
+
+              <section>
+                <h4 class="mb-3 mt-0 border-l-[3px] border-[#c6a15b] pl-3 text-sm font-extrabold text-[#14213d]">Apoderado(s) registrado(s)</h4>
+                @if (actual.apoderados.length) {
+                  <div class="space-y-3">
+                    @for (apoderado of actual.apoderados; track apoderado.id) {
+                      <div class="grid grid-cols-2 gap-x-6 gap-y-3 rounded-xl border border-[#e1e8f1] p-4 max-[639px]:grid-cols-1">
+                        <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Apellidos y nombres</p><p class="ficha-value">{{ apoderado.apellidoPaterno }} {{ apoderado.apellidoMaterno }}, {{ apoderado.nombres }}</p></div>
+                        <div><p class="ficha-label">Documento</p><p class="ficha-value">{{ apoderado.tipoDocumento || 'DNI' }} {{ apoderado.numeroDocumento }}</p></div>
+                        <div><p class="ficha-label">Identidad</p><p class="ficha-value">{{ apoderado.validadoReniec ? 'Validada mediante RENIEC' : 'Pendiente o registro manual' }}</p></div>
+                        <div><p class="ficha-label">Celular</p><p class="ficha-value">{{ apoderado.celular || 'No registrado' }}</p></div>
+                        <div><p class="ficha-label">Correo</p><p class="ficha-value break-all">{{ apoderado.email || 'No registrado' }}</p></div>
+                        <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Dirección</p><p class="ficha-value">{{ apoderado.direccion || 'No registrada' }}</p></div>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <p class="m-0 rounded-xl border border-dashed border-[#cbd5e1] p-4 text-sm text-[#64748b]">No hay apoderados asociados en el registro.</p>
+                }
+              </section>
+
+              <div class="mt-8 grid grid-cols-2 gap-10 px-4 pb-3 text-center text-xs text-[#475569] max-[639px]:grid-cols-1">
+                <div class="border-t border-[#94a3b8] pt-2">Firma del apoderado</div>
+                <div class="border-t border-[#94a3b8] pt-2">Secretaría académica</div>
+              </div>
+              <p class="m-0 text-center text-[10px] text-[#94a3b8]">Documento informativo generado desde el registro institucional. No reemplaza constancias oficiales.</p>
+            </div>
+
+            <div class="flex shrink-0 flex-wrap justify-end gap-2 border-t border-[#e1e8f1] bg-[#f8fafc] px-6 py-4 max-[639px]:px-4">
+              <button type="button" (click)="cerrarFichaDialog()" class="min-h-11 rounded-xl border border-[#d8e1ed] bg-white px-4 text-sm font-semibold text-[#475569] hover:bg-[#f1f5f9]">Cerrar</button>
+              <button type="button" (click)="exportarFichaPdf()" class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#14213d] px-5 text-sm font-bold text-white shadow-sm hover:bg-[#20365f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2864c5]">
+                <span aria-hidden="true">⇩</span> Exportar ficha a PDF
               </button>
             </div>
           </div>
-          }
+        }
       </ng-template>
     </div>
-  `
+  `,
+  styles: [`
+    .ficha-label { margin: 0 0 .2rem; color: #718096; font-size: .68rem; font-weight: 700; letter-spacing: .035em; }
+    .ficha-value { margin: 0; color: #172b4d; font-size: .82rem; font-weight: 600; line-height: 1.45; }
+  `]
 })
 export class MatriculasComponent implements OnInit {
   readonly auth = inject(AuthStore);
@@ -814,6 +887,11 @@ export class MatriculasComponent implements OnInit {
   readonly ficha = signal<FichaMatriculaResponseDto | null>(null);
 
   readonly listaEstudiantes = signal<EstudianteResponseDto[]>([]);
+  readonly estudiantesMatriculadosPorAnio = signal<ReadonlySet<number>>(new Set<number>());
+  readonly cargandoMatriculasAnio = signal(false);
+  readonly matriculasAnioVerificadas = signal(false);
+  readonly errorCargaMatriculasAnio = signal(false);
+  private solicitudMatriculasAnio = 0;
   readonly estudiantes = signal<EstudianteMatriculadoItem[]>([]);
   private estudiantesPorId = new Map<number, EstudianteResponseDto>();
 
@@ -824,6 +902,7 @@ export class MatriculasComponent implements OnInit {
   paginaMatriculas = 0;
   tamanoPaginaMatriculas = 10;
   seccionIdSeleccionada = 0;
+  filtroSeccionId = 0;
   anioLectivoId = 0;
   nuevoEstudianteId = 0;
   nuevasObservaciones = '';
@@ -838,7 +917,6 @@ export class MatriculasComponent implements OnInit {
     apellidoMaterno: '',
     fechaNacimiento: '2012-05-15',
     genero: 'M',
-    codigoEstudianteSiagie: '',
     grupoSanguineo: 'O+',
     alergiasCondiciones: ''
   };
@@ -874,6 +952,16 @@ export class MatriculasComponent implements OnInit {
     return this.estudiantesFiltradosPadron().slice(inicio, inicio + this.tamanoPaginaPadron);
   }
 
+  listaEstudiantesDisponibles(): EstudianteResponseDto[] {
+    if (!this.matriculasAnioVerificadas() || this.cargandoMatriculasAnio()) return [];
+    const matriculados = this.estudiantesMatriculadosPorAnio();
+    return this.listaEstudiantes().filter(estudiante => !matriculados.has(estudiante.id));
+  }
+
+  estaMatriculadoEnAnio(estudianteId: number): boolean {
+    return this.estudiantesMatriculadosPorAnio().has(estudianteId);
+  }
+
   cambiarPaginaPadron(evento: PageEvent): void {
     this.paginaPadron = evento.pageIndex;
     this.tamanoPaginaPadron = evento.pageSize;
@@ -894,6 +982,11 @@ export class MatriculasComponent implements OnInit {
       const matchEstado = estado === 'TODOS' || e.estado === estado;
       return matchQ && matchEstado;
     });
+  }
+
+  estudiantesPaginadosMatriculas(): EstudianteMatriculadoItem[] {
+    const inicio = this.paginaMatriculas * this.tamanoPaginaMatriculas;
+    return this.estudiantesFiltrados().slice(inicio, inicio + this.tamanoPaginaMatriculas);
   }
 
   nombreEstudiante(estudianteId: number): string {
@@ -918,7 +1011,8 @@ export class MatriculasComponent implements OnInit {
     this.academicoService.listarAnios().subscribe({
       next: anios => {
         this.anios.set(anios);
-        this.anioLectivoId = anios.find(a => a.abierto)?.id ?? anios[0]?.id ?? 0;
+        const aniosOrdenados = [...anios].sort((a, b) => b.anio - a.anio);
+        this.anioLectivoId = aniosOrdenados.find(a => a.abierto)?.id ?? aniosOrdenados[0]?.id ?? 0;
         this.cargarSecciones();
       },
       error: () => this.error.set('No se pudieron cargar los años lectivos.')
@@ -954,51 +1048,91 @@ export class MatriculasComponent implements OnInit {
     });
   }
 
-  cargarSecciones(): void {
+  cargarSecciones(preservarSeleccion = false): void {
     if (!this.anioLectivoId) return;
-    this.academicoService.listarSecciones(this.anioLectivoId).subscribe({
+    const anioConsultado = this.anioLectivoId;
+    this.cargarEstudiantesMatriculados(anioConsultado);
+    const seccionSeleccionada = this.seccionIdSeleccionada;
+    this.academicoService.listarSecciones(anioConsultado).subscribe({
       next: secciones => {
+        if (anioConsultado !== this.anioLectivoId) return;
         this.secciones.set(secciones);
+        this.filtroSeccionId = preservarSeleccion && secciones.some(s => s.id === this.filtroSeccionId)
+          ? this.filtroSeccionId
+          : 0;
+        const seccionConservada = preservarSeleccion
+          ? secciones.find(s => s.id === seccionSeleccionada)
+          : undefined;
         const conAlumnos = secciones.find(s => (s.vacantesOcupadas ?? 0) > 0);
-        this.seccionIdSeleccionada = conAlumnos ? conAlumnos.id : (secciones[0]?.id ?? 0);
+        this.seccionIdSeleccionada = seccionConservada?.id ?? conAlumnos?.id ?? secciones[0]?.id ?? 0;
         this.cargarMatriculas();
       },
       error: () => this.error.set('No se pudieron cargar las secciones.')
     });
   }
 
+  private cargarEstudiantesMatriculados(anioLectivoId: number): void {
+    const solicitud = ++this.solicitudMatriculasAnio;
+    this.cargandoMatriculasAnio.set(true);
+    this.matriculasAnioVerificadas.set(false);
+    this.errorCargaMatriculasAnio.set(false);
+    this.matriculaService.listarEstudianteIdsMatriculados(anioLectivoId).subscribe({
+      next: ids => {
+        if (solicitud !== this.solicitudMatriculasAnio) return;
+        this.estudiantesMatriculadosPorAnio.set(new Set(ids ?? []));
+        this.matriculasAnioVerificadas.set(true);
+        this.cargandoMatriculasAnio.set(false);
+      },
+      error: () => {
+        if (solicitud !== this.solicitudMatriculasAnio) return;
+        this.estudiantesMatriculadosPorAnio.set(new Set());
+        this.errorCargaMatriculasAnio.set(true);
+        this.cargandoMatriculasAnio.set(false);
+        this.error.set('No se pudo verificar qué estudiantes ya tienen matrícula en este año.');
+      }
+    });
+  }
+
   cargarMatriculas(): void {
     this.error.set(null);
     this.paginaMatriculas = 0;
+    if (!this.filtroSeccionId) {
+      this.cargando.set(true);
+      this.matriculaService.listarPorAnio(this.anioLectivoId).subscribe({
+        next: res => this.actualizarMatriculas(res),
+        error: () => {
+          this.cargando.set(false);
+          this.estudiantes.set([]);
+          this.error.set('No se pudieron cargar las matrículas del año lectivo.');
+        }
+      });
+      return;
+    }
     if (!this.seccionIdSeleccionada) {
       this.estudiantes.set([]);
       return;
     }
     this.cargando.set(true);
-    this.matriculaService.listarPorSeccion(this.seccionIdSeleccionada, 0, 50).subscribe({
-      next: (res) => {
-        this.cargando.set(false);
-        if (Array.isArray(res)) {
-          this.estudiantes.set(
-            res.map(m => ({
-              id: m.id,
-              codigoMatricula: `MAT-${this.anios().find(a => a.id === m.anioLectivoId)?.anio ?? m.anioLectivoId}-${String(m.id).padStart(3, '0')}`,
-              estudianteId: m.estudianteId,
-              estado: m.estadoMatricula,
-              fechaMatricula: m.fechaMatricula ? String(m.fechaMatricula).split('T')[0] : '-',
-              observaciones: m.observaciones
-            }))
-          );
-        } else {
-          this.estudiantes.set([]);
-        }
-      },
+    this.matriculaService.listarPorSeccion(this.filtroSeccionId, 0, 50).subscribe({
+      next: res => this.actualizarMatriculas(res),
       error: () => {
         this.cargando.set(false);
         this.estudiantes.set([]);
         this.error.set('No se pudieron cargar las matrículas de la sección.');
       }
     });
+  }
+
+  private actualizarMatriculas(res: MatriculaResponseDto[] | null): void {
+    this.cargando.set(false);
+    this.estudiantes.set((res ?? []).map(m => ({
+      id: m.id,
+      codigoMatricula: `MAT-${this.anios().find(a => a.id === m.anioLectivoId)?.anio ?? m.anioLectivoId}-${String(m.id).padStart(3, '0')}`,
+      estudianteId: m.estudianteId,
+      estado: m.estadoMatricula,
+      fechaMatricula: m.fechaMatricula ? String(m.fechaMatricula).split('T')[0] : '-',
+      observaciones: m.observaciones
+    })));
   }
 
   confirmarMatricula(matriculaId: number): void {
@@ -1009,7 +1143,7 @@ export class MatriculasComponent implements OnInit {
       next: matricula => {
         this.confirmandoMatricula.set(null);
         this.mensajeExito.set(`Matrícula #${matricula.id} confirmada; el pago fue validado.`);
-        this.cargarMatriculas();
+        this.cargarSecciones(true);
       },
       error: err => {
         this.confirmandoMatricula.set(null);
@@ -1029,7 +1163,6 @@ export class MatriculasComponent implements OnInit {
       apellidoMaterno: '',
       fechaNacimiento: '2012-05-15',
       genero: 'M',
-      codigoEstudianteSiagie: '',
       grupoSanguineo: 'O+',
       alergiasCondiciones: ''
     };
@@ -1100,15 +1233,26 @@ export class MatriculasComponent implements OnInit {
   }
 
   prepararMatriculaParaEstudiante(est: EstudianteResponseDto): void {
+    this.error.set(null);
+    if (!this.matriculasAnioVerificadas() || this.cargandoMatriculasAnio()) {
+      this.error.set('Espera a que termine la verificación de matrículas del año.');
+      return;
+    }
+    if (this.estaMatriculadoEnAnio(est.id)) {
+      this.error.set('Este estudiante ya tiene matrícula en el año seleccionado. Revisa la matrícula existente.');
+      return;
+    }
     this.nuevoEstudianteId = est.id;
     this.abrirDialogoSolicitud();
   }
 
   abrirModalNuevaMatricula(): void {
+    this.nuevoEstudianteId = 0;
     this.abrirDialogoSolicitud();
   }
 
   private abrirDialogoSolicitud(): void {
+    this.error.set(null);
     this.mostrarSolicitud.set(true);
     this.solicitudDialogRef = this.dialog.open(this.solicitudDialog, {
       width: '600px',
@@ -1130,6 +1274,14 @@ export class MatriculasComponent implements OnInit {
       this.error.set('Complete año, sección y seleccione un estudiante registrado.');
       return;
     }
+    if (!this.matriculasAnioVerificadas() || this.cargandoMatriculasAnio()) {
+      this.error.set('Espera a que termine la verificación de matrículas del año.');
+      return;
+    }
+    if (this.estaMatriculadoEnAnio(this.nuevoEstudianteId)) {
+      this.error.set('Este estudiante ya tiene matrícula en el año seleccionado. Revisa la matrícula existente.');
+      return;
+    }
     this.guardando.set(true);
     this.error.set(null);
     this.matriculaService.solicitarMatricula({
@@ -1141,11 +1293,11 @@ export class MatriculasComponent implements OnInit {
       next: (m) => {
         this.guardando.set(false);
         this.cerrarSolicitudDialog();
-        this.mensajeExito.set(`¡Matrícula #${m.id} solicitada exitosamente para el estudiante #${this.nuevoEstudianteId}!`);
+        this.mensajeExito.set(`¡Matrícula #${m.id} solicitada exitosamente para ${this.nombreEstudiante(m.estudianteId)}!`);
         this.nuevoEstudianteId = 0;
         this.nuevasObservaciones = '';
         this.pestanaActiva.set('matriculas');
-        this.cargarMatriculas();
+        this.cargarSecciones(true);
       },
       error: err => {
         this.guardando.set(false);
@@ -1154,12 +1306,116 @@ export class MatriculasComponent implements OnInit {
     });
   }
 
+  codigoFicha(ficha: FichaMatriculaResponseDto): string {
+    const anio = this.anios().find(item => item.id === ficha.matricula.anioLectivoId)?.anio ?? ficha.matricula.anioLectivoId;
+    return `MAT-${anio}-${String(ficha.matricula.id).padStart(3, '0')}`;
+  }
+
+  codigoInterno(estudianteId: number): string {
+    return `ALU-${String(estudianteId).padStart(6, '0')}`;
+  }
+
+  anioDeFicha(ficha: FichaMatriculaResponseDto): string {
+    return String(this.anios().find(item => item.id === ficha.matricula.anioLectivoId)?.anio ?? ficha.matricula.anioLectivoId);
+  }
+
+  seccionDeFicha(ficha: FichaMatriculaResponseDto): string {
+    const seccion = this.secciones().find(item => item.id === ficha.matricula.seccionId);
+    if (!seccion) return `Sección ID ${ficha.matricula.seccionId}`;
+    return `${this.gradosMap.get(seccion.gradoId) ?? `Grado ${seccion.gradoId}`} · Sección ${seccion.letra}`;
+  }
+
+  aulaDeFicha(ficha: FichaMatriculaResponseDto): string {
+    return this.secciones().find(item => item.id === ficha.matricula.seccionId)?.aulaFisica || 'Pendiente de asignación';
+  }
+
+  estadoFicha(estado: string): string {
+    const etiquetas: Record<string, string> = {
+      SOLICITADA: 'Solicitud registrada',
+      RESERVADA_TEMPORAL: 'Vacante reservada',
+      PENDIENTE_ASIGNACION: 'Pendiente de aula',
+      MATRICULADO: 'Matrícula confirmada',
+      TRASLADADO: 'Trasladado',
+      RETIRADO: 'Retirado',
+      CANCELADA: 'Cancelada'
+    };
+    return etiquetas[estado] ?? estado;
+  }
+
+  exportarFichaPdf(): void {
+    const ficha = this.ficha();
+    if (!ficha) return;
+
+    const ventana = window.open('', '_blank', 'width=900,height=850');
+    if (!ventana) {
+      this.error.set('Permite ventanas emergentes para exportar la ficha a PDF.');
+      return;
+    }
+
+    const seguro = (valor: unknown): string => String(valor ?? 'No registrado').replace(/[&<>"']/g, caracter => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    })[caracter] ?? caracter);
+    const estudiante = ficha.estudiante;
+    const codigo = this.codigoFicha(ficha);
+    const codigoInterno = estudiante.codigoInterno || this.codigoInterno(estudiante.id);
+    const apoderados = ficha.apoderados.map(apoderado => `
+      <section class="panel"><h2>Apoderado registrado</h2><div class="grid">
+        <div class="wide"><label>Apellidos y nombres</label><strong>${seguro(`${apoderado.apellidoPaterno} ${apoderado.apellidoMaterno}, ${apoderado.nombres}`)}</strong></div>
+        <div><label>Documento</label><strong>${seguro(apoderado.tipoDocumento || 'DNI')} ${seguro(apoderado.numeroDocumento)}</strong></div>
+        <div><label>Validación de identidad</label><strong>${apoderado.validadoReniec ? 'Validada mediante RENIEC' : 'Pendiente o registro manual'}</strong></div>
+        <div><label>Celular</label><strong>${seguro(apoderado.celular)}</strong></div>
+        <div><label>Correo</label><strong>${seguro(apoderado.email)}</strong></div>
+        <div class="wide"><label>Dirección</label><strong>${seguro(apoderado.direccion)}</strong></div>
+      </div></section>`).join('');
+    const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${seguro(codigo)}</title>
+      <style>
+        @page{size:A4;margin:16mm}*{box-sizing:border-box}body{margin:0;color:#172b4d;font:12px Arial,sans-serif}
+        header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #c6a15b;padding:0 0 14px;margin-bottom:18px}
+        .brand{font-size:12px;font-weight:800;letter-spacing:.12em;color:#a27a35}.subtitle{margin-top:5px;color:#64748b;font-size:11px}
+        h1{margin:7px 0 0;font-size:24px;color:#14213d}.code{text-align:right;font-size:11px;color:#718096}.code strong{display:block;margin-top:6px;font:700 17px monospace;color:#14213d}
+        .status{display:inline-block;margin:0 0 16px;padding:6px 10px;border:1px solid #d7e1ef;border-radius:20px;background:#f4f7fb;font-size:10px;font-weight:bold}
+        .panel{margin:0 0 14px;border:1px solid #dbe3ed;border-radius:8px;padding:12px 14px;break-inside:avoid}h2{margin:0 0 11px;padding-left:9px;border-left:3px solid #c6a15b;font-size:13px;color:#14213d}
+        .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}.wide{grid-column:1/-1}label{display:block;margin-bottom:3px;color:#718096;font-size:9px;font-weight:bold;text-transform:uppercase;letter-spacing:.04em}strong{font-size:11px;font-weight:600;line-height:1.4;overflow-wrap:anywhere}
+        .signatures{display:grid;grid-template-columns:1fr 1fr;gap:42px;margin:38px 14px 18px;text-align:center}.signature{border-top:1px solid #718096;padding-top:7px;color:#475569;font-size:10px}footer{border-top:1px solid #dbe3ed;padding-top:8px;text-align:center;color:#94a3b8;font-size:9px}
+      </style></head><body>
+      <header><div><div class="brand">I.E.P. SHUJI KITAMURA</div><h1>Ficha de matrícula</h1><div class="subtitle">Registro académico del estudiante</div></div><div class="code">Código de matrícula<strong>${seguro(codigo)}</strong></div></header>
+      <div class="status">${seguro(this.estadoFicha(ficha.matricula.estadoMatricula))}</div>
+      <section class="panel"><h2>Identificación del estudiante</h2><div class="grid">
+        <div class="wide"><label>Apellidos y nombres</label><strong>${seguro(`${estudiante.apellidoPaterno} ${estudiante.apellidoMaterno}, ${estudiante.nombres}`)}</strong></div>
+        <div><label>Documento</label><strong>${seguro(estudiante.tipoDocumento || 'DNI')} ${seguro(estudiante.numeroDocumento)}</strong></div>
+        <div><label>Fecha de nacimiento</label><strong>${seguro(estudiante.fechaNacimiento)}</strong></div>
+        <div><label>Género</label><strong>${seguro(estudiante.genero === 'F' ? 'Femenino' : estudiante.genero === 'M' ? 'Masculino' : 'No registrado')}</strong></div>
+        <div><label>Código interno</label><strong>${seguro(codigoInterno)}</strong></div>
+        <div><label>Código SIAGIE oficial</label><strong>${seguro(estudiante.codigoEstudianteSiagie || 'Pendiente de asignación')}</strong></div>
+        <div><label>Identidad</label><strong>${estudiante.validadoReniec ? 'Validada mediante RENIEC' : 'Pendiente o registro manual'}</strong></div>
+        <div><label>Grupo sanguíneo</label><strong>${seguro(estudiante.grupoSanguineo)}</strong></div>
+      </div></section>
+      <section class="panel"><h2>Datos de matrícula</h2><div class="grid">
+        <div><label>Año lectivo</label><strong>${seguro(this.anioDeFicha(ficha))}</strong></div>
+        <div><label>Grado y sección</label><strong>${seguro(this.seccionDeFicha(ficha))}</strong></div>
+        <div><label>Aula</label><strong>${seguro(this.aulaDeFicha(ficha))}</strong></div>
+        <div><label>Fecha de registro</label><strong>${seguro(ficha.matricula.fechaMatricula)}</strong></div>
+        <div class="wide"><label>Observaciones</label><strong>${seguro(ficha.matricula.observaciones || 'Sin observaciones registradas')}</strong></div>
+      </div></section>
+      ${apoderados || '<section class="panel"><h2>Apoderados</h2><strong>No hay apoderados asociados en el registro.</strong></section>'}
+      <div class="signatures"><div class="signature">Firma del apoderado</div><div class="signature">Secretaría académica</div></div>
+      <footer>Documento informativo generado desde el registro institucional. No reemplaza constancias oficiales.</footer>
+      </body></html>`;
+
+    ventana.document.open();
+    ventana.document.write(html);
+    ventana.document.close();
+    ventana.document.title = codigo;
+    ventana.focus();
+    window.setTimeout(() => ventana.print(), 250);
+  }
+
   verFicha(matriculaId: number): void {
     this.matriculaService.consultarFicha(matriculaId).subscribe({
       next: (ficha) => {
         this.ficha.set(ficha);
         this.fichaDialogRef = this.dialog.open(this.fichaDialog, {
-          width: '620px',
+          width: '920px',
           maxWidth: 'calc(100vw - 24px)',
           panelClass: 'school-dialog',
           autoFocus: 'dialog',

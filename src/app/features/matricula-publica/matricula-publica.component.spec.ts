@@ -18,9 +18,9 @@ function permitePago(datos: DocumentoSolicitudDto[]): boolean {
 
 describe('Documentos PDF y vínculo parental', () => {
   it('advierte la edad usando los límites recibidos del backend y el año lectivo seleccionado', () => {
-    const seccion = {id: 9, anioLectivoId: 2, edadMinimaAlCorte: 6, edadMaximaAlCorte: 8};
+    const seccion = {id: 9, anioLectivoId: 2, gradoId: 4, edadMinimaAlCorte: 6, edadMaximaAlCorte: 8};
     const contexto = {
-      nacimientoEstudiante: '2020-04-01', seccionId: () => 9, anioId: () => 2,
+      nacimientoEstudiante: '2020-04-01', gradoId: () => 4, anioId: () => 2,
       seccionesDisponibles: [seccion], catalogo: () => ({anios: [{id: 2, anio: 2026}]})
     };
     const aviso = Object.getOwnPropertyDescriptor(MatriculaPublicaComponent.prototype, 'advertenciaEdad')!.get!;

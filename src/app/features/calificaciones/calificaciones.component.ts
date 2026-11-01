@@ -5,6 +5,7 @@ import { forkJoin } from 'rxjs';
 import { CargaPlanillaComponent } from '../../shared/ui/carga-planilla.component';
 import { EvaluacionService } from '../../core/services/evaluacion.service';
 import { AcademicoService } from '../../core/services/academico.service';
+import { AuthStore } from '../../core/state/auth.store';
 import { AsignacionDocenteResponseDto, CompetenciaResponseDto, PeriodoResponseDto } from '../../core/models/academico.model';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
@@ -31,9 +32,9 @@ template: `
     <main class="grid min-w-0 gap-[22px] text-[#172b4d] max-[600px]:gap-4 max-[600px]:pb-1" aria-labelledby="calificaciones-title">
       <header class="flex items-end justify-between gap-6 border-t-[3px] border-[rgb(196_154_88_/_50%)] pt-3 max-[600px]:items-stretch max-[600px]:flex-col max-[600px]:gap-[14px]">
         <div class="min-w-0">
-          <p class="m-0 mb-[6px] text-[#8b6425] text-[11px] font-extrabold tracking-[.14em] leading-[1.4] uppercase">Evaluación docente</p>
+          <p class="m-0 mb-[6px] text-[#8b6425] text-[11px] font-extrabold tracking-[.14em] leading-[1.4] uppercase">{{ puedeEditar() ? 'Evaluación docente' : 'Consulta académica' }}</p>
           <h1 id="calificaciones-title" class="m-0 text-[#172b4d] text-[clamp(24px,3vw,34px)] font-extrabold tracking-[-.035em] leading-[1.15] tracking-[-.025em]">Matriz de Calificaciones CNEB</h1>
-          <p class="mt-2 max-w-[680px] text-[#56657c] text-sm leading-[1.6]">Registro y evaluación por competencias conectada con la base de datos oficial.</p>
+          <p class="mt-2 max-w-[680px] text-[#56657c] text-sm leading-[1.6]">{{ puedeEditar() ? 'Registro y evaluación por competencias conectada con la base de datos oficial.' : 'Consulta de calificaciones por periodo, sección y competencia.' }}</p>
         </div>
 
         <div class="flex flex-[0_0_auto] items-center justify-end gap-3 max-[600px]:items-stretch max-[600px]:flex-col">
@@ -43,10 +44,12 @@ template: `
               Calificaciones guardadas en BD
             </span>
           }
-          <button type="button" (click)="guardarCalificaciones()" [disabled]="alumnos().length === 0 || !asignacionId || !competenciaId" class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-[#e2e8f0] disabled:bg-[#f1f5f9] disabled:text-[#64748b] aria-disabled:cursor-not-allowed aria-disabled:border-[#e2e8f0] aria-disabled:bg-[#f1f5f9] aria-disabled:text-[#64748b] bg-[#2563eb] text-white hover:bg-[#1d4ed8] whitespace-nowrap max-[600px]:w-full max-[600px]:justify-center box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]">
-            <svg class="h-[17px] w-[17px] flex-[0_0_17px]" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
-            <span>Guardar en BD</span>
-          </button>
+          @if (puedeEditar()) {
+            <button type="button" (click)="guardarCalificaciones()" [disabled]="alumnos().length === 0 || !asignacionId || !competenciaId" class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-[#e2e8f0] disabled:bg-[#f1f5f9] disabled:text-[#64748b] aria-disabled:cursor-not-allowed aria-disabled:border-[#e2e8f0] aria-disabled:bg-[#f1f5f9] aria-disabled:text-[#64748b] bg-[#2563eb] text-white hover:bg-[#1d4ed8] whitespace-nowrap max-[600px]:w-full max-[600px]:justify-center box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]">
+              <svg class="h-[17px] w-[17px] flex-[0_0_17px]" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
+              <span>Guardar en BD</span>
+            </button>
+          }
         </div>
       </header>
 
@@ -54,7 +57,9 @@ template: `
         <div class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#fca5a5] bg-[#fee2e2] text-[#7f1d1d] m-0 text-[13px]" role="alert">{{ error() }}</div>
       }
 
-      <app-carga-planilla [asignacionId]="+asignacionId" [periodoId]="+periodoId" [seccionId]="seccionActualId" [competenciaId]="+competenciaId" (completada)="cargarCalificaciones()" />
+      @if (puedeEditar()) {
+        <app-carga-planilla [asignacionId]="+asignacionId" [periodoId]="+periodoId" [seccionId]="seccionActualId" [competenciaId]="+competenciaId" (completada)="cargarCalificaciones()" />
+      }
 
       <section class="grid min-w-0 grid-cols-[minmax(160px,.9fr)_minmax(240px,1.25fr)_minmax(310px,1.55fr)_minmax(150px,.8fr)] items-end gap-4 rounded-2xl border border-[#e1e8f1] bg-white !p-[18px] shadow-[0_5px_16px_rgb(23_43_77_/_5%)] max-[1399px]:grid-cols-2 max-[600px]:grid-cols-1 max-[600px]:gap-[13px] max-[600px]:!p-[15px]" aria-label="Filtros de calificaciones">
         <div class="grid gap-1 font-sans text-base leading-6 text-[#1e293b] min-w-0 m-0">
@@ -95,7 +100,11 @@ template: `
           <p class="m-0 text-[#59677a] text-xs">Total en matriz: <strong class="text-[#172b4d] text-[13px]">{{ alumnos().length }}</strong></p>
         </div>
 
-        <p class="" data-grade-scroll-hint="">Desliza horizontalmente para consultar Conclusión, Refuerzo y Acciones.</p>
+        @if (puedeEditar()) {
+          <p class="" data-grade-scroll-hint="">Desliza horizontalmente para consultar Conclusión, Refuerzo y Acciones.</p>
+        } @else {
+          <p class="" data-grade-scroll-hint="">Desliza horizontalmente para consultar Conclusión y Refuerzo.</p>
+        }
         <div class="flex flex-wrap items-end gap-3 border-b border-[#e1e8f1] bg-white p-4">
           <label class="grid min-w-[240px] flex-1 gap-1 text-xs font-semibold text-[#475569]">Buscar estudiante
             <input [(ngModel)]="busquedaAlumno" (ngModelChange)="pagina.set(0)" name="buscarCalificacion" type="search" placeholder="Nombre o apellido" class="min-h-11 rounded-xl border border-[#d9e1ec] px-3 text-sm font-normal text-[#172b4d]" />
@@ -114,13 +123,13 @@ template: `
                 <th scope="col" class="whitespace-nowrap">Calificación</th>
                 <th scope="col" class="whitespace-nowrap">Conclusión</th>
                 <th scope="col" class="whitespace-nowrap">Refuerzo</th>
-                <th scope="col" class="sticky right-0 z-[2] min-w-[88px] whitespace-nowrap bg-[#f6f8fb] shadow-[-8px_0_12px_rgb(23_43_77_/_8%)]">Acciones</th>
+                @if (puedeEditar()) { <th scope="col" class="sticky right-0 z-[2] min-w-[88px] whitespace-nowrap bg-[#f6f8fb] shadow-[-8px_0_12px_rgb(23_43_77_/_8%)]">Acciones</th> }
               </tr>
             </thead>
             <tbody>
               @if (cargando()) {
                 <tr>
-                  <td colspan="6">
+                  <td [attr.colspan]="puedeEditar() ? 6 : 5">
                     <div class="grid min-h-[220px] content-center justify-items-center gap-2 p-6 text-center" role="status" aria-live="polite">
                       <span class="mb-1 h-[30px] w-[30px] rounded-full border-[3px] border-[#dbe6f5] border-t-[#2864c5] animate-[grade-spin_.8s_linear_infinite]" aria-hidden="true"></span>
                       <span class="text-[#253a59] text-sm font-bold">Consultando calificaciones</span>
@@ -150,11 +159,11 @@ template: `
                         <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-[#dce5f0] bg-[#f3f6fa] px-[9px] py-[3px] text-xs font-[650] leading-[1.3] text-[#4c5d74] whitespace-nowrap">Sin dato</span>
                       }
                     </td>
-                    <td class="sticky right-0 z-[1] min-w-[88px] bg-white text-right shadow-[-8px_0_12px_rgb(23_43_77_/_8%)]" data-label="Acciones"><button type="button" (click)="abrirEdicion(alumno)" class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-[#e2e8f0] disabled:bg-[#f1f5f9] disabled:text-[#64748b] aria-disabled:cursor-not-allowed aria-disabled:border-[#e2e8f0] aria-disabled:bg-[#f1f5f9] aria-disabled:text-[#64748b] !border-[#e2e8f0] bg-white text-[#102447] hover:bg-[#f4f6fb] !min-h-11 !px-3 !text-sm !font-semibold box-border inline-flex min-w-0 min-h-10 items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:min-h-11 !leading-5">Editar</button></td>
+                    @if (puedeEditar()) { <td class="sticky right-0 z-[1] min-w-[88px] bg-white text-right shadow-[-8px_0_12px_rgb(23_43_77_/_8%)]" data-label="Acciones"><button type="button" (click)="abrirEdicion(alumno)" class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-[#e2e8f0] disabled:bg-[#f1f5f9] disabled:text-[#64748b] aria-disabled:cursor-not-allowed aria-disabled:border-[#e2e8f0] aria-disabled:bg-[#f1f5f9] aria-disabled:text-[#64748b] !border-[#e2e8f0] bg-white text-[#102447] hover:bg-[#f4f6fb] !min-h-11 !px-3 !text-sm !font-semibold box-border inline-flex min-w-0 min-h-10 items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:min-h-11 !leading-5">Editar</button></td> }
                   </tr>
                 } @empty {
                   <tr>
-                    <td colspan="6">
+                    <td [attr.colspan]="puedeEditar() ? 6 : 5">
                       <div class="grid min-h-[220px] content-center justify-items-center gap-2 p-6 text-center">
                         <span class="grid h-[42px] w-[42px] place-items-center rounded-[14px] bg-[#eff4fb] text-[#51719e] text-lg" aria-hidden="true">✓</span>
                         <span class="text-[#253a59] text-sm font-bold">No hay calificaciones para mostrar</span>
@@ -170,6 +179,7 @@ template: `
         <mat-paginator [length]="alumnosFiltrados().length" [pageIndex]="pagina()" [pageSize]="10" [pageSizeOptions]="[10, 25, 50]" (page)="cambiarPagina($event)" aria-label="Paginación de calificaciones" />
       </section>
 
+      @if (puedeEditar()) {
       <dialog #edicionDialog class="fixed inset-0 m-auto w-[min(620px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden rounded-[20px] border border-[#e1e8f1] bg-white p-0 text-[#172b4d] font-sans shadow-[0_24px_72px_rgb(15_31_57_/_24%)] backdrop:bg-[rgb(15_31_57_/_48%)] backdrop:backdrop-blur-[3px]" aria-labelledby="calificacion-dialog-title">
         <div class="flex min-h-0 max-h-[calc(100dvh-24px)] flex-col">
           <header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 max-[600px]:px-4">
@@ -206,12 +216,15 @@ template: `
           </form>
         </div>
       </dialog>
+      }
     </main>
   `
 })
 export class CalificacionesComponent implements OnInit {
   private readonly evaluacionService = inject(EvaluacionService);
   private readonly academicoService = inject(AcademicoService);
+  private readonly authStore = inject(AuthStore);
+  readonly puedeEditar = computed(() => this.authStore.hasRole('DOCENTE'));
   @ViewChild('edicionDialog') private edicionDialog!: ElementRef<HTMLDialogElement>;
   readonly alumnoEditando = signal<EvaluacionAlumno | null>(null);
   notaEditada: NotaCNEB = '-';
@@ -247,6 +260,7 @@ export class CalificacionesComponent implements OnInit {
   get seccionActualId(): number { return this.asignaciones().find(a => a.id === Number(this.asignacionId))?.seccionId ?? 0; }
 
   abrirEdicion(alumno: EvaluacionAlumno): void {
+    if (!this.puedeEditar()) return;
     this.alumnoEditando.set(alumno);
     this.notaEditada = alumno.c1;
     this.conclusionEditada = alumno.conclusionDescriptiva;
@@ -261,6 +275,7 @@ export class CalificacionesComponent implements OnInit {
   cerrarEdicion(): void { this.solicitudIa++; this.edicionDialog.nativeElement.close(); this.alumnoEditando.set(null); }
 
   sugerirConclusionConIa(): void {
+    if (!this.puedeEditar()) return;
     const alumno = this.alumnoEditando();
     const asignacion = this.asignaciones().find(a => a.id === Number(this.asignacionId));
     const competencia = this.competencias().find(c => c.id === Number(this.competenciaId));
@@ -290,6 +305,7 @@ export class CalificacionesComponent implements OnInit {
   }
 
   aplicarEdicion(): void {
+    if (!this.puedeEditar()) return;
     const seleccionado = this.alumnoEditando();
     if (!seleccionado || this.notaEditada === '-') return;
     this.alumnos.update(lista => lista.map(alumno => alumno.matriculaId === seleccionado.matriculaId
@@ -368,6 +384,7 @@ export class CalificacionesComponent implements OnInit {
   cambiarPagina(event: PageEvent): void { this.pagina.set(event.pageIndex); }
 
   guardarCalificaciones(): void {
+    if (!this.puedeEditar()) return;
     if (this.alumnos().length === 0 || !this.asignacionId || !this.competenciaId || !this.periodoId) return;
     if (this.alumnos().some(a => a.c1 === '-')) { this.error.set('Seleccione una calificación para cada estudiante.'); return; }
     this.error.set(null);

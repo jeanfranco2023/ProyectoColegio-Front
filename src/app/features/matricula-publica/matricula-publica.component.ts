@@ -51,7 +51,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   readonly enlacePago = signal('');
   readonly montoPago = signal(1);
   readonly anioId = signal<number | null>(null);
-  readonly seccionId = signal<number | null>(null);
+  readonly gradoId = signal<number | null>(null);
   readonly mensajeDni = signal('');
 
   get fechaNacimientoMaxima(): string {
@@ -90,11 +90,15 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     return this.catalogo().secciones.filter(s => s.anioLectivoId === year);
   }
 
+  get gradosDisponibles() {
+    return [...new Map(this.seccionesDisponibles.map(seccion => [seccion.gradoId, seccion])).values()];
+  }
+
   get advertenciaEdad(): string {
-    if (!this.nacimientoEstudiante || !this.seccionId()) return '';
-    const seccion = this.seccionesDisponibles.find(s => s.id === this.seccionId());
+    if (!this.nacimientoEstudiante || !this.gradoId()) return '';
+    const seccion = this.seccionesDisponibles.find(s => s.gradoId === this.gradoId());
     const anio = this.catalogo().anios.find(a => a.id === this.anioId());
-    if (!seccion || !anio) return 'Selecciona una sección disponible del año lectivo.';
+    if (!seccion || !anio) return 'Selecciona un grado disponible del año lectivo.';
     if (!Number.isInteger(seccion.edadMinimaAlCorte) || !Number.isInteger(seccion.edadMaximaAlCorte)
       || seccion.edadMinimaAlCorte > seccion.edadMaximaAlCorte) {
       return 'No se pudo comprobar el rango de edad. Vuelve a cargar la página antes de continuar.';
@@ -106,8 +110,8 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   }
 
   get errorEdad(): string {
-    if (!this.nacimientoEstudiante || !this.seccionId()) return '';
-    const section = this.seccionesDisponibles.find(s => s.id === this.seccionId());
+    if (!this.nacimientoEstudiante || !this.gradoId()) return '';
+    const section = this.seccionesDisponibles.find(s => s.gradoId === this.gradoId());
     if (!section || !Number.isInteger(section.edadMinimaAlCorte)
       || !Number.isInteger(section.edadMaximaAlCorte)
       || section.edadMinimaAlCorte > section.edadMaximaAlCorte) {
@@ -194,6 +198,10 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   abrirSolicitud(): void {
     this.error.set('');
     const actual = this.solicitud();
+    if (actual?.estado === 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION') {
+      this.mostrarExito(actual);
+      return;
+    }
     if (actual?.estado === 'MATRICULADA' || actual?.estado === 'RECHAZADA') {
       this.iniciarNuevaSolicitud();
       return;
@@ -245,7 +253,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     this.ubigeoApoderado = '';
     this.parentesco = 'MADRE';
     this.consentimientoGemini = false;
-    this.seccionId.set(null);
+    this.gradoId.set(null);
     this.enlacePago.set('');
     this.estadoPago.set('');
     this.error.set('');
@@ -272,7 +280,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       if (!solicitud) {
         const payload: CrearSolicitudMatriculaPublicaDto = {
           anioLectivoId: this.anioId()!,
-          seccionId: this.seccionId()!,
+          gradoId: this.gradoId()!,
           numeroDocumentoEstudiante: this.documentoEstudiante.trim(),
           nombresEstudiante: this.nombresEstudiante.trim(),
           apellidoPaternoEstudiante: this.apellidoPaternoEstudiante.trim(),
@@ -367,7 +375,8 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     try {
       const actualizada = await firstValueFrom(this.api.consultarPago(solicitud.id, token));
       this.solicitud.set(actualizada);
-      if (actualizada.estado === 'MATRICULADA') this.mostrarExito(actualizada);
+      if (actualizada.estado === 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION'
+        || actualizada.estado === 'MATRICULADA') this.mostrarExito(actualizada);
       else this.estadoPago.set('Aún no recibimos confirmación del pago. Espera un momento y vuelve a consultar.');
     } catch (error: unknown) {
       this.estadoPago.set(this.mensajeError(error, 'No se pudo consultar el estado del pago.'));
@@ -426,7 +435,8 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       DOCUMENTOS_VALIDADOS: 'Documentos validados',
       AUTORIZACION_EDAD_PENDIENTE: 'Autorización institucional de edad pendiente',
       PAGO_PENDIENTE: 'Pago pendiente',
-      MATRICULADA: 'Matrícula confirmada',
+      PAGO_CONFIRMADO_PENDIENTE_ASIGNACION: 'Pago confirmado · aula pendiente',
+      MATRICULADA: 'Aula asignada · matrícula completa',
       RECHAZADA: 'Solicitud rechazada'
     };
     return labels[estado];
@@ -441,7 +451,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   }
 
   private validarFormulario(): boolean {
-    if (!this.anioId() || !this.seccionId()) return this.error.set('Selecciona año lectivo y sección.'), false;
+    if (!this.anioId() || !this.gradoId()) return this.error.set('Selecciona año lectivo y grado.'), false;
     const required = [this.documentoEstudiante, this.nombresEstudiante, this.apellidoPaternoEstudiante,
       this.apellidoMaternoEstudiante, this.nacimientoEstudiante, this.documentoApoderado,
       this.nombresApoderado, this.apellidoPaternoApoderado, this.apellidoMaternoApoderado,
@@ -463,7 +473,9 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     if (!/^9\d{8}$/.test(this.celularApoderado) || !/^\d{6}$/.test(this.ubigeoApoderado)) {
       return this.error.set('Verifica el celular (9 dígitos) y el ubigeo (6 dígitos).'), false;
     }
-    if (this.emailApoderado.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.emailApoderado.trim())) {
+    const correoApoderado = this.emailApoderado.trim();
+    if (correoApoderado && (correoApoderado.length > 254
+        || !/^[A-Za-z0-9.!#$%&'*+/=?^_\x60{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/.test(correoApoderado))) {
       return this.error.set('Ingresa un correo electrónico válido o deja el campo vacío.'), false;
     }
     if (this.parentesco !== 'PADRE' && this.parentesco !== 'MADRE') {
@@ -489,7 +501,8 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       next: solicitud => {
         this.solicitud.set(solicitud);
         if (paymentId) {
-          if (solicitud.estado === 'MATRICULADA') {
+          if (solicitud.estado === 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION'
+            || solicitud.estado === 'MATRICULADA') {
             this.limpiarParametrosPago();
             this.mostrarExito(solicitud);
           } else {
@@ -497,7 +510,8 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
           }
           return;
         }
-        if (solicitud.estado === 'MATRICULADA') this.mostrarExito(solicitud);
+        if (solicitud.estado === 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION'
+          || solicitud.estado === 'MATRICULADA') this.mostrarExito(solicitud);
         else if (solicitud.estado === 'PAGO_PENDIENTE' && solicitud.enlacePago && this.documentosAprobados()) {
           this.enlacePago.set(solicitud.enlacePago);
           this.montoPago.set(solicitud.montoPago);
@@ -518,6 +532,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   private abrirEtapaActualizada(solicitud: SolicitudMatriculaPublicaDto): void {
     switch (solicitud.estado) {
       case 'MATRICULADA':
+      case 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION':
         this.mostrarExito(solicitud);
         return;
       case 'RECHAZADA':
@@ -568,7 +583,8 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       .subscribe({
         next: solicitud => {
           this.solicitud.set(solicitud);
-          if (solicitud.estado === 'MATRICULADA') {
+          if (solicitud.estado === 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION'
+            || solicitud.estado === 'MATRICULADA') {
             this.mostrarExito(solicitud);
             return;
           }
@@ -636,7 +652,8 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       return;
     }
     const solicitud = this.solicitud();
-    if (!solicitud || solicitud.estado !== 'MATRICULADA') return;
+    if (!solicitud || (solicitud.estado !== 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION'
+      && solicitud.estado !== 'MATRICULADA')) return;
 
     this.error.set('');
     this.procesando.set(true);

@@ -35,13 +35,13 @@ export interface RegistrarEstudianteRequestDto {
   apellidoMaterno: string;
   fechaNacimiento: string;
   genero: Genero;
-  codigoEstudianteSiagie?: string;
   grupoSanguineo?: string;
   alergiasCondiciones?: string;
 }
 
 export interface EstudianteResponseDto {
   id: number;
+  codigoInterno?: string;
   tipoDocumento?: TipoDocumento;
   numeroDocumento: string;
   nombres: string;

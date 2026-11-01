@@ -3,8 +3,10 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { AuthStore } from '../../core/state/auth.store';
+import { RolNombre } from '../../core/models/auth.model';
+import { ADMIN_ROUTE_ACCESS } from '../../core/authorization/admin-route-access';
 
-export type AdminMenuRole = 'DIRECCION' | 'SECRETARIA' | 'DOCENTE' | 'AUXILIAR' | 'TUTOR' | 'APODERADO';
+export type AdminMenuRole = RolNombre;
 
 export interface AdminMenuItem {
   label: string;
@@ -14,11 +16,6 @@ export interface AdminMenuItem {
   icon: string;
 }
 
-const MANAGEMENT_ROLES: readonly AdminMenuRole[] = ['DIRECCION', 'SECRETARIA'];
-const ACADEMIC_ROLES: readonly AdminMenuRole[] = ['DIRECCION', 'DOCENTE'];
-const STUDENT_SUPPORT_ROLES: readonly AdminMenuRole[] = ['DIRECCION', 'AUXILIAR', 'TUTOR'];
-const ATTENDANCE_ROLES: readonly AdminMenuRole[] = [...STUDENT_SUPPORT_ROLES, 'DOCENTE', 'SECRETARIA'];
-const FAMILY_ROLES: readonly AdminMenuRole[] = ['APODERADO'];
 const ROLE_LABELS: Record<AdminMenuRole, string> = {
   DIRECCION: 'Dirección',
   SECRETARIA: 'Secretaría',
@@ -30,24 +27,24 @@ const ROLE_LABELS: Record<AdminMenuRole, string> = {
 
 // This is the single source for both desktop and mobile navigation.
 export const ADMIN_MENU_ITEMS: readonly AdminMenuItem[] = [
-  { label: 'Panel general', route: '/admin/dashboard', roles: MANAGEMENT_ROLES, section: 'Principal', icon: 'M3 3h8v8H3z M13 3h8v5h-8z M13 10h8v11h-8z M3 13h8v8H3z' },
-  { label: 'Matrículas', route: '/admin/matriculas', roles: MANAGEMENT_ROLES, section: 'Vida académica', icon: 'M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z' },
-  { label: 'Solicitudes de matrícula', route: '/admin/solicitudes-matricula', roles: MANAGEMENT_ROLES, section: 'Vida académica', icon: 'M7 3h7l5 5v13H7a2 2 0 01-2-2V5a2 2 0 012-2zM14 3v5h5M9 13h6M9 17h6' },
-  { label: 'Aulas y horarios', route: '/admin/academico', roles: ['DIRECCION'], section: 'Vida académica', icon: 'M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M8 9h.01M16 9h.01' },
-  { label: 'Malla horaria', route: '/admin/horarios', roles: ACADEMIC_ROLES, section: 'Vida académica', icon: 'M4 4h16v16H4zM4 10h16M10 4v16' },
-  { label: 'Refuerzo académico', route: '/admin/refuerzos', roles: ACADEMIC_ROLES, section: 'Vida académica', icon: 'M12 3l9 5-9 5-9-5zM5 11v6l7 4 7-4v-6' },
-  { label: 'Calificaciones', route: '/admin/calificaciones', roles: ACADEMIC_ROLES, section: 'Vida académica', icon: 'M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2zM7 8h2m4 0h4M7 12h2m4 0h4M7 16h2m4 0h4' },
-  { label: 'Asistencia', route: '/admin/asistencia', roles: ATTENDANCE_ROLES, section: 'Vida académica', icon: 'M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11' },
-  { label: 'Convivencia', route: '/admin/convivencia', roles: STUDENT_SUPPORT_ROLES, section: 'Vida académica', icon: 'M12 21s-8-4.5-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 6.5-8 11-8 11z' },
-  { label: 'Tutoría y seguimiento', route: '/admin/tutoria', roles: ['TUTOR'], section: 'Vida académica', icon: 'M4 4h16v16H4zM8 8h8M8 12h8M8 16h5' },
-  { label: 'Incidencias y faltas', route: '/admin/observaciones-conductuales', roles: STUDENT_SUPPORT_ROLES, section: 'Vida académica', icon: 'M12 9v2m0 4h.01M3 20h18L12 3z' },
-  { label: 'Tesorería y pagos', route: '/admin/tesoreria', roles: [...MANAGEMENT_ROLES, 'APODERADO'], section: 'Comunidad y gestión', icon: 'M3 6h18v14H3zM3 10h18M7 15h4M6 3h12' },
-  { label: 'Comunicados', route: '/admin/comunicados', roles: [...MANAGEMENT_ROLES, 'APODERADO'], section: 'Comunidad y gestión', icon: 'M4 4h16v16H4zM8 8h8M8 12h8M8 16h5' },
-  { label: 'Usuarios y permisos', route: '/admin/usuarios', roles: ['DIRECCION'], section: 'Comunidad y gestión', icon: 'M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM20 8v6m3-3h-6' },
-  { label: 'Portal familiar', route: '/admin/portal-apoderado', roles: FAMILY_ROLES, section: 'Comunidad y gestión', icon: 'M3 11l9-8 9 8M5 10v11h14V10' },
-  { label: 'Designar suplente', route: '/admin/suplencias', roles: ['APODERADO'], section: 'Comunidad y gestión', icon: 'M4 21v-4h16v4M12 13a5 5 0 100-10 5 5 0 000 10z' },
-  { label: 'Gestión de suplentes', route: '/admin/aprobacion-suplencias', roles: ['DIRECCION'], section: 'Comunidad y gestión', icon: 'M9 12l2 2 4-4M4 3v12l8 6 8-6V3z' },
-  { label: 'Mi perfil', route: '/admin/perfil', roles: [], section: 'Comunidad y gestión', icon: 'M20 21a8 8 0 00-16 0M12 13a5 5 0 100-10 5 5 0 000 10z' }
+  { label: 'Panel general', route: '/admin/dashboard', roles: ADMIN_ROUTE_ACCESS.dashboard, section: 'Principal', icon: 'M3 3h8v8H3z M13 3h8v5h-8z M13 10h8v11h-8z M3 13h8v8H3z' },
+  { label: 'Matrículas', route: '/admin/matriculas', roles: ADMIN_ROUTE_ACCESS.matriculas, section: 'Vida académica', icon: 'M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z' },
+  { label: 'Solicitudes de matrícula', route: '/admin/solicitudes-matricula', roles: ADMIN_ROUTE_ACCESS['solicitudes-matricula'], section: 'Vida académica', icon: 'M7 3h7l5 5v13H7a2 2 0 01-2-2V5a2 2 0 012-2zM14 3v5h5M9 13h6M9 17h6' },
+  { label: 'Aulas y horarios', route: '/admin/academico', roles: ADMIN_ROUTE_ACCESS.academico, section: 'Vida académica', icon: 'M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M8 9h.01M16 9h.01' },
+  { label: 'Malla horaria', route: '/admin/horarios', roles: ADMIN_ROUTE_ACCESS.horarios, section: 'Vida académica', icon: 'M4 4h16v16H4zM4 10h16M10 4v16' },
+  { label: 'Refuerzo académico', route: '/admin/refuerzos', roles: ADMIN_ROUTE_ACCESS.refuerzos, section: 'Vida académica', icon: 'M12 3l9 5-9 5-9-5zM5 11v6l7 4 7-4v-6' },
+  { label: 'Calificaciones', route: '/admin/calificaciones', roles: ADMIN_ROUTE_ACCESS.calificaciones, section: 'Vida académica', icon: 'M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2zM7 8h2m4 0h4M7 12h2m4 0h4M7 16h2m4 0h4' },
+  { label: 'Asistencia', route: '/admin/asistencia', roles: ADMIN_ROUTE_ACCESS.asistencia, section: 'Vida académica', icon: 'M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11' },
+  { label: 'Convivencia', route: '/admin/convivencia', roles: ADMIN_ROUTE_ACCESS.convivencia, section: 'Vida académica', icon: 'M12 21s-8-4.5-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 6.5-8 11-8 11z' },
+  { label: 'Tutoría y seguimiento', route: '/admin/tutoria', roles: ADMIN_ROUTE_ACCESS.tutoria, section: 'Vida académica', icon: 'M4 4h16v16H4zM8 8h8M8 12h8M8 16h5' },
+  { label: 'Incidencias y faltas', route: '/admin/observaciones-conductuales', roles: ADMIN_ROUTE_ACCESS['observaciones-conductuales'], section: 'Vida académica', icon: 'M12 9v2m0 4h.01M3 20h18L12 3z' },
+  { label: 'Tesorería y pagos', route: '/admin/tesoreria', roles: ADMIN_ROUTE_ACCESS.tesoreria, section: 'Comunidad y gestión', icon: 'M3 6h18v14H3zM3 10h18M7 15h4M6 3h12' },
+  { label: 'Comunicados', route: '/admin/comunicados', roles: ADMIN_ROUTE_ACCESS.comunicados, section: 'Comunidad y gestión', icon: 'M4 4h16v16H4zM8 8h8M8 12h8M8 16h5' },
+  { label: 'Usuarios y permisos', route: '/admin/usuarios', roles: ADMIN_ROUTE_ACCESS.usuarios, section: 'Comunidad y gestión', icon: 'M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM20 8v6m3-3h-6' },
+  { label: 'Portal familiar', route: '/admin/portal-apoderado', roles: ADMIN_ROUTE_ACCESS['portal-apoderado'], section: 'Comunidad y gestión', icon: 'M3 11l9-8 9 8M5 10v11h14V10' },
+  { label: 'Designar suplente', route: '/admin/suplencias', roles: ADMIN_ROUTE_ACCESS.suplencias, section: 'Comunidad y gestión', icon: 'M4 21v-4h16v4M12 13a5 5 0 100-10 5 5 0 000 10z' },
+  { label: 'Gestión de suplentes', route: '/admin/aprobacion-suplencias', roles: ADMIN_ROUTE_ACCESS['aprobacion-suplencias'], section: 'Comunidad y gestión', icon: 'M9 12l2 2 4-4M4 3v12l8 6 8-6V3z' },
+  { label: 'Mi perfil', route: '/admin/perfil', roles: ADMIN_ROUTE_ACCESS.perfil, section: 'Comunidad y gestión', icon: 'M20 21a8 8 0 00-16 0M12 13a5 5 0 100-10 5 5 0 000 10z' }
 ];
 
 export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminMenuItem[] {
@@ -62,7 +59,7 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
   template: `
     <div class="min-h-screen bg-[#f5f7fb] text-slate-900 lg:flex">
       <aside class="hidden w-[268px] shrink-0 flex-col border-r border-[#e7edf5] bg-white text-[#172b4d] lg:sticky lg:top-0 lg:flex lg:h-screen">
-        <a routerLink="/admin/dashboard" class="flex min-h-[102px] items-center gap-3 px-6 py-7 no-underline focus-visible:outline-[3px] focus-visible:outline-[#83a9ea] focus-visible:outline-offset-2" aria-label="Inicio institucional">
+        <a [routerLink]="store.homeRoute()" class="flex min-h-[102px] items-center gap-3 px-6 py-7 no-underline focus-visible:outline-[3px] focus-visible:outline-[#83a9ea] focus-visible:outline-offset-2" aria-label="Inicio institucional">
           <img class="h-[42px] w-[42px] shrink-0 rounded-full bg-white object-contain" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de I.E.P. Shuji Kitamura">
           <span class="min-w-0">
             <span class="block truncate text-sm font-bold tracking-tight text-[#172b4d]">Shuji Kitamura</span>

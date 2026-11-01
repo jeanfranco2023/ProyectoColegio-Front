@@ -3,7 +3,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ApiResponse } from '../models/api-response.model';
-import { UserResponseDto } from '../models/auth.model';
+import {
+  CambiarPasswordRequestDto,
+  CrearUsuarioRequestDto,
+  UserResponseDto
+} from '../models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +26,7 @@ export class UsuarioService {
       .pipe(map(res => res.data ?? []));
   }
 
-  crearUsuario(payload: any): Observable<UserResponseDto> {
+  crearUsuario(payload: CrearUsuarioRequestDto): Observable<UserResponseDto> {
     return this.http
       .post<ApiResponse<UserResponseDto>>(this.baseUrl, payload)
       .pipe(map(res => res.data));
@@ -34,7 +38,7 @@ export class UsuarioService {
       .pipe(map(res => res.data));
   }
 
-  cambiarPassword(payload: any): Observable<void> {
+  cambiarPassword(payload: CambiarPasswordRequestDto): Observable<void> {
     return this.http
       .put<ApiResponse<void>>(`${this.baseUrl}/password`, payload)
       .pipe(map(() => undefined));

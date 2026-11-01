@@ -1,4 +1,5 @@
 import { inject } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from './auth.service';
 import { AuthStore } from '../state/auth.store';
@@ -23,8 +24,13 @@ export function initAuthApp(): Promise<void> {
         authStore.setSession(response.data);
       }
     })
-    .catch(() => {
-      localStorage.removeItem('refreshToken');
+    .catch((error: HttpErrorResponse) => {
+      // A rejected refresh means the stored session is no longer valid. Clear all
+      // credentials together so the guards cannot mistake a stale access token for
+      // an authenticated user. Keep tokens on network/server errors for retry.
+      if (error.status >= 400 && error.status < 500) {
+        authStore.clearSession();
+      }
       return Promise.resolve();
     });
 }

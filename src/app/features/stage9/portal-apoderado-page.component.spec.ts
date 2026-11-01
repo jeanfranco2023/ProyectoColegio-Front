@@ -13,7 +13,7 @@ describe('portal familiar conectado', () => {
     afterEach(() => { http.verify(); TestBed.resetTestingModule(); });
     function completar(id: number) { http.expectOne(r => r.url.endsWith(`/matriculas/${id}/calificaciones`)).flush([]); http.expectOne(r => r.url.endsWith(`/matriculas/${id}/periodos`)).flush([{ id: 1, nombre: 'I Bimestre' }]); http.expectOne(r => r.url.endsWith(`/matriculas/${id}/asistencia`)).flush([]); http.expectOne(r => r.url.endsWith('/tesoreria/mis-obligaciones')).flush([]); }
     it('carga datos reales por matrícula y consulta únicamente obligaciones familiares', () => { componente.seleccionar(1); completar(1); expect(componente.estado()).toBe('normal'); expect(componente.matriculaId()).toBe(1); expect(componente.periodoId()).toBe(1); });
-    it('no consulta una matrícula ajena al selector autorizado', () => { componente.seleccionar(99); componente.descargar(99); http.expectNone(() => true); });
+    it('no consulta una matrícula ajena al selector autorizado', () => { componente.seleccionar(99); componente.descargar(99); http.expectNone(() => true); expect(componente.matriculaId()).toBeNull(); });
     it('una respuesta tardía de otro hijo no reemplaza la selección actual', () => { componente.seleccionar(1); const primeras = http.match(() => true); componente.seleccionar(2); completar(2); for (const peticion of primeras)
         peticion.flush([]); expect(componente.matriculaId()).toBe(2); expect(componente.estado()).toBe('normal'); });
 });

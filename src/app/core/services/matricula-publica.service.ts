@@ -101,6 +101,11 @@ export class MatriculaPublicaService {
       `${this.baseUrl}/admin/${encodeURIComponent(id)}/autorizar-excepcion-edad`, { motivo });
   }
 
+  asignarSeccion(id: string, seccionId: number): Observable<SolicitudMatriculaPublicaAdminDto> {
+    return this.http.put<SolicitudMatriculaPublicaAdminDto>(
+      `${this.baseUrl}/admin/${encodeURIComponent(id)}/asignar-seccion`, { seccionId });
+  }
+
   documentoAdminUrl(id: string, tipo: TipoDocumentoSolicitud): Observable<{ url: string; versionId: string }> {
     return this.http.get<{ url: string; versionId: string }>(`${this.baseUrl}/admin/${encodeURIComponent(id)}/documentos/${tipo}/url`);
   }

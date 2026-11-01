@@ -3,7 +3,7 @@ import { CanActivateFn, Router } from '@angular/router';
 import { AuthStore } from '../state/auth.store';
 import { RolNombre } from '../models/auth.model';
 
-export const roleGuard = (allowedRoles: RolNombre[]): CanActivateFn => () => {
+export const roleGuard = (allowedRoles: readonly RolNombre[]): CanActivateFn => () => {
   const store = inject(AuthStore);
   const router = inject(Router);
 

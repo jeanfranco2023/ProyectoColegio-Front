@@ -3,6 +3,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
+  ActualizarEstadoIncidenciaRequestDto,
+  HistorialEstadoIncidenciaResponseDto,
   IncidenciaResponseDto,
   RegistrarIncidenciaRequestDto
 } from '../models/convivencia.model';
@@ -27,5 +29,13 @@ export class ConvivenciaService {
 
   registrarIncidencia(payload: RegistrarIncidenciaRequestDto): Observable<IncidenciaResponseDto> {
     return this.http.post<IncidenciaResponseDto>(`${this.baseUrl}/incidencias`, payload);
+  }
+
+  actualizarEstado(id: number, payload: ActualizarEstadoIncidenciaRequestDto): Observable<IncidenciaResponseDto> {
+    return this.http.put<IncidenciaResponseDto>(`${this.baseUrl}/incidencias/${id}/estado`, payload);
+  }
+
+  historialEstados(id: number): Observable<HistorialEstadoIncidenciaResponseDto[]> {
+    return this.http.get<HistorialEstadoIncidenciaResponseDto[]>(`${this.baseUrl}/incidencias/${id}/historial`);
   }
 }

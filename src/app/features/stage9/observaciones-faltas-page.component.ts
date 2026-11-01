@@ -5,14 +5,16 @@ import { Stage9ObservationDraft, Stage9State } from './stage9.contract';
 import { HijoPortalDto, PortalFamiliarService } from '../../core/services/portal-familiar.service';
 import { ConvivenciaService } from '../../core/services/convivencia.service';
 import { IncidenciaResponseDto, TipoFalta } from '../../core/models/convivencia.model';
+import { AuthStore } from '../../core/state/auth.store';
 import { fechaActualEnPeru } from '../../core/utils/fecha-nacimiento';
 @Component({ selector: 'app-observaciones-faltas-page', standalone: true, imports: [ObservacionesFaltasComponent], template: `
   <p role="status">{{ mensaje() }}</p>
-  <app-observaciones-faltas-screen [state]="estado()" [errorMessage]="mensaje()" [formError]="errorFormulario()" [students]="opciones()" [observationTypes]="tipos" [draft]="draft()" [observations]="observaciones()" (draftChange)="draft.set($event)" (saveRequested)="guardar($event)" (retry)="cargar()" />
+  <app-observaciones-faltas-screen [state]="estado()" [errorMessage]="mensaje()" [formError]="errorFormulario()" [canCreate]="auth.hasRole('TUTOR')" [students]="opciones()" [observationTypes]="tipos" [draft]="draft()" [observations]="observaciones()" (draftChange)="draft.set($event)" (saveRequested)="guardar($event)" (retry)="cargar()" />
 ` })
 export class ObservacionesFaltasPageComponent implements OnInit {
     private readonly portal = inject(PortalFamiliarService);
     private readonly convivencia = inject(ConvivenciaService);
+    readonly auth = inject(AuthStore);
     readonly hijos = signal<HijoPortalDto[]>([]);
     readonly incidencias = signal<IncidenciaResponseDto[]>([]);
     readonly estado = signal<Stage9State>('loading');
@@ -26,6 +28,7 @@ export class ObservacionesFaltasPageComponent implements OnInit {
     ngOnInit() { this.cargar(); }
     cargar() { this.estado.set('loading'); forkJoin({ hijos: this.portal.alumnosSeguimiento(), incidencias: this.convivencia.listarIncidencias() }).subscribe({ next: d => { this.hijos.set(d.hijos); this.incidencias.set(d.incidencias); this.estado.set(d.incidencias.length ? 'normal' : 'empty'); }, error: e => { this.estado.set('error'); this.mensaje.set(e?.error?.message ?? 'No se pudo cargar el registro de observaciones.'); } }); }
     guardar(draft: Stage9ObservationDraft) {
+        if (!this.auth.hasRole('TUTOR')) return;
         if (this.ocupado())
             return;
         this.errorFormulario.set('');

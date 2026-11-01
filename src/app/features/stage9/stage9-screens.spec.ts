@@ -60,4 +60,15 @@ describe('Etapa 9 presentation screens', () => {
     );
     expect(confirm?.disabled).toBe(true);
   });
+
+  it('shows observation registration only when the page grants create permission', async () => {
+    await TestBed.configureTestingModule({ imports: [ObservacionesFaltasComponent] }).compileComponents();
+    const fixture = TestBed.createComponent(ObservacionesFaltasComponent);
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).querySelector('form')).toBeNull();
+
+    fixture.componentRef.setInput('canCreate', true);
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).querySelector('form')).toBeTruthy();
+  });
 });

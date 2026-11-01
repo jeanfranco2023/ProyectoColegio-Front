@@ -16,6 +16,18 @@ export interface UserResponseDto {
   updatedAt: string;
 }
 
+export interface CrearUsuarioRequestDto {
+  username: string;
+  email: string;
+  password: string;
+  roles: RolNombre[];
+}
+
+export interface CambiarPasswordRequestDto {
+  passwordActual: string;
+  passwordNuevo: string;
+}
+
 export interface LoginRequestDto {
   username: string;
   password: string;

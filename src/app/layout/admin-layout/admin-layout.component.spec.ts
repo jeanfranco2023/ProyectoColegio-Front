@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { visibleAdminMenuItems } from './admin-layout.component';
+import { ADMIN_MENU_ITEMS, visibleAdminMenuItems } from './admin-layout.component';
+import { ADMIN_ROUTE_ACCESS } from '../../core/authorization/admin-route-access';
+import { routes } from '../../app.routes';
 
 const expectedMenuByRole = {
   DIRECCION: [
@@ -90,5 +92,21 @@ describe('admin menu by role', () => {
     expect(secretaria).not.toContain('/admin/usuarios');
     expect(secretaria).not.toContain('/admin/calificaciones');
     expect(secretaria).not.toContain('/admin/convivencia');
+  });
+
+  it('mantiene cada elemento del menú alineado con una ruta y su matriz de permisos', () => {
+    const adminRoutes = routes.find(route => route.path === 'admin')!.children!;
+
+    for (const item of ADMIN_MENU_ITEMS) {
+      const routePath = item.route.replace('/admin/', '');
+      expect(adminRoutes.some(route => route.path === routePath)).toBe(true);
+      expect(item.roles).toEqual(ADMIN_ROUTE_ACCESS[routePath as keyof typeof ADMIN_ROUTE_ACCESS]);
+    }
+  });
+
+  it('combina permisos solo cuando la cuenta tiene varios roles asignados', () => {
+    const rolesMixtos = visibleAdminMenuItems(['SECRETARIA', 'DOCENTE']).map(item => item.route);
+    expect(rolesMixtos).toContain('/admin/calificaciones');
+    expect(visibleAdminMenuItems(['SECRETARIA']).some(item => item.route === '/admin/calificaciones')).toBe(false);
   });
 });

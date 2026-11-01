@@ -32,7 +32,7 @@ export class AuthStore {
     return this.roles().includes(role);
   }
 
-  hasAnyRole(roles: RolNombre[]): boolean {
+  hasAnyRole(roles: readonly RolNombre[]): boolean {
     return roles.some(r => this.hasRole(r));
   }
 
@@ -69,12 +69,16 @@ export class AuthStore {
     }
   }
 
-  logout() {
+  clearSession() {
     this.accessToken.set(null);
     this.user.set(null);
     localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
     localStorage.removeItem('refreshToken');
+  }
+
+  logout() {
+    this.clearSession();
     this.router.navigate(['/auth/login']).catch(() => {});
   }
 

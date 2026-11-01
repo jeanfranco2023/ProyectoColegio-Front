@@ -57,7 +57,7 @@ export class SeguimientoTutoriaPageComponent implements OnInit {
             grupo.push(i);
             grupos.set(i.matriculaId, grupo);
         }
-        return this.alumnosFiltrados().map(h => { const registros = grupos.get(h.matriculaId) ?? []; const graves = registros.filter(i => i.tipoFalta !== 'LEVE').length; return { id: h.matriculaId, fullName: `${h.nombres} ${h.apellidoPaterno} ${h.apellidoMaterno}`, attendanceSummary: marcas.get(h.matriculaId)?.estado ?? 'Sin registro hoy', incidentsSummary: `${graves} graves o muy graves`, observationsCount: registros.length, lastActivity: registros.map(i => i.fechaIncidencia).sort().at(-1) ?? marcas.get(h.matriculaId)?.fechaSesion ?? 'Sin actividad' }; });
+        return this.alumnosFiltrados().map(h => { const registros = grupos.get(h.matriculaId) ?? []; const graves = registros.filter(i => i.tipoFalta !== 'LEVE').length; return { id: h.matriculaId, fullName: `${h.nombres} ${h.apellidoPaterno} ${h.apellidoMaterno}`, attendanceSummary: marcas.get(h.matriculaId)?.estado ?? 'Sin registro hoy', incidentsSummary: `${graves} graves o muy graves`, observationsCount: registros.length, lastActivity: registros.map(i => i.fechaIncidencia).sort((a, b) => a.localeCompare(b)).at(-1) ?? marcas.get(h.matriculaId)?.fechaSesion ?? 'Sin actividad' }; });
     });
     readonly graves = computed(() => this.incidenciasFiltradas().filter(i => i.tipoFalta !== 'LEVE').length);
     readonly asistenciasResumen = computed(() => { const ids = new Set(this.alumnosFiltrados().map(h => h.matriculaId)); return `${this.asistencias().filter(a => ids.has(a.matriculaId)).length} registros de hoy`; });

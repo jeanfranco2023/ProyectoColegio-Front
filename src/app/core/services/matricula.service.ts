@@ -26,6 +26,14 @@ export class MatriculaService {
     return this.http.get<MatriculaResponseDto[]>(`${this.baseUrl}/seccion/${seccionId}`, { params });
   }
 
+  listarPorAnio(anioLectivoId: number): Observable<MatriculaResponseDto[]> {
+    return this.http.get<MatriculaResponseDto[]>(`${this.baseUrl}/anio/${anioLectivoId}/registros`);
+  }
+
+  listarEstudianteIdsMatriculados(anioLectivoId: number): Observable<number[]> {
+    return this.http.get<number[]>(`${this.baseUrl}/anio/${anioLectivoId}/estudiantes-matriculados`);
+  }
+
   consultarFicha(id: number): Observable<FichaMatriculaResponseDto> {
     return this.http.get<FichaMatriculaResponseDto>(`${this.baseUrl}/${id}`);
   }
@@ -39,10 +47,7 @@ export class MatriculaService {
   }
 
   registrarEstudiante(payload: RegistrarEstudianteRequestDto): Observable<EstudianteResponseDto> {
-    return this.http.post<EstudianteResponseDto>(this.estudiantesUrl, {
-      ...payload,
-      codigoEstudianteSiagie: payload.codigoEstudianteSiagie?.trim() || undefined
-    });
+    return this.http.post<EstudianteResponseDto>(this.estudiantesUrl, payload);
   }
 
   consultarDni(dni: string): Observable<ConsultaDniResponseDto> {

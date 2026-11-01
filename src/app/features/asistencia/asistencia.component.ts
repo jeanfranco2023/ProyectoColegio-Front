@@ -21,6 +21,12 @@ export interface AlumnoAsistenciaItem {
   tieneDocumentoSustento?: boolean;
 }
 
+function fechaDiaEscolarMasReciente(): string {
+  const fecha = new Date();
+  if (fecha.getDay() === 0) fecha.setDate(fecha.getDate() - 2);
+  else if (fecha.getDay() === 6) fecha.setDate(fecha.getDate() - 1);
+  return fecha.toLocaleDateString('sv-SE');
+}
 
 @Component({
   selector: 'app-asistencia',
@@ -93,13 +99,67 @@ export interface AlumnoAsistenciaItem {
         </div>
       </dialog>
 
-      <dialog #justificacionDialog class="box-border w-[min(680px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden border border-[#e4eaf3] rounded-[22px] bg-white text-[#14213d] p-0 shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px] max-[639px]:w-[calc(100vw-16px)] max-[639px]:max-w-[calc(100vw-16px)] max-[639px]:max-h-[calc(100dvh-16px)] max-[639px]:rounded-[18px]" aria-labelledby="justificacion-dialog-title">
-        <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col"><header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4"><div><h3 id="justificacion-dialog-title" class="tracking-[-.025em]">Justificar inasistencia</h3><p>La justificación quedará asociada a la asistencia seleccionada.</p></div><button type="button" class="min-h-11 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] !h-11 !w-11 !min-w-11 !min-h-11 !shrink-0 !p-0 grid place-items-center !font-[650]" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button></header>
-          <form (ngSubmit)="justificarSeleccionada()" class="flex min-h-0 flex-[1_1_auto] flex-col"><div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
-            @if (error()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-xs text-[#b91c1c]" role="alert">{{ error() }}</p> }
-            <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Motivo de justificación *<textarea [(ngModel)]="motivoJustificacion" name="motivoJustificacion" required maxlength="4000" rows="4" placeholder="Describe brevemente el motivo" class="min-w-0 max-w-full border px-3 !py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base py-[10px] resize-y !min-h-[110px] !font-[650]"></textarea></label>
-            <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569]">Sustento médico o institucional en PDF *<input type="file" accept="application/pdf,.pdf" required aria-label="Sustento PDF privado" (change)="seleccionarSustento($event)" class="mt-2 block w-full text-sm"></label>
-          </div><footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]"><button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogos()">Cancelar</button><button type="submit" [disabled]="operando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ operando() ? 'Guardando…' : 'Guardar justificación' }}</button></footer></form>
+      <dialog #justificacionDialog class="!fixed !left-1/2 !top-1/2 !m-0 !-translate-x-1/2 !-translate-y-1/2 box-border w-[min(600px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden border border-[#e4eaf3] rounded-[22px] bg-white text-[#14213d] p-0 shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px] max-[639px]:w-[calc(100vw-16px)] max-[639px]:max-w-[calc(100vw-16px)] max-[639px]:max-h-[calc(100dvh-16px)] max-[639px]:rounded-[18px]" aria-labelledby="justificacion-dialog-title">
+        <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col">
+          <header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 max-[639px]:p-4">
+            <div>
+              <h3 id="justificacion-dialog-title" class="m-0 text-lg font-[750] leading-[27px] tracking-[-.025em] text-[#14213d]">Justificar inasistencia</h3>
+              <p class="mb-0 mt-1 text-xs leading-relaxed text-[#64748b]">Registra el motivo y adjunta el documento que lo sustenta.</p>
+            </div>
+            <button type="button" class="grid h-11 w-11 min-h-11 min-w-11 shrink-0 place-items-center rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] font-semibold text-[#334155]" (click)="cerrarDialogos()" aria-label="Cerrar">✕</button>
+          </header>
+          <form (ngSubmit)="justificarSeleccionada()" class="flex min-h-0 flex-[1_1_auto] flex-col">
+            <div class="min-h-0 flex-[1_1_auto] space-y-5 overflow-auto overscroll-contain px-6 py-5 max-[639px]:space-y-4 max-[639px]:p-4">
+              @if (error()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-sm text-[#b91c1c]" role="alert">{{ error() }}</p> }
+              <section class="rounded-xl border border-[#dce5f2] bg-[#f7f9fc] px-4 py-3" aria-label="Inasistencia seleccionada">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="min-w-0">
+                    <p class="m-0 text-[11px] font-semibold text-[#64748b]">ASISTENCIA #{{ justificacionId() }}</p>
+                    <p class="mb-0 mt-1 truncate text-sm font-bold text-[#172b4d]">{{ asistenciaEnJustificacion()?.estudiante || 'Estudiante seleccionado' }}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="m-0 text-[11px] font-semibold text-[#64748b]">FECHA DE FALTA</p>
+                    @if (asistenciaEnJustificacion()?.fecha) { <p class="mb-0 mt-1 text-sm font-semibold text-[#172b4d]">{{ asistenciaEnJustificacion()?.fecha | uiDatePe }}</p> }
+                  </div>
+                </div>
+              </section>
+              <label class="block text-sm font-semibold leading-normal text-[#334155]">Motivo de la inasistencia *
+                <span class="mt-1 block text-xs font-normal text-[#64748b]">Explica brevemente por qué el estudiante no pudo asistir.</span>
+                <textarea [(ngModel)]="motivoJustificacion" name="motivoJustificacion" required maxlength="4000" rows="4" placeholder="Escribe el motivo de la ausencia…" class="mt-2 block min-h-[112px] w-full resize-y rounded-xl border border-[#d9e1ec] bg-white px-3 py-3 text-sm font-normal leading-relaxed text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)]"></textarea>
+                <span class="mt-1 block text-right text-xs font-normal text-[#64748b]">{{ motivoJustificacion.length }} / 4000 caracteres</span>
+              </label>
+              <section class="rounded-2xl border border-[#d8e2f0] bg-white p-4 max-[639px]:p-3" aria-labelledby="sustento-title">
+                <div class="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <h4 id="sustento-title" class="m-0 text-sm font-bold text-[#172b4d]">Documento de sustento <span class="text-[#b42318]">*</span></h4>
+                    <p class="mb-0 mt-1 text-xs leading-relaxed text-[#64748b]">PDF de hasta 5 MB. Se guardará de forma privada junto a esta asistencia.</p>
+                  </div>
+                  <span class="rounded-full border border-[#dce5f2] bg-[#f7f9fc] px-2.5 py-1 text-[11px] font-semibold text-[#52647e]">PDF · máx. 5 MB</span>
+                </div>
+                <div class="mt-3 flex flex-col gap-3 rounded-xl border border-dashed border-[#a9bbd4] bg-[#f7f9fc] p-4 max-[639px]:p-3">
+                  <div class="flex items-center gap-3">
+                    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#eaf1ff] text-[#2458a6]" aria-hidden="true">
+                      <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M7 3.75h6l4.25 4.5v11A1.75 1.75 0 0 1 15.5 21h-8A1.75 1.75 0 0 1 5.75 19.25v-13A2.5 2.5 0 0 1 8.25 3.75Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M13 4v5h4M8.5 13h6M8.5 16.5h6"/></svg>
+                    </span>
+                    <div class="min-w-0 flex-1">
+                      @if (archivoSustento) {
+                        <p class="m-0 break-all text-sm font-semibold text-[#172b4d]">{{ archivoSustento.name }}</p>
+                        <p class="mb-0 mt-1 text-xs text-[#047857]">{{ archivoSustento.size / (1024 * 1024) | number:'1.1-1' }} MB · Listo para adjuntar</p>
+                      } @else {
+                        <p class="m-0 text-sm font-semibold text-[#172b4d]">Aún no has elegido un PDF</p>
+                        <p class="mb-0 mt-1 text-xs text-[#64748b]">Busca el documento en tu dispositivo.</p>
+                      }
+                    </div>
+                  </div>
+                  <label class="relative inline-flex min-h-11 w-full cursor-pointer items-center justify-center rounded-xl border border-[#b9c9df] bg-white px-4 text-sm font-bold text-[#1d4ed8] shadow-sm transition-colors hover:bg-[#edf4ff] focus-within:outline-none focus-within:ring-2 focus-within:ring-[#93b4f4]">
+                    {{ archivoSustento ? 'Cambiar documento PDF' : 'Buscar documento PDF' }}
+                    <input #sustentoInput type="file" accept="application/pdf,.pdf" required aria-label="Adjuntar sustento en formato PDF" (change)="seleccionarSustento($event)" class="absolute inset-0 h-full w-full cursor-pointer opacity-0">
+                  </label>
+                </div>
+              </section>
+            </div>
+            <footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]"><button type="button" class="inline-flex min-h-11 items-center justify-center rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] max-[640px]:w-full" (click)="cerrarDialogos()">Cancelar</button><button type="submit" [disabled]="operando()" class="inline-flex min-h-11 items-center justify-center rounded-xl bg-[#2563eb] px-[18px] font-semibold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:w-full">{{ operando() ? 'Guardando…' : 'Guardar justificación' }}</button></footer>
+          </form>
         </div>
       </dialog>
 
@@ -295,13 +355,15 @@ export class AsistenciaComponent implements OnInit {
   @ViewChild('registroDialog') private registroDialog!: ElementRef<HTMLDialogElement>;
   @ViewChild('biometricoDialog') private biometricoDialog!: ElementRef<HTMLDialogElement>;
   @ViewChild('justificacionDialog') private justificacionDialog!: ElementRef<HTMLDialogElement>;
+  @ViewChild('sustentoInput') private sustentoInput!: ElementRef<HTMLInputElement>;
 
-  fechaSeleccionada = new Date().toLocaleDateString('sv-SE');
-  fechaSesionNueva = new Date().toLocaleDateString('sv-SE');
+  fechaSeleccionada = fechaDiaEscolarMasReciente();
+  fechaSesionNueva = fechaDiaEscolarMasReciente();
   anioId = 0;
   readonly error = signal<string | null>(null);
   readonly mensaje = signal<string | null>(null);
   readonly justificacionId = signal<number | null>(null);
+  readonly asistenciaEnJustificacion = signal<AlumnoAsistenciaItem | null>(null);
   readonly operando = signal(false);
   tabActiva = signal<'AULA' | 'CONCILIACION'>('AULA');
   cargando = signal(false);
@@ -462,7 +524,10 @@ export class AsistenciaComponent implements OnInit {
   seleccionarSustento(event: Event): void {
     const archivo = (event.target as HTMLInputElement).files?.[0] ?? null;
     this.archivoSustento = archivo?.type === 'application/pdf' && archivo.size <= 5 * 1024 * 1024 ? archivo : null;
-    if (archivo && !this.archivoSustento) this.error.set('Adjunta un archivo PDF de hasta 5 MB.');
+    if (archivo && !this.archivoSustento) {
+      this.error.set('Adjunta un archivo PDF de hasta 5 MB.');
+      this.sustentoInput.nativeElement.value = '';
+    }
     else this.error.set(null);
   }
 
@@ -540,7 +605,9 @@ export class AsistenciaComponent implements OnInit {
     this.mensaje.set(null);
     this.motivoJustificacion = '';
     this.archivoSustento = null;
+    this.sustentoInput.nativeElement.value = '';
     this.justificacionId.set(id);
+    this.asistenciaEnJustificacion.set(this.alumnos().find(asistencia => asistencia.id === id) ?? null);
     this.justificacionDialog.nativeElement.showModal();
   }
 

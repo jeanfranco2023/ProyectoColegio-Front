@@ -34,7 +34,7 @@ export interface TransaccionResponseDto {
   montoPagado: number;
   fechaPago: string;
   estadoPago: EstadoPago;
-  payloadWebhook?: Record<string, any>;
+  payloadWebhook?: Record<string, unknown>;
 }
 
 export interface PreferenciaMercadoPagoResponseDto {

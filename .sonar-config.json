@@ -1,0 +1,7 @@
+{
+  "project": {
+    "projectKey": "shuji-frontend",
+    "path": ".",
+    "serverUrl": "http://localhost:9000"
+  }
+}
