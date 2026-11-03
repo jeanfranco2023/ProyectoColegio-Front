@@ -94,7 +94,8 @@ if (allSections.length) {
     await get(`/evaluacion/libreta/${enrollment.id}`);
     await get(`/convivencia/matricula/${enrollment.id}`);
     await get(`/tesoreria/obligaciones?matriculaId=${enrollment.id}`);
-    if (ficha.apoderados?.length) await get(`/apoderados/${ficha.apoderados[0].id}`);
+    const apoderadoId = ficha.apoderados?.[0]?.id ?? ficha.apoderados?.[0]?.apoderado?.id;
+    if (apoderadoId) await get(`/apoderados/${apoderadoId}`);
     else skipped.push('guardian read: enrollment has no linked guardian');
   } else skipped.push('enrollment-dependent reads: no enrollment');
 }

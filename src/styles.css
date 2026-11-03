@@ -96,7 +96,25 @@ router-outlet + * { animation: screen-enter 360ms cubic-bezier(.2, .7, .2, 1) bo
 .mat-mdc-form-field-subscript-wrapper { min-height: 18px; }
 .mat-mdc-dialog-container .mdc-dialog__surface,
 .mat-mdc-dialog-surface { display: flex !important; flex-direction: column; max-height: calc(100dvh - 24px) !important; overflow: hidden !important; border-radius: 22px !important; box-shadow: 0 28px 90px rgb(15 31 57 / 24%) !important; }
-.mat-mdc-dialog-content { min-height: 0; max-height: none; overflow: auto; overscroll-behavior: contain; }
+.mat-mdc-dialog-content { min-height: 0; max-height: none; overflow: auto; overscroll-behavior: contain; -ms-overflow-style: none; scrollbar-width: none; }
+.mat-mdc-dialog-content::-webkit-scrollbar { display: none; }
+
+/* Scrollbar invisible para modales flotantes y paneles navegables */
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.modal-body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.modal-body::-webkit-scrollbar {
+  display: none;
+}
 .mat-mdc-dialog-actions { position: sticky; bottom: 0; z-index: 1; flex: 0 0 auto; background: #fff; }
 
 .mat-mdc-dialog-actions .mat-mdc-button-base {

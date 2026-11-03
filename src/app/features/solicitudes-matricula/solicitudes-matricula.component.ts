@@ -39,6 +39,8 @@ export class SolicitudesMatriculaComponent implements OnInit {
   ngOnInit(): void { this.cargar(); }
 
   cargar(): void {
+    this.error.set('');
+    this.urlsDocumentos.set({});
     this.cargando.set(true);
     this.api.catalogo().subscribe({
       next: catalogo => this.seccionesDisponibles.set(catalogo.secciones),
@@ -103,10 +105,16 @@ export class SolicitudesMatriculaComponent implements OnInit {
   cerrarModal(): void { this.seleccion.set(null); this.confirmandoRechazo.set(false); }
 
   verDocumento(solicitud: SolicitudMatriculaPublicaAdminDto, doc: DocumentoSolicitudDto): void {
+    const key = `${solicitud.id}:${doc.tipo}`;
+    this.urlsDocumentos.update(urls => {
+      const actualizadas = { ...urls };
+      delete actualizadas[key];
+      return actualizadas;
+    });
     this.api.documentoAdminUrl(solicitud.id, doc.tipo).subscribe({
       next: response => {
         if (response.versionId !== doc.versionId) { this.error.set('El archivo cambió. Actualiza las solicitudes.'); return; }
-        this.urlsDocumentos.update(urls => ({ ...urls, [solicitud.id + ':' + doc.tipo]: response.url }));
+        this.urlsDocumentos.update(urls => ({ ...urls, [key]: response.url }));
       },
       error: err => this.error.set(err?.error?.message || 'No se pudo obtener el acceso temporal al archivo.')
     });

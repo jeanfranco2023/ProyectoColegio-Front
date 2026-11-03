@@ -19,6 +19,7 @@ const expectedMenuByRole = {
     ['Comunicados', '/admin/comunicados'],
     ['Usuarios y permisos', '/admin/usuarios'],
     ['Gestión de suplentes', '/admin/aprobacion-suplencias'],
+    ['Auditoría de accesos', '/admin/auditoria'],
     ['Mi perfil', '/admin/perfil']
   ],
   SECRETARIA: [
@@ -26,6 +27,7 @@ const expectedMenuByRole = {
     ['Matrículas', '/admin/matriculas'],
     ['Solicitudes de matrícula', '/admin/solicitudes-matricula'],
     ['Asistencia', '/admin/asistencia'],
+    ['Convivencia', '/admin/convivencia'],
     ['Tesorería y pagos', '/admin/tesoreria'],
     ['Comunicados', '/admin/comunicados'],
     ['Mi perfil', '/admin/perfil']
@@ -91,7 +93,7 @@ describe('admin menu by role', () => {
     expect(secretaria).not.toContain('/admin/academico');
     expect(secretaria).not.toContain('/admin/usuarios');
     expect(secretaria).not.toContain('/admin/calificaciones');
-    expect(secretaria).not.toContain('/admin/convivencia');
+    expect(secretaria).toContain('/admin/convivencia');
   });
 
   it('mantiene cada elemento del menú alineado con una ruta y su matriz de permisos', () => {

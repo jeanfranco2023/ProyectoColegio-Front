@@ -31,17 +31,21 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
         refreshInFlight = auth.refreshToken({ refreshToken }).pipe(
           tap(response => store.setSession(response.data)),
           map(response => response.data.accessToken),
-          catchError(refreshError => { store.logout(); return throwError(() => refreshError); }),
+          catchError(refreshError => {
+            if (refreshError.status >= 400 && refreshError.status < 500) store.logout();
+            return throwError(() => refreshError);
+          }),
           finalize(() => { refreshInFlight = null; }),
           shareReplay(1)
         );
       }
       return refreshInFlight.pipe(
-        switchMap(newToken => next(req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } }))),
-        catchError(retryError => {
-          if (retryError.status === 401) store.logout();
-          return throwError(() => retryError);
-        })
+        switchMap(newToken => next(req.clone({ setHeaders: { Authorization: `Bearer ${newToken}` } })).pipe(
+          catchError(retryError => {
+            if (retryError.status === 401) store.logout();
+            return throwError(() => retryError);
+          })
+        ))
       );
     })
   );

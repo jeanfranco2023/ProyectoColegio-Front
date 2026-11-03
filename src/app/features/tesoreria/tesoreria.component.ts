@@ -1,12 +1,14 @@
 import { Component, ElementRef, inject, signal, computed, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AppAlertComponent } from '../../shared/ui/app-alert.component';
 import { StatusBadgeComponent } from '../../shared/ui/status-badge.component';
 import { TesoreriaService } from '../../core/services/tesoreria.service';
 import { ConceptoCobroResponseDto } from '../../core/models/tesoreria.model';
 import { AuthStore } from '../../core/state/auth.store';
 import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
+import { fechaActualEnPeru } from '../../core/utils/fecha-nacimiento';
 
 export type EstadoPago = 'PAGADO_TOTAL' | 'PAGADO_PARCIAL' | 'PENDIENTE' | 'VENCIDO' | 'CANCELADO_POR_TRASLADO';
 
@@ -40,7 +42,13 @@ template: `
           </p>
         </div>
         @if (esSecretaria()) {
-        <div class="flex items-center gap-3">
+        <div class="flex flex-wrap items-center gap-3">
+          <button
+            (click)="abrirModalCuotaMatricula()"
+            class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-xs sm:text-sm transition cursor-pointer box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm leading-[1.25]"
+          >
+            Generar cuota de matrícula
+          </button>
           <button
             (click)="abrirModalEmitir()"
             class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]"
@@ -63,25 +71,29 @@ template: `
       }
 
       @if (error()) { <p class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#fca5a5] bg-[#fee2e2] text-[#7f1d1d]" role="alert">{{ error() }}</p> }
-      @if (checkoutUrl()) {
+      @if (checkoutObligacionId()) {
         <div class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#93c5fd] bg-[#dbeafe] text-[#1e3a8a] !grid gap-[10px] m-0" role="status">
-          <p>Pago preparado para la obligación #{{ checkoutObligacionId() }}. El pago solo se registrará cuando Mercado Pago confirme la operación.</p>
-          <a [href]="checkoutUrl()" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-[#e2e8f0] disabled:bg-[#f1f5f9] disabled:text-[#64748b] aria-disabled:cursor-not-allowed aria-disabled:border-[#e2e8f0] aria-disabled:bg-[#f1f5f9] aria-disabled:text-[#64748b] bg-[#2563eb] text-white hover:bg-[#1d4ed8]">Abrir Mercado Pago</a>
-          <p class="m-0 text-[#34445d] text-xs">Selecciona Yape, tarjeta o PagoEfectivo para pagar con CIP por los canales bancarios disponibles. La confirmación se consulta automáticamente.</p>
+          <p>Pago en verificación para la obligación #{{ checkoutObligacionId() }}. El pago solo se registrará cuando Mercado Pago confirme la operación.</p>
+          @if (checkoutUrl()) {
+            <a [href]="checkoutUrl()" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-[#e2e8f0] disabled:bg-[#f1f5f9] disabled:text-[#64748b] aria-disabled:cursor-not-allowed aria-disabled:border-[#e2e8f0] aria-disabled:bg-[#f1f5f9] aria-disabled:text-[#64748b] bg-[#2563eb] text-white hover:bg-[#1d4ed8]">Abrir Mercado Pago</a>
+            <p class="m-0 text-[#34445d] text-xs">Selecciona el medio de pago que prefieras. La confirmación se consulta automáticamente.</p>
+          }
           <button type="button" (click)="confirmarPago()" [disabled]="verificandoPago()" class="min-h-11 rounded-lg border px-4 py-2">{{ verificandoPago() ? 'Verificando…' : 'Consultar pago' }}</button>
         </div>
       }
       @if (mensaje()) { <p class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#86efac] bg-[#dcfce7] text-[#14532d]" role="status">{{ mensaje() }}</p> }
       @if (esSecretaria()) {
         <dialog #cronogramaDialog class="box-border w-[min(680px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden border border-[#e4eaf3] rounded-[22px] bg-white text-[#14213d] p-0 shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px] max-[639px]:w-[calc(100vw-16px)] max-[639px]:max-w-[calc(100vw-16px)] max-[639px]:max-h-[calc(100dvh-16px)] max-[639px]:rounded-[18px] !w-[min(600px,calc(100vw-24px))] !max-w-[calc(100vw-24px)] !max-h-[calc(100dvh-24px)] !overflow-hidden !rounded-[18px] !border-[#e1e8f1] !bg-white !p-0 !text-[#172b4d] font-sans !shadow-[0_24px_72px_rgb(15_31_57_/_24%)] backdrop:!bg-[rgb(15_31_57_/_48%)] backdrop:!backdrop-blur-[3px]" aria-labelledby="cronograma-dialog-title">
-          <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col max-h-[calc(100dvh-24px)] overflow-auto bg-white"><header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 bg-white"><div><h3 id="cronograma-dialog-title" class="!text-[#172b4d] !text-[19px] font-[750] !leading-[28.5px] tracking-[-.025em]">Generar cronograma de cobros</h3><p class="text-[#59677a]">Confirma matrícula, conceptos y fecha del primer vencimiento.</p></div><button type="button" class="min-h-9 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-3 !font-[650] text-[#334155] !h-9 !w-auto !min-h-9 !py-0 font-sans" (click)="cerrarCronograma()" aria-label="Cerrar">✕</button></header>
-            <form (ngSubmit)="generarCronograma()" class="flex min-h-0 flex-[1_1_auto] flex-col"><div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4 bg-white text-[#34445d]">
+          <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col max-h-[calc(100dvh-24px)] overflow-auto bg-white"><header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 bg-white"><div><h3 id="cronograma-dialog-title" class="!text-[#172b4d] !text-[19px] font-[750] !leading-[28.5px] tracking-[-.025em]">{{ modoGeneracion === 'MATRICULA' ? 'Generar cuota de matrícula' : 'Generar cronograma de cobros' }}</h3><p class="text-[#59677a]">{{ modoGeneracion === 'MATRICULA' ? 'Genera solo la cuota de matrícula; no crea cuotas de pensión.' : 'Confirma matrícula, conceptos y fecha del primer vencimiento.' }}</p></div><button type="button" class="min-h-9 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-3 !font-[650] text-[#334155] !h-9 !w-auto !min-h-9 !py-0 font-sans" (click)="cerrarCronograma()" aria-label="Cerrar">✕</button></header>
+            <form (ngSubmit)="guardarGeneracion()" class="flex min-h-0 flex-[1_1_auto] flex-col"><div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4 bg-white text-[#34445d]">
               @if (error()) { <p class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#fca5a5] bg-[#fee2e2] text-[#7f1d1d]" role="alert">{{ error() }}</p> }
               <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full text-[#34445d]">Matrícula ID *<input type="number" [(ngModel)]="matriculaId" aria-label="Matrícula ID *" name="matricula" min="1" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-sm min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
+              @if (modoGeneracion === 'ANUAL') {
               <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full text-[#34445d]">Concepto matrícula *<select [(ngModel)]="conceptoMatriculaId" name="conceptoMatricula" [disabled]="!conceptosMatricula().length" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-sm min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]">@if (!conceptosMatricula().length) { <option [ngValue]="0">Sin conceptos disponibles</option> } @for (c of conceptosMatricula(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }</select></label>
               <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full text-[#34445d]">Concepto pensión *<select [(ngModel)]="conceptoPensionId" name="conceptoPension" [disabled]="!conceptosPension().length" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-sm min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]">@if (!conceptosPension().length) { <option [ngValue]="0">Sin conceptos disponibles</option> } @for (c of conceptosPension(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }</select></label>
-              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full text-[#34445d]">Primer vencimiento *<input type="date" [(ngModel)]="primerVencimiento" name="primerVencimiento" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-sm min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
-            </div><footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto] border-t border-[#e5eaf2] bg-white max-[600px]:!flex-col-reverse"><button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarCronograma()">Cancelar</button><button type="submit" [disabled]="guardando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ guardando() ? 'Generando…' : 'Generar cronograma' }}</button></footer></form>
+              }
+              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full text-[#34445d]">Fecha de vencimiento *<input type="date" [(ngModel)]="primerVencimiento" name="primerVencimiento" [min]="fechaMinimaVencimiento" required class="!min-h-11 !rounded-[10px] !border-[#cbd5e1] !px-[11px] !py-[9px] !text-[#172b4d] !font-sans max-[600px]:!text-sm min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
+            </div><footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto] border-t border-[#e5eaf2] bg-white max-[600px]:!flex-col-reverse"><button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarCronograma()">Cancelar</button><button type="submit" [disabled]="guardando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ guardando() ? 'Generando…' : (modoGeneracion === 'MATRICULA' ? 'Crear cuota de matrícula' : 'Generar cronograma') }}</button></footer></form>
           </div>
         </dialog>
         <dialog #cobroDialog class="box-border w-[min(680px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden border border-[#e4eaf3] rounded-[22px] bg-white text-[#14213d] p-0 shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px] max-[639px]:w-[calc(100vw-16px)] max-[639px]:max-w-[calc(100vw-16px)] max-[639px]:max-h-[calc(100dvh-16px)] max-[639px]:rounded-[18px] !w-[min(600px,calc(100vw-24px))] !max-w-[calc(100vw-24px)] !max-h-[calc(100dvh-24px)] !overflow-hidden !rounded-[18px] !border-[#e1e8f1] !bg-white !p-0 !text-[#172b4d] font-sans !shadow-[0_24px_72px_rgb(15_31_57_/_24%)] backdrop:!bg-[rgb(15_31_57_/_48%)] backdrop:!backdrop-blur-[3px]" aria-labelledby="cobro-dialog-title">
@@ -262,6 +274,8 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
   readonly checkoutObligacionId = signal<number | null>(null);
   readonly verificandoPago = signal(false);
   private seguimientoPago: ReturnType<typeof setInterval> | null = null;
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   matriculaId = 0;
   readonly error = signal<string | null>(null);
@@ -271,6 +285,8 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
   conceptoMatriculaId = 0;
   conceptoPensionId = 0;
   primerVencimiento = '';
+  modoGeneracion: 'ANUAL' | 'MATRICULA' = 'ANUAL';
+  readonly fechaMinimaVencimiento = fechaActualEnPeru();
   filtroEstado = 'TODOS';
   cargando = signal(false);
 
@@ -294,6 +310,7 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.cargarObligaciones();
+    this.restaurarConfirmacionMercadoPago();
     if (!this.esAdministrativo()) return;
     this.tesoreriaService.listarConceptos().subscribe({ next: conceptos => {
       this.conceptosMatricula.set(conceptos.filter(c => c.tipoConcepto === 'MATRICULA'));
@@ -351,7 +368,10 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
     const retorno = `${window.location.origin}/admin/tesoreria`;
     this.tesoreriaService.crearPreferenciaMercadoPago({
       obligacionPagoId: item.id,
-      ...(retornoPublico ? { backUrlSuccess: `${retorno}?resultado=aprobado`, backUrlFailure: `${retorno}?resultado=fallido` } : {})
+      ...(retornoPublico ? {
+        backUrlSuccess: `${retorno}?resultado=aprobado&obligacionId=${item.id}`,
+        backUrlFailure: `${retorno}?resultado=fallido&obligacionId=${item.id}`
+      } : {})
     }).subscribe({
       next: preferencia => {
         this.pagandoId.set(null);
@@ -382,6 +402,7 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
     const id = this.checkoutObligacionId();
     const enlace = this.checkoutUrl();
     if (!id || this.verificandoPago()) return;
+    this.error.set(null);
     this.verificandoPago.set(true);
     this.tesoreriaService.confirmarPago(id).subscribe({
       next: pago => {
@@ -391,12 +412,17 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
         this.ngOnDestroy();
         this.checkoutUrl.set(null);
         this.checkoutObligacionId.set(null);
+        this.limpiarRetornoMercadoPago();
         this.mensaje.set('Pago confirmado y boleta registrada.');
         this.cargarObligaciones();
       },
       error: err => {
         this.verificandoPago.set(false);
         if (this.checkoutUrl() !== enlace) return;
+        if (err?.status === 0 || err?.status >= 500) {
+          this.error.set(err?.error?.message ?? 'No se pudo verificar temporalmente. Seguiremos consultando el pago.');
+          return;
+        }
         this.ngOnDestroy();
         this.error.set(err?.error?.message ?? 'No se pudo verificar el pago. Puedes volver a consultar.');
       }
@@ -406,6 +432,24 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.seguimientoPago) clearInterval(this.seguimientoPago);
     this.seguimientoPago = null;
+  }
+
+  private restaurarConfirmacionMercadoPago(): void {
+    const resultado = this.route.snapshot.queryParamMap.get('resultado');
+    const obligacionId = Number(this.route.snapshot.queryParamMap.get('obligacionId'));
+    if (!['aprobado', 'fallido'].includes(resultado ?? '') || !Number.isSafeInteger(obligacionId) || obligacionId <= 0) return;
+    this.checkoutObligacionId.set(obligacionId);
+    this.seguimientoPago = setInterval(() => this.confirmarPago(), 10000);
+    this.confirmarPago();
+  }
+
+  private limpiarRetornoMercadoPago(): void {
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { resultado: null, obligacionId: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
   }
 
   cobrar(item: ObligacionCobro): void {
@@ -453,6 +497,16 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
 
   abrirModalEmitir(): void {
     if (!this.esSecretaria()) return;
+    this.modoGeneracion = 'ANUAL';
+    this.error.set(null);
+    this.mensaje.set(null);
+    this.primerVencimiento = '';
+    this.cronogramaDialog?.nativeElement.showModal();
+  }
+
+  abrirModalCuotaMatricula(): void {
+    if (!this.esSecretaria()) return;
+    this.modoGeneracion = 'MATRICULA';
     this.error.set(null);
     this.mensaje.set(null);
     this.primerVencimiento = '';
@@ -461,6 +515,31 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
 
   cerrarCronograma(): void { this.cronogramaDialog?.nativeElement.close(); }
   cerrarCobro(): void { this.cobroDialog?.nativeElement.close(); this.cobroSeleccionado.set(null); }
+
+  guardarGeneracion(): void {
+    if (this.modoGeneracion === 'MATRICULA') {
+      this.generarObligacionMatricula();
+      return;
+    }
+    this.generarCronograma();
+  }
+
+  generarObligacionMatricula(): void {
+    if (!this.esSecretaria()) return;
+    if (!this.matriculaId || !this.primerVencimiento) { this.error.set('Complete matrícula y fecha de vencimiento.'); return; }
+    if (this.primerVencimiento < this.fechaMinimaVencimiento) { this.error.set('La fecha de vencimiento no puede ser anterior a hoy.'); return; }
+    if (this.guardando()) return;
+    this.guardando.set(true); this.error.set(null);
+    this.tesoreriaService.generarObligacionMatricula({ matriculaId: this.matriculaId, fechaVencimiento: this.primerVencimiento }).subscribe({
+      next: obligacion => {
+        this.guardando.set(false);
+        this.cerrarCronograma();
+        this.mensaje.set(`Cuota de matrícula #${obligacion.id} generada por S/ ${Number(obligacion.montoBase).toFixed(2)}.`);
+        this.cargarObligaciones();
+      },
+      error: err => { this.guardando.set(false); this.error.set(err?.error?.message ?? 'No se pudo generar la cuota de matrícula.'); }
+    });
+  }
 
   generarCronograma(): void {
     if (!this.esSecretaria()) return;

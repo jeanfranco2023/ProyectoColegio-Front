@@ -11,8 +11,12 @@ import {
   MatriculaResponseDto,
   EstudianteResponseDto,
   RegistrarEstudianteRequestDto,
+  EstadoTerminalMatricula,
+  EstadoPagoMatricula,
   TipoDocumento,
-  Genero
+  Genero,
+  ApoderadoResponseDto,
+  ParentescoApoderado
 } from '../../core/models/matricula.model';
 import { AcademicoService } from '../../core/services/academico.service';
 import { AnioLectivoResponseDto, SeccionResponseDto } from '../../core/models/academico.model';
@@ -24,6 +28,7 @@ export interface EstudianteMatriculadoItem {
   codigoMatricula: string;
   estudianteId: number;
   estado: string;
+  estadoPagoMatricula: EstadoPagoMatricula;
   fechaMatricula: string;
   observaciones?: string;
 }
@@ -203,15 +208,14 @@ export interface EstudianteMatriculadoItem {
           <!-- Students Table -->
           <div class="rounded-2xl !bg-white border !border-[#e1e8f1] overflow-hidden shadow-sm">
             <div class="overflow-x-auto" data-enrollments-table-scroll="">
-              <table id="tabla-estudiantes" class="w-full min-w-[1080px] text-left text-xs !text-[11px] [&>thead>tr>th:last-child]:static [&>tbody>tr>td:last-child]:static [&>thead>tr>th:last-child]:shadow-none [&>tbody>tr>td:last-child]:shadow-none [&>thead>tr>th:last-child]:px-3 [&>tbody>tr>td:last-child]:px-3 [&_thead]:!bg-[#f7f9fc] [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-[#f8faff]" data-mobile-table-cards="">
+              <table id="tabla-estudiantes" class="w-full min-w-[1000px] text-left text-xs !text-[11px] [&>thead>tr>th:last-child]:static [&>tbody>tr>td:last-child]:static [&>thead>tr>th:last-child]:shadow-none [&>tbody>tr>td:last-child]:shadow-none [&>thead>tr>th:last-child]:px-3 [&>tbody>tr>td:last-child]:px-3 [&_thead]:!bg-[#f7f9fc] [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-[#f8faff]" data-mobile-table-cards="">
                 <thead class="bg-[#f5f7fb] border-b !border-[#e1e8f1] !text-[#59677a] uppercase tracking-wider font-semibold">
                   <tr>
-                    <th class="px-5 py-3.5">Código interno</th>
+                    <th class="px-5 py-3.5">Código de estudiante</th>
                     <th class="px-5 py-3.5">Documento</th>
                     <th class="px-5 py-3.5">Apellidos y Nombres</th>
                     <th class="px-5 py-3.5">F. Nacimiento</th>
                     <th class="px-5 py-3.5">Género</th>
-                    <th class="px-5 py-3.5">SIAGIE oficial</th>
                     <th class="px-5 py-3.5">Grupo Sang.</th>
                     <th class="px-5 py-3.5">Estado BD</th>
                     <th class="px-5 py-3.5 text-right">Acciones</th>
@@ -220,7 +224,7 @@ export interface EstudianteMatriculadoItem {
                 <tbody class="divide-y divide-[#edf0f5] !text-[#34445d]">
                   @if (cargandoEstudiantes()) {
                     <tr>
-                      <td colspan="9" class="text-center py-12 !text-[#59677a]">
+                      <td colspan="8" class="text-center py-12 !text-[#59677a]">
                         <span class="inline-block w-6 h-6 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-2"></span>
                         <p class="font-medium !text-[11px]">Consultando estudiantes registrados en la base de datos...</p>
                       </td>
@@ -228,9 +232,8 @@ export interface EstudianteMatriculadoItem {
                   } @else {
                     @for (est of estudiantesPaginados(); track est.id) {
                       <tr class="!bg-[#f1f4f9] hover:bg-[#f1f4f9] transition group">
-                        <td class="px-5 py-3.5 font-mono font-semibold" data-label="Código interno">
-                          <span class="text-[#172b4d]">{{ est.codigoInterno || codigoInterno(est.id) }}</span>
-                          <span class="ml-1 text-[10px] font-normal text-[#718096]">ID #{{ est.id }}</span>
+                        <td class="px-5 py-3.5 font-mono font-semibold" data-label="Código de estudiante">
+                          <span class="text-[#172b4d]">{{ codigoEstudianteVisible(est) }}</span>
                         </td>
                         <td class="px-5 py-3.5 font-mono" data-label="Documento">
                           <span class="px-2 py-0.5 rounded !text-[11px] font-bold bg-[#f1f4f9] !text-[#34445d] border !border-[#e1e8f1] mr-1.5">
@@ -262,7 +265,6 @@ export interface EstudianteMatriculadoItem {
                             <span class="!text-[#59677a]">-</span>
                           }
                         </td>
-                        <td class="px-5 py-3.5 font-mono !text-[#59677a]" data-label="SIAGIE oficial">{{ est.codigoEstudianteSiagie || 'Pendiente de asignación' }}</td>
                         <td class="px-5 py-3.5 font-mono !text-[#34445d]" data-label="Grupo Sang.">{{ est.grupoSanguineo || '-' }}</td>
                         <td class="px-5 py-3.5" data-label="Estado BD">
                           <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full !text-[11px] font-bold !bg-[#edf9f3] !text-[#126943] border !border-[#b8dfcc]">
@@ -271,23 +273,38 @@ export interface EstudianteMatriculadoItem {
                           </span>
                         </td>
                         <td class="px-5 py-3.5 text-right" data-label="Acciones">
-                          @if (cargandoMatriculasAnio() || !matriculasAnioVerificadas()) {
-                            <button type="button" disabled class="inline-flex min-h-10 items-center justify-center rounded-[10px] border border-[#e1e8f1] bg-[#f1f4f9] px-4 text-sm font-semibold text-[#64748b]">
-                              {{ cargandoMatriculasAnio() ? 'Verificando...' : 'No disponible' }}
-                            </button>
-                          } @else if (estaMatriculadoEnAnio(est.id)) {
-                            <span class="inline-flex min-h-10 items-center justify-center rounded-[10px] border border-[#b8dfcc] bg-[#edf9f3] px-3 text-xs font-semibold text-[#126943]">
-                              Matrícula registrada
-                            </span>
-                          } @else {
-                          <button
-                            type="button"
-                            (click)="prepararMatriculaParaEstudiante(est)"
-                            class="inline-flex min-h-10 w-auto min-w-[104px] items-center justify-center gap-2 px-4 py-2 border border-[#c3d6f5] rounded-[10px] bg-[#eff5ff] text-[#184fae] font-semibold leading-tight text-center no-underline cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:border-[#8fb0e4] hover:bg-[#dce9ff] box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-[14px] !leading-[1.25]"
-                          >
-                            Matricular
-                          </button>
-                          }
+                          <div class="flex flex-wrap justify-end gap-2">
+                            @if (cargandoMatriculasAnio() || !matriculasAnioVerificadas()) {
+                              <button type="button" disabled class="inline-flex min-h-10 items-center justify-center rounded-[10px] border border-[#e1e8f1] bg-[#f1f4f9] px-4 text-sm font-semibold text-[#64748b]">
+                                {{ cargandoMatriculasAnio() ? 'Verificando...' : 'No disponible' }}
+                              </button>
+                            } @else if (estaMatriculadoEnAnio(est.id)) {
+                              <span class="inline-flex min-h-10 items-center justify-center rounded-[10px] border border-[#b8dfcc] bg-[#edf9f3] px-3 text-xs font-semibold text-[#126943]">
+                                Matrícula registrada
+                              </span>
+                            } @else {
+                              <button
+                                type="button"
+                                (click)="prepararMatriculaParaEstudiante(est)"
+                                class="inline-flex min-h-10 w-auto min-w-[104px] items-center justify-center gap-2 px-4 py-2 border border-[#c3d6f5] rounded-[10px] bg-[#eff5ff] text-[#184fae] font-semibold leading-tight text-center no-underline cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:border-[#8fb0e4] hover:bg-[#dce9ff] box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-[14px] !leading-[1.25]"
+                              >
+                                Matricular
+                              </button>
+                            }
+                            @if (auth.hasRole('SECRETARIA')) {
+                              <button type="button" (click)="abrirDialogoVinculoApoderado(est)" class="inline-flex min-h-10 items-center justify-center rounded-[10px] border border-[#e1e8f1] bg-white px-3 text-xs font-semibold text-[#34445d] hover:bg-[#f7f9fc]">
+                                Vincular apoderado
+                              </button>
+                            }
+                            @if (auth.hasRole('SECRETARIA') || auth.hasRole('DIRECCION')) {
+                              <button type="button" (click)="abrirModalCorregirDniEstudiante(est)" class="inline-flex min-h-10 items-center justify-center rounded-[10px] border border-[#d9e1ec] bg-white px-3 text-xs font-semibold text-[#184fae] hover:bg-[#eff5ff]" title="Corregir DNI">
+                                Corregir DNI
+                              </button>
+                              <button type="button" (click)="abrirModalEstadoEstudiante(est)" class="inline-flex min-h-10 items-center justify-center rounded-[10px] border border-[#d9e1ec] bg-white px-3 text-xs font-semibold text-[#64748b] hover:bg-[#f8fafc]" title="Cambiar estado (borrado lógico)">
+                                Estado
+                              </button>
+                            }
+                          </div>
                         </td>
                       </tr>
                     } @empty {
@@ -404,6 +421,7 @@ export interface EstudianteMatriculadoItem {
                     <th class="px-5 py-3.5">Estudiante</th>
                     <th class="px-5 py-3.5">Fecha Registro</th>
                     <th class="px-5 py-3.5">Estado en BD</th>
+                    <th class="px-5 py-3.5">Pago de matrícula</th>
                     <th class="px-5 py-3.5">Observaciones</th>
                     <th class="px-5 py-3.5 text-right">Acción</th>
                   </tr>
@@ -411,7 +429,7 @@ export interface EstudianteMatriculadoItem {
                 <tbody class="divide-y divide-[#edf0f5] !text-[#34445d]">
                   @if (cargando()) {
                     <tr>
-                      <td colspan="7" class="text-center py-10 !text-[#59677a]">
+                      <td colspan="8" class="text-center py-10 !text-[#59677a]">
                         <span class="inline-block w-5 h-5 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-2"></span>
                         <p>Consultando matrículas en la base de datos...</p>
                       </td>
@@ -431,9 +449,20 @@ export interface EstudianteMatriculadoItem {
                             {{ est.estado }}
                           </span>
                         </td>
+                        <td class="px-5 py-3.5" data-label="Pago de matrícula">
+                          <span class="px-2 py-1 rounded-full !text-[11px] font-bold border"
+                            [class.!bg-emerald-50]="est.estadoPagoMatricula === 'PAGADO'"
+                            [class.!text-emerald-700]="est.estadoPagoMatricula === 'PAGADO'"
+                            [class.!border-emerald-200]="est.estadoPagoMatricula === 'PAGADO'"
+                            [class.!bg-amber-50]="est.estadoPagoMatricula !== 'PAGADO'"
+                            [class.!text-amber-800]="est.estadoPagoMatricula !== 'PAGADO'"
+                            [class.!border-amber-200]="est.estadoPagoMatricula !== 'PAGADO'">
+                            {{ etiquetaEstadoPago(est.estadoPagoMatricula) }}
+                          </span>
+                        </td>
                         <td class="px-5 py-3.5 !text-[#59677a] truncate max-w-xs" data-label="Observaciones">{{ est.observaciones || '-' }}</td>
                         <td class="px-5 py-3.5 text-right" data-label="Acción">
-                          @if (est.estado === 'SOLICITADA' || est.estado === 'RESERVADA_TEMPORAL') {
+                          @if ((est.estado === 'SOLICITADA' || est.estado === 'RESERVADA_TEMPORAL') && est.estadoPagoMatricula === 'PAGADO') {
                             <button
                               type="button"
                               (click)="confirmarMatricula(est.id)"
@@ -442,6 +471,17 @@ export interface EstudianteMatriculadoItem {
                             >
                               {{ confirmandoMatricula() === est.id ? 'Validando pago…' : 'Confirmar matrícula' }}
                             </button>
+                          } @else if (est.estado === 'SOLICITADA' || est.estado === 'RESERVADA_TEMPORAL') {
+                            <span class="mr-2 inline-block max-w-56 text-left text-[11px] leading-4 !text-[#59677a]" [attr.title]="siguientePasoPago(est.estadoPagoMatricula)">
+                              {{ siguientePasoPago(est.estadoPagoMatricula) }}
+                            </span>
+                          }
+                          @if (auth.hasRole('SECRETARIA') && esEstadoGestionable(est.estado)) {
+                            <button
+                              type="button"
+                              (click)="abrirDialogCambioEstado(est)"
+                              class="mr-2 rounded-lg border border-rose-200 bg-white px-3 py-2 font-semibold text-rose-700 transition hover:bg-rose-50 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                            >{{ textoAccionEstado(est.estado) }}</button>
                           }
                           <button
                             type="button"
@@ -454,7 +494,7 @@ export interface EstudianteMatriculadoItem {
                       </tr>
                     } @empty {
                       <tr [hidden]="!!error()">
-                        <td colspan="7" class="text-center pt-3 pb-12 !text-[#59677a] space-y-2">
+                        <td colspan="8" class="text-center pt-3 pb-12 !text-[#59677a] space-y-2">
                           <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="#102447" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block h-[42px] w-[42px] mx-auto"><path d="M6 11.5c6-2 12-1 18 2.5v25c-6-3.5-12-4.5-18-2.5z"/><path d="M42 11.5c-6-2-12-1-18 2.5v25c6-3.5 12-4.5 18-2.5z"/><path d="M24 14v25" stroke="#C49A58"/><path d="M11 17c3-.5 6 .1 9 1.5M11 23c3-.5 6 .1 9 1.5M28 18.5c3-1.4 6-2 9-1.5M28 24.5c3-1.4 6-2 9-1.5" stroke="#C49A58"/></svg>
                           <p class="font-medium !text-[#59677a]">No se encontraron matrículas en esta sección.</p>
                           <p class="text-[11px] !text-[#59677a]">Los registros generados se sincronizan directamente con PostgreSQL.</p>
@@ -687,6 +727,44 @@ export interface EstudianteMatriculadoItem {
           </div>
       </ng-template>
 
+      <ng-template #vinculoApoderadoDialog>
+        <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col font-sans w-full max-w-lg p-1">
+          <div class="flex items-center justify-between gap-4 border-b border-[#e1e8f1] px-6 py-5">
+            <div>
+              <h3 class="m-0 text-lg font-bold text-[#14213d]">Vincular apoderado</h3>
+              <p class="m-0 mt-1 text-xs text-[#64748b]">{{ estudianteParaVinculo()?.apellidoPaterno }} {{ estudianteParaVinculo()?.apellidoMaterno }}, {{ estudianteParaVinculo()?.nombres }}</p>
+            </div>
+            <button type="button" (click)="cerrarDialogoVinculoApoderado()" aria-label="Cerrar diálogo" class="grid h-11 w-11 min-h-11 min-w-11 place-items-center rounded-xl border border-[#e1e8f1] bg-[#f7f9fc] text-[#64748b]">✕</button>
+          </div>
+          <form (ngSubmit)="guardarVinculoApoderado()" class="space-y-4 px-6 py-5">
+            @if (errorVinculoApoderado()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-2 text-sm text-[#b91c1c]" role="alert">{{ errorVinculoApoderado() }}</p> }
+            @if (cargandoApoderados()) { <p class="m-0 text-sm text-[#64748b]" role="status">Cargando apoderados...</p> }
+            <label class="grid gap-2 text-xs font-semibold text-[#475569]">Apoderado
+              <select [(ngModel)]="apoderadoIdSeleccionado" name="apoderadoId" required [disabled]="cargandoApoderados() || !apoderadosDisponibles().length" class="min-h-11 rounded-xl border border-[#d9e1ec] bg-white px-3 text-sm font-normal text-[#172b4d]">
+                <option [ngValue]="0" disabled>Seleccione un apoderado</option>
+                @for (apoderado of apoderadosDisponibles(); track apoderado.id) {
+                  <option [ngValue]="apoderado.id">{{ apoderado.apellidoPaterno }} {{ apoderado.apellidoMaterno }}, {{ apoderado.nombres }} · DNI {{ apoderado.numeroDocumento }}</option>
+                }
+              </select>
+            </label>
+            <label class="grid gap-2 text-xs font-semibold text-[#475569]">Parentesco
+              <select [(ngModel)]="parentescoApoderado" name="parentesco" required class="min-h-11 rounded-xl border border-[#d9e1ec] bg-white px-3 text-sm font-normal text-[#172b4d]">
+                <option value="PADRE">Padre</option><option value="MADRE">Madre</option><option value="TUTOR_LEGAL">Tutor legal</option><option value="ABUELO_A">Abuelo/a</option><option value="OTRO">Otro</option>
+              </select>
+            </label>
+            <div class="space-y-3 text-sm text-[#34445d]">
+              <label class="flex items-center gap-2"><input [(ngModel)]="esResponsableEconomico" name="responsableEconomico" type="checkbox" /> Responsable económico</label>
+              <label class="flex items-center gap-2"><input [(ngModel)]="tieneCustodia" name="custodia" type="checkbox" /> Tiene custodia</label>
+              <label class="flex items-center gap-2"><input [(ngModel)]="permiteRecojo" name="permiteRecojo" type="checkbox" /> Autorizado para recoger</label>
+            </div>
+            <div class="flex flex-wrap justify-end gap-2 border-t border-[#e5eaf2] pt-4">
+              <button type="button" (click)="cerrarDialogoVinculoApoderado()" class="min-h-11 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 text-sm font-semibold text-[#334155]">Cancelar</button>
+              <button type="submit" [disabled]="guardandoVinculoApoderado() || cargandoApoderados() || !apoderadosDisponibles().length" class="min-h-11 rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white disabled:opacity-50">{{ guardandoVinculoApoderado() ? 'Guardando...' : 'Guardar vínculo' }}</button>
+            </div>
+          </form>
+        </div>
+      </ng-template>
+
       <!-- ============================================================== -->
       <!-- MODAL: ASIGNAR MATRICULA A SECCION                             -->
       <!-- ============================================================== -->
@@ -794,9 +872,8 @@ export interface EstudianteMatriculadoItem {
                   <div><p class="ficha-label">Documento de identidad</p><p class="ficha-value">{{ actual.estudiante.tipoDocumento || 'DNI' }} {{ actual.estudiante.numeroDocumento }}</p></div>
                   <div><p class="ficha-label">Fecha de nacimiento</p><p class="ficha-value">{{ actual.estudiante.fechaNacimiento | uiDatePe }}</p></div>
                   <div><p class="ficha-label">Género</p><p class="ficha-value">{{ actual.estudiante.genero === 'F' ? 'Femenino' : actual.estudiante.genero === 'M' ? 'Masculino' : 'No registrado' }}</p></div>
-                  <div><p class="ficha-label">Código interno</p><p class="ficha-value font-mono">{{ actual.estudiante.codigoInterno || codigoInterno(actual.estudiante.id) }}</p></div>
-                  <div><p class="ficha-label">Código SIAGIE oficial</p><p class="ficha-value">{{ actual.estudiante.codigoEstudianteSiagie || 'Pendiente de asignación' }}</p></div>
-                  <div><p class="ficha-label">Validación de identidad</p><p class="ficha-value">{{ actual.estudiante.validadoReniec ? 'Validada mediante RENIEC' : 'Pendiente o registro manual' }}</p></div>
+                  <div><p class="ficha-label">Código de estudiante</p><p class="ficha-value font-mono">{{ codigoEstudianteVisible(actual.estudiante) }}</p></div>
+                  <div><p class="ficha-label">Estado de identidad</p><p class="ficha-value">{{ estadoIdentidad(actual.estudiante) }}</p></div>
                   <div><p class="ficha-label">Grupo sanguíneo</p><p class="ficha-value">{{ actual.estudiante.grupoSanguineo || 'No registrado' }}</p></div>
                 </div>
               </section>
@@ -808,7 +885,8 @@ export interface EstudianteMatriculadoItem {
                   <div><p class="ficha-label">Grado y sección</p><p class="ficha-value">{{ seccionDeFicha(actual) }}</p></div>
                   <div><p class="ficha-label">Aula</p><p class="ficha-value">{{ aulaDeFicha(actual) }}</p></div>
                   <div><p class="ficha-label">Fecha de registro</p><p class="ficha-value">{{ actual.matricula.fechaMatricula | uiDatePe }}</p></div>
-                  <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Observaciones</p><p class="ficha-value whitespace-pre-wrap">{{ actual.matricula.observaciones || 'Sin observaciones registradas' }}</p></div>
+                  <div><p class="ficha-label">Pago de matrícula</p><p class="ficha-value">{{ estadoPagoFicha(actual) }}</p></div>
+                  <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Observaciones</p><p class="ficha-value whitespace-pre-wrap">{{ observacionesFicha(actual) }}</p></div>
                 </div>
               </section>
 
@@ -816,14 +894,27 @@ export interface EstudianteMatriculadoItem {
                 <h4 class="mb-3 mt-0 border-l-[3px] border-[#c6a15b] pl-3 text-sm font-extrabold text-[#14213d]">Apoderado(s) registrado(s)</h4>
                 @if (actual.apoderados.length) {
                   <div class="space-y-3">
-                    @for (apoderado of actual.apoderados; track apoderado.id) {
+                    @for (vinculo of actual.apoderados; track vinculo.apoderado.id) {
                       <div class="grid grid-cols-2 gap-x-6 gap-y-3 rounded-xl border border-[#e1e8f1] p-4 max-[639px]:grid-cols-1">
-                        <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Apellidos y nombres</p><p class="ficha-value">{{ apoderado.apellidoPaterno }} {{ apoderado.apellidoMaterno }}, {{ apoderado.nombres }}</p></div>
-                        <div><p class="ficha-label">Documento</p><p class="ficha-value">{{ apoderado.tipoDocumento || 'DNI' }} {{ apoderado.numeroDocumento }}</p></div>
-                        <div><p class="ficha-label">Identidad</p><p class="ficha-value">{{ apoderado.validadoReniec ? 'Validada mediante RENIEC' : 'Pendiente o registro manual' }}</p></div>
-                        <div><p class="ficha-label">Celular</p><p class="ficha-value">{{ apoderado.celular || 'No registrado' }}</p></div>
-                        <div><p class="ficha-label">Correo</p><p class="ficha-value break-all">{{ apoderado.email || 'No registrado' }}</p></div>
-                        <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Dirección</p><p class="ficha-value">{{ apoderado.direccion || 'No registrada' }}</p></div>
+                        <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Apellidos y nombres</p><p class="ficha-value">{{ vinculo.apoderado.apellidoPaterno }} {{ vinculo.apoderado.apellidoMaterno }}, {{ vinculo.apoderado.nombres }}</p></div>
+                        <div>
+                          <p class="ficha-label">Documento</p>
+                          <div class="flex items-center gap-2">
+                            <p class="ficha-value">{{ vinculo.apoderado.tipoDocumento || 'DNI' }} {{ vinculo.apoderado.numeroDocumento }}</p>
+                            @if (auth.hasRole('SECRETARIA') || auth.hasRole('DIRECCION')) {
+                              <button type="button" (click)="abrirModalCorregirDniApoderado(vinculo.apoderado)" class="text-[11px] font-bold text-[#184fae] hover:underline cursor-pointer">
+                                Corregir DNI
+                              </button>
+                            }
+                          </div>
+                        </div>
+                        <div><p class="ficha-label">Parentesco</p><p class="ficha-value">{{ parentescoLabel(vinculo.parentesco) }}</p></div>
+                        <div><p class="ficha-label">Celular</p><p class="ficha-value">{{ vinculo.apoderado.celular || 'No registrado' }}</p></div>
+                        <div><p class="ficha-label">Correo</p><p class="ficha-value break-all">{{ vinculo.apoderado.email || 'No registrado' }}</p></div>
+                        <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Dirección</p><p class="ficha-value">{{ vinculo.apoderado.direccion || 'No registrada' }}</p></div>
+                        @if (vinculo.esResponsableEconomico) {
+                          <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Responsabilidad económica</p><p class="ficha-value">Responsable de pago</p></div>
+                        }
                       </div>
                     }
                   </div>
@@ -848,6 +939,194 @@ export interface EstudianteMatriculadoItem {
           </div>
         }
       </ng-template>
+
+      <ng-template #estadoDialog>
+        @if (matriculaSeleccionadaEstado(); as actual) {
+          <div class="w-full max-w-xl bg-white font-sans text-[#172b4d]">
+            <div class="border-b border-[#e1e8f1] px-6 py-4">
+              <p class="m-0 text-xs font-bold uppercase tracking-[.12em] text-[#a27a35]">Gestión de matrícula</p>
+              <h2 mat-dialog-title class="!mb-1 !px-0 !pt-1 !text-xl !font-extrabold !text-[#14213d]">Registrar salida o cancelación</h2>
+              <p class="m-0 text-sm text-[#64748b]">{{ nombreEstudiante(actual.estudianteId) }} · Matrícula #{{ actual.id }}</p>
+            </div>
+            <mat-dialog-content class="!max-h-none !px-6 !py-5">
+              <label for="estado-destino" class="mb-1 block text-xs font-semibold text-[#475569]">Estado final</label>
+              <select id="estado-destino" name="estadoDestino" [(ngModel)]="estadoDestino" class="mb-4 w-full rounded-xl border border-[#d9e1ec] bg-[#f7f9fc] px-3 py-3 text-sm text-[#14213d] focus:border-[#5b83d6] focus:outline-none">
+                @for (opcion of opcionesCambioEstado(); track opcion.estado) {
+                  <option [ngValue]="opcion.estado">{{ opcion.etiqueta }}</option>
+                }
+              </select>
+              <label for="motivo-estado" class="mb-1 block text-xs font-semibold text-[#475569]">Motivo y sustento <span class="text-rose-600">*</span></label>
+              <textarea id="motivo-estado" name="motivoEstado" [(ngModel)]="motivoCambioEstado" maxlength="500" rows="4" placeholder="Registra el motivo comunicado por la familia y el documento o sustento recibido." class="w-full resize-y rounded-xl border border-[#d9e1ec] bg-[#f7f9fc] px-3 py-3 text-sm text-[#14213d] placeholder:text-[#8b98aa] focus:border-[#5b83d6] focus:outline-none"></textarea>
+              <div class="mt-2 flex items-start gap-2 rounded-lg bg-[#f1f5f9] p-3 text-xs text-[#59677a]">
+                <span aria-hidden="true">ⓘ</span>
+                <p class="m-0">El estado, el motivo y el usuario que registra la acción quedarán en la auditoría. La vacante se actualizará automáticamente.</p>
+              </div>
+            </mat-dialog-content>
+            <mat-dialog-actions align="end" class="!border-t !border-[#e1e8f1] !px-6 !py-4">
+              <button mat-button type="button" (click)="cerrarDialogCambioEstado()" [disabled]="guardandoCambioEstado()">Cancelar</button>
+              <button mat-flat-button color="primary" type="button" (click)="guardarCambioEstado()" [disabled]="guardandoCambioEstado() || !motivoCambioEstado.trim()">
+                {{ guardandoCambioEstado() ? 'Guardando…' : 'Guardar cambio' }}
+              </button>
+            </mat-dialog-actions>
+          </div>
+        }
+      </ng-template>
+
+      <!-- MODAL: CORREGIR DNI ESTUDIANTE -->
+      <ng-template #corregirDniEstudianteDialog>
+        <div class="w-full max-w-lg bg-white rounded-2xl p-6 font-sans text-[#172b4d] scrollbar-hidden">
+          <h2 mat-dialog-title class="!m-0 !p-0 !text-xl !font-bold !text-[#14213d]">Corregir DNI de Estudiante</h2>
+          <mat-dialog-content class="!px-0 !py-4 scrollbar-hidden space-y-3">
+            @if (estudianteSeleccionadoDni(); as est) {
+              <p class="text-xs text-slate-500 m-0">Estudiante: <strong class="text-[#14213d]">{{ est.apellidoPaterno }} {{ est.apellidoMaterno }}, {{ est.nombres }}</strong> (DNI Actual: {{ est.numeroDocumento }})</p>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nuevo DNI (8 dígitos) *</label>
+                <div class="flex gap-2">
+                  <input
+                    type="text"
+                    [(ngModel)]="nuevoDniEstudiante"
+                    maxlength="8"
+                    minlength="8"
+                    inputmode="numeric"
+                    placeholder="Ej. 71234567"
+                    class="flex-1 rounded-xl border border-[#d9e1ec] px-3 py-2 text-sm text-[#14213d] focus:border-[#5b83d6] focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    (click)="consultarReniecEstudiante()"
+                    [disabled]="consultandoReniecEstudiante() || nuevoDniEstudiante.length !== 8"
+                    class="px-3 py-2 rounded-xl bg-blue-50 border border-blue-200 text-[#184fae] text-xs font-semibold hover:bg-blue-100 disabled:opacity-50 cursor-pointer inline-flex items-center gap-1.5"
+                  >
+                    @if (consultandoReniecEstudiante()) {
+                      <span class="inline-block w-3.5 h-3.5 border-2 border-[#184fae] border-t-transparent rounded-full animate-spin"></span>
+                    } @else {
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    }
+                    RENIEC
+                  </button>
+                </div>
+                @if (reniecEstudianteMensaje()) {
+                  <p class="text-[11px] mt-1 text-emerald-800 bg-emerald-50 px-2 py-1 rounded font-medium">{{ reniecEstudianteMensaje() }}</p>
+                }
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Motivo / Sustento de corrección *</label>
+                <textarea
+                  [(ngModel)]="motivoDniEstudiante"
+                  rows="3"
+                  maxlength="500"
+                  placeholder="Indica el motivo de corrección y el documento formal recibido."
+                  class="w-full rounded-xl border border-[#d9e1ec] px-3 py-2 text-sm text-[#14213d] focus:border-[#5b83d6] focus:outline-none resize-none"
+                ></textarea>
+              </div>
+            }
+          </mat-dialog-content>
+          <mat-dialog-actions align="end" class="!px-0 !pb-0 !pt-4 border-t border-[#edf0f5]">
+            <button mat-button type="button" mat-dialog-close [disabled]="guardandoDniEstudiante()">Cancelar</button>
+            <button mat-flat-button color="primary" type="button" (click)="confirmarCorregirDniEstudiante()" [disabled]="guardandoDniEstudiante() || nuevoDniEstudiante.length !== 8 || !motivoDniEstudiante.trim()">
+              {{ guardandoDniEstudiante() ? 'Guardando…' : 'Guardar Corrección' }}
+            </button>
+          </mat-dialog-actions>
+        </div>
+      </ng-template>
+
+      <!-- MODAL: ESTADO BORRADO LOGICO ESTUDIANTE -->
+      <ng-template #estadoEstudianteDialog>
+        <div class="w-full max-w-lg bg-white rounded-2xl p-6 font-sans text-[#172b4d] scrollbar-hidden">
+          <h2 mat-dialog-title class="!m-0 !p-0 !text-xl !font-bold !text-[#14213d]">Cambiar Estado de Estudiante</h2>
+          <mat-dialog-content class="!px-0 !py-4 scrollbar-hidden space-y-3">
+            @if (estudianteSeleccionadoEstado(); as est) {
+              <p class="text-xs text-slate-500 m-0">Estudiante: <strong class="text-[#14213d]">{{ est.apellidoPaterno }} {{ est.apellidoMaterno }}, {{ est.nombres }}</strong></p>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nuevo Estado *</label>
+                <select [(ngModel)]="estadoEstudianteDestino" class="w-full rounded-xl border border-[#d9e1ec] bg-[#f8fafc] px-3 py-2.5 text-sm text-[#14213d] focus:border-[#5b83d6] focus:outline-none">
+                  <option value="ACTIVO">ACTIVO · Estudiante regular matriculado</option>
+                  <option value="SUSPENDIDO">SUSPENDIDO · Suspensión temporal</option>
+                  <option value="RETIRADO">RETIRADO · Retiro voluntario o definitivo</option>
+                  <option value="TRASLADADO">TRASLADADO · Traslado a otra institución</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Motivo / Sustento de cambio de estado *</label>
+                <textarea
+                  [(ngModel)]="motivoEstadoEstudiante"
+                  rows="3"
+                  maxlength="500"
+                  placeholder="Describe la justificación, resolución o solicitud del apoderado."
+                  class="w-full rounded-xl border border-[#d9e1ec] px-3 py-2 text-sm text-[#14213d] focus:border-[#5b83d6] focus:outline-none resize-none"
+                ></textarea>
+              </div>
+              <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-600">
+                ⓘ Borrado lógico formal: el estudiante no se elimina físicamente de la base de datos para preservar el historial académico y la trazabilidad institucional.
+              </div>
+            }
+          </mat-dialog-content>
+          <mat-dialog-actions align="end" class="!px-0 !pb-0 !pt-4 border-t border-[#edf0f5]">
+            <button mat-button type="button" mat-dialog-close [disabled]="guardandoEstadoEstudiante()">Cancelar</button>
+            <button mat-flat-button color="primary" type="button" (click)="confirmarEstadoEstudiante()" [disabled]="guardandoEstadoEstudiante() || !motivoEstadoEstudiante.trim()">
+              {{ guardandoEstadoEstudiante() ? 'Guardando…' : 'Actualizar Estado' }}
+            </button>
+          </mat-dialog-actions>
+        </div>
+      </ng-template>
+
+      <!-- MODAL: CORREGIR DNI APODERADO -->
+      <ng-template #corregirDniApoderadoDialog>
+        <div class="w-full max-w-lg bg-white rounded-2xl p-6 font-sans text-[#172b4d] scrollbar-hidden">
+          <h2 mat-dialog-title class="!m-0 !p-0 !text-xl !font-bold !text-[#14213d]">Corregir DNI de Apoderado</h2>
+          <mat-dialog-content class="!px-0 !py-4 scrollbar-hidden space-y-3">
+            @if (apoderadoSeleccionadoDni(); as apo) {
+              <p class="text-xs text-slate-500 m-0">Apoderado: <strong class="text-[#14213d]">{{ apo.apellidoPaterno }} {{ apo.apellidoMaterno }}, {{ apo.nombres }}</strong> (DNI Actual: {{ apo.numeroDocumento }})</p>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nuevo DNI (8 dígitos) *</label>
+                <div class="flex gap-2">
+                  <input
+                    type="text"
+                    [(ngModel)]="nuevoDniApoderado"
+                    maxlength="8"
+                    minlength="8"
+                    inputmode="numeric"
+                    placeholder="Ej. 71234567"
+                    class="flex-1 rounded-xl border border-[#d9e1ec] px-3 py-2 text-sm text-[#14213d] focus:border-[#5b83d6] focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    (click)="consultarReniecApoderado()"
+                    [disabled]="consultandoReniecApoderado() || nuevoDniApoderado.length !== 8"
+                    class="px-3 py-2 rounded-xl bg-blue-50 border border-blue-200 text-[#184fae] text-xs font-semibold hover:bg-blue-100 disabled:opacity-50 cursor-pointer inline-flex items-center gap-1.5"
+                  >
+                    @if (consultandoReniecApoderado()) {
+                      <span class="inline-block w-3.5 h-3.5 border-2 border-[#184fae] border-t-transparent rounded-full animate-spin"></span>
+                    } @else {
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    }
+                    RENIEC
+                  </button>
+                </div>
+                @if (reniecApoderadoMensaje()) {
+                  <p class="text-[11px] mt-1 text-emerald-800 bg-emerald-50 px-2 py-1 rounded font-medium">{{ reniecApoderadoMensaje() }}</p>
+                }
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Motivo / Sustento de corrección *</label>
+                <textarea
+                  [(ngModel)]="motivoDniApoderado"
+                  rows="3"
+                  maxlength="500"
+                  placeholder="Indica el motivo de corrección y el documento formal recibido."
+                  class="w-full rounded-xl border border-[#d9e1ec] px-3 py-2 text-sm text-[#14213d] focus:border-[#5b83d6] focus:outline-none resize-none"
+                ></textarea>
+              </div>
+            }
+          </mat-dialog-content>
+          <mat-dialog-actions align="end" class="!px-0 !pb-0 !pt-4 border-t border-[#edf0f5]">
+            <button mat-button type="button" mat-dialog-close [disabled]="guardandoDniApoderado()">Cancelar</button>
+            <button mat-flat-button color="primary" type="button" (click)="confirmarCorregirDniApoderado()" [disabled]="guardandoDniApoderado() || nuevoDniApoderado.length !== 8 || !motivoDniApoderado.trim()">
+              {{ guardandoDniApoderado() ? 'Guardando…' : 'Guardar Corrección' }}
+            </button>
+          </mat-dialog-actions>
+        </div>
+      </ng-template>
     </div>
   `,
   styles: [`
@@ -862,11 +1141,40 @@ export class MatriculasComponent implements OnInit {
   private readonly academicoService = inject(AcademicoService);
 
   @ViewChild('nuevoAlumnoDialog') private nuevoAlumnoDialog!: TemplateRef<unknown>;
+  @ViewChild('vinculoApoderadoDialog') private vinculoApoderadoDialog!: TemplateRef<unknown>;
   @ViewChild('solicitudDialog') private solicitudDialog!: TemplateRef<unknown>;
   @ViewChild('fichaDialog') private fichaDialog!: TemplateRef<unknown>;
+  @ViewChild('estadoDialog') private estadoDialog!: TemplateRef<unknown>;
+  @ViewChild('corregirDniEstudianteDialog') private corregirDniEstudianteDialog!: TemplateRef<unknown>;
+  @ViewChild('estadoEstudianteDialog') private estadoEstudianteDialog!: TemplateRef<unknown>;
+  @ViewChild('corregirDniApoderadoDialog') private corregirDniApoderadoDialog!: TemplateRef<unknown>;
   private alumnoDialogRef?: MatDialogRef<unknown>;
+  private vinculoApoderadoDialogRef?: MatDialogRef<unknown>;
   private solicitudDialogRef?: MatDialogRef<unknown>;
   private fichaDialogRef?: MatDialogRef<unknown>;
+  private estadoDialogRef?: MatDialogRef<unknown>;
+  private corregirDniEstudianteDialogRef?: MatDialogRef<unknown>;
+  private estadoEstudianteDialogRef?: MatDialogRef<unknown>;
+  private corregirDniApoderadoDialogRef?: MatDialogRef<unknown>;
+
+  readonly estudianteSeleccionadoDni = signal<EstudianteResponseDto | null>(null);
+  nuevoDniEstudiante = '';
+  motivoDniEstudiante = '';
+  readonly consultandoReniecEstudiante = signal(false);
+  readonly reniecEstudianteMensaje = signal('');
+  readonly guardandoDniEstudiante = signal(false);
+
+  readonly estudianteSeleccionadoEstado = signal<EstudianteResponseDto | null>(null);
+  estadoEstudianteDestino = 'ACTIVO';
+  motivoEstadoEstudiante = '';
+  readonly guardandoEstadoEstudiante = signal(false);
+
+  readonly apoderadoSeleccionadoDni = signal<ApoderadoResponseDto | null>(null);
+  nuevoDniApoderado = '';
+  motivoDniApoderado = '';
+  readonly consultandoReniecApoderado = signal(false);
+  readonly reniecApoderadoMensaje = signal('');
+  readonly guardandoDniApoderado = signal(false);
 
   readonly anios = signal<AnioLectivoResponseDto[]>([]);
   readonly secciones = signal<SeccionResponseDto[]>([]);
@@ -884,7 +1192,21 @@ export class MatriculasComponent implements OnInit {
   readonly error = signal<string | null>(null);
   readonly mensajeExito = signal<string | null>(null);
   readonly confirmandoMatricula = signal<number | null>(null);
+  readonly matriculaSeleccionadaEstado = signal<EstudianteMatriculadoItem | null>(null);
+  readonly guardandoCambioEstado = signal(false);
   readonly ficha = signal<FichaMatriculaResponseDto | null>(null);
+  readonly estudianteParaVinculo = signal<EstudianteResponseDto | null>(null);
+  readonly apoderadosDisponibles = signal<ApoderadoResponseDto[]>([]);
+  readonly cargandoApoderados = signal(false);
+  readonly guardandoVinculoApoderado = signal(false);
+  readonly errorVinculoApoderado = signal<string | null>(null);
+  apoderadoIdSeleccionado = 0;
+  parentescoApoderado: ParentescoApoderado = 'PADRE';
+  esResponsableEconomico = true;
+  tieneCustodia = false;
+  permiteRecojo = true;
+  estadoDestino: EstadoTerminalMatricula = 'TRASLADADO';
+  motivoCambioEstado = '';
 
   readonly listaEstudiantes = signal<EstudianteResponseDto[]>([]);
   readonly estudiantesMatriculadosPorAnio = signal<ReadonlySet<number>>(new Set<number>());
@@ -901,6 +1223,7 @@ export class MatriculasComponent implements OnInit {
   tamanoPaginaPadron = 10;
   paginaMatriculas = 0;
   tamanoPaginaMatriculas = 10;
+  private revisionCargaMatriculas = 0;
   seccionIdSeleccionada = 0;
   filtroSeccionId = 0;
   anioLectivoId = 0;
@@ -1094,13 +1417,15 @@ export class MatriculasComponent implements OnInit {
   }
 
   cargarMatriculas(): void {
+    const revision = ++this.revisionCargaMatriculas;
     this.error.set(null);
     this.paginaMatriculas = 0;
     if (!this.filtroSeccionId) {
       this.cargando.set(true);
       this.matriculaService.listarPorAnio(this.anioLectivoId).subscribe({
-        next: res => this.actualizarMatriculas(res),
+        next: res => { if (revision === this.revisionCargaMatriculas) this.actualizarMatriculas(res); },
         error: () => {
+          if (revision !== this.revisionCargaMatriculas) return;
           this.cargando.set(false);
           this.estudiantes.set([]);
           this.error.set('No se pudieron cargar las matrículas del año lectivo.');
@@ -1109,13 +1434,15 @@ export class MatriculasComponent implements OnInit {
       return;
     }
     if (!this.seccionIdSeleccionada) {
+      this.cargando.set(false);
       this.estudiantes.set([]);
       return;
     }
     this.cargando.set(true);
-    this.matriculaService.listarPorSeccion(this.filtroSeccionId, 0, 50).subscribe({
-      next: res => this.actualizarMatriculas(res),
+    this.matriculaService.listarTodasPorSeccion(this.filtroSeccionId).subscribe({
+      next: res => { if (revision === this.revisionCargaMatriculas) this.actualizarMatriculas(res); },
       error: () => {
+        if (revision !== this.revisionCargaMatriculas) return;
         this.cargando.set(false);
         this.estudiantes.set([]);
         this.error.set('No se pudieron cargar las matrículas de la sección.');
@@ -1130,12 +1457,18 @@ export class MatriculasComponent implements OnInit {
       codigoMatricula: `MAT-${this.anios().find(a => a.id === m.anioLectivoId)?.anio ?? m.anioLectivoId}-${String(m.id).padStart(3, '0')}`,
       estudianteId: m.estudianteId,
       estado: m.estadoMatricula,
+      estadoPagoMatricula: m.estadoPagoMatricula,
       fechaMatricula: m.fechaMatricula ? String(m.fechaMatricula).split('T')[0] : '-',
       observaciones: m.observaciones
     })));
   }
 
   confirmarMatricula(matriculaId: number): void {
+    const matricula = this.estudiantes().find(est => est.id === matriculaId);
+    if (matricula && matricula.estadoPagoMatricula !== 'PAGADO') {
+      this.error.set(this.siguientePasoPago(matricula.estadoPagoMatricula));
+      return;
+    }
     this.confirmandoMatricula.set(matriculaId);
     this.error.set(null);
     this.mensajeExito.set(null);
@@ -1143,11 +1476,96 @@ export class MatriculasComponent implements OnInit {
       next: matricula => {
         this.confirmandoMatricula.set(null);
         this.mensajeExito.set(`Matrícula #${matricula.id} confirmada; el pago fue validado.`);
+        this.cargarMatriculas();
         this.cargarSecciones(true);
       },
       error: err => {
         this.confirmandoMatricula.set(null);
         this.error.set(err?.error?.message ?? 'No se pudo confirmar. Verifica el pago de la cuota de matrícula.');
+      }
+    });
+  }
+
+  etiquetaEstadoPago(estado: EstadoPagoMatricula): string {
+    const etiquetas: Record<EstadoPagoMatricula, string> = {
+      PAGADO: 'Pagado',
+      PARCIAL: 'Pago parcial',
+      PENDIENTE: 'Pendiente',
+      SIN_OBLIGACION: 'Sin obligación'
+    };
+    return etiquetas[estado] ?? 'No disponible';
+  }
+
+  siguientePasoPago(estado: EstadoPagoMatricula): string {
+    const siguientes: Record<EstadoPagoMatricula, string> = {
+      PAGADO: 'Pago validado; disponible para confirmar',
+      PARCIAL: 'Completar el pago en Tesorería',
+      PENDIENTE: 'Pendiente de pago en Tesorería',
+      SIN_OBLIGACION: 'Tesorería debe generar la obligación'
+    };
+    return siguientes[estado] ?? 'Verificar el estado del pago en Tesorería';
+  }
+
+  esEstadoGestionable(estado: string): boolean {
+    return estado === 'MATRICULADO' || estado === 'RESERVADA_TEMPORAL' || estado === 'SOLICITADA';
+  }
+
+  textoAccionEstado(estado: string): string {
+    return estado === 'MATRICULADO' ? 'Registrar traslado o retiro' : 'Cancelar solicitud';
+  }
+
+  opcionesCambioEstado(): { estado: EstadoTerminalMatricula; etiqueta: string }[] {
+    const estado = this.matriculaSeleccionadaEstado()?.estado;
+    if (estado === 'MATRICULADO') {
+      return [
+        { estado: 'TRASLADADO', etiqueta: 'Trasladado a otra institución' },
+        { estado: 'RETIRADO', etiqueta: 'Retiro del estudiante' }
+      ];
+    }
+    return estado === 'SOLICITADA' || estado === 'RESERVADA_TEMPORAL'
+      ? [{ estado: 'CANCELADA', etiqueta: 'Solicitud cancelada' }]
+      : [];
+  }
+
+  abrirDialogCambioEstado(matricula: EstudianteMatriculadoItem): void {
+    if (!this.auth.hasRole('SECRETARIA')) return;
+    this.matriculaSeleccionadaEstado.set(matricula);
+    this.estadoDestino = this.opcionesCambioEstado()[0]?.estado ?? 'CANCELADA';
+    this.motivoCambioEstado = '';
+    this.estadoDialogRef = this.dialog.open(this.estadoDialog, {
+      width: '560px',
+      maxWidth: 'calc(100vw - 24px)',
+      panelClass: 'school-dialog',
+      autoFocus: 'dialog',
+      restoreFocus: true
+    });
+    this.estadoDialogRef.afterClosed().subscribe(() => {
+      this.matriculaSeleccionadaEstado.set(null);
+      this.motivoCambioEstado = '';
+    });
+  }
+
+  cerrarDialogCambioEstado(): void {
+    this.estadoDialogRef?.close();
+  }
+
+  guardarCambioEstado(): void {
+    const seleccionada = this.matriculaSeleccionadaEstado();
+    const motivo = this.motivoCambioEstado.trim();
+    if (!seleccionada || !motivo || this.guardandoCambioEstado()) return;
+    this.guardandoCambioEstado.set(true);
+    this.error.set(null);
+    this.matriculaService.cambiarEstado(seleccionada.id, { estado: this.estadoDestino, motivo }).subscribe({
+      next: matricula => {
+        this.guardandoCambioEstado.set(false);
+        this.estadoDialogRef?.close();
+        this.mensajeExito.set(`Matrícula #${matricula.id}: ${this.estadoFicha(matricula.estadoMatricula)}. Motivo registrado en auditoría.`);
+        this.cargarMatriculas();
+        this.cargarSecciones(true);
+      },
+      error: err => {
+        this.guardandoCambioEstado.set(false);
+        this.error.set(err?.error?.message ?? 'No se pudo actualizar el estado de la matrícula.');
       }
     });
   }
@@ -1246,6 +1664,69 @@ export class MatriculasComponent implements OnInit {
     this.abrirDialogoSolicitud();
   }
 
+  abrirDialogoVinculoApoderado(estudiante: EstudianteResponseDto): void {
+    this.estudianteParaVinculo.set(estudiante);
+    this.apoderadoIdSeleccionado = 0;
+    this.parentescoApoderado = 'PADRE';
+    this.esResponsableEconomico = true;
+    this.tieneCustodia = false;
+    this.permiteRecojo = true;
+    this.errorVinculoApoderado.set(null);
+    this.apoderadosDisponibles.set([]);
+    this.cargandoApoderados.set(true);
+    this.vinculoApoderadoDialogRef = this.dialog.open(this.vinculoApoderadoDialog, {
+      width: '600px',
+      maxWidth: 'calc(100vw - 24px)',
+      panelClass: 'school-dialog',
+      autoFocus: 'dialog',
+      restoreFocus: true
+    });
+    this.vinculoApoderadoDialogRef.afterClosed().subscribe(() => this.estudianteParaVinculo.set(null));
+    this.matriculaService.listarApoderados().subscribe({
+      next: apoderados => {
+        this.cargandoApoderados.set(false);
+        this.apoderadosDisponibles.set(apoderados);
+        if (!apoderados.length) this.errorVinculoApoderado.set('No hay apoderados registrados para vincular.');
+      },
+      error: err => {
+        this.cargandoApoderados.set(false);
+        this.errorVinculoApoderado.set(err?.error?.message ?? 'No se pudo cargar el catálogo de apoderados.');
+      }
+    });
+  }
+
+  cerrarDialogoVinculoApoderado(): void {
+    this.vinculoApoderadoDialogRef?.close();
+  }
+
+  guardarVinculoApoderado(): void {
+    const estudiante = this.estudianteParaVinculo();
+    if (!estudiante || !this.apoderadoIdSeleccionado) {
+      this.errorVinculoApoderado.set('Seleccione un apoderado para vincular.');
+      return;
+    }
+    this.guardandoVinculoApoderado.set(true);
+    this.errorVinculoApoderado.set(null);
+    this.matriculaService.vincularApoderado({
+      estudianteId: estudiante.id,
+      apoderadoId: this.apoderadoIdSeleccionado,
+      parentesco: this.parentescoApoderado,
+      esResponsableEconomico: this.esResponsableEconomico,
+      tieneCustodia: this.tieneCustodia,
+      permiteRecojo: this.permiteRecojo
+    }).subscribe({
+      next: () => {
+        this.guardandoVinculoApoderado.set(false);
+        this.vinculoApoderadoDialogRef?.close();
+        this.mensajeExito.set('Apoderado vinculado al estudiante.');
+      },
+      error: err => {
+        this.guardandoVinculoApoderado.set(false);
+        this.errorVinculoApoderado.set(err?.error?.message ?? 'No se pudo vincular el apoderado.');
+      }
+    });
+  }
+
   abrirModalNuevaMatricula(): void {
     this.nuevoEstudianteId = 0;
     this.abrirDialogoSolicitud();
@@ -1315,6 +1796,46 @@ export class MatriculasComponent implements OnInit {
     return `ALU-${String(estudianteId).padStart(6, '0')}`;
   }
 
+  codigoEstudianteVisible(estudiante: EstudianteResponseDto): string {
+    return estudiante.codigoEstudianteSiagie || estudiante.codigoInterno || this.codigoInterno(estudiante.id);
+  }
+
+  estadoIdentidad(identidad: { validadoReniec?: boolean }): string {
+    return identidad.validadoReniec
+      ? 'Coincidencia confirmada en consulta de identidad'
+      : 'Datos de identidad registrados';
+  }
+
+  estadoPagoFicha(ficha: FichaMatriculaResponseDto): string {
+    const estados = {
+      PAGADO: 'Pagada',
+      PARCIAL: 'Pago parcial',
+      PENDIENTE: 'Pendiente',
+      SIN_OBLIGACION: 'Sin obligación de matrícula registrada'
+    } as const;
+    return estados[ficha.estadoPagoMatricula] ?? 'Estado de pago no disponible';
+  }
+
+  parentescoLabel(parentesco: FichaMatriculaResponseDto['apoderados'][number]['parentesco']): string {
+    const etiquetas = {
+      PADRE: 'Padre', MADRE: 'Madre', TUTOR_LEGAL: 'Tutor legal', ABUELO_A: 'Abuelo/a', OTRO: 'Otro'
+    } as const;
+    return parentesco ? etiquetas[parentesco] : 'No especificado';
+  }
+
+  observacionesFicha(ficha: FichaMatriculaResponseDto): string {
+    const observaciones = ficha.matricula.observaciones?.trim();
+    if (!observaciones) return 'Sin observaciones registradas';
+    const normalizadas = observaciones.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase().trim();
+    let fin = normalizadas.length;
+    while (fin > 0 && '.!;:,'.includes(normalizadas[fin - 1])) fin--;
+    const marcador = normalizadas.slice(0, fin).trim();
+    return ['pendiente de pago', 'pago pendiente', 'matricula pendiente de pago', 'pendiente de pago de matricula'].includes(marcador)
+      ? 'Sin observaciones registradas'
+      : observaciones;
+  }
+
   anioDeFicha(ficha: FichaMatriculaResponseDto): string {
     return String(this.anios().find(item => item.id === ficha.matricula.anioLectivoId)?.anio ?? ficha.matricula.anioLectivoId);
   }
@@ -1357,15 +1878,15 @@ export class MatriculasComponent implements OnInit {
     })[caracter] ?? caracter);
     const estudiante = ficha.estudiante;
     const codigo = this.codigoFicha(ficha);
-    const codigoInterno = estudiante.codigoInterno || this.codigoInterno(estudiante.id);
-    const apoderados = ficha.apoderados.map(apoderado => `
+    const apoderados = ficha.apoderados.map(vinculo => `
       <section class="panel"><h2>Apoderado registrado</h2><div class="grid">
-        <div class="wide"><label>Apellidos y nombres</label><strong>${seguro(`${apoderado.apellidoPaterno} ${apoderado.apellidoMaterno}, ${apoderado.nombres}`)}</strong></div>
-        <div><label>Documento</label><strong>${seguro(apoderado.tipoDocumento || 'DNI')} ${seguro(apoderado.numeroDocumento)}</strong></div>
-        <div><label>Validación de identidad</label><strong>${apoderado.validadoReniec ? 'Validada mediante RENIEC' : 'Pendiente o registro manual'}</strong></div>
-        <div><label>Celular</label><strong>${seguro(apoderado.celular)}</strong></div>
-        <div><label>Correo</label><strong>${seguro(apoderado.email)}</strong></div>
-        <div class="wide"><label>Dirección</label><strong>${seguro(apoderado.direccion)}</strong></div>
+        <div class="wide"><label>Apellidos y nombres</label><strong>${seguro(`${vinculo.apoderado.apellidoPaterno} ${vinculo.apoderado.apellidoMaterno}, ${vinculo.apoderado.nombres}`)}</strong></div>
+        <div><label>Documento</label><strong>${seguro(vinculo.apoderado.tipoDocumento || 'DNI')} ${seguro(vinculo.apoderado.numeroDocumento)}</strong></div>
+        <div><label>Parentesco</label><strong>${seguro(this.parentescoLabel(vinculo.parentesco))}</strong></div>
+        <div><label>Responsabilidad económica</label><strong>${vinculo.esResponsableEconomico ? 'Responsable de pago' : 'No responsable de pago'}</strong></div>
+        <div><label>Celular</label><strong>${seguro(vinculo.apoderado.celular)}</strong></div>
+        <div><label>Correo</label><strong>${seguro(vinculo.apoderado.email)}</strong></div>
+        <div class="wide"><label>Dirección</label><strong>${seguro(vinculo.apoderado.direccion)}</strong></div>
       </div></section>`).join('');
     const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><title>${seguro(codigo)}</title>
       <style>
@@ -1385,9 +1906,8 @@ export class MatriculasComponent implements OnInit {
         <div><label>Documento</label><strong>${seguro(estudiante.tipoDocumento || 'DNI')} ${seguro(estudiante.numeroDocumento)}</strong></div>
         <div><label>Fecha de nacimiento</label><strong>${seguro(estudiante.fechaNacimiento)}</strong></div>
         <div><label>Género</label><strong>${seguro(estudiante.genero === 'F' ? 'Femenino' : estudiante.genero === 'M' ? 'Masculino' : 'No registrado')}</strong></div>
-        <div><label>Código interno</label><strong>${seguro(codigoInterno)}</strong></div>
-        <div><label>Código SIAGIE oficial</label><strong>${seguro(estudiante.codigoEstudianteSiagie || 'Pendiente de asignación')}</strong></div>
-        <div><label>Identidad</label><strong>${estudiante.validadoReniec ? 'Validada mediante RENIEC' : 'Pendiente o registro manual'}</strong></div>
+        <div><label>Código de estudiante</label><strong>${seguro(this.codigoEstudianteVisible(estudiante))}</strong></div>
+        <div><label>Estado de identidad</label><strong>${seguro(this.estadoIdentidad(estudiante))}</strong></div>
         <div><label>Grupo sanguíneo</label><strong>${seguro(estudiante.grupoSanguineo)}</strong></div>
       </div></section>
       <section class="panel"><h2>Datos de matrícula</h2><div class="grid">
@@ -1395,7 +1915,8 @@ export class MatriculasComponent implements OnInit {
         <div><label>Grado y sección</label><strong>${seguro(this.seccionDeFicha(ficha))}</strong></div>
         <div><label>Aula</label><strong>${seguro(this.aulaDeFicha(ficha))}</strong></div>
         <div><label>Fecha de registro</label><strong>${seguro(ficha.matricula.fechaMatricula)}</strong></div>
-        <div class="wide"><label>Observaciones</label><strong>${seguro(ficha.matricula.observaciones || 'Sin observaciones registradas')}</strong></div>
+        <div><label>Pago de matrícula</label><strong>${seguro(this.estadoPagoFicha(ficha))}</strong></div>
+        <div class="wide"><label>Observaciones</label><strong>${seguro(this.observacionesFicha(ficha))}</strong></div>
       </div></section>
       ${apoderados || '<section class="panel"><h2>Apoderados</h2><strong>No hay apoderados asociados en el registro.</strong></section>'}
       <div class="signatures"><div class="signature">Firma del apoderado</div><div class="signature">Secretaría académica</div></div>
@@ -1432,5 +1953,137 @@ export class MatriculasComponent implements OnInit {
   cerrarFichaDialog(): void {
     this.ficha.set(null);
     this.fichaDialogRef?.close();
+  }
+
+  abrirModalCorregirDniEstudiante(est: EstudianteResponseDto): void {
+    this.estudianteSeleccionadoDni.set(est);
+    this.nuevoDniEstudiante = '';
+    this.motivoDniEstudiante = '';
+    this.reniecEstudianteMensaje.set('');
+    this.corregirDniEstudianteDialogRef = this.dialog.open(this.corregirDniEstudianteDialog, {
+      width: '480px',
+      maxWidth: 'calc(100vw - 24px)',
+      panelClass: 'school-dialog'
+    });
+  }
+
+  consultarReniecEstudiante(): void {
+    const dni = this.nuevoDniEstudiante.trim();
+    if (dni.length !== 8) return;
+    this.consultandoReniecEstudiante.set(true);
+    this.reniecEstudianteMensaje.set('');
+    this.matriculaService.consultarReniecPersona(dni).subscribe({
+      next: (persona) => {
+        this.consultandoReniecEstudiante.set(false);
+        const nom = [persona.nombres, persona.apellidoPaterno, persona.apellidoMaterno].filter(Boolean).join(' ');
+        this.reniecEstudianteMensaje.set(nom ? `RENIEC: ${nom}` : 'DNI verificado');
+      },
+      error: () => {
+        this.consultandoReniecEstudiante.set(false);
+        this.reniecEstudianteMensaje.set('Consulta no disponible');
+      }
+    });
+  }
+
+  confirmarCorregirDniEstudiante(): void {
+    const est = this.estudianteSeleccionadoDni();
+    if (!est || this.guardandoDniEstudiante()) return;
+    this.guardandoDniEstudiante.set(true);
+    this.matriculaService.corregirDniEstudiante(est.id, {
+      nuevoDni: this.nuevoDniEstudiante.trim(),
+      motivo: this.motivoDniEstudiante.trim()
+    }).subscribe({
+      next: () => {
+        this.guardandoDniEstudiante.set(false);
+        this.listaEstudiantes.update(lista => lista.map(e => e.id === est.id ? { ...e, numeroDocumento: this.nuevoDniEstudiante.trim() } : e));
+        this.mensajeExito.set('DNI del estudiante corregido exitosamente.');
+        this.corregirDniEstudianteDialogRef?.close();
+      },
+      error: (err) => {
+        this.guardandoDniEstudiante.set(false);
+        this.error.set(err?.error?.message || 'No se pudo corregir el DNI del estudiante.');
+      }
+    });
+  }
+
+  abrirModalEstadoEstudiante(est: EstudianteResponseDto): void {
+    this.estudianteSeleccionadoEstado.set(est);
+    this.estadoEstudianteDestino = (est as any).estado || 'ACTIVO';
+    this.motivoEstadoEstudiante = '';
+    this.estadoEstudianteDialogRef = this.dialog.open(this.estadoEstudianteDialog, {
+      width: '480px',
+      maxWidth: 'calc(100vw - 24px)',
+      panelClass: 'school-dialog'
+    });
+  }
+
+  confirmarEstadoEstudiante(): void {
+    const est = this.estudianteSeleccionadoEstado();
+    if (!est || this.guardandoEstadoEstudiante()) return;
+    this.guardandoEstadoEstudiante.set(true);
+    this.matriculaService.cambiarEstadoEstudiante(est.id, {
+      estado: this.estadoEstudianteDestino,
+      motivo: this.motivoEstadoEstudiante.trim()
+    }).subscribe({
+      next: () => {
+        this.guardandoEstadoEstudiante.set(false);
+        this.mensajeExito.set(`Estado del estudiante actualizado a ${this.estadoEstudianteDestino} (borrado lógico formal).`);
+        this.estadoEstudianteDialogRef?.close();
+      },
+      error: (err) => {
+        this.guardandoEstadoEstudiante.set(false);
+        this.error.set(err?.error?.message || 'No se pudo cambiar el estado del estudiante.');
+      }
+    });
+  }
+
+  abrirModalCorregirDniApoderado(apo: ApoderadoResponseDto): void {
+    this.apoderadoSeleccionadoDni.set(apo);
+    this.nuevoDniApoderado = '';
+    this.motivoDniApoderado = '';
+    this.reniecApoderadoMensaje.set('');
+    this.corregirDniApoderadoDialogRef = this.dialog.open(this.corregirDniApoderadoDialog, {
+      width: '480px',
+      maxWidth: 'calc(100vw - 24px)',
+      panelClass: 'school-dialog'
+    });
+  }
+
+  consultarReniecApoderado(): void {
+    const dni = this.nuevoDniApoderado.trim();
+    if (dni.length !== 8) return;
+    this.consultandoReniecApoderado.set(true);
+    this.reniecApoderadoMensaje.set('');
+    this.matriculaService.consultarReniecPersona(dni).subscribe({
+      next: (persona) => {
+        this.consultandoReniecApoderado.set(false);
+        const nom = [persona.nombres, persona.apellidoPaterno, persona.apellidoMaterno].filter(Boolean).join(' ');
+        this.reniecApoderadoMensaje.set(nom ? `RENIEC: ${nom}` : 'DNI verificado');
+      },
+      error: () => {
+        this.consultandoReniecApoderado.set(false);
+        this.reniecApoderadoMensaje.set('Consulta no disponible');
+      }
+    });
+  }
+
+  confirmarCorregirDniApoderado(): void {
+    const apo = this.apoderadoSeleccionadoDni();
+    if (!apo || this.guardandoDniApoderado()) return;
+    this.guardandoDniApoderado.set(true);
+    this.matriculaService.corregirDniApoderado(apo.id, {
+      nuevoDni: this.nuevoDniApoderado.trim(),
+      motivo: this.motivoDniApoderado.trim()
+    }).subscribe({
+      next: () => {
+        this.guardandoDniApoderado.set(false);
+        this.mensajeExito.set('DNI del apoderado corregido exitosamente.');
+        this.corregirDniApoderadoDialogRef?.close();
+      },
+      error: (err) => {
+        this.guardandoDniApoderado.set(false);
+        this.error.set(err?.error?.message || 'No se pudo corregir el DNI del apoderado.');
+      }
+    });
   }
 }

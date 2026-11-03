@@ -8,6 +8,7 @@ import {
   CrearUsuarioRequestDto,
   UserResponseDto
 } from '../models/auth.model';
+import { ReniecPersonaDto } from '../models/matricula-publica.model';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,22 @@ export class UsuarioService {
   obtenerPerfil(): Observable<UserResponseDto> {
     return this.http
       .get<ApiResponse<UserResponseDto>>(`${this.baseUrl}/me`)
+      .pipe(map(res => res.data));
+  }
+
+  consultarReniec(dni: string): Observable<ReniecPersonaDto> {
+    return this.http.get<ReniecPersonaDto>(`${environment.apiUrl}/personas/reniec/${encodeURIComponent(dni)}`);
+  }
+
+  corregirDni(id: number, payload: { nuevoDni: string; motivo: string }): Observable<UserResponseDto> {
+    return this.http
+      .patch<ApiResponse<UserResponseDto>>(`${this.baseUrl}/${id}/dni`, payload)
+      .pipe(map(res => res.data));
+  }
+
+  revocarRol(usuarioId: number, rolId: number): Observable<UserResponseDto> {
+    return this.http
+      .delete<ApiResponse<UserResponseDto>>(`${this.baseUrl}/${usuarioId}/roles/${rolId}`)
       .pipe(map(res => res.data));
   }
 }

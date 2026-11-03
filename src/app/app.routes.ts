@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { authGuard, initialPasswordGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
 import { ADMIN_ROUTE_ACCESS } from './core/authorization/admin-route-access';
 
@@ -20,13 +20,31 @@ export const routes: Routes = [
       import('./features/matricula-publica/matricula-publica.component').then(m => m.MatriculaPublicaComponent)
   },
   {
+    path: 'admision',
+    pathMatch: 'full',
+    redirectTo: 'matricula/inicio'
+  },
+  {
+    path: 'admision/:vista',
+    loadComponent: () =>
+      import('./features/matricula-publica/matricula-publica.component').then(m => m.MatriculaPublicaComponent)
+  },
+  {
     path: 'auth/login',
     loadComponent: () =>
       import('./features/auth/login/login.component').then(m => m.LoginComponent)
   },
   {
-    path: 'admin',
+    path: 'auth/cambiar-password-inicial',
     canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/auth/cambiar-password-inicial/cambiar-password-inicial.component').then(
+        m => m.CambiarPasswordInicialComponent
+      )
+  },
+  {
+    path: 'admin',
+    canActivate: [authGuard, initialPasswordGuard],
     loadComponent: () =>
       import('./layout/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
     children: [
@@ -101,6 +119,12 @@ export const routes: Routes = [
         canActivate: [roleGuard(ADMIN_ROUTE_ACCESS.usuarios)],
         loadComponent: () =>
           import('./features/usuarios/usuarios.component').then(m => m.UsuariosComponent)
+      },
+      {
+        path: 'auditoria',
+        canActivate: [roleGuard(ADMIN_ROUTE_ACCESS.auditoria)],
+        loadComponent: () =>
+          import('./features/auditoria/auditoria.component').then(m => m.AuditoriaComponent)
       },
       {
         path: 'perfil',

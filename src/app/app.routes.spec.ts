@@ -8,6 +8,7 @@ import { ADMIN_ROUTE_ACCESS } from './core/authorization/admin-route-access';
 
 const activeRoles = signal<string[]>([]);
 const authenticated = signal(true);
+const initialPasswordChangeRequired = signal(false);
 const landingRoute = signal('/admin/perfil');
 
 beforeEach(() => {
@@ -17,6 +18,7 @@ beforeEach(() => {
         provide: AuthStore,
         useValue: {
           isAuthenticated: () => authenticated(),
+          requiresInitialPasswordChange: () => initialPasswordChangeRequired(),
           hasAnyRole: (roles: string[]) => roles.some(role => activeRoles().includes(role)),
           homeRoute: () => landingRoute()
         }
@@ -80,6 +82,19 @@ describe('acceso a rutas administrativas por rol', () => {
 
     const perfil = admin.children!.find(route => route.path === 'perfil')!;
     expect(perfil.canActivate).toBeUndefined();
-    expect(admin.canActivate).toHaveLength(1);
+    expect(admin.canActivate).toHaveLength(2);
+  });
+
+  it('redirige las sesiones con contraseña temporal antes de entrar al área administrativa', () => {
+    const admin = routes.find(route => route.path === 'admin')!;
+    const guard = admin.canActivate![1] as CanActivateFn;
+    initialPasswordChangeRequired.set(true);
+
+    expect(TestBed.runInInjectionContext(() => guard({} as ActivatedRouteSnapshot, {} as RouterStateSnapshot)))
+      .toBe('redirect:/auth/cambiar-password-inicial');
+
+    const cambioClave = routes.find(route => route.path === 'auth/cambiar-password-inicial')!;
+    expect(cambioClave.canActivate).toHaveLength(1);
+    initialPasswordChangeRequired.set(false);
   });
 });

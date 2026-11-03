@@ -43,4 +43,28 @@ export interface AuthResponseDto {
   tokenType: string;
   expiresIn: number;
   user: UserResponseDto;
+  debeCambiarPassword?: boolean;
+}
+
+export type EstadoValidacionIa = 'VALIDADO_IA' | 'OBSERVADO_IA' | 'PENDIENTE';
+
+export interface DocumentoLegajoDto {
+  tipo: 'CV' | 'TITULO' | 'ANTECEDENTES';
+  nombreArchivo: string | null;
+  estadoIa: EstadoValidacionIa;
+  observacionIa: string | null;
+  fechaSubida?: string | null;
+}
+
+export interface ExpedienteEmpleadoDto {
+  dni: string;
+  nombres: string;
+  apellidoPaterno: string;
+  apellidoMaterno: string;
+  telefono: string;
+  direccion: string;
+  tipoContrato: string;
+  especialidad: string;
+  codigoModular?: string;
+  documentosLegajo: DocumentoLegajoDto[];
 }

@@ -33,6 +33,11 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private pollHandle: number | null = null;
   private vistaSubscription?: Subscription;
+  private queryParamSubscription?: Subscription;
+
+  readonly solicitudConflictiva = signal(false);
+  readonly reenviandoToken = signal(false);
+  readonly mensajeReenvioToken = signal('');
 
   readonly vista = signal<VistaMatricula>('inicio');
   readonly catalogo = signal<CatalogoMatriculaPublicaDto>({ anios: [], secciones: [] });
@@ -40,8 +45,6 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   readonly modal = signal<ModalEtapa>(null);
   readonly cargandoCatalogo = signal(true);
   readonly procesando = signal(false);
-  readonly consultandoDniEstudiante = signal(false);
-  readonly consultandoDniApoderado = signal(false);
   readonly documentoEnProceso = signal<TipoDocumentoSolicitud | null>(null);
   readonly numeroDocumentoRevision = signal(0);
   readonly avanceRevision = signal(0);
@@ -52,7 +55,6 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   readonly montoPago = signal(1);
   readonly anioId = signal<number | null>(null);
   readonly gradoId = signal<number | null>(null);
-  readonly mensajeDni = signal('');
 
   get fechaNacimientoMaxima(): string {
     return fechaActualEnPeru();
@@ -71,7 +73,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   celularApoderado = '';
   emailApoderado = '';
   direccionApoderado = '';
-  ubigeoApoderado = '';
+
   parentesco: CrearSolicitudMatriculaPublicaDto['parentesco'] = 'MADRE';
   consentimientoGemini = false;
 
@@ -135,6 +137,12 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
         if (vista !== 'inicio') void this.router.navigateByUrl('/matricula/inicio', { replaceUrl: true });
       }
     });
+    this.queryParamSubscription = this.route.queryParamMap.subscribe(params => {
+      const token = params.get('token');
+      if (token && token.trim().length > 0) {
+        this.consultarSeguimientoPorToken(token.trim());
+      }
+    });
     this.restaurarSolicitud();
     this.api.catalogo().subscribe({
       next: data => {
@@ -152,6 +160,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.vistaSubscription?.unsubscribe();
+    this.queryParamSubscription?.unsubscribe();
     this.detenerSeguimientoPago();
   }
 
@@ -167,32 +176,6 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     }
     this.error.set('');
     this.archivos[tipo] = archivo;
-  }
-
-  consultarDni(tipo: 'estudiante' | 'apoderado'): void {
-    const dni = tipo === 'estudiante' ? this.documentoEstudiante : this.documentoApoderado;
-    if (!/^\d{8}$/.test(dni)) {
-      this.mensajeDni.set('Ingresa un DNI de 8 dígitos.');
-      return;
-    }
-    const indicador = tipo === 'estudiante' ? this.consultandoDniEstudiante : this.consultandoDniApoderado;
-    indicador.set(true);
-    this.mensajeDni.set('');
-    this.api.consultarDni(dni).pipe(finalize(() => indicador.set(false))).subscribe({
-      next: identidad => {
-        if (tipo === 'estudiante') {
-          this.nombresEstudiante = identidad.nombres;
-          this.apellidoPaternoEstudiante = identidad.apellidoPaterno;
-          this.apellidoMaternoEstudiante = identidad.apellidoMaterno;
-        } else {
-          this.nombresApoderado = identidad.nombres;
-          this.apellidoPaternoApoderado = identidad.apellidoPaterno;
-          this.apellidoMaternoApoderado = identidad.apellidoMaterno;
-        }
-        this.mensajeDni.set('Nombres y apellidos consultados. Contrástalos con el documento adjunto.');
-      },
-      error: error => this.mensajeDni.set(this.mensajeError(error, 'No fue posible consultar este DNI; verifica el número o inténtalo luego.'))
-    });
   }
 
   abrirSolicitud(): void {
@@ -250,7 +233,9 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     this.celularApoderado = '';
     this.emailApoderado = '';
     this.direccionApoderado = '';
-    this.ubigeoApoderado = '';
+    this.solicitudConflictiva.set(false);
+    this.reenviandoToken.set(false);
+    this.mensajeReenvioToken.set('');
     this.parentesco = 'MADRE';
     this.consentimientoGemini = false;
     this.gradoId.set(null);
@@ -294,7 +279,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
           celularApoderado: this.celularApoderado.trim(),
           emailApoderado: this.emailApoderado.trim() || null,
           direccionApoderado: this.direccionApoderado.trim(),
-          ubigeoApoderado: this.ubigeoApoderado.trim(),
+          ubigeoApoderado: '150101',
           parentesco: this.parentesco,
           consentimientoGemini: true
         };
@@ -340,6 +325,50 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     }
   }
 
+  consultarSeguimientoPorToken(token: string): void {
+    this.procesando.set(true);
+    this.error.set('');
+    this.api.consultarPorToken(token).pipe(
+      finalize(() => this.procesando.set(false))
+    ).subscribe({
+      next: (solicitud) => {
+        this.solicitud.set(solicitud);
+        this.guardarCredencial(solicitud);
+        if (solicitud.estado === 'DOCUMENTOS_OBSERVADOS') {
+          this.modal.set('documentos');
+        } else {
+          this.abrirEtapaActualizada(solicitud);
+        }
+      },
+      error: (err) => {
+        this.error.set(this.mensajeError(err, 'No se pudo recuperar la solicitud mediante el enlace provisto.'));
+      }
+    });
+  }
+
+  reenviarEnlaceSeguimiento(): void {
+    const dni = this.documentoEstudiante.trim();
+    const anioId = this.anioId();
+    if (!dni || !anioId) {
+      this.error.set('Por favor ingresa el DNI del estudiante y selecciona el año lectivo.');
+      return;
+    }
+    this.reenviandoToken.set(true);
+    this.mensajeReenvioToken.set('');
+    this.api.reenviarToken(dni, anioId).pipe(
+      finalize(() => this.reenviandoToken.set(false))
+    ).subscribe({
+      next: (resp) => {
+        this.mensajeReenvioToken.set(
+          resp.mensaje || 'Si existe una solicitud para esos datos, se mostrarán las opciones disponibles para continuar.'
+        );
+      },
+      error: (err) => {
+        this.error.set(this.mensajeError(err, 'No se pudo reenviar el enlace. Por favor verifica los datos o contacta a Secretaría.'));
+      }
+    });
+  }
+
   readonly mensajeRevision = signal('');
 
   progresoRevision(): number {
@@ -368,9 +397,11 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   }
 
   async actualizarEstadoPago(): Promise<void> {
+    if (this.procesando()) return;
     const solicitud = this.solicitud();
     const token = this.leerToken();
     if (!solicitud || !token) return;
+    this.procesando.set(true);
     this.estadoPago.set('Consultando confirmación segura del pago…');
     try {
       const actualizada = await firstValueFrom(this.api.consultarPago(solicitud.id, token));
@@ -380,6 +411,8 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       else this.estadoPago.set('Aún no recibimos confirmación del pago. Espera un momento y vuelve a consultar.');
     } catch (error: unknown) {
       this.estadoPago.set(this.mensajeError(error, 'No se pudo consultar el estado del pago.'));
+    } finally {
+      this.procesando.set(false);
     }
   }
 
@@ -455,7 +488,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     const required = [this.documentoEstudiante, this.nombresEstudiante, this.apellidoPaternoEstudiante,
       this.apellidoMaternoEstudiante, this.nacimientoEstudiante, this.documentoApoderado,
       this.nombresApoderado, this.apellidoPaternoApoderado, this.apellidoMaternoApoderado,
-      this.celularApoderado, this.direccionApoderado, this.ubigeoApoderado];
+      this.celularApoderado, this.direccionApoderado];
     if (required.some(value => !value.trim())) return this.error.set('Completa todos los campos obligatorios.'), false;
     if (!fechaNacimientoValida(this.nacimientoEstudiante)) {
       return this.error.set('La fecha de nacimiento debe ser válida y anterior al día de hoy.'), false;
@@ -470,8 +503,9 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     if (!/^\d{8}$/.test(this.documentoEstudiante) || !/^\d{8}$/.test(this.documentoApoderado)) {
       return this.error.set('Los DNI deben tener 8 dígitos.'), false;
     }
-    if (!/^9\d{8}$/.test(this.celularApoderado) || !/^\d{6}$/.test(this.ubigeoApoderado)) {
-      return this.error.set('Verifica el celular (9 dígitos) y el ubigeo (6 dígitos).'), false;
+    if (!/^9\d{8}$/.test(this.celularApoderado)) {
+      return this.error.set('Verifica el número de celular (9 dígitos).'), false;
+
     }
     const correoApoderado = this.emailApoderado.trim();
     if (correoApoderado && (correoApoderado.length > 254

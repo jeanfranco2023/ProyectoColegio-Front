@@ -1,7 +1,6 @@
 import { Component, ElementRef, inject, signal, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { map } from 'rxjs';
 import { ComunicadoService } from '../../core/services/comunicado.service';
 import { AcademicoService } from '../../core/services/academico.service';
 import { AuthStore } from '../../core/state/auth.store';
@@ -60,7 +59,7 @@ template: `
           <form (ngSubmit)="publicar()" class="flex min-h-0 flex-[1_1_auto] flex-col"><div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
             @if (error()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-xs text-[#b91c1c]" role="alert">{{ error() }}</p> }
             <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Año lectivo *<select [(ngModel)]="anioLectivoId" name="anioLectivoId" [disabled]="!anios().length" required class="min-w-0 !min-h-[46px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]">@if (!anios().length) { <option [ngValue]="0">Sin años lectivos disponibles</option> } @for (anio of anios(); track anio.id) { <option [ngValue]="anio.id">Año {{ anio.anio }}</option> }</select></label>
-            <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Título *<input [(ngModel)]="titulo" name="titulo" required maxlength="150" placeholder="Asunto del comunicado" class="min-w-0 !min-h-[46px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
+            <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Título *<input [(ngModel)]="titulo" name="titulo" required maxlength="40" placeholder="Asunto del comunicado" class="min-w-0 !min-h-[46px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
             <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Contenido *<textarea [(ngModel)]="contenido" name="contenido" required maxlength="20000" rows="6" placeholder="Escribe el mensaje para la comunidad" class="min-w-0 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base py-[10px] resize-y !min-h-[110px] !font-[650]"></textarea></label>
             <label class="inline-flex items-center gap-3 text-sm text-slate-700"><input type="checkbox" class="w-[18px] accent-[#2563eb] !font-[650]" [(ngModel)]="requiereAcuse" name="requiereAcuse"> Solicitar confirmación de lectura</label>
           </div><footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]"><button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogo()">Cancelar</button><button type="submit" [disabled]="publicando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ publicando() ? 'Publicando…' : 'Publicar comunicado' }}</button></footer></form>
@@ -121,6 +120,11 @@ template: `
           }
         }
       </div>
+      @if (esSoloApoderado() && hayMasComunicados()) {
+        <button type="button" (click)="cargarMasComunicados()" [disabled]="cargandoMasComunicados()" class="rounded-lg border border-[#d9e2ef] bg-white px-4 py-2.5 text-sm font-semibold text-[#34445d] disabled:opacity-50">
+          {{ cargandoMasComunicados() ? 'Cargando…' : 'Cargar más comunicados' }}
+        </button>
+      }
     </div>
   `
 })
@@ -140,7 +144,10 @@ export class ComunicadosComponent implements OnInit {
   requiereAcuse = false;
 
   cargando = signal(false);
+  readonly cargandoMasComunicados = signal(false);
+  readonly hayMasComunicados = signal(false);
   readonly comunicados = signal<ComunicadoEscolar[]>([]);
+  private paginaBandejaApoderado = 0;
 
   ngOnInit(): void {
     this.restaurarAcusesConfirmados();
@@ -152,27 +159,18 @@ export class ComunicadosComponent implements OnInit {
 
   cargarComunicados(): void {
     this.error.set(null);
+    this.paginaBandejaApoderado = 0;
+    this.hayMasComunicados.set(false);
+    if (this.esSoloApoderado()) {
+      this.cargarPaginaBandeja(0, false);
+      return;
+    }
     this.cargando.set(true);
-    const consulta = this.esSoloApoderado()
-      ? this.comunicadoService.consultarBandeja(0, 20).pipe(map(res => res.comunicados))
-      : this.comunicadoService.listarPublicados();
-    consulta.subscribe({
+    this.comunicadoService.listarPublicados().subscribe({
       next: (res) => {
         this.cargando.set(false);
         if (Array.isArray(res)) {
-          this.comunicados.set(
-            res.map((c) => ({
-              id: c.id,
-              titulo: c.titulo || 'Sin título',
-              resumen: c.contenido || 'Sin contenido adicional',
-              destinatarios: 'Destinatario no informado',
-              prioridad: '—',
-              fechaPublicacion: c.fechaPublicacion ? String(c.fechaPublicacion).split('T')[0] : '—',
-              autor: c.remitenteUsuarioId ? `Usuario #${c.remitenteUsuarioId}` : '—',
-              requiereAcuse: c.requiereAcuse,
-              acuseConfirmado: c.acuseConfirmado === true || this.acusesConfirmados().has(c.id)
-            }))
-          );
+          this.comunicados.set(res.map(c => this.mapearComunicado(c)));
         } else {
           this.comunicados.set([]);
         }
@@ -183,6 +181,47 @@ export class ComunicadosComponent implements OnInit {
         this.error.set('No se pudieron cargar los comunicados.');
       }
     });
+  }
+
+  cargarMasComunicados(): void {
+    if (!this.esSoloApoderado() || !this.hayMasComunicados() || this.cargandoMasComunicados()) return;
+    this.cargarPaginaBandeja(this.paginaBandejaApoderado + 1, true);
+  }
+
+  private cargarPaginaBandeja(page: number, append: boolean): void {
+    if (append) this.cargandoMasComunicados.set(true);
+    else this.cargando.set(true);
+    this.comunicadoService.consultarBandeja(page, 100).subscribe({
+      next: response => {
+        const recibidos = response.comunicados ?? [];
+        const pagina = recibidos.map(c => this.mapearComunicado(c));
+        this.comunicados.update(actuales => append ? [...actuales, ...pagina] : pagina);
+        this.paginaBandejaApoderado = page;
+        this.hayMasComunicados.set(recibidos.length === 100);
+        this.cargando.set(false);
+        this.cargandoMasComunicados.set(false);
+      },
+      error: () => {
+        this.cargando.set(false);
+        this.cargandoMasComunicados.set(false);
+        if (!append) this.comunicados.set([]);
+        this.error.set('No se pudieron cargar los comunicados.');
+      }
+    });
+  }
+
+  private mapearComunicado(c: import('../../core/models/comunicado.model').ComunicadoResponseDto): ComunicadoEscolar {
+    return {
+      id: c.id,
+      titulo: c.titulo || 'Sin título',
+      resumen: c.contenido || 'Sin contenido adicional',
+      destinatarios: 'Destinatario no informado',
+      prioridad: '—',
+      fechaPublicacion: c.fechaPublicacion ? String(c.fechaPublicacion).split('T')[0] : '—',
+      autor: c.remitenteUsuarioId ? `Usuario #${c.remitenteUsuarioId}` : '—',
+      requiereAcuse: c.requiereAcuse,
+      acuseConfirmado: c.acuseConfirmado === true || this.acusesConfirmados().has(c.id)
+    };
   }
 
   nuevoComunicado(): void {
@@ -202,6 +241,7 @@ export class ComunicadosComponent implements OnInit {
 
   publicar(): void {
     if (!this.anioLectivoId || !this.titulo.trim() || !this.contenido.trim()) { this.error.set('Complete año, título y contenido.'); return; }
+    if (this.titulo.trim().length > 40) { this.error.set('El título admite como máximo 40 caracteres.'); return; }
     this.publicando.set(true);
     this.error.set(null);
     this.comunicadoService.publicarComunicado({ anioLectivoId: this.anioLectivoId, titulo: this.titulo.trim(), contenido: this.contenido.trim(), requiereAcuse: this.requiereAcuse }).subscribe({

@@ -36,6 +36,10 @@ export class AuthStore {
     return roles.some(r => this.hasRole(r));
   }
 
+  requiresInitialPasswordChange(): boolean {
+    return localStorage.getItem('debeCambiarPassword') === 'true';
+  }
+
   login(credentials: LoginRequestDto) {
     this.isLoading.set(true);
     this.error.set(null);
@@ -44,7 +48,11 @@ export class AuthStore {
       tap((response) => {
         this.setSession(response.data);
         this.isLoading.set(false);
-        this.router.navigate([this.homeRoute()]).catch(() => {});
+        if (response.data.debeCambiarPassword) {
+          this.router.navigate(['/auth/cambiar-password-inicial']).catch(() => {});
+        } else {
+          this.router.navigate([this.homeRoute()]).catch(() => {});
+        }
       }),
       catchError((err) => {
         this.isLoading.set(false);
@@ -67,6 +75,11 @@ export class AuthStore {
     if (data.refreshToken) {
       localStorage.setItem('refreshToken', data.refreshToken);
     }
+    if (data.debeCambiarPassword) {
+      localStorage.setItem('debeCambiarPassword', 'true');
+    } else {
+      localStorage.removeItem('debeCambiarPassword');
+    }
   }
 
   clearSession() {
@@ -75,6 +88,11 @@ export class AuthStore {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('user');
     localStorage.removeItem('refreshToken');
+    localStorage.removeItem('debeCambiarPassword');
+  }
+
+  marcarPasswordCambiado() {
+    localStorage.removeItem('debeCambiarPassword');
   }
 
   logout() {

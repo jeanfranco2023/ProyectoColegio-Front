@@ -44,7 +44,7 @@ function fechaDiaEscolarMasReciente(): string {
         </div>
         <div class="flex flex-wrap items-center gap-2">
           @if (puedeRegistrar()) {
-          <button (click)="abrirDialogoRegistro()" [disabled]="esDocente() && matriculasDocente().length === 0" class="px-4 py-2.5 rounded-xl !bg-[#1d4ed8] hover:!bg-[#1e40af] !text-white font-semibold text-xs !text-[11px] sm:text-sm cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">Registrar asistencia</button>
+          <button (click)="abrirDialogoRegistro()" [disabled]="puedeSeleccionarMatricula() && matriculasDocente().length === 0" class="px-4 py-2.5 rounded-xl !bg-[#1d4ed8] hover:!bg-[#1e40af] !text-white font-semibold text-xs !text-[11px] sm:text-sm cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">Registrar asistencia</button>
           }
           @if (puedeGestionarBiometria()) {
           <button (click)="abrirDialogoBiometrico()" class="px-4 py-2.5 rounded-xl !bg-[#334155] hover:!bg-[#1f2937] !text-white font-semibold text-xs !text-[11px] sm:text-sm cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">Importar marca</button>
@@ -68,7 +68,7 @@ function fechaDiaEscolarMasReciente(): string {
           <form (ngSubmit)="registrarAsistencia()" class="flex min-h-0 flex-[1_1_auto] flex-col"><div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
             @if (error()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-xs text-[#b91c1c]" role="alert">{{ error() }}</p> }
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              @if (esDocente()) {
+              @if (puedeSeleccionarMatricula()) {
                 <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569]">Estudiante asignado *<select [(ngModel)]="matriculaId" name="matriculaId" required class="mt-[6px] block w-full min-h-[46px] rounded-xl border border-[#d9e1ec] bg-white px-3 text-[#172b4d]"><option [ngValue]="0" disabled>Seleccione estudiante</option>@for (matricula of matriculasDocente(); track matricula.matriculaId) { <option [ngValue]="matricula.matriculaId">{{ matricula.estudiante }}</option> }</select></label>
               } @else {
                 <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Matrícula ID *<input type="number" [(ngModel)]="matriculaId" name="matriculaId" min="1" required class="min-w-0 !min-h-[46px] max-w-full border px-3 !py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#172b4d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
@@ -208,7 +208,7 @@ function fechaDiaEscolarMasReciente(): string {
       </div>
 
       <!-- Tabs Navigation -->
-      @if (!esDocente()) { <div class="flex items-center gap-2 border-b border-[#e5eaf2]">
+      @if (puedeConsultarAlertas()) { <div class="flex items-center gap-2 border-b border-[#e5eaf2]">
         <button
           (click)="tabActiva.set('AULA')"
           [class]="tabActiva() === 'AULA' ? 'border-blue-500 !text-[#184fae] font-bold' : 'border-transparent !text-[#59677a] hover:!text-[#172b4d]'"
@@ -233,10 +233,10 @@ function fechaDiaEscolarMasReciente(): string {
         <div class="rounded-2xl !bg-white border !border-[#e1e8f1] overflow-hidden shadow-sm">
           <div class="flex flex-wrap items-end gap-3 border-b border-[#e1e8f1] bg-white p-4">
             <label class="grid min-w-[220px] flex-1 gap-1 text-xs font-semibold text-[#475569]">Buscar estudiante
-              <input [(ngModel)]="busquedaAsistencia" (ngModelChange)="paginaAsistencia.set(0)" name="buscarAsistencia" type="search" placeholder="Nombre o apellido" class="min-h-11 rounded-xl border border-[#d9e1ec] px-3 text-sm font-normal text-[#172b4d]" />
+              <input [ngModel]="busquedaAsistencia()" (ngModelChange)="busquedaAsistencia.set($event); paginaAsistencia.set(0)" name="buscarAsistencia" type="search" placeholder="Nombre o apellido" class="min-h-11 rounded-xl border border-[#d9e1ec] px-3 text-sm font-normal text-[#172b4d]" />
             </label>
             <label class="grid min-w-[180px] gap-1 text-xs font-semibold text-[#475569]">Estado
-              <select [(ngModel)]="estadoFiltro" (ngModelChange)="paginaAsistencia.set(0)" name="filtroEstadoAsistencia" class="min-h-11 rounded-xl border border-[#d9e1ec] bg-white px-3 text-sm font-normal text-[#172b4d]">
+              <select [ngModel]="estadoFiltro()" (ngModelChange)="estadoFiltro.set($event); paginaAsistencia.set(0)" name="filtroEstadoAsistencia" class="min-h-11 rounded-xl border border-[#d9e1ec] bg-white px-3 text-sm font-normal text-[#172b4d]">
                 <option value="TODOS">Todos</option><option value="PRESENTE">Presente</option><option value="TARDANZA">Tardanza</option><option value="FALTA_JUSTIFICADA">Falta justificada</option><option value="FALTA_INJUSTIFICADA">Falta injustificada</option>
               </select>
             </label>
@@ -297,12 +297,12 @@ function fechaDiaEscolarMasReciente(): string {
               </tbody>
             </table>
           </div>
-          <mat-paginator [length]="alumnosFiltrados().length" [pageIndex]="paginaAsistencia()" [pageSize]="10" [pageSizeOptions]="[10, 25, 50]" (page)="cambiarPaginaAsistencia($event)" aria-label="Paginación de asistencias" />
+          <mat-paginator [length]="alumnosFiltrados().length" [pageIndex]="paginaAsistencia()" [pageSize]="tamanoPaginaAsistencia()" [pageSizeOptions]="[10, 25, 50]" (page)="cambiarPaginaAsistencia($event)" aria-label="Paginación de asistencias" />
         </div>
       }
 
       <!-- Tab Content: Conciliación Biométrica -->
-      @if (tabActiva() === 'CONCILIACION') {
+      @if (puedeConsultarAlertas() && tabActiva() === 'CONCILIACION') {
         <div class="space-y-4">
           <div class="rounded-2xl !bg-white border !border-[#e1e8f1] overflow-hidden shadow-sm">
             <div class="overflow-x-auto" data-attendance-table-scroll="">
@@ -345,8 +345,9 @@ export class AsistenciaComponent implements OnInit {
   private readonly asistenciaService = inject(AsistenciaService);
   private readonly academicoService = inject(AcademicoService);
   private readonly auth = inject(AuthStore);
-  readonly esDocente = computed(() => this.auth.hasRole('DOCENTE'));
+  readonly puedeSeleccionarMatricula = computed(() => this.auth.hasAnyRole(['DOCENTE', 'TUTOR']));
   readonly puedeRegistrar = computed(() => this.auth.hasAnyRole(['DOCENTE', 'TUTOR', 'AUXILIAR']));
+  readonly puedeConsultarAlertas = computed(() => this.auth.hasAnyRole(['DIRECCION', 'SECRETARIA', 'AUXILIAR']));
   readonly puedeGestionarBiometria = computed(() => this.auth.hasAnyRole(['SECRETARIA', 'AUXILIAR']));
   readonly puedeJustificar = computed(() => this.auth.hasAnyRole(['SECRETARIA', 'AUXILIAR', 'TUTOR']));
   readonly puedeDescargarSustento = computed(() => this.auth.hasRole('DIRECCION') || this.auth.hasRole('SECRETARIA'));
@@ -379,16 +380,20 @@ export class AsistenciaComponent implements OnInit {
   archivoBiometrico: File | null = null;
 
   readonly alumnos = signal<AlumnoAsistenciaItem[]>([]);
-  busquedaAsistencia = '';
-  estadoFiltro: EstadoAsistencia | 'TODOS' = 'TODOS';
+  readonly busquedaAsistencia = signal('');
+  readonly estadoFiltro = signal<EstadoAsistencia | 'TODOS'>('TODOS');
   readonly paginaAsistencia = signal(0);
+  readonly tamanoPaginaAsistencia = signal(10);
   readonly alumnosFiltrados = computed(() => {
-    const texto = this.busquedaAsistencia.trim().toLocaleLowerCase('es-PE');
+    const texto = this.busquedaAsistencia().trim().toLocaleLowerCase('es-PE');
     return this.alumnos().filter(alumno =>
       (!texto || alumno.estudiante.toLocaleLowerCase('es-PE').includes(texto)) &&
-      (this.estadoFiltro === 'TODOS' || alumno.estado === this.estadoFiltro));
+      (this.estadoFiltro() === 'TODOS' || alumno.estado === this.estadoFiltro()));
   });
-  readonly alumnosPagina = computed(() => this.alumnosFiltrados().slice(this.paginaAsistencia() * 10, this.paginaAsistencia() * 10 + 10));
+  readonly alumnosPagina = computed(() => this.alumnosFiltrados().slice(
+    this.paginaAsistencia() * this.tamanoPaginaAsistencia(),
+    this.paginaAsistencia() * this.tamanoPaginaAsistencia() + this.tamanoPaginaAsistencia()
+  ));
   readonly discrepancias = signal<DiscrepanciaAlertaResponseDto[]>([]);
 
   readonly totalPresentes = computed(() => this.alumnos().filter(a => a.estado === 'PRESENTE').length);
@@ -397,7 +402,7 @@ export class AsistenciaComponent implements OnInit {
   readonly totalInjustificadas = computed(() => this.alumnos().filter(a => a.estado === 'FALTA_INJUSTIFICADA').length);
 
   ngOnInit(): void {
-    if (this.esDocente()) {
+    if (this.puedeSeleccionarMatricula()) {
       this.asistenciaService.obtenerMatriculasDocente().subscribe({
         next: matriculas => {
           this.matriculasDocente.set(matriculas);
@@ -408,17 +413,20 @@ export class AsistenciaComponent implements OnInit {
       this.cargarAsistencia();
       return;
     }
-    this.academicoService.listarAnios().subscribe({
-      next: anios => { this.anios.set(anios); this.anioId = anios.find(a => a.abierto)?.id ?? anios[0]?.id ?? 0; },
-      error: () => this.error.set('No se pudieron consultar los años lectivos.')
-    });
+    if (this.puedeGestionarBiometria()) {
+      this.academicoService.listarAnios().subscribe({
+        next: anios => { this.anios.set(anios); this.anioId = anios.find(a => a.abierto)?.id ?? anios[0]?.id ?? 0; },
+        error: () => this.error.set('No se pudieron consultar los años lectivos.')
+      });
+    }
     this.cargarAsistencia();
   }
 
   cargarAsistencia(): void {
+    this.paginaAsistencia.set(0);
     this.error.set(null);
     this.cargando.set(true);
-    if (this.esDocente()) {
+    if (this.puedeSeleccionarMatricula()) {
       this.asistenciaService.obtenerReporteDocente(this.fechaSeleccionada).subscribe({
         next: res => {
           this.cargando.set(false);
@@ -464,22 +472,23 @@ export class AsistenciaComponent implements OnInit {
       }
     });
 
-    this.asistenciaService.listarAlertasConciliacion(this.fechaSeleccionada).subscribe({
-      next: (res) => {
-        if (Array.isArray(res)) {
-          this.discrepancias.set(res);
-        } else {
+    if (this.puedeConsultarAlertas()) {
+      this.asistenciaService.listarAlertasConciliacion(this.fechaSeleccionada).subscribe({
+        next: (res) => this.discrepancias.set(Array.isArray(res) ? res : []),
+        error: () => {
           this.discrepancias.set([]);
+          this.error.set('No se pudieron cargar las alertas de conciliación.');
         }
-      },
-      error: () => {
-        this.discrepancias.set([]);
-        this.error.set('No se pudieron cargar las alertas de conciliación.');
-      }
-    });
+      });
+    } else {
+      this.discrepancias.set([]);
+    }
   }
 
-  cambiarPaginaAsistencia(event: PageEvent): void { this.paginaAsistencia.set(event.pageIndex); }
+  cambiarPaginaAsistencia(event: PageEvent): void {
+    this.paginaAsistencia.set(event.pageIndex);
+    this.tamanoPaginaAsistencia.set(event.pageSize);
+  }
 
   resultadoDiscrepancia(tipo: TipoDiscrepancia): string {
     switch (tipo) {
@@ -502,6 +511,7 @@ export class AsistenciaComponent implements OnInit {
   }
 
   registrarAsistencia(): void {
+    if (!this.puedeRegistrar()) return;
     if (this.matriculaId <= 0 || !this.fechaSesionNueva || !this.horaRegistro) {
       this.error.set('Complete matrícula, fecha y hora.'); return;
     }
@@ -539,6 +549,7 @@ export class AsistenciaComponent implements OnInit {
   }
 
   importarMarca(): void {
+    if (!this.puedeGestionarBiometria()) return;
     if (!/^[0-9]{8}$/.test(this.dniBiometrico) || !this.fechaHoraBiometrico || !this.dispositivoCodigo.trim()) {
       this.error.set('Complete DNI, fecha/hora y dispositivo.'); return;
     }
@@ -558,6 +569,7 @@ export class AsistenciaComponent implements OnInit {
   }
 
   importarCsvBiometrico(): void {
+    if (!this.puedeGestionarBiometria()) return;
     const archivo = this.archivoBiometrico;
     if (!archivo) return;
     this.error.set(null); this.mensaje.set(null); this.operando.set(true);
@@ -572,6 +584,7 @@ export class AsistenciaComponent implements OnInit {
   }
 
   ejecutarConciliacion(): void {
+    if (!this.puedeGestionarBiometria()) return;
     if (!this.anioId) { this.error.set('Indique el año lectivo antes de conciliar.'); return; }
     this.error.set(null);
     this.asistenciaService.conciliarAsistencia(this.anioId, this.fechaSeleccionada, true).subscribe({

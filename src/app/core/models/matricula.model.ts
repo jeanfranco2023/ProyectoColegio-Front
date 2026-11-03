@@ -1,10 +1,19 @@
 export type EstadoMatricula =
   | 'SOLICITADA'
   | 'RESERVADA_TEMPORAL'
+  | 'PENDIENTE_ASIGNACION'
   | 'MATRICULADO'
   | 'TRASLADADO'
   | 'RETIRADO'
   | 'CANCELADA';
+
+export type EstadoTerminalMatricula = 'TRASLADADO' | 'RETIRADO' | 'CANCELADA';
+export type EstadoPagoMatricula = 'PAGADO' | 'PARCIAL' | 'PENDIENTE' | 'SIN_OBLIGACION';
+
+export interface CambiarEstadoMatriculaRequestDto {
+  estado: EstadoTerminalMatricula;
+  motivo: string;
+}
 
 export interface MatriculaResponseDto {
   id: number;
@@ -13,6 +22,7 @@ export interface MatriculaResponseDto {
   seccionId: number;
   fechaMatricula: string;
   estadoMatricula: EstadoMatricula;
+  estadoPagoMatricula: EstadoPagoMatricula;
   reservaExpiraAt?: string;
   observaciones?: string;
 }
@@ -75,10 +85,28 @@ export interface ApoderadoResponseDto {
   createdAt?: string;
 }
 
+export interface ApoderadoFichaResponseDto {
+  apoderado: ApoderadoResponseDto;
+  parentesco: 'PADRE' | 'MADRE' | 'TUTOR_LEGAL' | 'ABUELO_A' | 'OTRO' | null;
+  esResponsableEconomico: boolean;
+}
+
+export type ParentescoApoderado = Exclude<ApoderadoFichaResponseDto['parentesco'], null>;
+
+export interface VincularApoderadoRequestDto {
+  estudianteId: number;
+  apoderadoId: number;
+  parentesco: ParentescoApoderado;
+  esResponsableEconomico: boolean;
+  tieneCustodia: boolean;
+  permiteRecojo: boolean;
+}
+
 export interface FichaMatriculaResponseDto {
   matricula: MatriculaResponseDto;
   estudiante: EstudianteResponseDto;
-  apoderados: ApoderadoResponseDto[];
+  apoderados: ApoderadoFichaResponseDto[];
+  estadoPagoMatricula: 'PAGADO' | 'PARCIAL' | 'PENDIENTE' | 'SIN_OBLIGACION';
 }
 
 export interface SolicitarMatriculaRequestDto {

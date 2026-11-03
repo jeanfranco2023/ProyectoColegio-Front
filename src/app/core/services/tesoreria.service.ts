@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   ConceptoCobroResponseDto,
+  CrearObligacionMatriculaRequestDto,
   GenerarObligacionesAnualesRequestDto,
   CrearPreferenciaMercadoPagoDto,
   ObligacionResponseDto,
@@ -25,6 +26,10 @@ export class TesoreriaService {
 
   generarCronograma(payload: GenerarObligacionesAnualesRequestDto): Observable<ObligacionResponseDto[]> {
     return this.http.post<ObligacionResponseDto[]>(`${this.baseUrl}/obligaciones`, payload);
+  }
+
+  generarObligacionMatricula(payload: CrearObligacionMatriculaRequestDto): Observable<ObligacionResponseDto> {
+    return this.http.post<ObligacionResponseDto>(`${this.baseUrl}/obligaciones/matricula`, payload);
   }
 
   listarObligaciones(matriculaId: number): Observable<ObligacionResponseDto[]> {

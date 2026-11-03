@@ -7,6 +7,16 @@ import { AcademicoService } from '../../core/services/academico.service';
 import { ComunicadosComponent } from './comunicados.component';
 
 describe('Comunicados y cuentas con varios roles', () => {
+  it('rechaza títulos de más de 40 caracteres antes de enviar la publicación', () => {
+    preparar(['SECRETARIA']);
+    const componente = TestBed.runInInjectionContext(() => new ComunicadosComponent());
+    componente.anioLectivoId = 1;
+    componente.titulo = 'A'.repeat(41);
+    componente.contenido = 'Información para las familias.';
+    componente.publicar();
+    expect(componente.error()).toContain('40 caracteres');
+    expect(componente.publicando()).toBe(false);
+  });
   for (const rol of ['DIRECCION', 'SECRETARIA']) {
     it(`consulta publicaciones para ${rol} aunque también sea APODERADO`, () => {
       const api = preparar([rol, 'APODERADO']);
@@ -22,7 +32,7 @@ describe('Comunicados y cuentas con varios roles', () => {
     const api = preparar(['APODERADO']);
     const componente = TestBed.runInInjectionContext(() => new ComunicadosComponent());
     componente.cargarComunicados();
-    expect(api.consultarBandeja).toHaveBeenCalledWith(0, 20);
+    expect(api.consultarBandeja).toHaveBeenCalledWith(0, 100);
     expect(api.listarPublicados).not.toHaveBeenCalled();
     expect(componente.esSoloApoderado()).toBe(true);
   });

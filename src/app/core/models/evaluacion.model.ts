@@ -24,6 +24,32 @@ export interface EstudiantesEnRiesgoResponseDto {
   calificaciones: CalificacionResponseDto[];
 }
 
+export interface CuadroHonorEstudianteDto {
+  puesto: number;
+  matriculaId: number;
+  nombreCompleto: string;
+  puntajePromedioInterno: number;
+  porcentajeAsistencia: number;
+  totalIncidencias: number;
+  cantAd: number;
+  cantA: number;
+  cantB: number;
+  cantC: number;
+  mencionHonor: string;
+  beneficioInstitucional: null;
+}
+
+export interface CuadroHonorResponseDto {
+  anioLectivoId: number;
+  gradoId: number;
+  seccionId: number;
+  nivelNombre: string;
+  gradoNombre: string;
+  seccionLetra: string;
+  disclaimer: string;
+  estudiantes: CuadroHonorEstudianteDto[];
+}
+
 export interface LibretaNotasResponseDto {
   matriculaId: number;
   calificaciones: CalificacionResponseDto[];

@@ -12,3 +12,12 @@ export const authGuard: CanActivateFn = () => {
 
   return router.parseUrl('/auth/login');
 };
+
+export const initialPasswordGuard: CanActivateFn = () => {
+  const store = inject(AuthStore);
+  const router = inject(Router);
+
+  return store.requiresInitialPasswordChange()
+    ? router.parseUrl('/auth/cambiar-password-inicial')
+    : true;
+};

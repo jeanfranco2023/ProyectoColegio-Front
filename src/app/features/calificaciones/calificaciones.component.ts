@@ -7,6 +7,7 @@ import { EvaluacionService } from '../../core/services/evaluacion.service';
 import { AcademicoService } from '../../core/services/academico.service';
 import { AuthStore } from '../../core/state/auth.store';
 import { AsignacionDocenteResponseDto, CompetenciaResponseDto, PeriodoResponseDto } from '../../core/models/academico.model';
+import { CuadroHonorResponseDto } from '../../core/models/evaluacion.model';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 
 type NotaCNEB = 'AD' | 'A' | 'B' | 'C' | '-';
@@ -61,6 +62,28 @@ template: `
         <app-carga-planilla [asignacionId]="+asignacionId" [periodoId]="+periodoId" [seccionId]="seccionActualId" [competenciaId]="+competenciaId" (completada)="cargarCalificaciones()" />
       }
 
+      <!-- Selector de pestañas: matriz de calificaciones y ranking anual interno -->
+      <div class="flex flex-wrap items-center gap-2 border-b border-[#e1e8f1] pb-3">
+        <button
+          type="button"
+          (click)="pestanaActiva.set('matriz')"
+          [class]="pestanaActiva() === 'matriz' ? 'border-[#2563eb] text-[#2563eb] font-bold bg-blue-50/60 shadow-sm' : 'border-[#e2e8f0] text-[#59677a] hover:bg-slate-50 font-semibold'"
+          class="px-4 py-2 text-sm rounded-xl border transition-all cursor-pointer inline-flex items-center gap-2"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+          Matriz CNEB por Competencia
+        </button>
+        <button
+          type="button"
+          (click)="abrirRanking()"
+          [class]="pestanaActiva() === 'ranking' ? 'border-[#c49a58] text-[#936622] font-bold bg-amber-50/70 shadow-sm' : 'border-[#e2e8f0] text-[#59677a] hover:bg-slate-50 font-semibold'"
+          class="px-4 py-2 text-sm rounded-xl border transition-all cursor-pointer inline-flex items-center gap-2"
+        >
+          <svg class="w-4 h-4 text-[#c49a58]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+          Ranking anual interno de la sección
+        </button>
+      </div>
+
       <section class="grid min-w-0 grid-cols-[minmax(160px,.9fr)_minmax(240px,1.25fr)_minmax(310px,1.55fr)_minmax(150px,.8fr)] items-end gap-4 rounded-2xl border border-[#e1e8f1] bg-white !p-[18px] shadow-[0_5px_16px_rgb(23_43_77_/_5%)] max-[1399px]:grid-cols-2 max-[600px]:grid-cols-1 max-[600px]:gap-[13px] max-[600px]:!p-[15px]" aria-label="Filtros de calificaciones">
         <div class="grid gap-1 font-sans text-base leading-6 text-[#1e293b] min-w-0 m-0">
           <label class="font-sans text-[13px] leading-[1.4] font-medium text-[#1e293b]" for="periodo-calificaciones">Periodo Académico</label>
@@ -88,6 +111,7 @@ template: `
         </div>
       </section>
 
+      @if (pestanaActiva() === 'matriz') {
       <section class="min-w-0 overflow-hidden rounded-2xl border border-[#e1e8f1] bg-white !p-0 shadow-[0_5px_16px_rgb(23_43_77_/_5%)]" aria-label="Matriz de calificaciones">
         <div class="flex min-h-16 items-center justify-between gap-[14px] border-b border-[#e5eaf2] px-[18px] py-[14px] max-[600px]:items-start max-[600px]:flex-col max-[600px]:px-[14px]">
           <div class="flex flex-wrap items-center gap-2 max-[600px]:gap-[6px]" aria-label="Escala CNEB">
@@ -107,10 +131,10 @@ template: `
         }
         <div class="flex flex-wrap items-end gap-3 border-b border-[#e1e8f1] bg-white p-4">
           <label class="grid min-w-[240px] flex-1 gap-1 text-xs font-semibold text-[#475569]">Buscar estudiante
-            <input [(ngModel)]="busquedaAlumno" (ngModelChange)="pagina.set(0)" name="buscarCalificacion" type="search" placeholder="Nombre o apellido" class="min-h-11 rounded-xl border border-[#d9e1ec] px-3 text-sm font-normal text-[#172b4d]" />
+            <input [ngModel]="busquedaAlumno()" (ngModelChange)="busquedaAlumno.set($event); pagina.set(0)" name="buscarCalificacion" type="search" placeholder="Nombre o apellido" class="min-h-11 rounded-xl border border-[#d9e1ec] px-3 text-sm font-normal text-[#172b4d]" />
           </label>
           <label class="grid min-w-[170px] gap-1 text-xs font-semibold text-[#475569]">Calificación
-            <select [(ngModel)]="filtroNota" (ngModelChange)="pagina.set(0)" name="filtroNotaCalificacion" class="min-h-11 rounded-xl border border-[#d9e1ec] bg-white px-3 text-sm font-normal text-[#172b4d]"><option value="TODOS">Todas</option><option value="SIN_CALIFICAR">Sin calificar</option><option value="AD">AD</option><option value="A">A</option><option value="B">B</option><option value="C">C</option></select>
+            <select [ngModel]="filtroNota()" (ngModelChange)="filtroNota.set($event); pagina.set(0)" name="filtroNotaCalificacion" class="min-h-11 rounded-xl border border-[#d9e1ec] bg-white px-3 text-sm font-normal text-[#172b4d]"><option value="TODOS">Todas</option><option value="SIN_CALIFICAR">Sin calificar</option><option value="AD">AD</option><option value="A">A</option><option value="B">B</option><option value="C">C</option></select>
           </label>
           <span class="pb-3 text-xs text-[#59677a]">{{ alumnosFiltrados().length }} estudiantes</span>
         </div>
@@ -176,8 +200,124 @@ template: `
             </tbody>
           </table>
         </div>
-        <mat-paginator [length]="alumnosFiltrados().length" [pageIndex]="pagina()" [pageSize]="10" [pageSizeOptions]="[10, 25, 50]" (page)="cambiarPagina($event)" aria-label="Paginación de calificaciones" />
+        <mat-paginator [length]="alumnosFiltrados().length" [pageIndex]="pagina()" [pageSize]="tamanoPagina()" [pageSizeOptions]="[10, 25, 50]" (page)="cambiarPagina($event)" aria-label="Paginación de calificaciones" />
       </section>
+      }
+
+      @if (pestanaActiva() === 'ranking') {
+        <section class="space-y-6" aria-label="Ranking anual interno de la sección">
+          @if (rankingError()) { <p class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">{{ rankingError() }}</p> }
+          @if (rankingCargando()) { <p class="text-sm text-slate-600" role="status">Consultando el ranking anual interno de la sección…</p> }
+          <!-- Podio para los tres primeros puestos devueltos por el servicio -->
+          @if (rankingAlumnos().length >= 3) {
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- 2do Puesto -->
+              <div class="order-2 md:order-1 p-5 rounded-2xl border-2 border-slate-200 bg-gradient-to-b from-slate-50 to-white shadow-sm flex flex-col justify-between items-center text-center">
+                <span class="w-10 h-10 rounded-full bg-slate-200 text-slate-700 font-extrabold flex items-center justify-center text-base mb-2">2°</span>
+                <span class="text-xs font-bold text-slate-500 uppercase tracking-wider">Puesto 2</span>
+                <h3 class="text-base font-bold text-[#14213d] mt-1">{{ rankingAlumnos()[1].nombreCompleto }}</h3>
+                <div class="mt-3 flex items-center gap-2">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">Puntaje {{ rankingAlumnos()[1].puntajePromedioInterno | number:'1.2-2' }}</span>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">{{ rankingAlumnos()[1].porcentajeAsistencia }}% Asist.</span>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-2 font-medium">{{ rankingAlumnos()[1].totalIncidencias }} incidencias</p>
+              </div>
+
+              <!-- 1er Puesto (Oro / Destacado) -->
+              <div class="order-1 md:order-2 p-6 rounded-2xl border-2 border-[#c49a58] bg-gradient-to-b from-[#fffbf2] to-white shadow-md flex flex-col justify-between items-center text-center scale-105">
+                <span class="w-12 h-12 rounded-full bg-[#fceecf] text-[#936622] font-black flex items-center justify-center text-lg mb-2 shadow-inner">👑 1°</span>
+                <span class="text-xs font-extrabold text-[#936622] uppercase tracking-wider">Puesto 1</span>
+                <h3 class="text-lg font-extrabold text-[#14213d] mt-1">{{ rankingAlumnos()[0].nombreCompleto }}</h3>
+                <div class="mt-3 flex items-center gap-2">
+                  <span class="px-3 py-1 rounded-full text-xs font-black bg-[#fef3c7] text-[#92400e] border border-[#fde68a]">Puntaje {{ rankingAlumnos()[0].puntajePromedioInterno | number:'1.2-2' }}</span>
+                  <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">{{ rankingAlumnos()[0].porcentajeAsistencia }}% Asist.</span>
+                </div>
+                <span class="inline-block mt-2 px-3 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">{{ rankingAlumnos()[0].totalIncidencias }} incidencias registradas</span>
+              </div>
+
+              <!-- 3er Puesto -->
+              <div class="order-3 md:order-3 p-5 rounded-2xl border-2 border-amber-200 bg-gradient-to-b from-amber-50/40 to-white shadow-sm flex flex-col justify-between items-center text-center">
+                <span class="w-10 h-10 rounded-full bg-amber-100 text-amber-800 font-extrabold flex items-center justify-center text-base mb-2">3°</span>
+                <span class="text-xs font-bold text-amber-700 uppercase tracking-wider">Puesto 3</span>
+                <h3 class="text-base font-bold text-[#14213d] mt-1">{{ rankingAlumnos()[2].nombreCompleto }}</h3>
+                <div class="mt-3 flex items-center gap-2">
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">Puntaje {{ rankingAlumnos()[2].puntajePromedioInterno | number:'1.2-2' }}</span>
+                  <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">{{ rankingAlumnos()[2].porcentajeAsistencia }}% Asist.</span>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-2 font-medium">{{ rankingAlumnos()[2].totalIncidencias }} incidencias</p>
+              </div>
+            </div>
+          }
+
+          <!-- Tabla de ranking por sección -->
+          <div class="rounded-2xl border border-[#e1e8f1] bg-white overflow-hidden shadow-sm">
+            <div class="p-4 border-b border-[#e1e8f1] bg-[#f8fafc] flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 class="text-base font-bold text-[#14213d] m-0">Ranking anual interno de la sección</h3>
+                <p class="text-xs text-[#59677a] m-0 mt-0.5">{{ rankingDisclaimer() }}</p>
+              </div>
+              <span class="px-3 py-1 rounded-lg text-xs font-semibold bg-white border border-[#e2e8f0] text-slate-700">{{ rankingAlumnos().length }} estudiantes evaluados</span>
+            </div>
+
+            <div class="overflow-x-auto scrollbar-hidden">
+              <table class="w-full text-left text-sm">
+                <thead class="bg-[#f1f4f9] text-[#475569] text-xs uppercase font-bold tracking-wider border-b border-[#e2e8f0]">
+                  <tr>
+                    <th scope="col" class="py-3 px-4 text-center w-16">Puesto</th>
+                    <th scope="col" class="py-3 px-4">Estudiante</th>
+                    <th scope="col" class="py-3 px-4 text-center">Puntaje interno</th>
+                    <th scope="col" class="py-3 px-4 text-center">Asistencia (%)</th>
+                    <th scope="col" class="py-3 px-4 text-center">Incidencias registradas</th>
+                    <th scope="col" class="py-3 px-4 text-right">Mención</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#e2e8f0]">
+                  @for (item of rankingAlumnos(); track item.matriculaId) {
+                    <tr class="hover:bg-slate-50/80 transition-colors" [class.bg-amber-50]="item.puesto === 1" [class.bg-slate-50]="item.puesto === 2">
+                      <td class="py-3 px-4 text-center">
+                        @if (item.puesto === 1) {
+                          <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-amber-100 text-[#92400e] font-black text-xs">1°</span>
+                        } @else if (item.puesto === 2) {
+                          <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-200 text-slate-700 font-black text-xs">2°</span>
+                        } @else if (item.puesto === 3) {
+                          <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-amber-200/60 text-amber-900 font-black text-xs">3°</span>
+                        } @else {
+                          <span class="text-slate-500 font-bold text-xs">{{ item.puesto }}</span>
+                        }
+                      </td>
+                      <td class="py-3 px-4 font-bold text-[#14213d]">{{ item.nombreCompleto }}</td>
+                      <td class="py-3 px-4 text-center">
+                        <span class="px-2.5 py-1 rounded-md text-xs font-bold"
+                          [class.bg-blue-100]="item.puntajePromedioInterno >= 3.5"
+                          [class.text-blue-800]="item.puntajePromedioInterno >= 3.5"
+                          [class.bg-emerald-100]="item.puntajePromedioInterno >= 2.5 && item.puntajePromedioInterno < 3.5"
+                          [class.text-emerald-800]="item.puntajePromedioInterno >= 2.5 && item.puntajePromedioInterno < 3.5"
+                          [class.bg-amber-100]="item.puntajePromedioInterno < 2.5"
+                          [class.text-amber-800]="item.puntajePromedioInterno < 2.5">
+                          {{ item.puntajePromedioInterno | number:'1.2-2' }}
+                        </span>
+                      </td>
+                      <td class="py-3 px-4 text-center font-mono font-medium text-slate-700">{{ item.porcentajeAsistencia }}%</td>
+                      <td class="py-3 px-4 text-center">{{ item.totalIncidencias }}</td>
+                      <td class="py-3 px-4 text-right">
+                        <span class="text-xs font-semibold text-[#184fae]">{{ item.mencionHonor }}</span>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="6" class="text-center py-10 text-slate-500">
+                        <p class="font-medium text-slate-600 m-0">No hay alumnos matriculados con calificaciones para esta sección.</p>
+                        <p class="text-xs text-slate-400 m-0 mt-1">Selecciona una sección asignada y vuelve a consultar.</p>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </section>
+      }
 
       @if (puedeEditar()) {
       <dialog #edicionDialog class="fixed inset-0 m-auto w-[min(620px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden rounded-[20px] border border-[#e1e8f1] bg-white p-0 text-[#172b4d] font-sans shadow-[0_24px_72px_rgb(15_31_57_/_24%)] backdrop:bg-[rgb(15_31_57_/_48%)] backdrop:backdrop-blur-[3px]" aria-labelledby="calificacion-dialog-title">
@@ -221,6 +361,14 @@ template: `
   `
 })
 export class CalificacionesComponent implements OnInit {
+  readonly pestanaActiva = signal<'matriz' | 'ranking'>('matriz');
+  readonly cuadroHonor = signal<CuadroHonorResponseDto | null>(null);
+  readonly rankingAlumnos = computed(() => this.cuadroHonor()?.estudiantes ?? []);
+  readonly rankingSeccion = computed(() => this.cuadroHonor()?.seccionLetra ?? '');
+  readonly rankingDisclaimer = computed(() => this.cuadroHonor()?.disclaimer ?? 'Puntaje interno de referencia; no representa una escala oficial ni otorga beneficios institucionales.');
+  readonly rankingError = signal<string | null>(null);
+  readonly rankingCargando = signal(false);
+  private solicitudRanking = 0;
   private readonly evaluacionService = inject(EvaluacionService);
   private readonly academicoService = inject(AcademicoService);
   private readonly authStore = inject(AuthStore);
@@ -247,16 +395,20 @@ export class CalificacionesComponent implements OnInit {
   cargando = signal(false);
 
   readonly alumnos = signal<EvaluacionAlumno[]>([]);
-  busquedaAlumno = '';
-  filtroNota = 'TODOS';
+  readonly busquedaAlumno = signal('');
+  readonly filtroNota = signal('TODOS');
   readonly pagina = signal(0);
+  readonly tamanoPagina = signal(10);
   readonly alumnosFiltrados = computed(() => {
-    const texto = this.busquedaAlumno.trim().toLocaleLowerCase('es-PE');
+    const texto = this.busquedaAlumno().trim().toLocaleLowerCase('es-PE');
+    const nota = this.filtroNota();
     return this.alumnos().filter(alumno =>
       (!texto || alumno.estudiante.toLocaleLowerCase('es-PE').includes(texto)) &&
-      (this.filtroNota === 'TODOS' || (this.filtroNota === 'SIN_CALIFICAR' ? alumno.c1 === '-' : alumno.c1 === this.filtroNota)));
+      (nota === 'TODOS' || (nota === 'SIN_CALIFICAR' ? alumno.c1 === '-' : alumno.c1 === nota)));
   });
-  readonly alumnosPagina = computed(() => this.alumnosFiltrados().slice(this.pagina() * 10, this.pagina() * 10 + 10));
+  readonly alumnosPagina = computed(() => this.alumnosFiltrados().slice(
+    this.pagina() * this.tamanoPagina(), this.pagina() * this.tamanoPagina() + this.tamanoPagina()
+  ));
   get seccionActualId(): number { return this.asignaciones().find(a => a.id === Number(this.asignacionId))?.seccionId ?? 0; }
 
   abrirEdicion(alumno: EvaluacionAlumno): void {
@@ -326,14 +478,55 @@ export class CalificacionesComponent implements OnInit {
     });
   }
 
+  abrirRanking(): void {
+    this.pestanaActiva.set('ranking');
+    this.cargarRanking();
+  }
+
+  cargarRanking(): void {
+    const seccionId = this.seccionActualId;
+    const solicitud = ++this.solicitudRanking;
+    if (!seccionId) {
+      this.cuadroHonor.set(null);
+      this.rankingError.set(null);
+      this.rankingCargando.set(false);
+      return;
+    }
+    this.rankingError.set(null);
+    this.rankingCargando.set(true);
+    this.evaluacionService.consultarRankingSeccion(seccionId).subscribe({
+      next: cuadro => {
+        if (solicitud !== this.solicitudRanking || seccionId !== this.seccionActualId) return;
+        this.cuadroHonor.set(cuadro);
+        this.rankingCargando.set(false);
+      },
+      error: err => {
+        if (solicitud !== this.solicitudRanking || seccionId !== this.seccionActualId) return;
+        this.cuadroHonor.set(null);
+        this.rankingCargando.set(false);
+        this.rankingError.set(err?.error?.message ?? 'No se pudo consultar el ranking anual interno de la sección.');
+      }
+    });
+  }
+
   cambiarAsignacion(): void {
+    this.solicitudRanking++;
+    this.rankingCargando.set(false);
     const asignacion = this.asignaciones().find(a => a.id === Number(this.asignacionId));
-    if (!asignacion) return;
+    if (!asignacion) {
+      this.cuadroHonor.set(null);
+      this.rankingError.set(null);
+      this.rankingCargando.set(false);
+      return;
+    }
     this.periodoId = 0;
     this.competenciaId = 0;
     this.alumnos.set([]);
+    this.cuadroHonor.set(null);
+    this.rankingError.set(null);
     this.pagina.set(0);
     this.error.set(null);
+    if (this.pestanaActiva() === 'ranking') this.cargarRanking();
     this.academicoService.listarAreas(asignacion.nivelId).subscribe({next: areas => this.areas.set(areas), error: () => this.areas.set([])});
     this.academicoService.listarCompetencias(asignacion.areaCurricularId).subscribe({
       next: competencias => { this.competencias.set(competencias); this.competenciaId = competencias[0]?.id ?? 0; this.cargarCalificaciones(); },
@@ -372,6 +565,7 @@ export class CalificacionesComponent implements OnInit {
         } else {
           this.alumnos.set([]);
         }
+        if (this.pestanaActiva() === 'ranking') this.cargarRanking();
       },
       error: (err) => {
         this.cargando.set(false);
@@ -381,7 +575,10 @@ export class CalificacionesComponent implements OnInit {
     });
   }
 
-  cambiarPagina(event: PageEvent): void { this.pagina.set(event.pageIndex); }
+  cambiarPagina(event: PageEvent): void {
+    this.pagina.set(event.pageIndex);
+    this.tamanoPagina.set(event.pageSize);
+  }
 
   guardarCalificaciones(): void {
     if (!this.puedeEditar()) return;

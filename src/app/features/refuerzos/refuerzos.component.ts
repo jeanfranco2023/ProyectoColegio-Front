@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { AuthStore } from '../../core/state/auth.store';
 import { AcademicoService } from '../../core/services/academico.service';
 import { RefuerzoService, SesionRefuerzoDto, InscripcionRefuerzoDto } from '../../core/services/refuerzo.service';
 import { AsignacionDocenteResponseDto, AulaResponseDto, PeriodoResponseDto } from '../../core/models/academico.model';
@@ -24,10 +25,12 @@ import { AsignacionHorarioOpcionDto, HorarioService } from '../../core/services/
       <div class="flex gap-2"><button class="min-h-11 rounded-lg border p-2" type="button" [disabled]="ocupado()" (click)="seleccionar(s)">Pase de lista</button><button class="min-h-11 rounded-lg border p-2" type="button" [disabled]="ocupado()" (click)="derivar(s)">Derivar estudiantes B/C</button></div></li>}
     @if(!sesiones().length){<li>No hay sesiones en este periodo.</li>}</ul>
     @if(seleccionada();as sesion){<section class="grid gap-3 rounded-xl border bg-white p-4"><h2 class="text-lg font-semibold">Asistencia: {{ sesion.tema }}</h2><div class="overflow-auto"><table class="w-full text-left"><thead><tr><th>Estudiante</th><th>Estado</th><th>Observaciones de avance</th><th>Acción</th></tr></thead><tbody>
-      @for(i of inscritos();track i.id){<tr class="border-t"><td class="p-2">{{ i.nombreEstudiante || 'Estudiante #' + i.estudianteId }}</td><td><select class="min-h-11 rounded-lg border p-2" [ngModel]="i.estadoAsistencia" (ngModelChange)="i.estadoAsistencia=$event"><option>PENDIENTE</option><option>ASISTIO</option><option>FALTO</option><option>JUSTIFICADO</option></select></td><td><input class="min-h-11 rounded-lg border p-2" maxlength="500" [ngModel]="i.observaciones" (ngModelChange)="i.observaciones=$event" [attr.aria-label]="'Avance del estudiante ' + i.estudianteId" /></td><td><button class="min-h-11 rounded-lg border p-2" type="button" [disabled]="ocupado() || !puedeTomarAsistencia() || i.estadoAsistencia === 'PENDIENTE' || (i.estadoAsistencia === 'JUSTIFICADO' && !i.observaciones?.trim())" (click)="guardarAsistencia(i)">Guardar</button></td></tr>}
+      @for(i of inscritos();track i.id){<tr class="border-t"><td class="p-2">{{ i.nombreEstudiante || 'Estudiante #' + i.estudianteId }}</td><td>@if (puedeRegistrarAsistencia()) {<select class="min-h-11 rounded-lg border p-2" [ngModel]="i.estadoAsistencia" (ngModelChange)="i.estadoAsistencia=$event"><option>PENDIENTE</option><option>ASISTIO</option><option>FALTO</option><option>JUSTIFICADO</option></select>} @else {<span>{{ i.estadoAsistencia }}</span>}</td><td>@if (puedeRegistrarAsistencia()) {<input class="min-h-11 rounded-lg border p-2" maxlength="500" [ngModel]="i.observaciones" (ngModelChange)="i.observaciones=$event" [attr.aria-label]="'Avance del estudiante ' + i.estudianteId" />} @else {<span>{{ i.observaciones || '—' }}</span>}</td><td>@if (puedeRegistrarAsistencia()) {<button class="min-h-11 rounded-lg border p-2" type="button" [disabled]="ocupado() || !puedeTomarAsistencia() || i.estadoAsistencia === 'PENDIENTE' || (i.estadoAsistencia === 'JUSTIFICADO' && !i.observaciones?.trim())" (click)="guardarAsistencia(i)">Guardar</button>} @else {<span class="text-xs text-slate-500">Solo lectura</span>}</td></tr>}
     </tbody></table></div></section>}
   </section>` })
 export class RefuerzosComponent implements OnInit {
+    private readonly auth = inject(AuthStore);
+    readonly puedeRegistrarAsistencia = computed(() => this.auth.hasRole('DOCENTE'));
     private readonly academico = inject(AcademicoService);
     private readonly servicio = inject(RefuerzoService);
     private readonly horarios = inject(HorarioService);
@@ -103,8 +106,8 @@ export class RefuerzosComponent implements OnInit {
     derivar(s: SesionRefuerzoDto) { if (this.ocupado())
         return; this.ocupado.set(true); this.servicio.derivarAutomatico(s.id).subscribe({ next: datos => { this.ocupado.set(false); this.mensaje.set(`Derivación completada: ${datos.length} inscripciones devueltas.`); this.seleccionar(s); }, error: e => this.fallo(e) }); }
     guardarAsistencia(i: InscripcionRefuerzoDto) { if (this.ocupado())
-        return; this.ocupado.set(true); this.servicio.asistencia({ inscripcionId: i.id, estadoAsistencia: i.estadoAsistencia, observaciones: i.observaciones ?? '' }).subscribe({ next: () => { this.ocupado.set(false); this.mensaje.set('Asistencia guardada.'); }, error: e => this.fallo(e) }); }
-    puedeTomarAsistencia() { return !!this.seleccionada() && this.seleccionada()!.fechaProgramada <= this.hoy; }
+        return; this.ocupado.set(true); this.servicio.asistencia({ inscripcionId: i.id, estadoAsistencia: i.estadoAsistencia, observaciones: i.observaciones ?? '' }).subscribe({ next: actualizada => { this.ocupado.set(false); this.inscritos.update(filas => filas.map(fila => fila.id === actualizada.id ? actualizada : fila)); this.mensaje.set('Asistencia guardada.'); }, error: e => this.fallo(e) }); }
+    puedeTomarAsistencia() { return this.puedeRegistrarAsistencia() && !!this.seleccionada() && this.seleccionada()!.fechaProgramada <= this.hoy; }
     private fallo(error: {
         error?: {
             message?: string;

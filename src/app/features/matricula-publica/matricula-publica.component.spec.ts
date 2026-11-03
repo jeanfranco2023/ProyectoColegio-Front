@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { signal } from '@angular/core';
+import { of } from 'rxjs';
 import { MatriculaPublicaComponent } from './matricula-publica.component';
 import { DocumentoSolicitudDto, TipoDocumentoSolicitud } from '../../core/models/matricula-publica.model';
 
@@ -67,5 +68,25 @@ describe('Documentos PDF y vínculo parental', () => {
       expect(input.value).toBe('');
       expect(error()).toContain('PDF');
     }
+  });
+});
+
+describe('Reenvío de seguimiento público', () => {
+  it('muestra respuesta genérica del backend y nunca afirma que se entregó un correo', () => {
+    const mensaje = signal('');
+    const contexto = {
+      documentoEstudiante: '12345678',
+      anioId: () => 2026,
+      error: signal(''),
+      reenviandoToken: signal(false),
+      mensajeReenvioToken: mensaje,
+      api: { reenviarToken: vi.fn(() => of({mensaje: 'Si existe una solicitud, recibirás instrucciones.'})) },
+      mensajeError: () => 'No se pudo procesar la consulta.'
+    };
+
+    MatriculaPublicaComponent.prototype.reenviarEnlaceSeguimiento.call(contexto as unknown as MatriculaPublicaComponent);
+
+    expect(mensaje()).toBe('Si existe una solicitud, recibirás instrucciones.');
+    expect(mensaje().toLowerCase()).not.toContain('reenviado');
   });
 });

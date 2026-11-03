@@ -49,13 +49,6 @@ export interface CatalogoMatriculaPublicaDto {
   secciones: SeccionMatriculaPublicaDto[];
 }
 
-export interface IdentidadDniDto {
-  numeroDocumento: string;
-  nombres: string;
-  apellidoPaterno: string;
-  apellidoMaterno: string;
-}
-
 export interface CrearSolicitudMatriculaPublicaDto {
   anioLectivoId: number;
   gradoId: number;
@@ -72,9 +65,17 @@ export interface CrearSolicitudMatriculaPublicaDto {
   celularApoderado: string;
   emailApoderado: string | null;
   direccionApoderado: string;
-  ubigeoApoderado: string;
+  ubigeoApoderado?: string;
   parentesco: 'PADRE' | 'MADRE';
   consentimientoGemini: true;
+}
+
+export interface ReniecPersonaDto {
+  numeroDocumento?: string;
+  dni?: string;
+  nombres?: string;
+  apellidoPaterno?: string;
+  apellidoMaterno?: string;
 }
 
 export interface SolicitudMatriculaPublicaDto {

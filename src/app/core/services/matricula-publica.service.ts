@@ -5,7 +5,6 @@ import { environment } from '../../../environments/environment';
 import {
   CatalogoMatriculaPublicaDto,
   CrearSolicitudMatriculaPublicaDto,
-  IdentidadDniDto,
   PagoMatriculaPublicaDto,
   SolicitudMatriculaPublicaAdminDto,
   SolicitudMatriculaPublicaDto,
@@ -21,10 +20,6 @@ export class MatriculaPublicaService {
     return this.http.get<CatalogoMatriculaPublicaDto>(`${this.baseUrl}/public/catalogo`);
   }
 
-  consultarDni(dni: string): Observable<IdentidadDniDto> {
-    return this.http.get<IdentidadDniDto>(`${this.baseUrl}/public/dni/${encodeURIComponent(dni)}`);
-  }
-
   crear(payload: CrearSolicitudMatriculaPublicaDto): Observable<SolicitudMatriculaPublicaDto> {
     return this.http.post<SolicitudMatriculaPublicaDto>(`${this.baseUrl}/public`, payload);
   }
@@ -33,6 +28,23 @@ export class MatriculaPublicaService {
     return this.http.get<SolicitudMatriculaPublicaDto>(`${this.baseUrl}/public/${encodeURIComponent(id)}`, {
       headers: this.tokenHeaders(token)
     });
+  }
+
+  consultarPorToken(token: string): Observable<SolicitudMatriculaPublicaDto> {
+    return this.http.get<SolicitudMatriculaPublicaDto>(
+      `${this.baseUrl}/public/por-token/${encodeURIComponent(token)}`,
+      { headers: this.tokenHeaders(token) }
+    );
+  }
+
+  reenviarToken(
+    numeroDocumentoEstudiante: string,
+    anioLectivoId: number
+  ): Observable<{ mensaje: string }> {
+    return this.http.post<{ mensaje: string }>(
+      `${this.baseUrl}/public/reenviar-token`,
+      { numeroDocumentoEstudiante, anioLectivoId }
+    );
   }
 
   subirDocumento(
@@ -44,7 +56,7 @@ export class MatriculaPublicaService {
     const data = new FormData();
     data.append('archivo', archivo, archivo.name);
     return this.http.post<SolicitudMatriculaPublicaDto>(
-      `${this.baseUrl}/public/${encodeURIComponent(id)}/documentos/${tipo}`,
+      `${this.baseUrl}/public/${encodeURIComponent(id)}/documentos/${tipo}?token=${encodeURIComponent(token)}`,
       data,
       { headers: this.tokenHeaders(token) }
     );
@@ -57,7 +69,7 @@ export class MatriculaPublicaService {
   }
 
   consultarPago(id: string, token: string): Observable<SolicitudMatriculaPublicaDto> {
-    return this.http.post<SolicitudMatriculaPublicaDto>(`${this.baseUrl}/public/${id}/consultar-pago`, {}, { headers: this.tokenHeaders(token) });
+    return this.http.post<SolicitudMatriculaPublicaDto>(`${this.baseUrl}/public/${encodeURIComponent(id)}/consultar-pago`, {}, { headers: this.tokenHeaders(token) });
   }
 
   confirmarPago(id: string, token: string, paymentId: string): Observable<SolicitudMatriculaPublicaDto> {

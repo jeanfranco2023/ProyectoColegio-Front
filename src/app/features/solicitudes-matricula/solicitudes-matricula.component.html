@@ -96,7 +96,7 @@
 
 @if (seleccion()) {
   <div class="fixed inset-0 z-[2100] grid place-items-center bg-[rgb(12_25_43_/_48%)] p-[15px] backdrop-blur-[4px]" (click)="cerrarModal()" (keydown.escape)="cerrarModal()">
-    <section class="max-h-[calc(100dvh-30px)] w-full max-w-[500px] overflow-y-auto rounded-[18px] border border-[#e2e8f0] bg-white p-[23px] shadow-[0_25px_80px_rgb(10_24_45_/_25%)] max-[600px]:p-[18px]" role="dialog" aria-modal="true" cdkTrapFocus cdkTrapFocusAutoCapture (click)="$event.stopPropagation()">
+    <section class="max-h-[calc(100dvh-30px)] w-full max-w-[500px] overflow-y-auto scrollbar-hidden rounded-[18px] border border-[#e2e8f0] bg-white p-[23px] shadow-[0_25px_80px_rgb(10_24_45_/_25%)] max-[600px]:p-[18px]" role="dialog" aria-modal="true" cdkTrapFocus cdkTrapFocusAutoCapture (click)="$event.stopPropagation()">
       @if (!confirmandoRechazo()) {
         <header><span class="text-[11px] font-bold tracking-[.12em] text-[#76500a]">GESTIÓN DE SOLICITUD</span><h2 class="mb-[7px] mt-[7px] text-[21px] font-normal text-[#1d304c] tracking-[-.025em]">Solicitar corrección</h2><p class="m-0 text-[11px] leading-[1.65] text-[#59677a]">La familia podrá volver a subir el documento observado con el código privado de su trámite.</p></header>
         <div class="my-5 grid gap-[14px]">

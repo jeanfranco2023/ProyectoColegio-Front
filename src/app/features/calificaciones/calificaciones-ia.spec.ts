@@ -6,7 +6,7 @@ import { CalificacionesComponent } from './calificaciones.component';
 import { AcademicoService } from '../../core/services/academico.service';
 import { EvaluacionService } from '../../core/services/evaluacion.service';
 import { AuthStore } from '../../core/state/auth.store';
-describe('sugerencias pedagógicas', () => {
+describe('calificaciones y sugerencias pedagógicas', () => {
     const rolActual = signal('DOCENTE');
     let respuesta: Subject<{
         conclusionDescriptiva: string;
@@ -31,6 +31,23 @@ describe('sugerencias pedagógicas', () => {
     });
     afterEach(() => TestBed.resetTestingModule());
     const resultado = { conclusionDescriptiva: 'Resuelve con apoyo.', aspectoMejora: 'Comprobar resultados.', recomendacionApoderado: 'Practicar con ejemplos.', generadoPorIa: true };
+    it('recalcula la matriz al cambiar nombre y calificación sin volver a consultar datos', () => {
+        const alumno = componente.alumnoEditando()!;
+        componente.alumnos.set([
+            { ...alumno, estudiante: 'Ana', c1: 'B' },
+            { ...alumno, matriculaId: 10, estudiante: 'Lucía', c1: 'A' }
+        ]);
+        expect(componente.alumnosFiltrados()).toHaveLength(2);
+        componente.busquedaAlumno.set('luc');
+        expect(componente.alumnosFiltrados().map(a => a.matriculaId)).toEqual([10]);
+        componente.filtroNota.set('B');
+        expect(componente.alumnosFiltrados()).toHaveLength(0);
+        componente.filtroNota.set('A');
+        expect(componente.alumnosFiltrados()).toHaveLength(1);
+        componente.busquedaAlumno.set('');
+        componente.filtroNota.set('TODOS');
+        expect(componente.alumnosFiltrados()).toHaveLength(2);
+    });
     it('presenta la sugerencia para revisión y conserva su procedencia IA', () => { componente.sugerirConclusionConIa(); respuesta.next(resultado); expect(componente.conclusionEditada).toContain('Resuelve con apoyo.'); expect(componente.sugerenciaIaEditada).toBe(true); expect(componente.mensajeIa()).toContain('Revísala'); });
     it('no sobrescribe cambios humanos realizados durante la consulta', () => { componente.sugerirConclusionConIa(); componente.conclusionEditada = 'Conclusión escrita por el docente'; respuesta.next(resultado); expect(componente.conclusionEditada).toBe('Conclusión escrita por el docente'); expect(componente.sugerenciaIaEditada).toBe(false); });
     it('permite a Dirección consultar, pero bloquea los controles de escritura', () => { const alumno = componente.alumnoEditando()!; rolActual.set('DIRECCION'); componente.alumnoEditando.set(null); componente.abrirEdicion(alumno); componente.sugerirConclusionConIa(); componente.aplicarEdicion(); componente.guardarCalificaciones(); expect(componente.puedeEditar()).toBe(false); expect(componente.alumnoEditando()).toBeNull(); expect(respuesta.observed).toBe(false); });

@@ -7,6 +7,7 @@ export type TipoComprobante = 'BOLETA' | 'RECIBO_INTERNO';
 export type EstadoComprobante = 'EMITIDO' | 'ANULADO';
 export interface ConceptoCobroResponseDto { id: number; codigo: string; nombre: string; tipoConcepto: TipoConcepto; montoSugerido: number; }
 export interface GenerarObligacionesAnualesRequestDto { matriculaId: number; conceptoMatriculaId: number; conceptoPensionId: number; primerVencimiento: string; }
+export interface CrearObligacionMatriculaRequestDto { matriculaId: number; fechaVencimiento: string; }
 
 export interface ObligacionResponseDto {
   id: number;

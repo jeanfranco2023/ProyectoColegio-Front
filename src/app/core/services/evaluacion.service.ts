@@ -5,6 +5,7 @@ import { environment } from '../../../environments/environment';
 import {
   FilaCalificacionResponseDto,
   CalificacionResponseDto,
+  CuadroHonorResponseDto,
   EstudiantesEnRiesgoResponseDto,
   LibretaNotasResponseDto,
   RegistrarCalificacionesMasivasRequestDto
@@ -43,6 +44,10 @@ export class EvaluacionService {
   listarCalificaciones(asignacionDocenteId: number, periodoAcademicoId: number): Observable<CalificacionResponseDto[]> {
     const params = new HttpParams().set('asignacionDocenteId', asignacionDocenteId).set('periodoAcademicoId', periodoAcademicoId);
     return this.http.get<CalificacionResponseDto[]>(`${this.baseUrl}/cneb`, { params });
+  }
+
+  consultarRankingSeccion(seccionId: number): Observable<CuadroHonorResponseDto> {
+    return this.http.get<CuadroHonorResponseDto>(`${this.baseUrl}/ranking/seccion/${seccionId}`);
   }
 
   consultarEstudiantesEnRiesgo(periodoId: number): Observable<EstudiantesEnRiesgoResponseDto> {

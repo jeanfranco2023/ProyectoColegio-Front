@@ -44,6 +44,7 @@ export const ADMIN_MENU_ITEMS: readonly AdminMenuItem[] = [
   { label: 'Portal familiar', route: '/admin/portal-apoderado', roles: ADMIN_ROUTE_ACCESS['portal-apoderado'], section: 'Comunidad y gestión', icon: 'M3 11l9-8 9 8M5 10v11h14V10' },
   { label: 'Designar suplente', route: '/admin/suplencias', roles: ADMIN_ROUTE_ACCESS.suplencias, section: 'Comunidad y gestión', icon: 'M4 21v-4h16v4M12 13a5 5 0 100-10 5 5 0 000 10z' },
   { label: 'Gestión de suplentes', route: '/admin/aprobacion-suplencias', roles: ADMIN_ROUTE_ACCESS['aprobacion-suplencias'], section: 'Comunidad y gestión', icon: 'M9 12l2 2 4-4M4 3v12l8 6 8-6V3z' },
+  { label: 'Auditoría de accesos', route: '/admin/auditoria', roles: ADMIN_ROUTE_ACCESS.auditoria, section: 'Comunidad y gestión', icon: 'M3 12a9 9 0 1018 0 9 9 0 00-18 0zm9-5v5l3 2' },
   { label: 'Mi perfil', route: '/admin/perfil', roles: ADMIN_ROUTE_ACCESS.perfil, section: 'Comunidad y gestión', icon: 'M20 21a8 8 0 00-16 0M12 13a5 5 0 100-10 5 5 0 000 10z' }
 ];
 

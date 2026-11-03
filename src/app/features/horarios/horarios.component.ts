@@ -18,7 +18,7 @@ interface GradoHorarioOpcion { clave: string; anioLectivoId: number; anio: numbe
 
     <section class="grid gap-4 rounded-2xl border border-[#e1e8f1] bg-white p-4 shadow-sm md:grid-cols-[minmax(260px,1fr)_minmax(260px,1fr)]" aria-label="Filtros de malla horaria">
       <label class="grid gap-1 text-xs font-semibold text-slate-600">Año lectivo y grado
-        <select class="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800" [(ngModel)]="gradoSeleccionado" name="grado" (ngModelChange)="cargar()"><option value="">Selecciona un grado</option>@for (grado of grados(); track grado.clave) { <option [value]="grado.clave">{{ grado.anio }} · {{ grado.nivel }} · {{ grado.grado }}</option> }</select>
+        <select class="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800" [ngModel]="gradoSeleccionado()" name="grado" (ngModelChange)="seleccionarGrado($event)"><option value="">Selecciona un grado</option>@for (grado of grados(); track grado.clave) { <option [value]="grado.clave">{{ grado.anio }} · {{ grado.nivel }} · {{ grado.grado }}</option> }</select>
       </label>
       @if (gestion() && gradoActual()) { <label class="grid gap-1 text-xs font-semibold text-slate-600">Área del siguiente bloque
         <select class="min-h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800" [(ngModel)]="areaSeleccionada" name="area"><option [ngValue]="0">Selecciona el área</option>@for (area of areasDelGrado(); track area.id) { <option [ngValue]="area.id">{{ area.nombre }}</option> }</select>
@@ -68,7 +68,7 @@ export class HorariosComponent implements OnInit {
     }
     return [...opciones.values()].sort((a, b) => b.anio - a.anio || a.nivel.localeCompare(b.nivel) || a.grado.localeCompare(b.grado));
   });
-  readonly gradoActual = computed(() => this.grados().find(g => g.clave === this.gradoSeleccionado) ?? null);
+  readonly gradoActual = computed(() => this.grados().find(g => g.clave === this.gradoSeleccionado()) ?? null);
   readonly areasDelGrado = computed(() => {
     const grade = this.gradoActual();
     if (!grade) return [];
@@ -77,7 +77,7 @@ export class HorariosComponent implements OnInit {
     for (const item of this.catalogo()) if (item.gradoId === grade.gradoId && item.anioLectivoId === grade.anioLectivoId) opciones.set(item.areaId, item.areaNombre);
     return [...opciones].map(([id, nombre]) => ({ id, nombre })).sort((a, b) => a.nombre.localeCompare(b.nombre));
   });
-  gradoSeleccionado = '';
+  readonly gradoSeleccionado = signal('');
   areaSeleccionada = 0;
   private revision = 0;
   readonly dias: Array<{ numero: number; nombre: string; codigo: DiaHorario }> = [
@@ -102,8 +102,8 @@ export class HorariosComponent implements OnInit {
           this.bloques.set(bloques);
           this.opcionesDireccion.set(this.crearOpcionesDireccion(anios, niveles, gradosPorNivel));
           const anioAbierto = anios.find(anio => anio.abierto);
-          this.gradoSeleccionado = this.grados().find(grado => grado.anioLectivoId === anioAbierto?.id)?.clave
-            ?? this.grados()[0]?.clave ?? '';
+          this.gradoSeleccionado.set(this.grados().find(grado => grado.anioLectivoId === anioAbierto?.id)?.clave
+            ?? this.grados()[0]?.clave ?? '');
           this.cargar();
         },
         error: error => { this.cargando.set(false); this.mensaje.set(error?.error?.message ?? 'No se pudieron cargar años, niveles y grados.'); }
@@ -114,7 +114,7 @@ export class HorariosComponent implements OnInit {
     forkJoin({ catalogo: this.servicio.catalogo(), bloques: this.servicio.bloques() }).subscribe({
       next: ({ catalogo, bloques }) => {
         this.catalogo.set(catalogo); this.bloques.set(bloques);
-        this.gradoSeleccionado = this.grados()[0]?.clave ?? '';
+        this.gradoSeleccionado.set(this.grados()[0]?.clave ?? '');
         this.cargar();
       },
       error: error => { this.cargando.set(false); this.mensaje.set(error?.error?.message ?? 'No se pudieron cargar los grados asignados y los bloques.'); }
@@ -127,6 +127,11 @@ export class HorariosComponent implements OnInit {
       nivel: nivel.nombre, nivelId: nivel.id, grado: grado.nombre, gradoId: grado.id,
       numeroGrado: grado.numeroGrado
     })))).sort((a, b) => b.anio - a.anio || a.nivel.localeCompare(b.nivel) || (a.numeroGrado ?? 0) - (b.numeroGrado ?? 0));
+  }
+
+  seleccionarGrado(clave: string): void {
+    this.gradoSeleccionado.set(clave);
+    this.cargar();
   }
 
   cargar(): void {
