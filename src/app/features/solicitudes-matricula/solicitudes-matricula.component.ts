@@ -4,14 +4,15 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { StatusBadgeComponent } from '../../shared/ui/status-badge.component';
 import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
-import { MatriculaPublicaService } from '../../core/services/matricula-publica.service';
 import { AuthStore } from '../../core/state/auth.store';
+import { AcademicoService } from '../../core/services/academico.service';
+import { MatriculaPublicaService } from '../../core/services/matricula-publica.service';
 import {
   DocumentoSolicitudDto,
-  SeccionMatriculaPublicaDto,
   SolicitudMatriculaPublicaAdminDto,
   TipoDocumentoSolicitud
 } from '../../core/models/matricula-publica.model';
+import { SeccionResponseDto } from '../../core/models/academico.model';
 
 @Component({
   selector: 'app-solicitudes-matricula',
@@ -21,10 +22,9 @@ import {
 })
 export class SolicitudesMatriculaComponent implements OnInit {
   private readonly api = inject(MatriculaPublicaService);
-  readonly auth = inject(AuthStore);
+  private readonly academico = inject(AcademicoService);
+  readonly store = inject(AuthStore);
   readonly solicitudes = signal<SolicitudMatriculaPublicaAdminDto[]>([]);
-  readonly seccionesDisponibles = signal<SeccionMatriculaPublicaDto[]>([]);
-  readonly seccionesSeleccionadas = signal<Record<string, number>>({});
   readonly cargando = signal(false);
   readonly error = signal('');
   readonly aviso = signal('');
@@ -32,58 +32,21 @@ export class SolicitudesMatriculaComponent implements OnInit {
   readonly documento = signal<TipoDocumentoSolicitud>('PARTIDA_NACIMIENTO');
   readonly observacion = signal('');
   readonly confirmandoRechazo = signal(false);
+  readonly autorizandoEdad = signal(false);
+  readonly asignandoSeccion = signal(false);
+  readonly motivoEdad = signal('');
+  readonly seccionesAsignables = signal<SeccionResponseDto[]>([]);
+  readonly seccionAsignarId = signal<number | null>(null);
   readonly guardando = signal(false);
   readonly urlsDocumentos = signal<Record<string, string>>({});
-  readonly motivosEdad = signal<Record<string, string>>({});
 
   ngOnInit(): void { this.cargar(); }
 
   cargar(): void {
-    this.error.set('');
-    this.urlsDocumentos.set({});
     this.cargando.set(true);
-    this.api.catalogo().subscribe({
-      next: catalogo => this.seccionesDisponibles.set(catalogo.secciones),
-      error: () => this.seccionesDisponibles.set([])
-    });
     this.api.listarAdmin().subscribe({
       next: values => { this.solicitudes.set(values); this.cargando.set(false); },
       error: err => { this.error.set(err?.error?.message || 'No se pudieron cargar las solicitudes.'); this.cargando.set(false); }
-    });
-  }
-
-  seccionesDelGrado(solicitud: SolicitudMatriculaPublicaAdminDto): SeccionMatriculaPublicaDto[] {
-    return this.seccionesDisponibles().filter(seccion =>
-      seccion.anioLectivoId === solicitud.anioLectivoId && seccion.gradoId === solicitud.gradoId);
-  }
-
-  seleccionarSeccion(id: string, seccionId: number): void {
-    this.seccionesSeleccionadas.update(actual => ({ ...actual, [id]: seccionId }));
-  }
-
-  asignarSeccion(solicitud: SolicitudMatriculaPublicaAdminDto): void {
-    const seccionId = this.seccionesSeleccionadas()[solicitud.id];
-    if (!seccionId) { this.error.set('Selecciona una sección disponible del grado solicitado.'); return; }
-    this.guardando.set(true);
-    this.api.asignarSeccion(solicitud.id, seccionId).subscribe({
-      next: actualizada => {
-        this.solicitudes.update(actuales => actuales.map(item => item.id === actualizada.id ? actualizada : item));
-        this.aviso.set('Aula asignada. La matrícula pasó a completada y la vacante quedó actualizada.');
-        this.guardando.set(false);
-        this.cargarCatalogo();
-      },
-      error: err => {
-        this.error.set(err?.error?.message || 'No se pudo asignar la sección. Actualiza la lista de vacantes.');
-        this.guardando.set(false);
-        this.cargarCatalogo();
-      }
-    });
-  }
-
-  private cargarCatalogo(): void {
-    this.api.catalogo().subscribe({
-      next: catalogo => this.seccionesDisponibles.set(catalogo.secciones),
-      error: () => this.seccionesDisponibles.set([])
     });
   }
 
@@ -93,28 +56,105 @@ export class SolicitudesMatriculaComponent implements OnInit {
     this.documento.set(doc?.tipo ?? 'PARTIDA_NACIMIENTO');
     this.observacion.set(doc?.observacion ?? '');
     this.confirmandoRechazo.set(false);
+    this.autorizandoEdad.set(false);
+    this.asignandoSeccion.set(false);
     this.error.set('');
   }
 
   abrirRechazo(solicitud: SolicitudMatriculaPublicaAdminDto): void {
     this.seleccion.set(solicitud);
     this.confirmandoRechazo.set(true);
+    this.autorizandoEdad.set(false);
+    this.asignandoSeccion.set(false);
     this.error.set('');
   }
 
-  cerrarModal(): void { this.seleccion.set(null); this.confirmandoRechazo.set(false); }
+  abrirAutorizacionEdad(solicitud: SolicitudMatriculaPublicaAdminDto): void {
+    this.seleccion.set(solicitud);
+    this.confirmandoRechazo.set(false);
+    this.autorizandoEdad.set(true);
+    this.asignandoSeccion.set(false);
+    this.motivoEdad.set('');
+    this.error.set('');
+  }
+
+  abrirAsignacionSeccion(solicitud: SolicitudMatriculaPublicaAdminDto): void {
+    this.seleccion.set(solicitud);
+    this.confirmandoRechazo.set(false);
+    this.autorizandoEdad.set(false);
+    this.asignandoSeccion.set(true);
+    this.seccionAsignarId.set(null);
+    this.seccionesAsignables.set([]);
+    this.error.set('');
+    this.guardando.set(true);
+    this.academico.listarSecciones(solicitud.anioLectivoId).subscribe({
+      next: secciones => {
+        const opciones = secciones.filter(seccion =>
+          seccion.gradoId === solicitud.gradoId && seccion.cupoMaximo > seccion.vacantesOcupadas
+        );
+        this.seccionesAsignables.set(opciones);
+        this.seccionAsignarId.set(opciones[0]?.id ?? null);
+        if (!opciones.length) this.error.set('No hay secciones con vacantes para el grado y año de esta solicitud.');
+        this.guardando.set(false);
+      },
+      error: err => {
+        this.error.set(err?.error?.message || 'No se pudieron cargar las secciones disponibles.');
+        this.guardando.set(false);
+      }
+    });
+  }
+
+  cerrarModal(): void {
+    this.seleccion.set(null);
+    this.confirmandoRechazo.set(false);
+    this.autorizandoEdad.set(false);
+    this.asignandoSeccion.set(false);
+  }
+
+  documentosValidados(solicitud: SolicitudMatriculaPublicaAdminDto): boolean {
+    return solicitud.documentos.length === 3 && solicitud.documentos.every(documento => documento.estado === 'VALIDADO');
+  }
+
+  autorizarEdad(): void {
+    const item = this.seleccion();
+    const motivo = this.motivoEdad().trim();
+    if (!item || motivo.length < 10 || motivo.length > 500) {
+      this.error.set('La justificación debe tener entre 10 y 500 caracteres.');
+      return;
+    }
+    this.guardando.set(true);
+    this.api.autorizarExcepcionEdad(item.id, motivo).subscribe({
+      next: updated => {
+        this.solicitudes.update(current => current.map(s => s.id === updated.id ? updated : s));
+        this.aviso.set('La excepción de edad fue autorizada. La familia podrá continuar cuando actualice su solicitud.');
+        this.guardando.set(false);
+        this.cerrarModal();
+      },
+      error: err => { this.error.set(err?.error?.message || 'No se pudo autorizar la excepción de edad.'); this.guardando.set(false); }
+    });
+  }
+
+  asignarSeccion(): void {
+    const item = this.seleccion();
+    const seccionId = this.seccionAsignarId();
+    if (!item || !seccionId) { this.error.set('Selecciona una sección disponible.'); return; }
+    this.guardando.set(true);
+    this.api.asignarSeccion(item.id, seccionId).subscribe({
+      next: updated => {
+        this.solicitudes.update(current => current.map(s => s.id === updated.id ? updated : s));
+        this.aviso.set('La sección quedó asignada a la matrícula pagada.');
+        this.guardando.set(false);
+        this.cerrarModal();
+      },
+      error: err => { this.error.set(err?.error?.message || 'No se pudo asignar la sección.'); this.guardando.set(false); }
+    });
+  }
 
   verDocumento(solicitud: SolicitudMatriculaPublicaAdminDto, doc: DocumentoSolicitudDto): void {
-    const key = `${solicitud.id}:${doc.tipo}`;
-    this.urlsDocumentos.update(urls => {
-      const actualizadas = { ...urls };
-      delete actualizadas[key];
-      return actualizadas;
-    });
     this.api.documentoAdminUrl(solicitud.id, doc.tipo).subscribe({
       next: response => {
         if (response.versionId !== doc.versionId) { this.error.set('El archivo cambió. Actualiza las solicitudes.'); return; }
-        this.urlsDocumentos.update(urls => ({ ...urls, [key]: response.url }));
+        this.urlsDocumentos.update(urls => ({ ...urls, [solicitud.id + ':' + doc.tipo]: response.url }));
       },
       error: err => this.error.set(err?.error?.message || 'No se pudo obtener el acceso temporal al archivo.')
     });
@@ -150,36 +190,6 @@ export class SolicitudesMatriculaComponent implements OnInit {
     });
   }
 
-  actualizarMotivoEdad(id: string, motivo: string): void {
-    this.motivosEdad.update(current => ({ ...current, [id]: motivo }));
-  }
-
-  motivoEdad(solicitudId: string): string {
-    return this.motivosEdad()[solicitudId] ?? '';
-  }
-
-  autorizarExcepcionEdad(solicitud: SolicitudMatriculaPublicaAdminDto): void {
-    const motivo = this.motivosEdad()[solicitud.id]?.trim() ?? '';
-    if (motivo.length < 10 || motivo.length > 500) {
-      this.error.set('Registra una justificación institucional de 10 a 500 caracteres.');
-      return;
-    }
-    this.guardando.set(true);
-    this.api.autorizarExcepcionEdad(solicitud.id, motivo).subscribe({
-      next: updated => {
-        this.solicitudes.update(current => current.map(s => s.id === updated.id ? updated : s));
-        this.aviso.set('La excepción quedó autorizada por Dirección y registrada en el expediente.');
-        this.motivosEdad.update(current => ({ ...current, [solicitud.id]: '' }));
-        this.error.set('');
-        this.guardando.set(false);
-      },
-      error: err => {
-        this.error.set(err?.error?.message || 'No se pudo autorizar la excepción. Verifica los documentos y vuelve a intentar.');
-        this.guardando.set(false);
-      }
-    });
-  }
-
   etiquetaDocumento(tipo: TipoDocumentoSolicitud): string {
     return tipo === 'PARTIDA_NACIMIENTO' ? 'Partida de nacimiento'
       : tipo === 'DNI_C4' ? 'DNI o C4' : 'Recibo de luz o agua';
@@ -194,10 +204,10 @@ export class SolicitudesMatriculaComponent implements OnInit {
     const labels: Record<SolicitudMatriculaPublicaAdminDto['estado'], string> = {
       DOCUMENTOS_PENDIENTES: 'Documentos pendientes', DOCUMENTOS_OBSERVADOS: 'Corrección solicitada',
       DOCUMENTOS_EN_VALIDACION: 'En verificación automática',
-      AUTORIZACION_EDAD_PENDIENTE: 'Autorización de edad pendiente',
       DOCUMENTOS_VALIDADOS: 'Documentos validados', PAGO_PENDIENTE: 'Pago pendiente',
-      PAGO_CONFIRMADO_PENDIENTE_ASIGNACION: 'Pagada · aula pendiente',
-      MATRICULADA: 'Aula asignada · matrícula completa', RECHAZADA: 'Rechazada'
+      AUTORIZACION_EDAD_PENDIENTE: 'Autorización de edad pendiente',
+      PAGO_CONFIRMADO_PENDIENTE_ASIGNACION: 'Pago confirmado · sección pendiente',
+      MATRICULADA: 'Matriculada', RECHAZADA: 'Rechazada'
     };
     return labels[estado];
   }

@@ -65,6 +65,7 @@ export interface EstudianteResponseDto {
   grupoSanguineo?: string;
   alergiasCondiciones?: string;
   activo?: boolean;
+  estado?: 'ACTIVO' | 'INACTIVO';
   createdAt?: string;
 }
 

@@ -1,5 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { forkJoin } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
 import { SeguimientoTutoriaComponent } from './seguimiento-tutoria.component';
 import { Stage9State, Stage9TutorFilters } from './stage9.contract';
 import { CalificacionRiesgoTutorDto, HijoPortalDto, PortalFamiliarService } from '../../core/services/portal-familiar.service';
@@ -9,6 +9,7 @@ import { IncidenciaResponseDto } from '../../core/models/convivencia.model';
 import { AsistenciaDocenteDto } from '../../core/services/asistencia.service';
 import { PeriodoResponseDto } from '../../core/models/academico.model';
 import { fechaActualEnPeru } from '../../core/utils/fecha-nacimiento';
+import { AuthStore } from '../../core/state/auth.store';
 @Component({ selector: 'app-seguimiento-tutoria-page', standalone: true, imports: [SeguimientoTutoriaComponent], template: `
   <p class="mb-3 text-sm">Asistencia de hoy: {{ hoy }}. {{ riesgoCount() }} estudiantes tienen calificaciones B o C en el periodo seleccionado. Las observaciones e incidencias también se filtran por periodo.</p>
   <app-seguimiento-tutoria-screen [state]="estado()" [errorMessage]="mensaje()" [filters]="filtros()" [sections]="secciones()" [periods]="opcionesPeriodos()" [students]="filas()" [studentCount]="filas().length" [attendanceSummary]="asistenciasResumen()" [incidentCount]="graves()" [observationCount]="incidenciasFiltradas().length" (filtersChanged)="filtrar($event)" (studentRequested)="seleccionar($event)" (retry)="cargar()" />
@@ -19,6 +20,7 @@ export class SeguimientoTutoriaPageComponent implements OnInit {
     private readonly portal = inject(PortalFamiliarService);
     private readonly convivencia = inject(ConvivenciaService);
     private readonly asistencia = inject(AsistenciaService);
+    readonly authStore = inject(AuthStore);
     readonly hoy = fechaActualEnPeru();
     readonly hijos = signal<HijoPortalDto[]>([]);
     readonly riesgos = signal<CalificacionRiesgoTutorDto[]>([]);

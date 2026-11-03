@@ -22,10 +22,10 @@ export class StatusBadgeComponent {
 
   get toneClasses(): string {
     switch (this.tone) {
-      case 'success': return '!border-[#86efac] bg-[#dcfce7] text-[#14532d]';
-      case 'warning': return '!border-[#fcd34d] bg-[#fef3c7] text-[#78350f]';
-      case 'error': return '!border-[#fca5a5] bg-[#fee2e2] text-[#7f1d1d]';
-      default: return '!border-[#93c5fd] bg-[#dbeafe] text-[#1e3a8a]';
+      case 'success': return 'border-ui-success-border bg-ui-success-bg text-ui-success-text';
+      case 'warning': return 'border-ui-warning-border bg-ui-warning-bg text-ui-warning-text';
+      case 'error': return 'border-ui-error-border bg-ui-error-bg text-ui-error-text';
+      default: return 'border-ui-info-border bg-ui-info-bg text-ui-info-text';
     }
   }
 

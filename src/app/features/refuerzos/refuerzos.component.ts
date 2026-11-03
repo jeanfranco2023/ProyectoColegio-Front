@@ -7,18 +7,18 @@ import { AsignacionDocenteResponseDto, AulaResponseDto, PeriodoResponseDto } fro
 import { fechaActualEnPeru } from '../../core/utils/fecha-nacimiento';
 import { AsignacionHorarioOpcionDto, HorarioService } from '../../core/services/horario.service';
 @Component({ selector: 'app-refuerzos', standalone: true, imports: [FormsModule], template: `
-  <section class="grid gap-4 text-slate-800"><h1 class="text-2xl font-bold">Refuerzo académico</h1>
-    <label class="grid gap-1">Asignación docente <select class="min-h-11 rounded-lg border p-2" [(ngModel)]="asignacionId" (ngModelChange)="cambiarAsignacion()">@for(a of asignaciones(); track a.id){<option [ngValue]="a.id">{{ descripcion(a.id) }}</option>}</select></label>
-    <label class="grid gap-1">Periodo <select class="min-h-11 rounded-lg border p-2" [(ngModel)]="periodoId" (ngModelChange)="cargar()">@for(p of periodos();track p.id){<option [ngValue]="p.id">{{ p.nombre }}</option>}</select></label>
-    <p role="status">{{ mensaje() }}</p>
-    <details class="rounded-xl border bg-white p-4"><summary class="cursor-pointer font-semibold">Programar sesión</summary>
+  <section class="grid gap-4 text-ui-text"><header class="grid gap-2 border-b border-ui-divider pb-4"><p class="m-0 text-[11px] font-semibold uppercase tracking-[.12em] text-ui-muted">Acompañamiento pedagógico</p><h1 class="m-0 font-display text-2xl font-bold">Refuerzo académico</h1></header>
+    <label class="grid gap-2 text-sm font-semibold">Asignación docente <select class="min-h-11 rounded-lg border border-ui-control-border bg-ui-surface px-3 py-2 text-ui-text focus-visible:outline-2 focus-visible:outline-ui-focus" [(ngModel)]="asignacionId" (ngModelChange)="cambiarAsignacion()">@for(a of asignaciones(); track a.id){<option [ngValue]="a.id">{{ descripcion(a.id) }}</option>}</select></label>
+    <label class="grid gap-2 text-sm font-semibold">Periodo <select class="min-h-11 rounded-lg border border-ui-control-border bg-ui-surface px-3 py-2 text-ui-text focus-visible:outline-2 focus-visible:outline-ui-focus" [(ngModel)]="periodoId" (ngModelChange)="cargar()">@for(p of periodos();track p.id){<option [ngValue]="p.id">{{ p.nombre }}</option>}</select></label>
+    <p role="status" class="m-0 min-h-11 rounded-lg border border-ui-divider bg-ui-surface-soft px-3 py-2 text-sm text-ui-text">{{ mensaje() }}</p>
+    <details class="rounded-xl border border-ui-divider bg-ui-surface p-4"><summary class="min-h-11 cursor-pointer content-center font-semibold text-ui-text">Programar sesión</summary>
       <form (ngSubmit)="programar()" class="mt-4 grid gap-3 md:grid-cols-2">
-        <label class="grid gap-1">Tema <input class="min-h-11 rounded-lg border p-2" name="tema" [(ngModel)]="tema" maxlength="40" required /></label>
-        <label class="grid gap-1">Fecha <input class="min-h-11 rounded-lg border p-2" type="date" name="fecha" [(ngModel)]="fecha" [min]="hoy" required /></label>
-        <label class="grid gap-1">Inicio <input class="min-h-11 rounded-lg border p-2" type="time" name="inicio" [(ngModel)]="inicio" required /></label>
-        <label class="grid gap-1">Fin <input class="min-h-11 rounded-lg border p-2" type="time" name="fin" [(ngModel)]="fin" required /></label>
-        <label class="grid gap-1">Aula <select class="min-h-11 rounded-lg border p-2" name="aula" [(ngModel)]="aula" required><option value="">Selecciona</option>@for(a of aulas();track a.id){<option [value]="a.codigo">{{ a.codigo }} · {{ a.nombre }}</option>}</select></label>
-        <button class="min-h-11 rounded-lg bg-blue-700 p-2 text-white disabled:opacity-50" [disabled]="ocupado() || !periodoId" type="submit">Guardar sesión</button>
+        <label class="grid gap-2 text-sm font-semibold">Tema <input class="min-h-11 rounded-lg border border-ui-control-border bg-ui-surface px-3 py-2 text-ui-text focus-visible:outline-2 focus-visible:outline-ui-focus" name="tema" [(ngModel)]="tema" maxlength="40" required /></label>
+        <label class="grid gap-2 text-sm font-semibold">Fecha <input class="min-h-11 rounded-lg border border-ui-control-border bg-ui-surface px-3 py-2 text-ui-text focus-visible:outline-2 focus-visible:outline-ui-focus" type="date" name="fecha" [(ngModel)]="fecha" [min]="hoy" required /></label>
+        <label class="grid gap-2 text-sm font-semibold">Inicio <input class="min-h-11 rounded-lg border border-ui-control-border bg-ui-surface px-3 py-2 text-ui-text focus-visible:outline-2 focus-visible:outline-ui-focus" type="time" name="inicio" [(ngModel)]="inicio" required /></label>
+        <label class="grid gap-2 text-sm font-semibold">Fin <input class="min-h-11 rounded-lg border border-ui-control-border bg-ui-surface px-3 py-2 text-ui-text focus-visible:outline-2 focus-visible:outline-ui-focus" type="time" name="fin" [(ngModel)]="fin" required /></label>
+        <label class="grid gap-2 text-sm font-semibold">Aula <select class="min-h-11 rounded-lg border border-ui-control-border bg-ui-surface px-3 py-2 text-ui-text focus-visible:outline-2 focus-visible:outline-ui-focus" name="aula" [(ngModel)]="aula" required><option value="">Selecciona</option>@for(a of aulas();track a.id){<option [value]="a.codigo">{{ a.codigo }} · {{ a.nombre }}</option>}</select></label>
+        <button class="min-h-11 rounded-lg bg-ui-action px-4 py-2 font-semibold text-ui-action-text disabled:opacity-50" [disabled]="ocupado() || !periodoId" type="submit">Guardar sesión</button>
       </form>
     </details>
     <ul class="grid gap-3">@for(s of sesiones();track s.id){<li class="flex flex-wrap items-center justify-between gap-3 rounded-xl border bg-white p-4"><div><h2 class="font-semibold">{{ s.tema }}</h2><p>{{ s.fechaProgramada }} · {{ s.horaInicio }} - {{ s.horaFin }} · {{ s.aulaAsignada || 'Sin aula' }}</p></div>

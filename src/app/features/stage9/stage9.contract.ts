@@ -25,10 +25,10 @@ export interface Stage9Payment {
   concept: string;
   schoolYear: number;
   amount: number;
+  amountLabel: 'Pagado' | 'Saldo pendiente';
   currency: 'PEN';
   dueDate: string;
-  status: 'PAGADO' | 'PENDIENTE' | 'VENCIDO';
-  receiptName?: string | null;
+  status: 'PAGADO' | 'PAGO PARCIAL' | 'PENDIENTE' | 'VENCIDO' | 'SIN ESTADO';
 }
 
 export interface Stage9ObservationDraft {

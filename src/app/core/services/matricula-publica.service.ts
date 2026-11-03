@@ -6,6 +6,7 @@ import {
   CatalogoMatriculaPublicaDto,
   CrearSolicitudMatriculaPublicaDto,
   PagoMatriculaPublicaDto,
+  ReniecPersonaDto,
   SolicitudMatriculaPublicaAdminDto,
   SolicitudMatriculaPublicaDto,
   TipoDocumentoSolicitud
@@ -16,6 +17,9 @@ export class MatriculaPublicaService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/solicitudes-matricula`;
 
+  consultarDni(dni: string): Observable<ReniecPersonaDto> {
+    return this.http.get<ReniecPersonaDto>(`${environment.apiUrl}/personas/reniec/${encodeURIComponent(dni)}`);
+  }
   catalogo(): Observable<CatalogoMatriculaPublicaDto> {
     return this.http.get<CatalogoMatriculaPublicaDto>(`${this.baseUrl}/public/catalogo`);
   }

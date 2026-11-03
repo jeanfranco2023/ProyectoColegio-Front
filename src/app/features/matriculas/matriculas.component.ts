@@ -38,60 +38,60 @@ export interface EstudianteMatriculadoItem {
   standalone: true,
   imports: [CommonModule, FormsModule, MatDialogModule, MatButtonModule, MatPaginatorModule, RouterLink, UiDatePePipe],
   template: `
-    <div class="space-y-6 min-w-0 text-[#172b4d] max-[640px]:text-[13px] [&_*:focus-visible]:outline-[3px] [&_*:focus-visible]:outline-[#2864c5] [&_*:focus-visible]:outline-offset-[3px]">
+    <div class="space-y-6 min-w-0 text-ui-text max-[640px]:text-[13px] [&_*:focus-visible]:outline-[3px] [&_*:focus-visible]:outline-[var(--ui-action)] [&_*:focus-visible]:outline-offset-[3px]">
       <!-- Top Banner / Alert -->
       @if (mensajeExito()) {
-        <div class="p-4 rounded-2xl border-t-[3px] border-t-[#c49a58]/50 pt-3 bg-emerald-500/10 border border-emerald-500/30 text-[#047857] flex items-center justify-between shadow-lg shadow-emerald-950/20">
+        <div class="p-4 rounded-2xl border-t-[3px] border-t-ui-success-border pt-3 bg-ui-success-bg border border-ui-success-border text-ui-success-text flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <span class="p-1.5 rounded-lg bg-emerald-500/20 text-[#047857]">
+            <span class="p-1.5 rounded-lg bg-ui-success-bg text-ui-success-text">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
             </span>
             <div>
-              <p class="font-bold text-sm text-[#047857]">Operación Exitosa</p>
-              <p class="!text-[11px] text-[#047857]">{{ mensajeExito() }}</p>
+              <p class="font-bold text-sm text-ui-success-text">Operación Exitosa</p>
+              <p class="!text-[11px] text-ui-success-text">{{ mensajeExito() }}</p>
             </div>
           </div>
-          <button (click)="mensajeExito.set(null)" class="text-[#047857] hover:text-[#065f46] cursor-pointer !text-[11px] font-semibold px-2 py-1 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+          <button (click)="mensajeExito.set(null)" class="text-ui-success-text hover:text-ui-success-text cursor-pointer !text-[11px] font-semibold px-2 py-1 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
             ✕
           </button>
         </div>
       }
 
       @if (error()) {
-        <div class="p-4 rounded-2xl border-t-[3px] border-t-[#c49a58]/50 pt-3 bg-rose-500/10 border border-rose-500/30 text-[#be123c] flex items-center justify-between shadow-lg shadow-rose-950/20">
+        <div class="p-4 rounded-2xl border-t-[3px] border-t-ui-error-border pt-3 bg-ui-error-bg border border-ui-error-border text-ui-error-text flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <span class="p-1.5 rounded-lg bg-rose-500/20 text-[#be123c]">
+            <span class="p-1.5 rounded-lg bg-ui-error-bg text-ui-error-text">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </span>
             <div>
-              <p class="font-bold text-sm text-[#be123c]">Error</p>
-              <p class="!text-[11px] text-[#be123c]">{{ error() }}</p>
+              <p class="font-bold text-sm text-ui-error-text">Error</p>
+              <p class="!text-[11px] text-ui-error-text">{{ error() }}</p>
             </div>
           </div>
-          <button (click)="error.set(null)" class="text-[#be123c] hover:text-[#9f1239] cursor-pointer !text-[11px] font-semibold px-2 py-1 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+          <button (click)="error.set(null)" class="text-ui-error-text hover:text-ui-error-text cursor-pointer !text-[11px] font-semibold px-2 py-1 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
             ✕
           </button>
         </div>
       }
 
       <!-- Page Header -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-t-[3px] border-t-[#c49a58]/50 pt-3">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-t-[3px] border-t-ui-action/50 pt-3">
         <div>
           <div class="flex items-center gap-2 mb-1">
-            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/10 text-[#2563eb] border border-blue-500/20">
+            <span class="px-2.5 py-0.5 rounded-full border border-ui-divider bg-ui-surface-soft text-[11px] font-semibold text-ui-muted">
               Módulo Académico
             </span>
-            <span class="!text-[11px] !text-[#59677a]">•</span>
-            <span class="!text-[11px] !text-[#59677a] font-medium">Año Lectivo {{ anioActivoTexto() }}</span>
+            <span class="!text-[11px] !text-ui-muted">•</span>
+            <span class="!text-[11px] !text-ui-muted font-medium">Año Lectivo {{ anioActivoTexto() }}</span>
           </div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight !text-[#172b4d] tracking-[-.025em]">
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight !text-ui-text tracking-[-.025em]">
             Padrón de Estudiantes & Matrículas
           </h2>
-          <p class="text-sm !text-[#59677a] mt-1">
+          <p class="text-sm !text-ui-muted mt-1">
             Gestión centralizada de estudiantes, registro oficial y asignación de vacantes en secciones.
           </p>
         </div>
@@ -102,7 +102,7 @@ export interface EstudianteMatriculadoItem {
           <button
             id="btn-abrir-registro-alumno"
             (click)="abrirModalNuevoAlumno()"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-[#c49a58] rounded-[10px] bg-[linear-gradient(110deg,#102447_0%,#1d365c_100%)] text-white font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] shadow-[inset_0_-2px_#c49a58] hover:bg-[linear-gradient(110deg,#173156_0%,#284b76_100%)] focus-visible:outline-[3px] focus-visible:outline-[#2864c5] focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-ui-action rounded-[10px] bg-ui-action text-ui-action-text font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] shadow-none hover:bg-ui-action/90 focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -113,7 +113,7 @@ export interface EstudianteMatriculadoItem {
           <button
             id="btn-abrir-nueva-matricula"
             (click)="abrirModalNuevaMatricula()"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-[#e1e8f1] rounded-[10px] bg-white text-[#102447] font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:bg-[#f4f7fb] focus-visible:outline-[3px] focus-visible:outline-[#2864c5] focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-ui-border rounded-[10px] bg-ui-surface text-ui-text font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:bg-ui-surface-soft focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" focusable="false">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -123,7 +123,7 @@ export interface EstudianteMatriculadoItem {
           }
           <a
             routerLink="/admin/solicitudes-matricula"
-            class="inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 border border-[#e1e8f1] rounded-[10px] bg-white text-[#102447] font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:bg-[#f4f7fb] focus-visible:outline-[3px] focus-visible:outline-[#2864c5] focus-visible:outline-offset-[3px] max-[640px]:w-full"
+            class="inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 border border-ui-border rounded-[10px] bg-ui-surface text-ui-text font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:bg-ui-surface-soft focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] max-[640px]:w-full"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" focusable="false">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 4.75h7l4 4V19a1.25 1.25 0 0 1-1.25 1.25h-9.5A1.25 1.25 0 0 1 6 19V6a1.25 1.25 0 0 1 1-1.25Z" />
@@ -135,19 +135,19 @@ export interface EstudianteMatriculadoItem {
       </div>
 
       <!-- Main Navigation Tabs -->
-      <div class="flex items-center gap-2 border-b !border-[#e1e8f1]">
+      <div class="flex items-center gap-2 border-b !border-ui-border">
         <button
           id="tab-estudiantes"
           (click)="pestanaActiva.set('estudiantes')"
           [class]="pestanaActiva() === 'estudiantes'
-            ? 'px-4 py-3 border-b-2 border-blue-500 text-blue-700 font-bold text-sm flex items-center gap-2 transition cursor-pointer'
-            : 'px-4 py-3 border-b-2 border-transparent !text-[#59677a] hover:!text-[#34445d] font-medium text-sm flex items-center gap-2 transition cursor-pointer'"
+            ? 'px-4 py-3 border-b-2 border-ui-action text-ui-action font-bold text-sm flex items-center gap-2 transition cursor-pointer'
+            : 'px-4 py-3 border-b-2 border-transparent !text-[var(--ui-muted)] hover:!text-ui-text font-medium text-sm flex items-center gap-2 transition cursor-pointer'"
          class="max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
           <span>Padrón de Estudiantes</span>
-          <span class="px-2 py-0.5 rounded-full !text-[11px] font-mono bg-[#f1f4f9] !text-[#34445d]">
+          <span class="px-2 py-0.5 rounded-full !text-[11px] font-mono bg-ui-surface-soft !text-ui-text">
             {{ listaEstudiantes().length }}
           </span>
         </button>
@@ -156,14 +156,14 @@ export interface EstudianteMatriculadoItem {
           id="tab-matriculas"
           (click)="pestanaActiva.set('matriculas'); cargarSecciones(true)"
           [class]="pestanaActiva() === 'matriculas'
-            ? 'px-4 py-3 border-b-2 border-blue-500 text-blue-700 font-bold text-sm flex items-center gap-2 transition cursor-pointer'
-            : 'px-4 py-3 border-b-2 border-transparent !text-[#59677a] hover:!text-[#34445d] font-medium text-sm flex items-center gap-2 transition cursor-pointer'"
+            ? 'px-4 py-3 border-b-2 border-ui-action text-ui-action font-bold text-sm flex items-center gap-2 transition cursor-pointer'
+            : 'px-4 py-3 border-b-2 border-transparent !text-[var(--ui-muted)] hover:!text-ui-text font-medium text-sm flex items-center gap-2 transition cursor-pointer'"
          class="max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
           <span>Matrículas por Sección</span>
-          <span class="px-2 py-0.5 rounded-full !text-[11px] font-mono bg-[#f1f4f9] !text-[#34445d]">
+          <span class="px-2 py-0.5 rounded-full !text-[11px] font-mono bg-ui-surface-soft !text-ui-text">
             {{ estudiantes().length }}
           </span>
         </button>
@@ -175,9 +175,9 @@ export interface EstudianteMatriculadoItem {
       @if (pestanaActiva() === 'estudiantes') {
         <div class="space-y-4">
           <!-- Filter / Search Bar for Students -->
-          <div class="p-4 rounded-2xl !bg-white border !border-[#e1e8f1] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="p-4 rounded-2xl !bg-ui-surface border !border-ui-border flex flex-col sm:flex-row items-center justify-between gap-4">
             <div class="w-full sm:w-96 relative">
-              <span class="absolute inset-y-0 left-3 z-[1] pl-3.5 flex items-center pointer-events-none !text-[#59677a]">
+              <span class="absolute inset-y-0 left-3 z-[1] pl-3.5 flex items-center pointer-events-none !text-ui-muted">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
@@ -188,16 +188,16 @@ export interface EstudianteMatriculadoItem {
                 [(ngModel)]="busquedaEstudiante"
                 (ngModelChange)="paginaPadron = 0"
                 placeholder="Buscar por DNI, Nombres o Apellidos..."
-                class="w-full !pl-11 pr-4 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] !text-[11px] placeholder-slate-500 focus:outline-none focus:border-blue-500 transition min-w-0 !min-h-[44px] max-w-full px-3 py-[10px] !border-[#d9e1ec] transition-colors focus:border-[#5b83d6] focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !pr-3 !py-2"
+                class="w-full !pl-11 pr-4 py-2 rounded-xl !bg-ui-surface border !border-ui-border !text-ui-text !text-[11px] placeholder:text-ui-muted focus:outline-none focus:border-ui-action transition min-w-0 !min-h-[44px] max-w-full px-3 py-[10px] !border-ui-control-border transition-colors focus:border-ui-action focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base !pr-3 !py-2"
               />
             </div>
 
             <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
               <button
                 (click)="cargarEstudiantes()"
-                class="px-3.5 py-2 rounded-xl bg-[#f1f4f9] hover:bg-slate-700 !text-[#34445d] !text-[11px] font-semibold transition cursor-pointer flex items-center gap-2 border !border-[#e1e8f1] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                class="px-3.5 py-2 rounded-xl bg-ui-surface-soft hover:bg-ui-action !text-ui-text !text-[11px] font-semibold transition cursor-pointer flex items-center gap-2 border !border-ui-border max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 !text-[#59677a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 !text-ui-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
                 <span>Actualizar Padrón</span>
@@ -206,7 +206,7 @@ export interface EstudianteMatriculadoItem {
           </div>
 
           <!-- Students Table -->
-          <div class="rounded-2xl !bg-white border !border-[#e1e8f1] overflow-hidden shadow-sm">
+          <div class="rounded-2xl !bg-ui-surface border !border-ui-border overflow-hidden shadow-sm">
             <div class="overflow-x-auto" data-enrollments-table-scroll="">
               <table id="tabla-estudiantes" class="w-full min-w-[1000px] text-left text-xs !text-[11px] [&>thead>tr>th:last-child]:static [&>tbody>tr>td:last-child]:static [&>thead>tr>th:last-child]:shadow-none [&>tbody>tr>td:last-child]:shadow-none [&>thead>tr>th:last-child]:px-3 [&>tbody>tr>td:last-child]:px-3 [&_thead]:!bg-[#f7f9fc] [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-[#f8faff]" data-mobile-table-cards="">
                 <thead class="bg-[#f5f7fb] border-b !border-[#e1e8f1] !text-[#59677a] uppercase tracking-wider font-semibold">
@@ -221,7 +221,7 @@ export interface EstudianteMatriculadoItem {
                     <th class="px-5 py-3.5 text-right">Acciones</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[#edf0f5] !text-[#34445d]">
+                <tbody class="divide-y divide-[var(--ui-divider)] !text-ui-text">
                   @if (cargandoEstudiantes()) {
                     <tr>
                       <td colspan="8" class="text-center py-12 !text-[#59677a]">
@@ -236,41 +236,53 @@ export interface EstudianteMatriculadoItem {
                           <span class="text-[#172b4d]">{{ codigoEstudianteVisible(est) }}</span>
                         </td>
                         <td class="px-5 py-3.5 font-mono" data-label="Documento">
-                          <span class="px-2 py-0.5 rounded !text-[11px] font-bold bg-[#f1f4f9] !text-[#34445d] border !border-[#e1e8f1] mr-1.5">
+                          <span class="px-2 py-0.5 rounded !text-[11px] font-bold bg-ui-surface-soft !text-ui-text border !border-ui-border mr-1.5">
                             {{ est.tipoDocumento || 'DNI' }}
                           </span>
-                          <span class="text-[#2563eb] font-semibold">{{ est.numeroDocumento }}</span>
+                          <span class="text-ui-action font-semibold">{{ est.numeroDocumento }}</span>
                         </td>
                         <td class="px-5 py-3.5" data-label="Apellidos y Nombres">
-                          <div class="font-semibold !text-[#172b4d]">
+                          <div class="font-semibold !text-ui-text">
                             {{ est.apellidoPaterno }} {{ est.apellidoMaterno }}, {{ est.nombres }}
                           </div>
                           @if (est.alergiasCondiciones) {
-                            <div class="!text-[11px] text-[#a16207] truncate max-w-xs mt-0.5">
+                            <div class="!text-[11px] text-ui-warning-text truncate max-w-xs mt-0.5">
                               ⚠️ {{ est.alergiasCondiciones }}
                             </div>
                           }
                         </td>
-                        <td class="px-5 py-3.5 !text-[#59677a] font-mono" data-label="F. Nacimiento">{{ est.fechaNacimiento | uiDatePe }}</td>
+                        <td class="px-5 py-3.5 !text-ui-muted font-mono" data-label="F. Nacimiento">{{ est.fechaNacimiento | uiDatePe }}</td>
                         <td class="px-5 py-3.5" data-label="Género">
                           @if (est.genero === 'M') {
-                            <span class="px-2 py-0.5 rounded-full !text-[11px] font-medium bg-blue-500/10 text-[#2563eb] border border-blue-500/20">
+                            <span class="px-2 py-0.5 rounded-full border border-ui-divider bg-ui-surface-soft !text-[11px] font-medium text-ui-muted">
                               Masculino
                             </span>
                           } @else if (est.genero === 'F') {
-                            <span class="px-2 py-0.5 rounded-full !text-[11px] font-medium bg-pink-500/10 text-pink-700 border border-pink-500/20">
+                            <span class="px-2 py-0.5 rounded-full border border-ui-divider bg-ui-surface-soft !text-[11px] font-medium text-ui-muted">
                               Femenino
                             </span>
                           } @else {
-                            <span class="!text-[#59677a]">-</span>
+                            <span class="!text-ui-muted">-</span>
                           }
                         </td>
                         <td class="px-5 py-3.5 font-mono !text-[#34445d]" data-label="Grupo Sang.">{{ est.grupoSanguineo || '-' }}</td>
                         <td class="px-5 py-3.5" data-label="Estado BD">
-                          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full !text-[11px] font-bold !bg-[#edf9f3] !text-[#126943] border !border-[#b8dfcc]">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                            Activo
-                          </span>
+                          @if (est.estado || est.activo !== undefined) {
+                            <span
+                              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full !text-[11px] font-bold border"
+                              [class.!bg-ui-success-bg]="est.estado === 'ACTIVO' || (!est.estado && est.activo === true)"
+                              [class.!text-ui-success-text]="est.estado === 'ACTIVO' || (!est.estado && est.activo === true)"
+                              [class.!border-ui-success-border]="est.estado === 'ACTIVO' || (!est.estado && est.activo === true)"
+                              [class.!bg-ui-error-bg]="est.estado === 'INACTIVO' || (!est.estado && est.activo === false)"
+                              [class.!text-ui-error-text]="est.estado === 'INACTIVO' || (!est.estado && est.activo === false)"
+                              [class.!border-ui-error-border]="est.estado === 'INACTIVO' || (!est.estado && est.activo === false)"
+                            >
+                              <span class="w-1.5 h-1.5 rounded-full" [class.bg-ui-success-text]="est.estado === 'ACTIVO' || (!est.estado && est.activo === true)" [class.bg-ui-error-text]="est.estado === 'INACTIVO' || (!est.estado && est.activo === false)"></span>
+                              {{ est.estado || (est.activo ? 'Activo' : 'Inactivo') }}
+                            </span>
+                          } @else {
+                            <span class="!text-ui-muted">Sin estado disponible</span>
+                          }
                         </td>
                         <td class="px-5 py-3.5 text-right" data-label="Acciones">
                           <div class="flex flex-wrap justify-end gap-2">
@@ -309,10 +321,14 @@ export interface EstudianteMatriculadoItem {
                       </tr>
                     } @empty {
                       <tr [hidden]="!!error()">
-                        <td colspan="9" class="text-center pt-3 pb-12 !text-[#59677a] space-y-2">
-                          <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="#102447" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block h-[42px] w-[42px] mx-auto"><path d="M6 11.5c6-2 12-1 18 2.5v25c-6-3.5-12-4.5-18-2.5z"/><path d="M42 11.5c-6-2-12-1-18 2.5v25c6-3.5 12-4.5 18-2.5z"/><path d="M24 14v25" stroke="#C49A58"/><path d="M11 17c3-.5 6 .1 9 1.5M11 23c3-.5 6 .1 9 1.5M28 18.5c3-1.4 6-2 9-1.5M28 24.5c3-1.4 6-2 9-1.5" stroke="#C49A58"/></svg>
-                          <p class="font-medium !text-[#59677a]">No se encontraron estudiantes registrados.</p>
-                          <p class="text-[11px] !text-[#59677a]">Haz clic en "Registrar Alumno" para dar de alta al primer estudiante en la base de datos.</p>
+                        <td colspan="9" class="text-center pt-3 pb-12 !text-ui-muted space-y-2">
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="var(--ui-action)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block h-[42px] w-[42px] mx-auto"><path d="M6 11.5c6-2 12-1 18 2.5v25c-6-3.5-12-4.5-18-2.5z"/><path d="M42 11.5c-6-2-12-1-18 2.5v25c6-3.5 12-4.5 18-2.5z"/><path d="M24 14v25" stroke="var(--ui-gold)"/><path d="M11 17c3-.5 6 .1 9 1.5M11 23c3-.5 6 .1 9 1.5M28 18.5c3-1.4 6-2 9-1.5M28 24.5c3-1.4 6-2 9-1.5" stroke="var(--ui-gold)"/></svg>
+                          <p class="font-medium !text-ui-muted">No se encontraron estudiantes registrados.</p>
+                          @if (authStore.hasRole('SECRETARIA')) {
+                            <p class="text-[11px] !text-ui-muted">Haz clic en "Registrar Alumno" para dar de alta al primer estudiante en la base de datos.</p>
+                          } @else {
+                            <p class="text-[11px] !text-ui-muted">No hay estudiantes disponibles para consultar con este acceso.</p>
+                          }
                         </td>
                       </tr>
                     }
@@ -342,11 +358,11 @@ export interface EstudianteMatriculadoItem {
           <!-- Filters Bar -->
           <div class="p-4 rounded-2xl !bg-white border !border-[#e1e8f1] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <div>
-              <label class="block !text-[11px] font-semibold !text-[#59677a] mb-1">Año Lectivo</label>
+              <label class="block !text-[11px] font-semibold !text-ui-muted mb-1">Año Lectivo</label>
               <select
                 [(ngModel)]="anioLectivoId" aria-label="Año Lectivo"
                 (change)="cargarSecciones()"
-                class="w-full px-3 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] !text-[11px] focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
+                class="w-full px-3 py-2 rounded-xl !bg-ui-surface border !border-ui-border !text-ui-text !text-[11px] focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
               >
                 @for (anio of anios(); track anio.id) {
                   <option [ngValue]="anio.id">{{ anio.anio }} {{ anio.abierto ? '(Activo)' : '' }}</option>
@@ -355,11 +371,11 @@ export interface EstudianteMatriculadoItem {
             </div>
 
             <div>
-              <label class="block !text-[11px] font-semibold !text-[#59677a] mb-1">Sección en BD</label>
+              <label class="block !text-[11px] font-semibold !text-ui-muted mb-1">Sección en BD</label>
               <select
                 [(ngModel)]="filtroSeccionId" aria-label="Sección en BD"
                 (change)="cargarMatriculas()"
-                class="w-full px-3 py-2 rounded-xl !bg-white border !border-[#e1e8f1] !text-[#172b4d] !text-[11px] focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
+                class="w-full px-3 py-2 rounded-xl !bg-ui-surface border !border-ui-border !text-ui-text !text-[11px] focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
               >
                 <option [ngValue]="0">Todas las secciones</option>
                 @for (seccion of secciones(); track seccion.id) {
@@ -369,7 +385,7 @@ export interface EstudianteMatriculadoItem {
             </div>
 
             <div>
-              <label class="block !text-[11px] font-semibold !text-[#59677a] mb-1">Estado de Matrícula</label>
+              <label class="block !text-[11px] font-semibold !text-ui-muted mb-1">Estado de Matrícula</label>
               <select
                 [(ngModel)]="filtroEstado" aria-label="Estado de Matrícula"
                 (ngModelChange)="paginaMatriculas = 0"
@@ -400,7 +416,7 @@ export interface EstudianteMatriculadoItem {
             <div class="flex items-end">
               <button
                 (click)="cargarMatriculas()"
-                class="w-full py-2 px-3 rounded-xl bg-[#f1f4f9] hover:bg-slate-700 !text-[#34445d] !text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 border !border-[#e1e8f1] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                class="w-full py-2 px-3 rounded-xl bg-ui-surface-soft hover:bg-ui-action !text-ui-text !text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1.5 border !border-ui-border max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -411,10 +427,10 @@ export interface EstudianteMatriculadoItem {
           </div>
 
           <!-- Matriculas Table -->
-          <div class="rounded-2xl !bg-white border !border-[#e1e8f1] overflow-hidden shadow-sm">
+          <div class="rounded-2xl !bg-ui-surface border !border-ui-border overflow-hidden shadow-sm">
             <div class="overflow-x-auto" data-enrollments-table-scroll="">
-              <table class="w-full min-w-[1080px] text-left text-xs !text-[11px] [&>thead>tr>th:last-child]:static [&>tbody>tr>td:last-child]:static [&>thead>tr>th:last-child]:shadow-none [&>tbody>tr>td:last-child]:shadow-none [&>thead>tr>th:last-child]:px-3 [&>tbody>tr>td:last-child]:px-3 [&_thead]:!bg-[#f7f9fc] [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-[#f8faff]" data-mobile-table-cards="">
-                <thead class="bg-[#f5f7fb] border-b !border-[#e1e8f1] !text-[#59677a] uppercase tracking-wider font-semibold">
+              <table class="w-full min-w-[1080px] text-left text-xs !text-[11px] [&>thead>tr>th:last-child]:static [&>tbody>tr>td:last-child]:static [&>thead>tr>th:last-child]:shadow-none [&>tbody>tr>td:last-child]:shadow-none [&>thead>tr>th:last-child]:px-3 [&>tbody>tr>td:last-child]:px-3 [&_thead]:!bg-ui-surface-soft [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-ui-surface-soft" data-mobile-table-cards="">
+                <thead class="bg-ui-surface-soft border-b !border-ui-border !text-ui-muted uppercase tracking-wider font-semibold">
                   <tr>
                     <th class="px-5 py-3.5">ID BD</th>
                     <th class="px-5 py-3.5">Matrícula</th>
@@ -426,7 +442,7 @@ export interface EstudianteMatriculadoItem {
                     <th class="px-5 py-3.5 text-right">Acción</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[#edf0f5] !text-[#34445d]">
+                <tbody class="divide-y divide-[var(--ui-divider)] !text-ui-text">
                   @if (cargando()) {
                     <tr>
                       <td colspan="8" class="text-center py-10 !text-[#59677a]">
@@ -445,7 +461,7 @@ export interface EstudianteMatriculadoItem {
                         </td>
                         <td class="px-5 py-3.5 !text-[#59677a] font-mono" data-label="Fecha Registro">{{ est.fechaMatricula | uiDatePe }}</td>
                         <td class="px-5 py-3.5" data-label="Estado en BD">
-                          <span class="px-2 py-1 rounded-full !text-[11px] font-bold !bg-[#eff5ff] !text-[#184fae] border !border-[#c3d6f5]">
+                          <span class="px-2 py-1 rounded-full !text-[11px] font-bold !bg-ui-surface-soft !text-ui-action border !border-ui-action/30">
                             {{ est.estado }}
                           </span>
                         </td>
@@ -467,7 +483,7 @@ export interface EstudianteMatriculadoItem {
                               type="button"
                               (click)="confirmarMatricula(est.id)"
                               [disabled]="confirmandoMatricula() === est.id"
-                              class="mr-2 rounded-lg bg-emerald-600 px-3 py-2 font-semibold text-white transition hover:bg-emerald-500 disabled:cursor-wait disabled:opacity-60 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                              class="mr-2 rounded-lg bg-ui-action px-3 py-2 font-semibold text-ui-action-text transition hover:bg-ui-text disabled:cursor-wait disabled:opacity-60 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
                             >
                               {{ confirmandoMatricula() === est.id ? 'Validando pago…' : 'Confirmar matrícula' }}
                             </button>
@@ -486,7 +502,7 @@ export interface EstudianteMatriculadoItem {
                           <button
                             type="button"
                             (click)="verFicha(est.id)"
-                            class="rounded-lg bg-[#f1f4f9] px-3 py-2 font-medium !text-[#34445d] transition hover:bg-slate-700 hover:text-white max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                            class="rounded-lg bg-ui-surface-soft px-3 py-2 font-medium !text-ui-text transition hover:bg-ui-action hover:text-ui-action-text max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
                           >
                             Ver Ficha
                           </button>
@@ -525,22 +541,22 @@ export interface EstudianteMatriculadoItem {
       <ng-template #nuevoAlumnoDialog>
           <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col font-sans w-full max-w-2xl p-1">
             <!-- Modal Header -->
-            <div class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 flex items-center justify-between border-b !border-[#e1e8f1] pb-4">
+            <div class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-ui-border px-6 py-5 [&_h3]:m-0 [&_h3]:text-ui-text [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-ui-muted [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 flex items-center justify-between border-b !border-ui-border pb-4">
               <div class="flex items-center gap-3">
-                <div class="p-2.5 rounded-xl bg-blue-600/20 text-[#2563eb] border border-blue-500/30">
+                <div class="p-2.5 rounded-xl bg-ui-action/10 text-ui-action border border-ui-action/30">
                   <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 class="text-lg leading-tight !leading-[1.25] font-bold !text-[#172b4d] tracking-[-.025em]">Registrar Nuevo Alumno</h3>
-                  <p class="text-xs text-[#64748b]">El alumno será dado de alta directamente en la base de datos PostgreSQL.</p>
+                  <h3 class="text-lg leading-tight !leading-[1.25] font-bold !text-ui-text tracking-[-.025em]">Registrar Nuevo Alumno</h3>
+                  <p class="text-xs text-ui-muted">El alumno será dado de alta directamente en la base de datos PostgreSQL.</p>
                 </div>
               </div>
               <button
                 id="btn-cerrar-modal-alumno"
                 (click)="cerrarModalNuevoAlumno()"
-                class="grid !h-11 !w-11 !min-h-11 !min-w-11 !shrink-0 place-items-center !p-0 !text-[#59677a] bg-[#f1f4f9] hover:text-white rounded-lg hover:bg-[#f1f4f9] transition cursor-pointer box-border inline-flex min-w-0 min-h-10 items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:min-h-11"
+                class="grid !h-11 !w-11 !min-h-11 !min-w-11 !shrink-0 place-items-center !p-0 !text-ui-muted bg-ui-surface-soft hover:text-ui-action-text rounded-lg hover:bg-ui-surface-soft transition cursor-pointer box-border inline-flex min-w-0 min-h-10 items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:min-h-11"
               >
                 ✕
               </button>
@@ -552,20 +568,20 @@ export interface EstudianteMatriculadoItem {
               <!-- Grid Row 1: Documento -->
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label class="block text-xs font-semibold text-[#475569] mb-1">Tipo de Documento *</label>
+                  <label class="block text-xs font-semibold text-ui-muted mb-1">Tipo de Documento *</label>
                   <select
                     id="nuevo-alumno-tipo-doc" aria-label="Tipo de Documento *"
                     [(ngModel)]="nuevoAlumno.tipoDocumento"
                     name="tipoDoc"
                     required
-                    class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] !text-[#172b4d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   >
                     <option value="DNI">DNI (Perú)</option>
                   </select>
                 </div>
 
                 <div class="sm:col-span-2">
-                  <label class="block text-xs font-semibold text-[#475569] mb-1">Número de Documento *</label>
+                  <label class="block text-xs font-semibold text-ui-muted mb-1">Número de Documento *</label>
                   <div class="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-2"><input
                     id="nuevo-alumno-numero-doc" aria-label="Número de Documento *"
                     type="text"
@@ -576,21 +592,21 @@ export interface EstudianteMatriculadoItem {
                     inputmode="numeric"
                     pattern="[0-9]{8}"
                     placeholder="Ej. 74839201"
-                    class="min-w-0 flex-1 px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] !text-[#172b4d] !text-base placeholder-slate-500 focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
+                    class="min-w-0 flex-1 px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
-                  <button type="button" (click)="consultarDni()" [disabled]="consultandoDni() || nuevoAlumno.tipoDocumento !== 'DNI'" class="inline-flex items-center justify-center whitespace-nowrap px-2 py-2.5 rounded-xl bg-blue-600 text-white text-xs !text-[14px] font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ consultandoDni() ? 'Consultando...' : 'Consultar DNI' }}</button></div>
+                  <button type="button" (click)="consultarDni()" [disabled]="consultandoDni() || nuevoAlumno.tipoDocumento !== 'DNI'" class="inline-flex min-h-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-ui-divider bg-ui-surface-soft px-3 py-2.5 text-center font-sans text-sm font-semibold leading-[1.25] text-ui-text transition-colors hover:bg-ui-surface focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] disabled:opacity-50"><svg class="h-5 w-5 shrink-0" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.8" cy="10.8" r="6.3"></circle><path d="m15.5 15.5 4.2 4.2"></path></svg>{{ consultandoDni() ? 'Consultando...' : 'Consultar DNI' }}</button></div>
                 </div>
               </div>
 
-              <p class="text-xs text-[#64748b]">Los datos del proveedor externo son referenciales. Revisa nombres y apellidos antes de guardar.</p>
+              <p class="text-xs text-ui-muted">Los datos del proveedor externo son referenciales. Revisa nombres y apellidos antes de guardar.</p>
               @if (error()) {
-                <p class="!text-[11px] text-[#be123c]" role="alert">{{ error() }}</p>
+                <p class="!text-[11px] text-ui-error-text" role="alert">{{ error() }}</p>
               }
 
               <!-- Grid Row 2: Nombres y Apellidos -->
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label class="block text-xs font-semibold text-[#475569] mb-1">Nombres *</label>
+                  <label class="block text-xs font-semibold text-ui-muted mb-1">Nombres *</label>
                   <input
                     id="nuevo-alumno-nombres" aria-label="Nombres *"
                     type="text"
@@ -599,12 +615,12 @@ export interface EstudianteMatriculadoItem {
                     required
                     maxlength="100"
                     placeholder="Ej. Mateo Alejandro"
-                    class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] !text-[#172b4d] !text-base placeholder-slate-500 focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
                 </div>
 
                 <div>
-                  <label class="block text-xs font-semibold text-[#475569] mb-1">Apellido Paterno *</label>
+                  <label class="block text-xs font-semibold text-ui-muted mb-1">Apellido Paterno *</label>
                   <input
                     id="nuevo-alumno-ape-paterno" aria-label="Apellido Paterno *"
                     type="text"
@@ -613,12 +629,12 @@ export interface EstudianteMatriculadoItem {
                     required
                     maxlength="80"
                     placeholder="Ej. Quispe"
-                    class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] !text-[#172b4d] !text-base placeholder-slate-500 focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
                 </div>
 
                 <div>
-                  <label class="block text-xs font-semibold text-[#475569] mb-1">Apellido Materno *</label>
+                  <label class="block text-xs font-semibold text-ui-muted mb-1">Apellido Materno *</label>
                   <input
                     id="nuevo-alumno-ape-materno" aria-label="Apellido Materno *"
                     type="text"
@@ -627,7 +643,7 @@ export interface EstudianteMatriculadoItem {
                     required
                     maxlength="80"
                     placeholder="Ej. Mendoza"
-                    class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] !text-[#172b4d] !text-base placeholder-slate-500 focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
                 </div>
               </div>
@@ -635,25 +651,25 @@ export interface EstudianteMatriculadoItem {
               <!-- Grid Row 3: Nacimiento, Genero, Grupo Sanguineo -->
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
-                  <label class="block text-xs font-semibold text-[#475569] mb-1">Fecha de Nacimiento *</label>
+                  <label class="block text-xs font-semibold text-ui-muted mb-1">Fecha de Nacimiento *</label>
                   <input
                     id="nuevo-alumno-fecha-nac" aria-label="Fecha de Nacimiento *"
                     type="date"
                     [(ngModel)]="nuevoAlumno.fechaNacimiento"
                     name="fechaNacimiento"
                     required
-                    class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] !text-[#172b4d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
                 </div>
 
                 <div>
-                  <label class="block text-xs font-semibold text-[#475569] mb-1">Género *</label>
+                  <label class="block text-xs font-semibold text-ui-muted mb-1">Género *</label>
                   <select
                     id="nuevo-alumno-genero" aria-label="Género *"
                     [(ngModel)]="nuevoAlumno.genero"
                     name="genero"
                     required
-                    class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] !text-[#172b4d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   >
                     <option value="M">Masculino</option>
                     <option value="F">Femenino</option>
@@ -661,12 +677,12 @@ export interface EstudianteMatriculadoItem {
                 </div>
 
                 <div>
-                  <label class="block text-xs font-semibold text-[#475569] mb-1">Grupo Sanguíneo</label>
+                  <label class="block text-xs font-semibold text-ui-muted mb-1">Grupo Sanguíneo</label>
                   <select
                     id="nuevo-alumno-grupo-sang" aria-label="Grupo Sanguíneo"
                     [(ngModel)]="nuevoAlumno.grupoSanguineo"
                     name="grupoSanguineo"
-                    class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] !text-[#172b4d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   >
                     <option value="O+">O+</option>
                     <option value="O-">O-</option>
@@ -691,18 +707,18 @@ export interface EstudianteMatriculadoItem {
                     name="alergias"
                     maxlength="4000"
                     placeholder="Ej. Ninguna alergia conocida / Alérgico a penicilina"
-                    class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] !text-[#172b4d] !text-base placeholder-slate-500 focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base"
+                    class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
                 </div>
               </div>
 
               </div>
               <!-- Modal Footer -->
-              <div class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto] flex items-center justify-end gap-3 pt-4 border-t !border-[#e1e8f1]">
+              <div class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-ui-border bg-ui-surface px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto] flex items-center justify-end gap-3 pt-4 border-t !border-ui-border">
                 <button
                   type="button"
                   (click)="cerrarModalNuevoAlumno()"
-                  class="px-4 py-2.5 rounded-xl bg-[#f1f4f9] hover:bg-slate-700 text-[#475569] text-xs !text-[14px] font-semibold transition cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                  class="px-4 py-2.5 rounded-xl bg-ui-surface-soft hover:bg-ui-action text-ui-muted text-xs !text-[14px] font-semibold transition cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
                 >
                   Cancelar
                 </button>
@@ -710,7 +726,7 @@ export interface EstudianteMatriculadoItem {
                   id="btn-guardar-alumno"
                   type="submit"
                   [disabled]="guardandoAlumno() || consultandoDni()"
-                  class="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs !text-[14px] font-semibold shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer disabled:opacity-50 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                  class="px-5 py-2.5 rounded-xl bg-ui-action hover:bg-ui-action/90 text-ui-action-text text-xs !text-[14px] font-semibold shadow-lg shadow-none transition flex items-center gap-2 cursor-pointer disabled:opacity-50 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
                 >
                   @if (guardandoAlumno()) {
                     <span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
@@ -770,16 +786,16 @@ export interface EstudianteMatriculadoItem {
       <!-- ============================================================== -->
       <ng-template #solicitudDialog>
           <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col font-sans w-full max-w-lg p-1">
-            <div class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 flex items-center justify-between border-b border-[#e5eaf2] pb-4">
-              <h3 class="text-lg !leading-7 font-bold text-[#14213d] tracking-[-.025em]">Asignar Solicitud de Matrícula</h3>
-              <button (click)="cerrarSolicitudDialog()" class="inline-flex h-11 min-h-11 w-11 min-w-11 shrink-0 items-center justify-center rounded p-2 text-base font-normal text-[#64748b] hover:text-[#475569]" aria-label="Cerrar diálogo">✕</button>
+            <div class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-ui-border px-6 py-5 [&_h3]:m-0 [&_h3]:text-ui-text [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-ui-muted [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 flex items-center justify-between border-b border-ui-border pb-4">
+              <h3 class="text-lg !leading-7 font-bold text-ui-text tracking-[-.025em]">Asignar Solicitud de Matrícula</h3>
+              <button (click)="cerrarSolicitudDialog()" class="inline-flex h-11 min-h-11 w-11 min-w-11 shrink-0 items-center justify-center rounded p-2 text-base font-normal text-ui-muted hover:text-ui-muted" aria-label="Cerrar diálogo">✕</button>
             </div>
 
             <form (ngSubmit)="solicitar()" class="flex min-h-0 flex-[1_1_auto] flex-col space-y-4">
               <div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
               <div>
-                <label class="block text-xs font-semibold text-[#475569] mb-1">Año Lectivo</label>
-                <select [(ngModel)]="anioLectivoId" aria-label="Año Lectivo" name="anio" (change)="cargarSecciones()" required class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] text-[#14213d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-[#f5f7fb] !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base">
+                <label class="block text-xs font-semibold text-ui-muted mb-1">Año Lectivo</label>
+                <select [(ngModel)]="anioLectivoId" aria-label="Año Lectivo" name="anio" (change)="cargarSecciones()" required class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface-soft !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base">
                   @for (anio of anios(); track anio.id) {
                     <option [ngValue]="anio.id">{{ anio.anio }} {{ anio.abierto ? '(Vigente)' : '' }}</option>
                   }
@@ -787,8 +803,8 @@ export interface EstudianteMatriculadoItem {
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-[#475569] mb-1">Estudiante Registrado *</label>
-                <select [(ngModel)]="nuevoEstudianteId" aria-label="Estudiante Registrado *" name="estudiante" required class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] text-[#14213d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-[#f5f7fb] !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base">
+                <label class="block text-xs font-semibold text-ui-muted mb-1">Estudiante Registrado *</label>
+                <select [(ngModel)]="nuevoEstudianteId" aria-label="Estudiante Registrado *" name="estudiante" required class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface-soft !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base">
                   <option [ngValue]="0" disabled>Seleccionar estudiante...</option>
                   @if (cargandoMatriculasAnio()) {
                     <option [ngValue]="0" disabled>Verificando matrículas del año...</option>
@@ -808,8 +824,8 @@ export interface EstudianteMatriculadoItem {
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-[#475569] mb-1">Sección de Destino *</label>
-                <select [(ngModel)]="seccionIdSeleccionada" aria-label="Sección de Destino *" name="seccion" required class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] text-[#14213d] !text-base focus:outline-none focus:border-blue-500 min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-[#f5f7fb] !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base">
+                <label class="block text-xs font-semibold text-ui-muted mb-1">Sección de Destino *</label>
+                <select [(ngModel)]="seccionIdSeleccionada" aria-label="Sección de Destino *" name="seccion" required class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border text-ui-text !text-base focus:outline-none focus:border-ui-action min-w-0 !min-h-11 max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface-soft !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base">
                   @for (s of secciones(); track s.id) {
                     <option [ngValue]="s.id">{{ obtenerNombreSeccion(s) }}</option>
                   }
@@ -817,23 +833,23 @@ export interface EstudianteMatriculadoItem {
               </div>
 
               <div>
-                <label class="block text-xs font-semibold text-[#475569] mb-1">Observaciones</label>
+                <label class="block text-xs font-semibold text-ui-muted mb-1">Observaciones</label>
                 <textarea
                   [(ngModel)]="nuevasObservaciones" aria-label="Observaciones"
                   name="observaciones"
                   maxlength="4000"
                   rows="3"
                   placeholder="Observaciones de la matrícula..."
-                  class="w-full px-3 py-2.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] text-[#14213d] text-xs placeholder-slate-500 focus:outline-none focus:border-blue-500 min-w-0 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-[#f5f7fb] !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base py-[10px] resize-y !min-h-[100px]"
+                  class="w-full px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border text-ui-text text-xs placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface-soft !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base py-[10px] resize-y !min-h-[100px]"
                 ></textarea>
               </div>
 
               </div>
-              <div class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto] flex items-center justify-end gap-3 pt-4 border-t !border-[#e1e8f1]">
-                <button type="button" (click)="cerrarSolicitudDialog()" class="px-4 py-2 rounded-xl bg-[#f1f4f9] text-[#475569] text-xs !text-sm font-semibold box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+              <div class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-ui-border bg-ui-surface px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto] flex items-center justify-end gap-3 pt-4 border-t !border-ui-border">
+                <button type="button" (click)="cerrarSolicitudDialog()" class="px-4 py-2 rounded-xl bg-ui-surface-soft text-ui-muted text-xs !text-sm font-semibold box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
                   Cancelar
                 </button>
-                <button type="submit" [disabled]="guardando()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs !text-sm font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+                <button type="submit" [disabled]="guardando()" class="px-5 py-2 rounded-xl bg-ui-action hover:bg-ui-action/90 text-ui-action-text text-xs !text-sm font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
                   {{ guardando() ? 'Guardando...' : 'Asignar Matrícula' }}
                 </button>
               </div>
@@ -1139,6 +1155,7 @@ export class MatriculasComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly matriculaService = inject(MatriculaService);
   private readonly academicoService = inject(AcademicoService);
+  readonly authStore = inject(AuthStore);
 
   @ViewChild('nuevoAlumnoDialog') private nuevoAlumnoDialog!: TemplateRef<unknown>;
   @ViewChild('vinculoApoderadoDialog') private vinculoApoderadoDialog!: TemplateRef<unknown>;
@@ -1571,6 +1588,7 @@ export class MatriculasComponent implements OnInit {
   }
 
   abrirModalNuevoAlumno(): void {
+    if (!this.authStore.hasRole('SECRETARIA')) return;
     this.error.set(null);
     this.mensajeExito.set(null);
     this.nuevoAlumno = {
@@ -1624,6 +1642,7 @@ export class MatriculasComponent implements OnInit {
   }
 
   guardarEstudiante(): void {
+    if (!this.authStore.hasRole('SECRETARIA')) return;
     if (!this.nuevoAlumno.numeroDocumento || !this.nuevoAlumno.nombres || !this.nuevoAlumno.apellidoPaterno || !this.nuevoAlumno.apellidoMaterno || !this.nuevoAlumno.fechaNacimiento) {
       this.error.set('Por favor complete todos los campos obligatorios del estudiante.');
       return;
@@ -1751,6 +1770,7 @@ export class MatriculasComponent implements OnInit {
   }
 
   solicitar(): void {
+    if (!this.authStore.hasRole('SECRETARIA')) return;
     if (!this.anioLectivoId || !this.seccionIdSeleccionada || !this.nuevoEstudianteId) {
       this.error.set('Complete año, sección y seleccione un estudiante registrado.');
       return;

@@ -19,10 +19,10 @@ import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
   template: `
     <div class="space-y-6 min-w-0 font-inter text-[#172b4d] [&_button]:min-h-11 [&_input]:min-h-11 [&_select]:min-h-11 [&_:focus-visible]:outline-[3px] [&_:focus-visible]:outline-[#2864c5] [&_:focus-visible]:outline-offset-[3px] [&_.grid>div]:min-w-0 [&_.grid>article]:min-w-0">
       <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t-[3px] border-[#c49a58]/50 pt-3">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t-[3px] border-[var(--ui-gold)]/50 pt-3">
         <div>
-          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#14213d] tracking-[-.025em]">Usuarios & Permisos (RBAC)</h2>
-          <p class="text-sm text-[#59677a] mt-1">
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-ui-text tracking-[-.025em]">Usuarios & Permisos (RBAC)</h2>
+          <p class="text-sm text-ui-muted mt-1">
             Administración de cuentas institucionales, asignación de roles y control de acceso sincronizado con PostgreSQL.
           </p>
         </div>
@@ -39,16 +39,16 @@ import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
         </div>
       </div>
 
-      @if (error()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-xs text-[#b91c1c]" role="alert">{{ error() }}</p> }
+      @if (error()) { <p class="m-0 rounded-xl border border-ui-error-border bg-ui-error-bg px-3 py-[10px] text-xs text-ui-error-text" role="alert">{{ error() }}</p> }
 
       <!-- Filters & Stats -->
-      <div class="p-4 rounded-2xl bg-white border border-[#e5eaf2] flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="p-4 rounded-2xl bg-ui-surface border border-ui-divider flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex w-full flex-col items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
-          <label class="text-xs !text-[11px] font-semibold text-[#59677a]">Filtrar por Rol:</label>
+          <label class="text-xs !text-[11px] font-semibold text-ui-muted">Filtrar por Rol:</label>
           <select
             [(ngModel)]="filtroRol" aria-label="Filtrar por Rol"
             (change)="cargarUsuarios()"
-            class="px-3 py-1.5 rounded-xl bg-[#f5f7fb] border border-[#e5eaf2] text-[#14213d] text-xs !text-[11px] focus:outline-none focus:border-blue-500 min-w-0 !min-h-[44px] max-w-full py-[10px] !border-[#d9e1ec] !bg-[#f5f7fb] !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !min-h-11 !py-[6px] !px-3 !border-[#e5eaf2]"
+            class="px-3 py-1.5 rounded-xl bg-ui-surface-soft border border-ui-divider text-ui-text text-xs !text-[11px] focus:outline-none focus:border-ui-focus min-w-0 !min-h-[44px] max-w-full py-[10px] !border-ui-control-border !bg-ui-surface-soft !text-ui-text transition-colors focus:border-[var(--ui-focus)] focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base !min-h-11 !py-[6px] !px-3 !border-ui-divider"
           >
             <option value="">Todos los Roles</option>
             <option value="DIRECCION">Dirección</option>
@@ -60,22 +60,22 @@ import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
           </select>
           <button
             (click)="cargarUsuarios()"
-            class="px-3 py-1.5 rounded-xl bg-[#f1f4f9] hover:bg-slate-700 text-[#34445d] text-xs !text-[11px] font-semibold cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+            class="px-3 py-1.5 rounded-xl bg-ui-surface-soft hover:bg-ui-divider text-ui-text text-xs !text-[11px] font-semibold cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
           >
             Actualizar BD
           </button>
         </div>
 
-        <div class="text-xs !text-[11px] text-[#59677a]">
-          Total de cuentas en BD: <span class="text-[#14213d] font-bold">{{ usuarios().length }}</span>
+        <div class="text-xs !text-[11px] text-ui-muted">
+          Total de cuentas en BD: <span class="text-ui-text font-bold">{{ usuarios().length }}</span>
         </div>
       </div>
 
       <!-- Users Table -->
-      <div class="rounded-2xl bg-white border border-[#e5eaf2] overflow-hidden shadow-sm">
+      <div class="rounded-2xl bg-ui-surface border border-ui-divider overflow-hidden shadow-sm">
         <div class="overflow-x-auto">
-          <table class="w-full min-w-[900px] max-[640px]:min-w-[820px] text-left text-xs !text-[11px] [&_th:last-child]:static [&_th:last-child]:shadow-none [&_td:last-child]:static [&_td:last-child]:shadow-none [&_thead]:!bg-[#f7f9fc] [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-[#f8faff]" data-mobile-table-cards="">
-            <thead class="bg-[#f5f7fb] border-b border-[#e5eaf2] text-[#59677a] uppercase tracking-wider font-semibold">
+          <table class="w-full min-w-[900px] max-[640px]:min-w-[820px] text-left text-xs !text-[11px] [&_th:last-child]:static [&_th:last-child]:shadow-none [&_td:last-child]:static [&_td:last-child]:shadow-none [&_thead]:!bg-ui-surface-soft [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-ui-surface-soft" data-mobile-table-cards="">
+            <thead class="bg-ui-surface-soft border-b border-ui-divider text-ui-muted uppercase tracking-wider font-semibold">
               <tr>
                 <th class="px-5 py-3.5">ID BD</th>
                 <th class="px-5 py-3.5">Usuario</th>
@@ -86,20 +86,20 @@ import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
                 <th class="px-5 py-3.5 text-right">Acción</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-[#edf0f5] text-[#34445d]">
+            <tbody class="divide-y divide-[var(--ui-divider)] text-ui-text">
               @if (cargando()) {
                 <tr>
-                  <td colspan="7" class="text-center py-10 text-[#59677a]">
-                    <span class="inline-block w-5 h-5 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-2"></span>
+                  <td colspan="7" class="text-center py-10 text-ui-muted">
+                    <span class="inline-block w-5 h-5 border-2 border-ui-action/30 border-t-ui-action rounded-full animate-spin mb-2"></span>
                     <p>Consultando usuarios en la base de datos...</p>
                   </td>
                 </tr>
               } @else {
                 @for (user of usuarios(); track user.id) {
-                  <tr class="!bg-[#f1f4f9] hover:bg-[#f1f4f9] transition">
-                    <td class="px-5 py-3.5 font-mono text-[#59677a]" data-label="ID BD">{{ user.id }}</td>
-                    <td class="px-5 py-3.5 font-bold text-[#14213d]" data-label="Usuario">{{ user.username }}</td>
-                    <td class="px-5 py-3.5 text-[#34445d]" data-label="Correo Electrónico">{{ user.email }}</td>
+                  <tr class="!bg-ui-surface-soft hover:bg-ui-surface-soft transition">
+                    <td class="px-5 py-3.5 font-mono text-ui-muted" data-label="ID BD">{{ user.id }}</td>
+                    <td class="px-5 py-3.5 font-bold text-ui-text" data-label="Usuario">{{ user.username }}</td>
+                    <td class="px-5 py-3.5 text-ui-text" data-label="Correo Electrónico">{{ user.email }}</td>
                     <td class="px-5 py-3.5" data-label="Roles Asignados">
                       <div class="flex flex-wrap gap-1">
                         @for (r of user.roles; track r.codigo) {
@@ -122,16 +122,16 @@ import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
                     </td>
                     <td class="px-5 py-3.5" data-label="Estado en BD">
                       @if (user.activo) {
-                        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#edf9f3] border border-[#b8dfcc] text-[#126943]">
+                        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-ui-success-bg border border-ui-success-border text-ui-success-text">
                           ACTIVO
                         </span>
                       } @else {
-                        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#fff1ef] border border-[#f2b7b0] text-[#a43128]">
+                        <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-ui-error-bg border border-ui-error-border text-ui-error-text">
                           SUSPENDIDO
                         </span>
                       }
                     </td>
-                    <td class="px-5 py-3.5 !text-[#59677a] font-mono" data-label="Fecha Creación">{{ user.createdAt ? (user.createdAt | uiDatePe:true) : '-' }}</td>
+                    <td class="px-5 py-3.5 !text-ui-muted font-mono" data-label="Fecha Creación">{{ user.createdAt ? (user.createdAt | uiDatePe:true) : '-' }}</td>
                     <td class="px-5 py-3.5 text-right" data-label="Acción">
                       <div class="flex flex-wrap justify-end gap-1.5">
                         <button
@@ -155,9 +155,9 @@ import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
                 } @empty {
                   <tr [hidden]="!!error()">
                     <td colspan="7" data-label="">
-                      <div class="text-center py-12 text-[#59677a] space-y-2 relative pt-[62px]" data-illustration="crest"><svg aria-hidden="true" class="absolute left-1/2 top-3 h-[42px] w-[42px] -translate-x-1/2 fill-none stroke-[#102447] stroke-2 [stroke-linecap:round] [stroke-linejoin:round]"><path d="M24 5 39 11v11c0 10-6.5 16-15 21C15.5 38 9 32 9 22V11z"/><path d="M15 18c3-1 6-.5 9 1.5v13c-3-2-6-2.5-9-1.5zM33 18c-3-1-6-.5-9 1.5v13c3-2 6-2.5 9-1.5z" stroke="#C49A58"/></svg>
-                        <p class="font-medium text-[#59677a]">No se encontraron usuarios registrados en la base de datos.</p>
-                        <p class="text-[11px] text-[#59677a]">Cree un nuevo usuario institucional con el botón superior para darlo de alta en PostgreSQL.</p>
+                      <div class="text-center py-12 text-ui-muted space-y-2 relative pt-[62px]" data-illustration="crest"><svg aria-hidden="true" class="absolute left-1/2 top-3 h-[42px] w-[42px] -translate-x-1/2 fill-none stroke-[var(--ui-action)] stroke-2 [stroke-linecap:round] [stroke-linejoin:round]"><path d="M24 5 39 11v11c0 10-6.5 16-15 21C15.5 38 9 32 9 22V11z"/><path d="M15 18c3-1 6-.5 9 1.5v13c-3-2-6-2.5-9-1.5zM33 18c-3-1-6-.5-9 1.5v13c3-2 6-2.5 9-1.5z" stroke="var(--ui-gold)"/></svg>
+                        <p class="font-medium text-ui-muted">No se encontraron usuarios registrados en la base de datos.</p>
+                        <p class="text-[11px] text-ui-muted">Cree un nuevo usuario institucional con el botón superior para darlo de alta en PostgreSQL.</p>
                       </div>
                     </td>
                   </tr>
@@ -595,11 +595,11 @@ import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
 
       <!-- CONFIRMAR ESTADO DIALOG -->
       <ng-template #confirmarEstadoDialog>
-        <h2 mat-dialog-title class="!px-6 !pt-6 !text-xl !font-semibold !tracking-tight !text-[#14213d] tracking-[-.025em]">{{ usuarioPendienteEstado()?.activo ? 'Suspender usuario' : 'Activar usuario' }}</h2>
+        <h2 mat-dialog-title class="!px-6 !pt-6 !text-xl !font-semibold !tracking-tight !text-ui-text tracking-[-.025em]">{{ usuarioPendienteEstado()?.activo ? 'Suspender usuario' : 'Activar usuario' }}</h2>
         <mat-dialog-content class="!px-6 !pt-3">
-          <p class="text-sm leading-6 text-slate-600">{{ usuarioPendienteEstado()?.activo ? 'La cuenta perderá el acceso al portal.' : 'La cuenta recuperará el acceso según sus roles asignados.' }}</p>
-          @if (usuarioPendienteEstado()) { <p class="mt-3 break-all text-sm font-semibold text-slate-800">{{ usuarioPendienteEstado()!.email }}</p> }
-          @if (error()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-xs text-[#b91c1c] mt-4" role="alert">{{ error() }}</p> }
+          <p class="text-sm leading-6 text-ui-muted">{{ usuarioPendienteEstado()?.activo ? 'La cuenta perderá el acceso al portal.' : 'La cuenta recuperará el acceso según sus roles asignados.' }}</p>
+          @if (usuarioPendienteEstado()) { <p class="mt-3 break-all text-sm font-semibold text-ui-text">{{ usuarioPendienteEstado()!.email }}</p> }
+          @if (error()) { <p class="m-0 rounded-xl border border-ui-error-border bg-ui-error-bg px-3 py-[10px] text-xs text-ui-error-text mt-4" role="alert">{{ error() }}</p> }
         </mat-dialog-content>
         <mat-dialog-actions align="end" class="!gap-2 !px-6 !pb-6">
           <button mat-button type="button" mat-dialog-close [disabled]="actualizandoEstado()">Cancelar</button>
