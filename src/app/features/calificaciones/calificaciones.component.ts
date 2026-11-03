@@ -6,6 +6,7 @@ import { CargaPlanillaComponent } from '../../shared/ui/carga-planilla.component
 import { EvaluacionService } from '../../core/services/evaluacion.service';
 import { AcademicoService } from '../../core/services/academico.service';
 import { AsignacionDocenteResponseDto, CompetenciaResponseDto, PeriodoResponseDto } from '../../core/models/academico.model';
+import { AuthStore } from '../../core/state/auth.store';
 
 type NotaCNEB = 'AD' | 'A' | 'B' | 'C' | '-';
 
@@ -27,7 +28,7 @@ export interface EvaluacionAlumno {
   standalone: true,
   imports: [CommonModule, FormsModule, CargaPlanillaComponent],
 template: `
-    <main class="grid min-w-0 gap-[22px] text-ui-text max-[600px]:gap-4 max-[600px]:pb-1" aria-labelledby="calificaciones-title">
+    <main class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-[22px] text-ui-text max-[600px]:gap-4 max-[600px]:pb-1" aria-labelledby="calificaciones-title">
       <header class="flex items-end justify-between gap-6 border-t-[3px] border-ui-divider pt-3 max-[600px]:items-stretch max-[600px]:flex-col max-[600px]:gap-[14px]">
         <div class="min-w-0">
           <p class="m-0 mb-[6px] text-ui-muted text-[11px] font-extrabold tracking-[.14em] leading-[1.4] uppercase">Evaluación docente</p>
@@ -37,42 +38,48 @@ template: `
 
         <div class="flex flex-[0_0_auto] items-center justify-end gap-3 max-[600px]:items-stretch max-[600px]:flex-col">
           @if (guardadoExitoso()) {
-            <span class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#86efac] bg-[#dcfce7] text-[#14532d] m-0 text-xs" role="status">
+            <span class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-ui-success-border bg-ui-success-bg text-ui-success-text m-0 text-xs" role="status">
               <svg class="h-5 w-5 shrink-0" aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>
               Calificaciones guardadas en BD
             </span>
           }
+          @if (authStore.hasRole('DOCENTE')) {
           <button type="button" (click)="guardarCalificaciones()" [disabled]="alumnos().length === 0 || !asignacionId || !competenciaId" class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-ui-divider disabled:bg-ui-surface-soft disabled:text-ui-muted aria-disabled:cursor-not-allowed aria-disabled:border-ui-divider aria-disabled:bg-ui-surface-soft aria-disabled:text-ui-muted bg-ui-action text-ui-action-text hover:bg-ui-action whitespace-nowrap max-[600px]:w-full max-[600px]:justify-center box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]">
             <svg class="h-[17px] w-[17px] flex-[0_0_17px]" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" /></svg>
             <span>Guardar en BD</span>
           </button>
+          }
         </div>
       </header>
 
       @if (error()) {
-        <div class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[#fca5a5] bg-[#fee2e2] text-[#7f1d1d] m-0 text-[13px]" role="alert">{{ error() }}</div>
+        <div class="flex items-start gap-3 rounded-lg border border-transparent px-4 py-3 font-sans text-base leading-6 border-[var(--ui-error-border)] bg-ui-error-bg text-ui-error-text m-0 text-[13px]" role="alert">{{ error() }}</div>
       }
 
-      <app-carga-planilla [asignacionId]="+asignacionId" [periodoId]="+periodoId" [seccionId]="seccionActualId" [competenciaId]="+competenciaId" (completada)="cargarCalificaciones()" />
+      @if (authStore.hasRole('DOCENTE')) {
+        <app-carga-planilla [asignacionId]="+asignacionId" [periodoId]="+periodoId" [seccionId]="seccionActualId" [competenciaId]="+competenciaId" (completada)="cargarCalificaciones()" />
+      } @else {
+        <p class="m-0 rounded-xl border border-ui-info-border bg-ui-info-bg px-4 py-3 text-sm font-medium text-ui-info-text" role="status">Vista de solo lectura. El registro de calificaciones está habilitado para Docencia.</p>
+      }
 
       <section class="grid min-w-0 grid-cols-[minmax(160px,.9fr)_minmax(240px,1.25fr)_minmax(310px,1.55fr)_minmax(150px,.8fr)] items-end gap-4 rounded-2xl border border-ui-divider bg-ui-surface !p-[18px] shadow-[0_5px_16px_rgb(23_43_77_/_5%)] max-[1399px]:grid-cols-2 max-[600px]:grid-cols-1 max-[600px]:gap-[13px] max-[600px]:!p-[15px]" aria-label="Filtros de calificaciones">
         <div class="grid gap-1 font-sans text-base leading-6 text-ui-text min-w-0 m-0">
           <label class="font-sans text-[13px] leading-[1.4] font-medium text-ui-text" for="periodo-calificaciones">Periodo Académico</label>
-          <select id="periodo-calificaciones" [(ngModel)]="periodoId" (change)="cargarCalificaciones()" [disabled]="!periodos().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-[#7f1d1d] box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-[#7f1d1d] max-[600px]:!text-sm min-[601px]:!text-[13px]   !rounded-xl !border-ui-control-border !text-ui-text">
+          <select id="periodo-calificaciones" [(ngModel)]="periodoId" (change)="cargarCalificaciones()" [disabled]="!periodos().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border max-[600px]:!text-sm min-[601px]:!text-[13px] !rounded-xl !border-ui-control-border !text-ui-text">
             @if (!periodos().length) { <option [ngValue]="0">Sin periodos disponibles</option> } @for (periodo of periodos(); track periodo.id) { <option [ngValue]="periodo.id">{{ periodo.nombre }}</option> }
           </select>
         </div>
 
         <div class="grid gap-1 font-sans text-base leading-6 text-ui-text min-w-0 m-0">
           <label class="font-sans text-[13px] leading-[1.4] font-medium text-ui-text" for="asignacion-calificaciones">Asignación docente y sección</label>
-          <select id="asignacion-calificaciones" [(ngModel)]="asignacionId" (change)="cambiarAsignacion()" [disabled]="!asignaciones().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-[#7f1d1d] box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-[#7f1d1d] max-[600px]:!text-sm min-[601px]:!text-[13px]   !rounded-xl !border-ui-control-border !text-ui-text">
+          <select id="asignacion-calificaciones" [(ngModel)]="asignacionId" (change)="cambiarAsignacion()" [disabled]="!asignaciones().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border max-[600px]:!text-sm min-[601px]:!text-[13px] !rounded-xl !border-ui-control-border !text-ui-text">
             @if (!asignaciones().length) { <option [ngValue]="0">Sin asignaciones disponibles</option> } @for (a of asignaciones(); track a.id) { <option [ngValue]="a.id">Sección {{ a.seccionId }} · Área {{ a.areaCurricularId }} · Asignación {{ a.id }}</option> }
           </select>
         </div>
 
         <div class="grid gap-1 font-sans text-base leading-6 text-ui-text min-w-0 m-0">
           <label class="font-sans text-[13px] leading-[1.4] font-medium text-ui-text" for="competencia-calificaciones">Competencia</label>
-          <select id="competencia-calificaciones" [(ngModel)]="competenciaId" (change)="cargarCalificaciones()" [disabled]="!competencias().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-[#7f1d1d] box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-[#7f1d1d] max-[600px]:!text-sm min-[601px]:!text-[13px]   !rounded-xl !border-ui-control-border !text-ui-text">
+          <select id="competencia-calificaciones" [(ngModel)]="competenciaId" (change)="cargarCalificaciones()" [disabled]="!competencias().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border max-[600px]:!text-sm min-[601px]:!text-[13px] !rounded-xl !border-ui-control-border !text-ui-text">
             @if (!competencias().length) { <option [ngValue]="0">Sin competencias disponibles</option> } @for (c of competencias(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }
           </select>
         </div>
@@ -87,8 +94,8 @@ template: `
           <div class="flex flex-wrap items-center gap-2 max-[600px]:gap-[6px]" aria-label="Escala CNEB">
             <span class="mr-1 text-ui-text text-xs font-extrabold tracking-[.06em] uppercase max-[600px]:mb-0.5 max-[600px]:w-full">Escala CNEB:</span>
             <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-ui-divider bg-ui-surface-soft px-[9px] py-[3px] text-xs font-extrabold leading-[1.3] text-ui-action whitespace-nowrap">AD</span>
-            <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-[#9bd8bf] bg-[#edf9f3] px-[9px] py-[3px] text-xs font-extrabold leading-[1.3] text-[#126943] whitespace-nowrap">A</span>
-            <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-[#edca83] bg-[#fff7e7] px-[9px] py-[3px] text-xs font-extrabold leading-[1.3] text-[#805300] whitespace-nowrap">B</span>
+            <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-ui-success-border bg-ui-success-bg px-[9px] py-[3px] text-xs font-extrabold leading-[1.3] text-ui-success-text whitespace-nowrap">A</span>
+            <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-ui-warning-border bg-ui-warning-bg px-[9px] py-[3px] text-xs font-extrabold leading-[1.3] text-ui-warning-text whitespace-nowrap">B</span>
             <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-ui-divider bg-ui-surface-soft px-[9px] py-[3px] text-xs font-extrabold leading-[1.3] text-ui-text whitespace-nowrap">C</span>
           </div>
           <p class="m-0 text-ui-muted text-xs">Total en matriz: <strong class="text-ui-text text-[13px]">{{ alumnos().length }}</strong></p>
@@ -112,7 +119,7 @@ template: `
                 <tr>
                   <td colspan="6">
                     <div class="grid min-h-[220px] content-center justify-items-center gap-2 p-6 text-center" role="status" aria-live="polite">
-                      <span class="mb-1 h-[30px] w-[30px] rounded-full border-[3px] border-ui-divider border-t-[#2864c5] animate-[grade-spin_.8s_linear_infinite]" aria-hidden="true"></span>
+                      <span class="mb-1 h-[30px] w-[30px] rounded-full border-[3px] border-ui-divider border-t-[var(--ui-action)] animate-[grade-spin_.8s_linear_infinite]" aria-hidden="true"></span>
                       <span class="text-ui-text text-sm font-bold">Consultando calificaciones</span>
                       <span class="max-w-[48ch] text-ui-muted text-xs leading-[1.5]">Espera mientras se carga la matriz.</span>
                     </div>
@@ -120,33 +127,33 @@ template: `
                 </tr>
               } @else {
                 @for (alumno of alumnos(); track alumno.matriculaId) {
-                  <tr [ngClass]="alumno.c1 === '-' ? '[&>td]:bg-[#fffaf0] dark:[&>td]:bg-[#443821] dark:[&>td]:text-ui-text [&>td:first-child]:shadow-[inset_3px_0_var(--ui-control-border)] [&>td:last-child]:bg-[#fffaf0] dark:[&>td:last-child]:bg-[#443821]' : ''">
+                  <tr [ngClass]="alumno.c1 === '-' ? '[&>td]:bg-[var(--ui-warning-bg)] dark:[&>td]:bg-[var(--ui-warning-text)] dark:[&>td]:text-ui-text [&>td:first-child]:shadow-[inset_3px_0_var(--ui-control-border)] [&>td:last-child]:bg-[var(--ui-warning-bg)] dark:[&>td:last-child]:bg-[var(--ui-warning-text)]' : ''">
                     <td class="w-16 text-center text-ui-muted tabular-nums" data-label="N°">{{ alumno.numeroOrden }}</td>
                     <td data-label="Estudiante / Matrícula"><span class="inline-flex min-h-8 items-center rounded-[9px] border border-ui-divider bg-ui-surface-soft px-[9px] py-[5px] text-xs font-bold text-ui-text whitespace-nowrap">{{ alumno.estudiante }}</span></td>
                     <td class="text-center" data-label="Calificación">
                       @if (alumno.c1 === '-') {
                         <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-ui-divider bg-ui-surface-soft px-[9px] py-[3px] text-xs font-extrabold leading-[1.3] text-ui-muted whitespace-nowrap">Sin calificar</span>
                       } @else {
-                        <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border px-[9px] py-[3px] text-xs font-extrabold leading-[1.3] whitespace-nowrap" [ngClass]="{ 'border-ui-divider bg-ui-surface-soft text-ui-action': alumno.c1 === 'AD', 'border-[#9bd8bf] bg-[#edf9f3] text-[#126943]': alumno.c1 === 'A', 'border-[#edca83] bg-[#fff7e7] text-[#805300]': alumno.c1 === 'B', 'border-ui-divider bg-ui-surface-soft text-ui-text': alumno.c1 === 'C' }">{{ alumno.c1 }}</span>
+                        <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border px-[9px] py-[3px] text-xs font-extrabold leading-[1.3] whitespace-nowrap" [ngClass]="{ 'border-ui-divider bg-ui-surface-soft text-ui-action': alumno.c1 === 'AD', 'border-[var(--ui-success-border)] bg-[var(--ui-success-bg)] text-[var(--ui-success-text)]': alumno.c1 === 'A', 'border-[var(--ui-warning-border)] bg-[var(--ui-warning-bg)] text-[var(--ui-warning-text)]': alumno.c1 === 'B', 'border-ui-divider bg-ui-surface-soft text-ui-text': alumno.c1 === 'C' }">{{ alumno.c1 }}</span>
                       }
                     </td>
                     <td class="max-w-[320px] overflow-hidden text-ellipsis whitespace-nowrap text-ui-muted" [title]="alumno.conclusionDescriptiva || 'Sin conclusión'" data-label="Conclusión">{{ alumno.conclusionDescriptiva || 'Sin conclusión' }}</td>
                     <td data-label="Refuerzo">
                       @if (alumno.requiereRefuerzo === true) {
-                        <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-[#f1c7bf] bg-ui-surface-soft px-[9px] py-[3px] text-xs font-[650] leading-[1.3] text-ui-text whitespace-nowrap">CNEB C</span>
+                        <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-ui-error-border bg-ui-surface-soft px-[9px] py-[3px] text-xs font-[650] leading-[1.3] text-ui-text whitespace-nowrap">CNEB C</span>
                       } @else if (alumno.requiereRefuerzo === false) {
                         <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-ui-divider bg-ui-surface-soft px-[9px] py-[3px] text-xs font-[650] leading-[1.3] text-ui-muted whitespace-nowrap">Normal</span>
                       } @else {
                         <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-ui-divider bg-ui-surface-soft px-[9px] py-[3px] text-xs font-[650] leading-[1.3] text-ui-muted whitespace-nowrap">Sin dato</span>
                       }
                     </td>
-                    <td class="sticky right-0 z-[1] min-w-[88px] bg-ui-surface text-right shadow-[-8px_0_12px_rgb(23_43_77_/_8%)]" data-label="Acciones"><button type="button" (click)="abrirEdicion(alumno)" class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-ui-divider disabled:bg-ui-surface-soft disabled:text-ui-muted aria-disabled:cursor-not-allowed aria-disabled:border-ui-divider aria-disabled:bg-ui-surface-soft aria-disabled:text-ui-muted !border-ui-divider bg-ui-surface text-ui-text hover:bg-ui-surface-soft !min-h-11 !px-3 !text-sm !font-semibold box-border inline-flex min-w-0 min-h-10 items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:min-h-11 !leading-5">Editar</button></td>
+                    <td class="sticky right-0 z-[1] min-w-[88px] bg-ui-surface text-right shadow-[-8px_0_12px_rgb(23_43_77_/_8%)]" data-label="Acciones">@if (authStore.hasRole('DOCENTE')) { <button type="button" (click)="abrirEdicion(alumno)" class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-ui-divider disabled:bg-ui-surface-soft disabled:text-ui-muted aria-disabled:cursor-not-allowed aria-disabled:border-ui-divider aria-disabled:bg-ui-surface-soft aria-disabled:text-ui-muted !border-ui-divider bg-ui-surface text-ui-text hover:bg-ui-surface-soft !min-h-11 !px-3 !text-sm !font-semibold box-border inline-flex min-w-0 min-h-10 items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:min-h-11 !leading-5">Editar</button> } @else { <span class="text-xs text-ui-muted">Solo lectura</span> }</td>
                   </tr>
                 } @empty {
                   <tr>
                     <td colspan="6">
                       <div class="grid min-h-[220px] content-center justify-items-center gap-2 p-6 text-center">
-                        <span class="grid h-[42px] w-[42px] place-items-center rounded-[14px] bg-[#eff4fb] text-[#51719e] text-lg" aria-hidden="true">✓</span>
+                        <span class="grid h-[42px] w-[42px] place-items-center rounded-[14px] bg-ui-info-bg text-ui-info-text text-lg" aria-hidden="true">✓</span>
                         <span class="text-ui-text text-sm font-bold">No hay calificaciones para mostrar</span>
                         <span class="max-w-[48ch] text-ui-muted text-xs leading-[1.5]">Selecciona un periodo y una asignación con matrículas para consultar la matriz.</span>
                       </div>
@@ -170,11 +177,11 @@ template: `
               <label class="grid gap-2 text-sm">Evidencia de aprendizaje, sin nombres ni DNI
                 <textarea [(ngModel)]="evidenciaObservada" name="evidencia" maxlength="300" rows="2" class="rounded-lg border p-3"></textarea>
               </label>
-              <button type="button" class="min-h-11 rounded-lg border border-indigo-200 bg-indigo-50 p-2 text-indigo-800 disabled:opacity-50" (click)="sugerirConclusionConIa()" [disabled]="generandoIa() || notaEditada === '-' || !evidenciaObservada.trim()">{{ generandoIa() ? 'Generando sugerencia…' : 'Sugerir conclusión con IA' }}</button>
+              <button type="button" class="min-h-11 rounded-lg border border-ui-info-border bg-ui-info-bg p-2 text-ui-info-text disabled:opacity-50" (click)="sugerirConclusionConIa()" [disabled]="generandoIa() || notaEditada === '-' || !evidenciaObservada.trim()">{{ generandoIa() ? 'Generando sugerencia…' : 'Sugerir conclusión con IA' }}</button>
               <p role="status" class="text-sm">{{ mensajeIa() }}</p>
               <label class="grid gap-1 font-sans text-base leading-6 text-ui-text m-0 gap-[7px]">
                 <span class="font-sans text-[13px] leading-[1.4] font-medium text-ui-text">Calificación CNEB *</span>
-                <select [(ngModel)]="notaEditada" name="nota" required class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-[#7f1d1d] box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-[#7f1d1d] !min-h-[46px] !text-sm max-[600px]:!text-base min-w-0 !min-h-[46px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !py-2">
+                <select [(ngModel)]="notaEditada" name="nota" required class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border !min-h-[46px] !text-sm max-[600px]:!text-base min-w-0 !min-h-[46px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-[var(--ui-focus)] focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base !py-2">
                   <option value="-" disabled>Seleccione</option>
                   <option value="AD">AD · Logro destacado</option>
                   <option value="A">A · Logro esperado</option>
@@ -184,9 +191,9 @@ template: `
               </label>
               <label class="grid gap-1 font-sans text-base leading-6 text-ui-text m-0 gap-[7px]">
                 <span class="font-sans text-[13px] leading-[1.4] font-medium text-ui-text">Conclusión descriptiva</span>
-                <textarea [(ngModel)]="conclusionEditada" name="conclusion" maxlength="4000" rows="5" placeholder="Describe los avances y aspectos por reforzar" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-[#7f1d1d] !min-h-[130px] !text-sm !leading-5 max-[600px]:!text-base max-[600px]:!leading-6 resize-y min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base min-h-[100px] py-[10px] resize-y"></textarea>
+                <textarea [(ngModel)]="conclusionEditada" name="conclusion" maxlength="4000" rows="5" placeholder="Describe los avances y aspectos por reforzar" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border !min-h-[130px] !text-sm !leading-5 max-[600px]:!text-base max-[600px]:!leading-6 resize-y min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-[var(--ui-focus)] focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base min-h-[100px] py-[10px] resize-y"></textarea>
               </label>
-              @if (notaEditada === 'C') { <p class="m-0 -mt-[6px] rounded-[10px] border border-ui-divider bg-[#fff8e9] px-3 py-[10px] text-[#76500a] text-xs leading-[1.5]">Esta calificación marcará al estudiante para refuerzo.</p> }
+              @if (notaEditada === 'C') { <p class="m-0 -mt-[6px] rounded-[10px] border border-ui-divider bg-ui-warning-bg px-3 py-[10px] text-ui-warning-text text-xs leading-[1.5]">Esta calificación marcará al estudiante para refuerzo.</p> }
             </div>
             <footer class="sticky bottom-0 flex flex-[0_0_auto] justify-end gap-[10px] border-t border-ui-divider bg-ui-surface px-6 py-[14px] max-[600px]:flex-col-reverse max-[600px]:px-4 max-[600px]:py-3">
               <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans !text-sm !leading-[1.25] !font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-ui-divider disabled:bg-ui-surface-soft disabled:text-ui-muted aria-disabled:cursor-not-allowed aria-disabled:border-ui-divider aria-disabled:bg-ui-surface-soft aria-disabled:text-ui-muted border-ui-divider bg-ui-surface text-ui-text hover:bg-ui-surface-soft max-[600px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !border-ui-divider" (click)="cerrarEdicion()">Cancelar</button>
@@ -201,6 +208,7 @@ template: `
 export class CalificacionesComponent implements OnInit {
   private readonly evaluacionService = inject(EvaluacionService);
   private readonly academicoService = inject(AcademicoService);
+  readonly authStore = inject(AuthStore);
   @ViewChild('edicionDialog') private edicionDialog!: ElementRef<HTMLDialogElement>;
   readonly alumnoEditando = signal<EvaluacionAlumno | null>(null);
   notaEditada: NotaCNEB = '-';
@@ -226,6 +234,7 @@ export class CalificacionesComponent implements OnInit {
   get seccionActualId(): number { return this.asignaciones().find(a => a.id === Number(this.asignacionId))?.seccionId ?? 0; }
 
   abrirEdicion(alumno: EvaluacionAlumno): void {
+    if (!this.authStore.hasRole('DOCENTE')) return;
     this.alumnoEditando.set(alumno);
     this.notaEditada = alumno.c1;
     this.conclusionEditada = alumno.conclusionDescriptiva;
@@ -240,6 +249,7 @@ export class CalificacionesComponent implements OnInit {
   cerrarEdicion(): void { this.solicitudIa++; this.edicionDialog.nativeElement.close(); this.alumnoEditando.set(null); }
 
   sugerirConclusionConIa(): void {
+    if (!this.authStore.hasRole('DOCENTE')) return;
     const alumno = this.alumnoEditando();
     const asignacion = this.asignaciones().find(a => a.id === Number(this.asignacionId));
     const competencia = this.competencias().find(c => c.id === Number(this.competenciaId));
@@ -269,6 +279,7 @@ export class CalificacionesComponent implements OnInit {
   }
 
   aplicarEdicion(): void {
+    if (!this.authStore.hasRole('DOCENTE')) return;
     const seleccionado = this.alumnoEditando();
     if (!seleccionado || this.notaEditada === '-') return;
     this.alumnos.update(lista => lista.map(alumno => alumno.matriculaId === seleccionado.matriculaId
@@ -279,6 +290,10 @@ export class CalificacionesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.authStore.hasRole('SECRETARIA')) {
+      this.error.set('El backend permite consultar la matriz a Dirección y Docencia; Secretaría no tiene acceso a esos endpoints.');
+      return;
+    }
     this.academicoService.listarAsignaciones().subscribe({
       next: asignaciones => {
         this.asignaciones.set(asignaciones);
@@ -320,7 +335,7 @@ export class CalificacionesComponent implements OnInit {
             res.map((c, idx) => ({
               matriculaId: c.matriculaId,
               numeroOrden: idx + 1,
-              estudiante: `Matrícula #${c.matriculaId}`,
+              estudiante: `${c.nombreEstudiante || 'Estudiante'} · Matrícula #${c.matriculaId}`,
               c1: c.calificacionCualitativa ?? '-',
               c2: '-',
               c3: '-',
@@ -343,6 +358,7 @@ export class CalificacionesComponent implements OnInit {
   }
 
   guardarCalificaciones(): void {
+    if (!this.authStore.hasRole('DOCENTE')) return;
     if (this.alumnos().length === 0 || !this.asignacionId || !this.competenciaId || !this.periodoId) return;
     if (this.alumnos().some(a => a.c1 === '-')) { this.error.set('Seleccione una calificación para cada estudiante.'); return; }
     this.error.set(null);

@@ -7,7 +7,7 @@ import { Component, signal } from '@angular/core';
     <section class="mt-7 border-t border-ui-border pt-[22px] pb-[26px] max-[600px]:mt-5 max-[600px]:py-[18px]" aria-labelledby="ui-community-gallery-title">
       <div class="mb-[15px]">
         <p class="mb-[5px] font-sans text-[11px] leading-[1.4] font-bold tracking-[.08em] text-ui-muted">GALERÍA</p>
-        <h2 id="ui-community-gallery-title" class="m-0 font-sans text-[21px] leading-[1.3] font-semibold text-ui-text">Nuestra comunidad</h2>
+        <h2 id="ui-community-gallery-title" class="m-0 font-display text-[21px] leading-[1.3] font-semibold text-ui-text">Nuestra comunidad</h2>
       </div>
       @if (photos().length) {
         <div class="grid grid-cols-[repeat(3,minmax(0,1fr))] gap-3 max-[600px]:grid-cols-1">

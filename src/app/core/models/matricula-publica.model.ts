@@ -6,7 +6,9 @@ export type EstadoSolicitudMatriculaPublica =
   | 'DOCUMENTOS_EN_VALIDACION'
   | 'DOCUMENTOS_OBSERVADOS'
   | 'DOCUMENTOS_VALIDADOS'
+  | 'AUTORIZACION_EDAD_PENDIENTE'
   | 'PAGO_PENDIENTE'
+  | 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION'
   | 'MATRICULADA'
   | 'RECHAZADA';
 
@@ -33,6 +35,7 @@ export interface AnioLectivoPublicoDto {
 export interface SeccionMatriculaPublicaDto {
   id: number;
   anioLectivoId: number;
+  gradoId: number;
   nivel: string;
   grado: string;
   letra: string;
@@ -55,7 +58,7 @@ export interface IdentidadDniDto {
 
 export interface CrearSolicitudMatriculaPublicaDto {
   anioLectivoId: number;
-  seccionId: number;
+  gradoId: number;
   numeroDocumentoEstudiante: string;
   nombresEstudiante: string;
   apellidoPaternoEstudiante: string;
@@ -99,6 +102,11 @@ export interface SolicitudMatriculaPublicaAdminDto extends Omit<SolicitudMatricu
   celularApoderado: string;
   emailApoderado: string | null;
   anioLectivoId: number;
-  seccionId: number;
+  gradoId: number;
+  seccionId: number | null;
   creadaAt: string;
+  requiereAutorizacionEdad: boolean;
+  motivoAutorizacionEdad: string | null;
+  autorizadoPorUsuarioId: number | null;
+  fechaAutorizacionEdad: string | null;
 }

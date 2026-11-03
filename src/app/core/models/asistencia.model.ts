@@ -13,13 +13,23 @@ export type TipoDiscrepancia =
 export interface AsistenciaAulaResponseDto {
   id: number;
   matriculaId: number;
+  nombreEstudiante: string;
   fechaSesion: string;
   horaRegistro?: string;
   estado: EstadoAsistenciaAula;
   auxiliarUsuarioId?: number;
   justificada?: boolean;
   motivoJustificacion?: string;
-  documentoSustentoUrl?: string;
+  tieneDocumentoSustento: boolean;
+}
+
+export interface DocenteAsistenciaDiariaResponseDto {
+  id: number;
+  matriculaId: number;
+  estudiante: string;
+  fechaSesion: string;
+  horaRegistro?: string;
+  estado: EstadoAsistenciaAula;
 }
 
 export interface ReporteAsistenciaDiariaResponseDto {
@@ -29,6 +39,7 @@ export interface ReporteAsistenciaDiariaResponseDto {
 
 export interface DiscrepanciaAlertaResponseDto {
   estudianteId: number;
+  nombreEstudiante: string;
   fecha: string;
   tipoDiscrepancia: TipoDiscrepancia;
 }
@@ -53,7 +64,7 @@ export interface RegistrarAsistenciaAulaRequestDto {
 export interface JustificarInasistenciaRequestDto {
   asistenciaId: number;
   motivo: string;
-  documentoSustentoUrl?: string | null;
+  archivo: File;
 }
 
 export interface ImportarLoteBiometricoRequestDto {

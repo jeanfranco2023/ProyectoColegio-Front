@@ -24,58 +24,58 @@ import { AuthStore } from '../../../core/state/auth.store';
   ],
   styleUrl: './login.component.css',
   template: `
-    <main class="ui-login-page grid min-h-screen bg-[#f4f6fb] font-[Inter,ui-sans-serif,system-ui,sans-serif] text-[#172b4d] lg:grid-cols-[1.05fr_0.95fr]">
-      <section class="ui-login-cover relative hidden min-h-screen overflow-hidden bg-[radial-gradient(ellipse_at_78%_20%,rgb(63_104_158_/_30%),transparent_42%),linear-gradient(145deg,#102541_0%,#17375e_58%,#1b416c_100%)] px-10 py-12 text-white lg:flex lg:flex-col lg:justify-between xl:px-16 xl:py-14">
+    <main class="ui-login-page grid min-h-screen bg-ui-background font-sans text-ui-text lg:grid-cols-[1.05fr_0.95fr]">
+      <section class="ui-login-cover relative hidden min-h-screen overflow-hidden bg-ui-surface-soft px-10 py-12 text-ui-text lg:flex lg:flex-col lg:justify-between xl:px-16 xl:py-14">
         
         
         
 
         <a routerLink="/auth/login" class="ui-login-brand relative z-10 flex w-fit items-center gap-3" aria-label="I.E.P. Shuji Kitamura">
-          <img class="block size-12 shrink-0 rounded-full border-2 border-[#c49a58] bg-white object-contain p-[3px]" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de Shuji Kitamura">
+          <img class="block size-12 shrink-0 rounded-full border-2 border-ui-gold bg-white object-contain p-[3px]" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de Shuji Kitamura">
           <span>
             <span class="block text-sm font-bold tracking-wide">I.E.P. Shuji Kitamura</span>
-            <span class="ui-login-brand-label mt-0.5 block text-[10px] font-medium tracking-[0.18em] text-blue-100/70">PORTAL INSTITUCIONAL</span>
+            <span class="ui-login-brand-label mt-0.5 block text-[11px] font-medium tracking-[0.18em] text-ui-muted">PORTAL INSTITUCIONAL</span>
           </span>
         </a>
 
         <div class="ui-login-cover-copy relative z-10 my-14 max-w-xl">
-          <p class="ui-login-kicker mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-3.5 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-blue-100">
-            <span class="ui-login-kicker-dot h-1.5 w-1.5 rounded-full bg-[#d3ad70]"></span> Gestión educativa, con propósito
+          <p class="ui-login-kicker mb-5 inline-flex items-center gap-2 rounded-full border border-ui-border bg-ui-surface-soft px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-ui-action">
+            <span class="ui-login-kicker-dot h-1.5 w-1.5 rounded-full bg-ui-action"></span> Gestión educativa, con propósito
           </p>
-          <h1 class="ui-login-cover-title max-w-lg text-4xl font-semibold leading-[1.12] tracking-[-0.04em] text-white xl:text-5xl">
+          <h1 class="ui-login-cover-title max-w-lg text-4xl font-semibold leading-[1.12] tracking-[-0.04em] text-ui-text xl:text-5xl">
             Un espacio para aprender, crecer y avanzar.
           </h1>
-          <p class="ui-login-cover-description mt-5 max-w-md text-sm leading-7 text-blue-100/75">
+          <p class="ui-login-cover-description mt-5 max-w-md text-sm leading-7 text-ui-muted">
             Accede a las herramientas académicas y administrativas de nuestra comunidad educativa desde un único lugar.
           </p>
           <div class="ui-login-motto-row mt-10 flex items-center gap-4">
-            <span class="h-px w-12 bg-[#c49a58]"></span>
-            <p class="text-xs font-medium tracking-wide text-blue-100/70">Excelencia · Disciplina · Saber</p>
+            <span class="h-px w-12 bg-ui-gold"></span>
+            <p class="text-xs font-medium tracking-wide text-ui-muted">Excelencia · Disciplina · Saber</p>
           </div>
         </div>
 
-        <p class="relative z-10 text-[10px] tracking-wide text-blue-100/80">© 2026 I.E.P. Shuji Kitamura · Todos los derechos reservados</p>
+        <p class="relative z-10 text-[11px] tracking-wide text-ui-muted">© 2026 I.E.P. Shuji Kitamura · Todos los derechos reservados</p>
       </section>
 
       <section class="ui-login-content flex min-h-screen min-w-0 items-center justify-center px-5 py-10 sm:px-8 lg:px-12">
         <div class="ui-login-content-inner w-full min-w-0 max-w-[440px]">
           <a routerLink="/auth/login" class="ui-login-brand ui-login-brand-mobile mb-8 flex items-center gap-3 lg:hidden">
-            <img class="block size-11 shrink-0 rounded-full border-2 border-[#c49a58] bg-white object-contain p-[3px]" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de Shuji Kitamura">
+            <img class="block size-11 shrink-0 rounded-full border-2 border-ui-gold bg-white object-contain p-[3px]" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de Shuji Kitamura">
             <span>
-              <span class="block text-sm font-bold text-slate-800">I.E.P. Shuji Kitamura</span>
-              <span class="mt-0.5 block text-[10px] font-semibold tracking-[0.15em] text-slate-500">PORTAL INSTITUCIONAL</span>
+              <span class="block text-sm font-bold text-ui-text">I.E.P. Shuji Kitamura</span>
+              <span class="mt-0.5 block text-[11px] font-semibold tracking-[0.15em] text-ui-muted">PORTAL INSTITUCIONAL</span>
             </span>
           </a>
 
-          <div class="ui-login-card w-full min-w-0 rounded-[28px] border border-[#e4eaf2] bg-white p-5 shadow-[0_24px_70px_rgba(23,43,77,0.10)] sm:p-9">
+          <div class="ui-login-card w-full min-w-0 rounded-[28px] border border-ui-border bg-ui-surface p-5 shadow-card sm:p-9">
             <div class="mb-8">
-              <p class="ui-login-eyebrow text-[10px] font-bold uppercase tracking-[0.18em] text-[#76551f]">Acceso seguro</p>
-              <h2 class="mt-2 text-3xl font-semibold tracking-[-0.04em] text-[#14213d]">Bienvenido de nuevo</h2>
-              <p class="mt-2 text-sm leading-6 text-slate-500">Ingresa tus credenciales para continuar al portal escolar.</p>
+              <p class="ui-login-eyebrow text-[11px] font-bold uppercase tracking-[0.18em] text-ui-muted">Acceso seguro</p>
+              <h2 class="mt-2 text-3xl font-semibold tracking-[-0.04em] text-ui-text">Bienvenido de nuevo</h2>
+              <p class="mt-2 text-sm leading-6 text-ui-muted">Ingresa tus credenciales para continuar al portal escolar.</p>
             </div>
 
             @if (store.error()) {
-              <div role="alert" aria-live="polite" class="mb-5 flex gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800">
+              <div role="alert" aria-live="polite" class="mb-5 flex gap-3 rounded-2xl border border-ui-error-border bg-ui-error-bg p-4 text-sm text-ui-error-text">
                 <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 9v3m0 4h.01M10.3 3.86L1.82 18.5A2 2 0 003.55 21h16.9a2 2 0 001.73-3L13.7 3.86a2 2 0 00-3.4 0z"/></svg>
                 <span><strong class="block text-xs font-bold">No se pudo iniciar sesión</strong><span class="mt-1 block text-xs leading-5">{{ store.error() }}</span></span>
               </div>
@@ -100,8 +100,8 @@ import { AuthStore } from '../../../core/state/auth.store';
               </mat-form-field>
 
               <div class="ui-login-options flex flex-wrap items-center justify-between gap-x-3.5 gap-y-2 py-[3px] pb-3.5">
-                <mat-checkbox [(ngModel)]="rememberMe" name="rememberMe" color="primary" class="text-xs text-[#34445d]">Recordar este equipo</mat-checkbox>
-                <button type="button" (click)="openPasswordHelp(passwordHelp)" class="ui-login-help min-h-11 cursor-pointer border-0 bg-transparent font-[inherit] text-xs font-semibold text-[#184fae] hover:text-[#123d89] hover:underline">¿Olvidaste tu clave?</button>
+                <mat-checkbox [(ngModel)]="rememberMe" name="rememberMe" color="primary" class="text-xs text-ui-text">Recordar este equipo</mat-checkbox>
+                <button type="button" (click)="openPasswordHelp(passwordHelp)" class="ui-login-help min-h-11 cursor-pointer border-0 bg-transparent font-[inherit] text-xs font-semibold text-ui-action hover:text-ui-action hover:underline">¿Olvidaste tu clave?</button>
               </div>
 
               <button mat-flat-button color="primary" type="submit" [disabled]="store.isLoading() || !username || !password" [attr.aria-busy]="store.isLoading()" class="ui-login-submit !h-12 !w-full !rounded-xl !text-sm !font-semibold !shadow-md">
@@ -114,15 +114,15 @@ import { AuthStore } from '../../../core/state/auth.store';
               </button>
             </form>
 
-            <div class="ui-login-privacy mt-7 flex items-start gap-3 rounded-2xl bg-[#f6f8fc] p-4">
-              <span class="ui-login-privacy-icon grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-blue-50 text-blue-700">
+            <div class="ui-login-privacy mt-7 flex items-start gap-3 rounded-2xl bg-ui-surface-soft p-4">
+              <span class="ui-login-privacy-icon grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-ui-action text-ui-action-text">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7l8-4z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4"/></svg>
               </span>
-              <p class="text-[11px] leading-5 text-slate-600"><strong class="block text-xs font-semibold text-slate-800">Tu información está protegida</strong>El acceso está reservado a usuarios autorizados de la comunidad educativa.</p>
+              <p class="text-[11px] leading-5 text-ui-muted"><strong class="block text-xs font-semibold text-ui-text">Tu información está protegida</strong>El acceso está reservado a usuarios autorizados de la comunidad educativa.</p>
             </div>
           </div>
 
-          <p class="ui-login-footer mt-6 text-center text-[10px] tracking-wide text-[#59677a]">© 2026 I.E.P. Shuji Kitamura · Excelencia, disciplina y saber</p>
+          <p class="ui-login-footer mt-6 text-center text-[11px] tracking-wide text-ui-muted">© 2026 I.E.P. Shuji Kitamura · Excelencia, disciplina y saber</p>
         </div>
       </section>
 

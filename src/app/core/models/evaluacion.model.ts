@@ -1,5 +1,5 @@
 export type CalificacionCualitativa = 'AD' | 'A' | 'B' | 'C';
-export interface FilaCalificacionResponseDto { matriculaId: number; competenciaId: number; calificacionCualitativa: CalificacionCualitativa | null; conclusionDescriptiva: string | null; requiereRefuerzo: boolean | null; }
+export interface FilaCalificacionResponseDto { matriculaId: number; nombreEstudiante: string; competenciaId: number; calificacionCualitativa: CalificacionCualitativa | null; conclusionDescriptiva: string | null; requiereRefuerzo: boolean | null; }
 
 export interface CalificacionResponseDto {
   id: number;

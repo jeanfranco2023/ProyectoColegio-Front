@@ -22,6 +22,7 @@ export interface ObligacionResponseDto {
   totalPagado: number;
   saldoPendiente: number;
   estado: EstadoObligacion;
+  nombreEstudiante: string;
 }
 
 export interface TransaccionResponseDto {

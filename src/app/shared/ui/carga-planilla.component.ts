@@ -3,13 +3,13 @@ import { Subscription } from 'rxjs';
 import { EvaluacionService, ImportacionCneb } from '../../core/services/evaluacion.service';
 @Component({
     selector: 'app-carga-planilla', standalone: true,
-    template: `<section class="grid gap-3 rounded-xl border border-ui-border bg-ui-surface p-4 font-sans text-ui-text" aria-label="Importar planilla CNEB">
+    template: `<section class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3 rounded-xl border border-ui-border bg-ui-surface p-4 font-sans text-ui-text" aria-label="Importar planilla CNEB">
     <h2 class="font-semibold">Importar calificaciones CSV o Excel</h2>
     <p class="text-sm">Descarga la plantilla de la competencia seleccionada. Conserva el DNI como texto para mantener sus ocho dígitos.</p>
     <div class="flex flex-wrap items-center gap-3">
       <button type="button" class="min-h-11 rounded-lg border p-2" [disabled]="!contextoValido || procesando()" (click)="plantilla()">Descargar plantilla CSV</button>
-      <label class="grid gap-1 text-sm">Planilla, hasta 5 MB y 500 filas
-        <input type="file" accept=".csv,.xlsx" [disabled]="!contextoValido || procesando()" (change)="seleccionar($event)" class="min-h-11" />
+      <label class="grid min-w-0 max-w-full gap-1 text-sm">Planilla, hasta 5 MB y 500 filas
+        <input type="file" accept=".csv,.xlsx" [disabled]="!contextoValido || procesando()" (change)="seleccionar($event)" class="min-h-11 w-full min-w-0 max-w-full" />
       </label>
       <button type="button" class="min-h-11 rounded-lg border p-2" [disabled]="!archivo || procesando()" (click)="enviar(false)">Validar y previsualizar</button>
       <button type="button" class="min-h-11 rounded-lg bg-ui-action px-3 py-2 font-sans font-semibold text-ui-action-text disabled:opacity-50" [disabled]="!vista() || procesando()" (click)="enviar(true)">Confirmar carga</button>

@@ -6,7 +6,7 @@
 .ui-login-brand img { width: 48px; height: 48px; flex: 0 0 48px; padding: 3px; border: 1px solid var(--ui-divider) !important; border-radius: 50%; background: #fff; object-fit: contain; }
 .ui-login-brand strong, .ui-login-brand small { display: block; }
 .ui-login-brand strong { color: var(--ui-text) !important; font-size: 14px; font-weight: 600; }
-.ui-login-brand small { margin-top: 4px; color: var(--ui-muted) !important; font-size: 10px; font-weight: 600; letter-spacing: .1em; }
+.ui-login-brand small { margin-top: 4px; color: var(--ui-muted) !important; font-size: 11px; font-weight: 600; letter-spacing: .1em; }
 .ui-login-cover-copy { position: relative; z-index: 1; width: min(100%, 620px); margin: 64px 0; }
 .ui-login-kicker, .ui-login-eyebrow { margin: 0; color: var(--ui-action) !important; font-size: 11px !important; font-weight: 600 !important; letter-spacing: .12em !important; text-transform: uppercase; }
 .ui-login-cover-title { max-width: 570px !important; margin: 20px 0 15px !important; color: var(--ui-text) !important; font-family: var(--font-display) !important; font-size: clamp(36px, 4vw, 58px) !important; font-weight: 500 !important; line-height: 1.04 !important; letter-spacing: -.035em !important; text-wrap: balance; }
@@ -14,7 +14,7 @@
 .ui-login-motto-row { margin-top: 24px !important; gap: 13px !important; }
 .ui-login-motto-row > span { background: var(--ui-gold) !important; }
 .ui-login-motto-row p { margin: 0 !important; color: var(--ui-text) !important; font-size: 12px !important; font-weight: 600 !important; letter-spacing: .06em !important; }
-.ui-login-cover > p:last-child { position: relative; z-index: 1; margin: 0; color: var(--ui-muted) !important; font-size: 10px !important; }
+.ui-login-cover > p:last-child { position: relative; z-index: 1; margin: 0; color: var(--ui-muted) !important; font-size: 11px !important; }
 .ui-login-content { display: flex; min-width: 0; flex-direction: column; align-items: center; justify-content: center; padding: 40px clamp(24px, 5vw, 76px); background: var(--ui-canvas); }
 .ui-login-content-inner { width: min(100%, 430px) !important; }
 .ui-login-brand-mobile { display: none !important; }
@@ -31,11 +31,11 @@
 .ui-login-submit:hover:not(:disabled) { background: var(--ui-action) !important; }
 .ui-login-submit .mdc-button__label { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .ui-login-privacy { display: flex; align-items: flex-start; gap: 12px; margin-top: 24px !important; padding: 14px !important; border: 1px solid var(--ui-divider); background: var(--ui-surface-soft) !important; }
-.ui-login-privacy-icon { display: grid; width: 32px; height: 32px; flex: 0 0 32px; place-items: center; border: 1px solid var(--ui-control-border); color: var(--ui-text); }
+.ui-login-privacy-icon { display: grid; width: 32px; height: 32px; flex: 0 0 32px; place-items: center; border: 1px solid var(--ui-action); background: var(--ui-action); color: var(--ui-action-text); }
 .ui-login-privacy-icon svg { width: 17px; height: 17px; }
 .ui-login-privacy p { margin: 0 !important; color: var(--ui-muted) !important; font-size: 11px !important; line-height: 1.6 !important; }
 .ui-login-privacy strong { display: block; margin-bottom: 2px; color: var(--ui-text) !important; font-size: 12px !important; }
-.ui-login-footer { margin: 18px 0 0 !important; color: var(--ui-muted) !important; font-size: 10px !important; text-align: center; }
+.ui-login-footer { margin: 18px 0 0 !important; color: var(--ui-muted) !important; font-size: 11px !important; text-align: center; }
 .ui-login-page :where(a, button, input):focus-visible { outline: 3px solid var(--ui-focus); outline-offset: 2px; }
 @media (max-width: 850px) {
   .ui-login-page { grid-template-columns: minmax(0, 1fr); }
@@ -50,7 +50,7 @@
   .ui-login-card { padding: 20px 16px !important; }
   .ui-login-options { align-items: flex-start; }
 }
-@media (prefers-color-scheme: dark) { .ui-login-brand img { background: #fff; } }
+:root.theme-dark .ui-login-brand img { background: #fff; }
 @media (prefers-reduced-motion: reduce) { .ui-login-page *, .ui-login-page *::before, .ui-login-page *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
 .ui-login-kicker-dot { background: var(--ui-action) !important; }
 .ui-login-brand-label { color: var(--ui-muted) !important; }

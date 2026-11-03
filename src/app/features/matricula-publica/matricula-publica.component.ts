@@ -2,17 +2,17 @@ import { CommonModule } from '@angular/common';
 import { A11yModule } from '@angular/cdk/a11y';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize, firstValueFrom, Subscription } from 'rxjs';
 import { edadAlCorteMatricula, fechaActualEnPeru, fechaNacimientoValida } from '../../core/utils/fecha-nacimiento';
 import { MatriculaPublicaService } from '../../core/services/matricula-publica.service';
-import { CommunityGalleryComponent } from '../../shared/ui/community-gallery.component';
 import {
   CatalogoMatriculaPublicaDto,
   CrearSolicitudMatriculaPublicaDto,
   DocumentoSolicitudDto,
   EstadoSolicitudMatriculaPublica,
   PagoMatriculaPublicaDto,
+  SeccionMatriculaPublicaDto,
   SolicitudMatriculaPublicaDto,
   TipoDocumentoSolicitud
 } from '../../core/models/matricula-publica.model';
@@ -23,7 +23,7 @@ type VistaMatricula = 'inicio' | 'propuesta' | 'niveles' | 'admision' | 'pregunt
 @Component({
   selector: 'app-matricula-publica',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive, A11yModule, CommunityGalleryComponent],
+  imports: [CommonModule, FormsModule, RouterLink, A11yModule],
   templateUrl: './matricula-publica.component.html',
   styleUrl: './matricula-publica.component.css',
   host: { class: 'block' }
@@ -52,7 +52,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   readonly enlacePago = signal('');
   readonly montoPago = signal(1);
   readonly anioId = signal<number | null>(null);
-  readonly seccionId = signal<number | null>(null);
+  readonly gradoId = signal<number | null>(null);
   readonly mensajeDni = signal('');
 
   get fechaNacimientoMaxima(): string {
@@ -91,9 +91,23 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     return this.catalogo().secciones.filter(s => s.anioLectivoId === year);
   }
 
+  get gradosDisponibles(): SeccionMatriculaPublicaDto[] {
+    const grados = new Map<number, SeccionMatriculaPublicaDto>();
+    for (const seccion of this.seccionesDisponibles) {
+      const existente = grados.get(seccion.gradoId);
+      if (existente) existente.vacantesDisponibles += seccion.vacantesDisponibles;
+      else grados.set(seccion.gradoId, { ...seccion });
+    }
+    return [...grados.values()];
+  }
+
+  get requiereAutorizacionEdad(): boolean {
+    return this.advertenciaEdad.includes('Los casos excepcionales requieren autorización institucional.');
+  }
+
   get advertenciaEdad(): string {
-    if (!this.nacimientoEstudiante || !this.seccionId()) return '';
-    const seccion = this.seccionesDisponibles.find(s => s.id === this.seccionId());
+    if (!this.nacimientoEstudiante || !this.gradoId()) return '';
+    const seccion = this.seccionesDisponibles.find(s => s.gradoId === this.gradoId());
     const anio = this.catalogo().anios.find(a => a.id === this.anioId());
     if (!seccion || !anio) return 'Selecciona una sección disponible del año lectivo.';
     if (!Number.isInteger(seccion.edadMinimaAlCorte) || !Number.isInteger(seccion.edadMaximaAlCorte)
@@ -130,6 +144,22 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
         this.cargandoCatalogo.set(false);
         this.error.set('No se pudo cargar la oferta académica. Intenta nuevamente en unos minutos.');
       }
+    });
+  }
+
+  navegarASeccion(event: Event, sectionId: string): void {
+    event.preventDefault();
+    const navigation = this.vista() === 'inicio'
+      ? this.router.navigate([], { relativeTo: this.route, fragment: sectionId })
+      : this.router.navigate(['/matricula', 'inicio'], { fragment: sectionId });
+
+    void navigation.then(() => {
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        const target = document.getElementById(sectionId);
+        if (!target) return;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      }));
     });
   }
 
@@ -232,7 +262,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     this.ubigeoApoderado = '';
     this.parentesco = 'MADRE';
     this.consentimientoGemini = false;
-    this.seccionId.set(null);
+    this.gradoId.set(null);
     this.enlacePago.set('');
     this.estadoPago.set('');
     this.error.set('');
@@ -259,7 +289,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       if (!solicitud) {
         const payload: CrearSolicitudMatriculaPublicaDto = {
           anioLectivoId: this.anioId()!,
-          seccionId: this.seccionId()!,
+          gradoId: this.gradoId()!,
           numeroDocumentoEstudiante: this.documentoEstudiante.trim(),
           nombresEstudiante: this.nombresEstudiante.trim(),
           apellidoPaternoEstudiante: this.apellidoPaternoEstudiante.trim(),
@@ -355,7 +385,9 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       const actualizada = await firstValueFrom(this.api.consultarPago(solicitud.id, token));
       this.solicitud.set(actualizada);
       if (actualizada.estado === 'MATRICULADA') this.mostrarExito(actualizada);
-      else this.estadoPago.set('Aún no recibimos confirmación del pago. Espera un momento y vuelve a consultar.');
+      else if (!this.reflejarPagoConfirmadoPendienteAsignacion(actualizada)) {
+        this.estadoPago.set('Aún no recibimos confirmación del pago. Espera un momento y vuelve a consultar.');
+      }
     } catch (error: unknown) {
       this.estadoPago.set(this.mensajeError(error, 'No se pudo consultar el estado del pago.'));
     }
@@ -394,6 +426,10 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     });
   }
 
+  puedeContinuarAlPago(): boolean {
+    return this.solicitud()?.estado === 'DOCUMENTOS_VALIDADOS' && this.documentosAprobados();
+  }
+
   actualizarRevision(): void {
     const solicitud = this.solicitud();
     const token = this.leerToken();
@@ -412,6 +448,8 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       DOCUMENTOS_OBSERVADOS: 'Requiere correcciones',
       DOCUMENTOS_VALIDADOS: 'Documentos validados',
       PAGO_PENDIENTE: 'Pago pendiente',
+      AUTORIZACION_EDAD_PENDIENTE: 'Pendiente de autorización por edad',
+      PAGO_CONFIRMADO_PENDIENTE_ASIGNACION: 'Pago confirmado · sección pendiente',
       MATRICULADA: 'Matrícula confirmada',
       RECHAZADA: 'Solicitud rechazada'
     };
@@ -427,27 +465,27 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   }
 
   private validarFormulario(): boolean {
-    if (!this.anioId() || !this.seccionId()) return this.error.set('Selecciona año lectivo y sección.'), false;
+    if (!this.anioId() || !this.gradoId()) return this.error.set('Selecciona el año lectivo y el grado.'), false;
     const required = [this.documentoEstudiante, this.nombresEstudiante, this.apellidoPaternoEstudiante,
       this.apellidoMaternoEstudiante, this.nacimientoEstudiante, this.documentoApoderado,
       this.nombresApoderado, this.apellidoPaternoApoderado, this.apellidoMaternoApoderado,
-      this.celularApoderado, this.direccionApoderado, this.ubigeoApoderado];
+      this.celularApoderado, this.direccionApoderado];
     if (required.some(value => !value.trim())) return this.error.set('Completa todos los campos obligatorios.'), false;
     if (!fechaNacimientoValida(this.nacimientoEstudiante)) {
       return this.error.set('La fecha de nacimiento debe ser válida y anterior al día de hoy.'), false;
     }
-    if (this.advertenciaEdad) return this.error.set(this.advertenciaEdad), false;
+    if (this.advertenciaEdad && !this.requiereAutorizacionEdad) return this.error.set(this.advertenciaEdad), false;
     if ([this.nombresEstudiante, this.apellidoPaternoEstudiante, this.apellidoMaternoEstudiante,
       this.nombresApoderado, this.apellidoPaternoApoderado, this.apellidoMaternoApoderado]
       .some(value => value.trim().length > 20)
-      || this.emailApoderado.trim().length > 50 || this.direccionApoderado.trim().length > 150) {
-      return this.error.set('Revisa la longitud de los nombres (20), correo (50) o dirección (150 caracteres).'), false;
+      || this.emailApoderado.trim().length > 100 || this.direccionApoderado.trim().length > 150) {
+      return this.error.set('Revisa la longitud de los nombres (20), correo (100) o dirección (150 caracteres).'), false;
     }
     if (!/^\d{8}$/.test(this.documentoEstudiante) || !/^\d{8}$/.test(this.documentoApoderado)) {
       return this.error.set('Los DNI deben tener 8 dígitos.'), false;
     }
-    if (!/^9\d{8}$/.test(this.celularApoderado) || !/^\d{6}$/.test(this.ubigeoApoderado)) {
-      return this.error.set('Verifica el celular (9 dígitos) y el ubigeo (6 dígitos).'), false;
+    if (!/^9\d{8}$/.test(this.celularApoderado) || (this.ubigeoApoderado && !/^\d{6}$/.test(this.ubigeoApoderado))) {
+      return this.error.set('Verifica el celular (9 dígitos) y, si ingresas el ubigeo, que tenga 6 dígitos.'), false;
     }
     if (this.emailApoderado.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.emailApoderado.trim())) {
       return this.error.set('Ingresa un correo electrónico válido o deja el campo vacío.'), false;
@@ -484,6 +522,10 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
           return;
         }
         if (solicitud.estado === 'MATRICULADA') this.mostrarExito(solicitud);
+        else if (solicitud.estado === 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION') {
+          this.modal.set('pago');
+          this.reflejarPagoConfirmadoPendienteAsignacion(solicitud);
+        }
         else if (solicitud.estado === 'PAGO_PENDIENTE' && solicitud.enlacePago && this.documentosAprobados()) {
           this.enlacePago.set(solicitud.enlacePago);
           this.montoPago.set(solicitud.montoPago);
@@ -521,6 +563,13 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
         this.estadoPago.set('Completa el pago o consulta su confirmación.');
         this.iniciarSeguimientoPago();
         return;
+      case 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION':
+        this.modal.set('pago');
+        this.reflejarPagoConfirmadoPendienteAsignacion(solicitud);
+        return;
+      case 'AUTORIZACION_EDAD_PENDIENTE':
+        this.modal.set(this.documentosAprobados() ? 'validacion' : 'documentos');
+        return;
       case 'DOCUMENTOS_VALIDADOS':
       case 'DOCUMENTOS_EN_VALIDACION':
         this.modal.set('validacion');
@@ -555,6 +604,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
             this.mostrarExito(solicitud);
             return;
           }
+          if (this.reflejarPagoConfirmadoPendienteAsignacion(solicitud)) return;
           if (solicitud.enlacePago) this.enlacePago.set(solicitud.enlacePago);
           this.estadoPago.set('El pago aún no figura aprobado. Seguiremos consultando la confirmación segura.');
           this.iniciarSeguimientoPago();
@@ -564,6 +614,14 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
           this.iniciarSeguimientoPago();
         }
       });
+  }
+
+  private reflejarPagoConfirmadoPendienteAsignacion(solicitud: SolicitudMatriculaPublicaDto): boolean {
+    if (solicitud.estado !== 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION') return false;
+    this.detenerSeguimientoPago();
+    this.enlacePago.set('');
+    this.estadoPago.set('Pago confirmado. La institución asignará la sección y actualizará el estado de la matrícula.');
+    return true;
   }
 
   private limpiarParametrosPago(): void {

@@ -11,6 +11,7 @@ export interface IncidenciaResponseDto {
   requiereCitacion: boolean | null;
   estado: EstadoIncidencia;
   createdAt?: string;
+  nombreEstudiante: string;
 }
 
 export interface RegistrarIncidenciaRequestDto {

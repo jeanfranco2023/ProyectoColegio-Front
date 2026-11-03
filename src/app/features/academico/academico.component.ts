@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AcademicoService } from '../../core/services/academico.service';
 import { AulaResponseDto, NivelResponseDto } from '../../core/models/academico.model';
+import { AuthStore } from '../../core/state/auth.store';
 
 const AULA_CODE_PREFIXES: Record<string, string> = {
   INIC: 'AULA_I_',
@@ -40,6 +41,7 @@ export interface NivelItem {
           </p>
         </div>
         <div class="flex items-center gap-3">
+          @if (authStore.hasRole('DIRECCION')) {
           <button
             (click)="abrirModalNuevaAula()"
             class="px-4 py-2.5 rounded-xl bg-ui-action hover:bg-ui-action/90 text-ui-action-text font-semibold !text-[11px] leading-[1.333333] sm:text-sm shadow-[var(--ui-card-shadow)] transition flex items-center gap-2 cursor-pointer max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !leading-[1.25]"
@@ -49,11 +51,13 @@ export interface NivelItem {
             </svg>
             <span>Nueva Aula en BD</span>
           </button>
+          }
         </div>
       </div>
 
       @if (error()) { <p class="text-ui-error-text text-sm" role="alert">{{ error() }}</p> }
-      <dialog #aulaDialog class="box-border w-[min(680px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden border border-ui-divider rounded-[22px] bg-ui-surface text-ui-text p-0 shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px] max-[639px]:w-[calc(100vw-16px)] max-[639px]:max-w-[calc(100vw-16px)] max-[639px]:max-h-[calc(100dvh-16px)] max-[639px]:rounded-[18px]" aria-labelledby="aula-dialog-title">
+      @if (authStore.hasRole('DIRECCION')) {
+      <dialog #aulaDialog class="box-border w-[min(680px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden border border-ui-divider rounded-[22px] bg-ui-surface text-ui-text p-0 shadow-dialog backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px] max-[639px]:w-[calc(100vw-16px)] max-[639px]:max-w-[calc(100vw-16px)] max-[639px]:max-h-[calc(100dvh-16px)] max-[639px]:rounded-[18px]" aria-labelledby="aula-dialog-title">
         <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col">
           <header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-ui-divider px-6 py-5 [&_h3]:m-0 [&_h3]:text-ui-text [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-ui-muted [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4">
             <div><h3 id="aula-dialog-title" class="tracking-[-.025em]">Registrar aula</h3><p>Completa los datos del ambiente escolar.</p></div>
@@ -71,11 +75,12 @@ export interface NivelItem {
             </div>
             <footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-ui-divider bg-ui-surface px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]">
               <button type="button" class="rounded-xl border border-ui-divider bg-ui-surface-soft px-4 font-semibold text-ui-action max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogoAula()">Cancelar</button>
-              <button type="submit" [disabled]="guardando()" class="rounded-xl bg-ui-action px-[18px] font-bold text-ui-action-text shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ guardando() ? 'Guardando…' : 'Crear aula' }}</button>
+              <button type="submit" [disabled]="guardando()" class="rounded-xl bg-ui-action px-[18px] font-bold text-ui-action-text shadow-card disabled:cursor-wait disabled:opacity-[.55] max-[640px]:min-h-11 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ guardando() ? 'Guardando…' : 'Crear aula' }}</button>
             </footer>
           </form>
         </div>
       </dialog>
+      }
 
       <!-- Level Cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -126,7 +131,7 @@ export interface NivelItem {
         </div>
 
         <div class="overflow-x-auto">
-          <table class="w-full min-w-[680px] text-left !text-[11px] leading-[1.333333] [&_thead]:!bg-ui-surface-soft [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-[#f8faff]" data-mobile-table-cards="">
+          <table class="w-full min-w-[680px] text-left !text-[11px] leading-[1.333333] [&_thead]:!bg-ui-surface-soft [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-ui-surface-soft" data-mobile-table-cards="">
             <thead class="bg-ui-surface-soft border-b !border-ui-divider !text-ui-muted uppercase tracking-wider font-semibold">
               <tr>
                 <th class="px-5 py-3.5">ID BD</th>
@@ -136,7 +141,7 @@ export interface NivelItem {
                 <th class="px-5 py-3.5 text-center">Estado en BD</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-[#edf0f5] !text-ui-action">
+            <tbody class="divide-y divide-[var(--ui-divider)] !text-ui-action">
               @if (cargando()) {
                 <tr>
                   <td colspan="5" class="text-center py-10 !text-ui-muted">
@@ -190,6 +195,7 @@ export interface NivelItem {
 })
 export class AcademicoComponent implements OnInit {
   private readonly academicoService = inject(AcademicoService);
+  readonly authStore = inject(AuthStore);
   readonly error = signal<string | null>(null);
   readonly guardando = signal(false);
   codigo = '';
@@ -262,6 +268,7 @@ export class AcademicoComponent implements OnInit {
   }
 
   abrirModalNuevaAula(): void {
+    if (!this.authStore.hasRole('DIRECCION')) return;
     this.error.set(null);
     this.codigo = '';
     this.nombre = '';
@@ -275,6 +282,7 @@ export class AcademicoComponent implements OnInit {
   }
 
   crearAula(): void {
+    if (!this.authStore.hasRole('DIRECCION')) return;
     if (!this.codigo.trim() || !this.nombre.trim() || this.capacidad < 1) { this.error.set('Complete código, nombre y capacidad.'); return; }
     this.guardando.set(true); this.error.set(null);
     this.academicoService.crearAula({ codigo: this.codigo.trim(), nombre: this.nombre.trim(), ubicacion: this.ubicacion.trim(), capacidad: this.capacidad }).subscribe({

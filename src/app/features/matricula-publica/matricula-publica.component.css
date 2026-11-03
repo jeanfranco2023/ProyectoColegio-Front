@@ -13,6 +13,7 @@
 .admission-page .public-brand small, .admission-page .admission-topline { color: var(--ui-muted) !important; }
 .admission-page .nav-apply { background: var(--ui-action) !important; color: var(--ui-action-text) !important; box-shadow: none !important; }
 .admission-page .nav-apply:hover:not(:disabled) { background: var(--ui-action) !important; color: var(--ui-action-text) !important; }
+.admission-page .admission-nav-links a { color: var(--ui-muted) !important; }
 .admission-page .admission-nav-links a:hover, .admission-page .admission-nav-links a.is-active { color: var(--ui-action) !important; }
 .admission-page .admission-hero {
   min-height: 0 !important; grid-template-columns: minmax(0, 1.02fr) minmax(300px, .98fr) !important;
@@ -51,13 +52,13 @@
   border-radius: 3px 28px 3px 3px !important; background: var(--ui-surface) !important;
   box-shadow: 10px 12px 0 var(--ui-canvas), 11px 13px 0 var(--ui-divider) !important; transform: none !important;
 }
-.admission-page .emblem-caption { color: var(--ui-muted) !important; font-family: var(--font-sans) !important; font-size: 10px !important; letter-spacing: .15em !important; }
+.admission-page .emblem-caption { color: var(--ui-muted) !important; font-family: var(--font-sans) !important; font-size: 11px !important; letter-spacing: .15em !important; }
 .admission-page .emblem-image-wrap { width: 112px !important; height: 112px !important; border: 1px solid var(--ui-divider) !important; border-radius: 50% !important; background: #fff !important; box-shadow: none !important; }
 .admission-page .emblem-image-wrap img { width: 100% !important; height: 100% !important; object-fit: contain !important; }
-.admission-page .archive-seal { position: absolute; top: 22px; right: 22px; display: grid; place-items: center; min-width: 76px; min-height: 32px; border: 1.5px solid var(--ui-accent); border-radius: 50%; color: var(--ui-accent); font: 700 9px/1 var(--font-sans); letter-spacing: .12em; transform: rotate(7deg); }
+.admission-page .archive-seal { position: absolute; top: 22px; right: 22px; display: grid; place-items: center; min-width: 76px; min-height: 32px; border: 1.5px solid var(--ui-accent); border-radius: 50%; color: var(--ui-accent); font: 700 11px/1 var(--font-sans); letter-spacing: .12em; transform: rotate(7deg); }
 .admission-page .hero-emblem-card strong { color: var(--ui-text) !important; font-family: var(--font-display) !important; font-size: 27px !important; font-weight: 500 !important; line-height: 1.15 !important; text-align: center; }
 .admission-page .emblem-divider { width: 40px !important; height: 1px !important; background: var(--ui-gold) !important; }
-.admission-page .hero-emblem-card small { color: var(--ui-muted) !important; font-family: var(--font-sans) !important; font-size: 10px !important; letter-spacing: .08em !important; }
+.admission-page .hero-emblem-card small { color: var(--ui-muted) !important; font-family: var(--font-sans) !important; font-size: 11px !important; letter-spacing: .08em !important; }
 .admission-page .hero-art-note { position: relative !important; inset: auto !important; width: min(90%, 340px) !important; min-height: 58px; padding: 10px 12px !important; gap: 12px !important; border: 1px solid var(--ui-divider) !important; border-left: 3px solid var(--ui-action) !important; border-radius: 3px !important; background: var(--ui-canvas) !important; box-shadow: none !important; }
 .admission-page .archive-note-mark { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 30px; color: var(--ui-action); border: 1px solid var(--ui-divider); }
 .admission-page .hero-art-note b { color: var(--ui-text) !important; }
@@ -87,22 +88,20 @@
   .admission-page .emblem-image-wrap { width: 92px !important; height: 92px !important; }
   .admission-page .hero-art-note { width: 100% !important; }
 }
-@media (prefers-color-scheme: dark) {
-  .admission-page .emblem-image-wrap { background: #fff !important; }
-  .admission-page .hero-emblem-card { box-shadow: 7px 9px 0 var(--ui-canvas), 8px 10px 0 var(--ui-divider) !important; }
-}
+:root.theme-dark .admission-page .emblem-image-wrap { background: #fff !important; }
+:root.theme-dark .admission-page .hero-emblem-card { box-shadow: 7px 9px 0 var(--ui-canvas), 8px 10px 0 var(--ui-divider) !important; }
 @media (prefers-reduced-motion: reduce) { .admission-page *, .admission-page *::before, .admission-page *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
 
 /* El modal vive fuera del main para cubrir la página; estas reglas lo alcanzan por su propio ancla. */
-.modal-backdrop .ui-admission-wizard { width: min(840px, 100%) !important; max-height: min(92dvh, 900px) !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; border-color: var(--ui-divider) !important; border-radius: 5px 24px 5px 5px !important; }
+.modal-backdrop .ui-admission-wizard { width: min(1180px, calc(100vw - 32px)) !important; max-height: min(94dvh, 980px) !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; border-color: var(--ui-divider) !important; border-radius: 12px 28px 12px 12px !important; }
 .modal-backdrop .ui-wizard-header { background: var(--ui-surface-soft) !important; border-bottom: 1px solid var(--ui-divider) !important; }
 .modal-backdrop .ui-wizard-header .eyebrow { color: var(--ui-action) !important; }
 .modal-backdrop .ui-wizard-header h2 { color: var(--ui-text) !important; font-family: var(--font-display) !important; }
 .modal-backdrop .ui-wizard-header p { color: var(--ui-muted) !important; }
 .modal-backdrop .ui-form-progress { padding: 12px 20px; border-bottom: 1px solid var(--ui-divider); background: var(--ui-canvas); }
-.modal-backdrop .ui-form-progress ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+.modal-backdrop .ui-form-progress ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
 .modal-backdrop .ui-form-progress li { display: flex; min-width: 0; align-items: center; gap: 8px; color: var(--ui-text); font: 600 11px/1.25 var(--font-sans); }
-.modal-backdrop .ui-form-progress li > span { display: grid; width: 28px; height: 28px; flex: 0 0 28px; place-items: center; border: 1px solid var(--ui-control-border); background: var(--ui-surface); color: var(--ui-text); }
+.modal-backdrop .ui-form-progress li > span { display: grid; width: 28px; height: 28px; flex: 0 0 28px; place-items: center; border: 1px solid var(--ui-control-border); border-radius: 50%; background: var(--ui-surface); color: var(--ui-text); }
 .modal-backdrop .ui-wizard-body { padding: 18px !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; }
 .modal-backdrop .form-step { border-color: var(--ui-divider) !important; border-radius: 4px !important; background: var(--ui-surface) !important; }
 .modal-backdrop .form-step + .form-step { margin-top: 10px !important; }
@@ -129,4 +128,61 @@
 .admission-page .process-icon svg { width: 19px; height: 19px; }
 .modal-backdrop .ui-admission-wizard .modal-footer { border-top: 1px solid var(--ui-divider) !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; }
 @media (max-width: 600px) { .modal-backdrop .ui-form-progress { padding: 10px 12px; } .modal-backdrop .ui-form-progress ol { gap: 5px; } .modal-backdrop .ui-form-progress li { gap: 5px; font-size: 11px; } .modal-backdrop .ui-form-progress li > span { width: 24px; height: 24px; flex-basis: 24px; } .modal-backdrop .ui-wizard-body { padding: 12px !important; } }
-@media (prefers-color-scheme: dark) { .modal-backdrop .ui-admission-wizard { background: var(--ui-surface) !important; } }
+:root.theme-dark .modal-backdrop .ui-admission-wizard { background: var(--ui-surface) !important; }
+
+
+
+/* Public information routes: readable supporting copy across every navbar section. */
+.admission-page:not(.public-landing) .route-page-heading > p,
+.admission-page:not(.public-landing) .section-heading p,
+.admission-page:not(.public-landing) .value-card p,
+.admission-page:not(.public-landing) .levels-heading > p,
+.admission-page:not(.public-landing) .level-card-copy p,
+.admission-page:not(.public-landing) .process-intro > p,
+.admission-page:not(.public-landing) .process-item p,
+.admission-page:not(.public-landing) .documents-copy > p,
+.admission-page:not(.public-landing) .faq-heading > p,
+.admission-page:not(.public-landing) .faq-list details p,
+.admission-page:not(.public-landing) .final-cta p {
+  font-size: 16px !important;
+  line-height: 1.7 !important;
+}
+.admission-page:not(.public-landing) .faq-list summary {
+  min-height: 60px !important;
+  font-size: 16px !important;
+  line-height: 1.45 !important;
+}
+.admission-page:not(.public-landing) .documents-checklist b { font-size: 15px !important; }
+.admission-page:not(.public-landing) .documents-checklist small,
+.admission-page:not(.public-landing) .documents-format small,
+.admission-page:not(.public-landing) .process-item small,
+.admission-page:not(.public-landing) .process-time {
+  font-size: 14px !important;
+  line-height: 1.55 !important;
+}
+.admission-page:not(.public-landing) .level-card-copy > span,
+.admission-page:not(.public-landing) .level-stamp { font-size: 12px !important; }
+.admission-page:not(.public-landing) .button { font-size: 15px !important; }
+@media (max-width: 780px) {
+  .admission-page:not(.public-landing) .route-page-heading > p,
+  .admission-page:not(.public-landing) .section-heading p,
+  .admission-page:not(.public-landing) .value-card p,
+  .admission-page:not(.public-landing) .levels-heading > p,
+  .admission-page:not(.public-landing) .level-card-copy p,
+  .admission-page:not(.public-landing) .process-intro > p,
+  .admission-page:not(.public-landing) .process-item p,
+  .admission-page:not(.public-landing) .documents-copy > p,
+  .admission-page:not(.public-landing) .faq-heading > p,
+  .admission-page:not(.public-landing) .faq-list details p,
+  .admission-page:not(.public-landing) .final-cta p {
+    font-size: 15px !important;
+    line-height: 1.65 !important;
+  }
+  .admission-page:not(.public-landing) .faq-list summary { min-height: 58px !important; font-size: 15px !important; }
+  .admission-page:not(.public-landing) .documents-checklist b { font-size: 15px !important; }
+  .admission-page:not(.public-landing) .documents-checklist small,
+  .admission-page:not(.public-landing) .documents-format small,
+  .admission-page:not(.public-landing) .process-item small,
+  .admission-page:not(.public-landing) .process-time { font-size: 14px !important; }
+}
+

@@ -22,7 +22,7 @@ export class MatriculaPublicaService {
   }
 
   consultarDni(dni: string): Observable<IdentidadDniDto> {
-    return this.http.get<IdentidadDniDto>(`${this.baseUrl}/public/dni/${encodeURIComponent(dni)}`);
+    return this.http.get<IdentidadDniDto>(`${environment.apiUrl}/personas/reniec/${encodeURIComponent(dni)}`);
   }
 
   crear(payload: CrearSolicitudMatriculaPublicaDto): Observable<SolicitudMatriculaPublicaDto> {
@@ -84,6 +84,14 @@ export class MatriculaPublicaService {
 
   listarAdmin(): Observable<SolicitudMatriculaPublicaAdminDto[]> {
     return this.http.get<SolicitudMatriculaPublicaAdminDto[]>(`${this.baseUrl}/admin`);
+  }
+
+  asignarSeccionAdmin(id: string, seccionId: number): Observable<SolicitudMatriculaPublicaAdminDto> {
+    return this.http.put<SolicitudMatriculaPublicaAdminDto>(`${this.baseUrl}/admin/${encodeURIComponent(id)}/asignar-seccion`, { seccionId });
+  }
+
+  autorizarExcepcionEdadAdmin(id: string, motivo: string): Observable<SolicitudMatriculaPublicaAdminDto> {
+    return this.http.post<SolicitudMatriculaPublicaAdminDto>(`${this.baseUrl}/admin/${encodeURIComponent(id)}/autorizar-excepcion-edad`, { motivo });
   }
 
   observarAdmin(id: string, tipo: TipoDocumentoSolicitud, observacion: string): Observable<SolicitudMatriculaPublicaAdminDto> {

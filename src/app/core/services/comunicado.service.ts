@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   BandejaApoderadoResponseDto,
+  ComunicadoDestinatarioResponseDto,
   ComunicadoResponseDto,
   EmitirComunicadoRequestDto,
   MetricasLecturaResponseDto
@@ -20,8 +21,8 @@ export class ComunicadoService {
     return this.http.get<ComunicadoResponseDto[]>(this.baseUrl);
   }
 
-  confirmarAcuse(id: number): Observable<unknown> {
-    return this.http.post(`${this.baseUrl}/${id}/acuse`, { confirmarAcuse: true });
+  confirmarAcuse(id: number): Observable<ComunicadoDestinatarioResponseDto> {
+    return this.http.post<ComunicadoDestinatarioResponseDto>(`${this.baseUrl}/${id}/acuse`, { confirmarAcuse: true });
   }
 
   consultarBandeja(page: number = 0, size: number = 20): Observable<BandejaApoderadoResponseDto> {

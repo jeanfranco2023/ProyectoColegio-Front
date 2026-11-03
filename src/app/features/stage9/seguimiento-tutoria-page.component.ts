@@ -1,27 +1,33 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { forkJoin } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
 import { SeguimientoTutoriaComponent } from './seguimiento-tutoria.component';
 import { Stage9State, Stage9TutorFilters } from './stage9.contract';
 import { HijoPortalDto, PortalFamiliarService } from '../../core/services/portal-familiar.service';
 import { ConvivenciaService } from '../../core/services/convivencia.service';
 import { AsistenciaService } from '../../core/services/asistencia.service';
 import { IncidenciaResponseDto } from '../../core/models/convivencia.model';
-import { AsistenciaAulaResponseDto } from '../../core/models/asistencia.model';
+import { AsistenciaAulaResponseDto, DocenteAsistenciaDiariaResponseDto } from '../../core/models/asistencia.model';
 import { PeriodoResponseDto } from '../../core/models/academico.model';
 import { fechaActualEnPeru } from '../../core/utils/fecha-nacimiento';
+import { AuthStore } from '../../core/state/auth.store';
 @Component({ selector: 'app-seguimiento-tutoria-page', standalone: true, imports: [SeguimientoTutoriaComponent], template: `
+  @if (authStore.hasRole('SECRETARIA')) {
+    <p class="rounded-xl border border-ui-info-border bg-ui-info-bg px-4 py-3 text-sm font-medium text-ui-info-text" role="status">El backend no expone para Secretaría los datos de seguimiento por estudiante requeridos en esta vista. Está disponible para Dirección, Tutoría y Auxiliar.</p>
+  } @else {
   <p class="mb-3 text-sm">Asistencia de hoy: {{ hoy }}. Las observaciones e incidencias se filtran por el periodo seleccionado.</p>
   <app-seguimiento-tutoria-screen [state]="estado()" [errorMessage]="mensaje()" [filters]="filtros()" [sections]="secciones()" [periods]="opcionesPeriodos()" [students]="filas()" [studentCount]="filas().length" [attendanceSummary]="asistenciasResumen()" [incidentCount]="graves()" [observationCount]="incidenciasFiltradas().length" (filtersChanged)="filtrar($event)" (studentRequested)="seleccionar($event)" (retry)="cargar()" />
-  @if(detalleId();as id){<aside class="grid gap-2 rounded-xl border bg-white p-4" aria-label="Detalle de seguimiento"><h2 class="font-semibold">{{ nombre(id) }}</h2>@for(i of detalle();track i.id){<p>{{ i.fechaIncidencia }} · {{ i.tipoFalta }} · {{ i.descripcion }}</p>}@if(!detalle().length){<p>No hay incidencias registradas para este estudiante en el periodo.</p>}<button type="button" class="min-h-11 rounded-lg border p-2" (click)="detalleId.set(null)">Cerrar detalle</button></aside>}
+  @if(detalleId();as id){<aside class="grid gap-2 rounded-xl border bg-ui-surface p-4" aria-label="Detalle de seguimiento"><h2 class="font-semibold">{{ nombre(id) }}</h2>@for(i of detalle();track i.id){<p>{{ i.fechaIncidencia }} · {{ i.tipoFalta }} · {{ i.descripcion }}</p>}@if(!detalle().length){<p>No hay incidencias registradas para este estudiante en el periodo.</p>}<button type="button" class="min-h-11 rounded-lg border p-2" (click)="detalleId.set(null)">Cerrar detalle</button></aside>}
+  }
 ` })
 export class SeguimientoTutoriaPageComponent implements OnInit {
     private readonly portal = inject(PortalFamiliarService);
     private readonly convivencia = inject(ConvivenciaService);
     private readonly asistencia = inject(AsistenciaService);
+    readonly authStore = inject(AuthStore);
     readonly hoy = fechaActualEnPeru();
     readonly hijos = signal<HijoPortalDto[]>([]);
     readonly incidencias = signal<IncidenciaResponseDto[]>([]);
-    readonly asistencias = signal<AsistenciaAulaResponseDto[]>([]);
+    readonly asistencias = signal<Array<AsistenciaAulaResponseDto | DocenteAsistenciaDiariaResponseDto>>([]);
     readonly periodos = signal<PeriodoResponseDto[]>([]);
     readonly estado = signal<Stage9State>('loading');
     readonly mensaje = signal('');
@@ -46,7 +52,13 @@ export class SeguimientoTutoriaPageComponent implements OnInit {
     readonly asistenciasResumen = computed(() => { const ids = new Set(this.alumnosFiltrados().map(h => h.matriculaId)); return `${this.asistencias().filter(a => ids.has(a.matriculaId)).length} registros de hoy`; });
     readonly detalle = computed(() => this.incidenciasFiltradas().filter(i => i.matriculaId === this.detalleId()));
     ngOnInit() { this.cargar(); }
-    cargar() { this.estado.set('loading'); forkJoin({ hijos: this.portal.alumnosSeguimiento(), incidencias: this.convivencia.listarIncidencias(), asistencia: this.asistencia.obtenerReporteDiario(this.hoy) }).subscribe({ next: d => { this.hijos.set(d.hijos); this.incidencias.set(d.incidencias); this.asistencias.set(d.asistencia.asistencias); this.estado.set(d.hijos.length ? 'normal' : 'empty'); if (!this.filtros().sectionId && d.hijos.length)
+    cargar() {
+        if (this.authStore.hasRole('SECRETARIA')) return;
+        this.estado.set('loading');
+        const asistencia$ = this.authStore.hasRole('TUTOR')
+            ? this.asistencia.obtenerReporteDocente(this.hoy)
+            : this.asistencia.obtenerReporteDiario(this.hoy).pipe(map(reporte => reporte.asistencias));
+        forkJoin({ hijos: this.portal.alumnosSeguimiento(), incidencias: this.convivencia.listarIncidencias(), asistencia: asistencia$ }).subscribe({ next: d => { this.hijos.set(d.hijos); this.incidencias.set(d.incidencias); this.asistencias.set(d.asistencia); this.estado.set(d.hijos.length ? 'normal' : 'empty'); if (!this.filtros().sectionId && d.hijos.length)
             this.filtros.update(f => ({ ...f, sectionId: d.hijos[0].seccionId })); this.cargarPeriodos(); }, error: e => { this.estado.set('error'); this.mensaje.set(e?.error?.message ?? 'No se pudo cargar el seguimiento.'); } }); }
     filtrar(f: Stage9TutorFilters) { this.filtros.set(f); this.detalleId.set(null); this.cargarPeriodos(); }
     private cargarPeriodos() { const anio = this.hijos().find(h => h.seccionId === this.filtros().sectionId)?.anioLectivoId; if (!anio || anio === this.anioCargado)

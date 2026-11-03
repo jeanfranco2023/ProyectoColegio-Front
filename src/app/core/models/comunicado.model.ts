@@ -5,7 +5,16 @@ export interface ComunicadoResponseDto {
   remitenteUsuarioId: number;
   fechaPublicacion: string;
   requiereAcuse: boolean;
-  acuseConfirmado?: boolean | null;
+}
+
+export interface ComunicadoDestinatarioResponseDto {
+  id: number;
+  comunicadoId: number;
+  apoderadoId: number;
+  leido: boolean;
+  fechaLectura: string | null;
+  acuseConfirmado: boolean;
+  fechaAcuse: string | null;
 }
 
 export interface BandejaApoderadoResponseDto {

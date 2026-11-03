@@ -34,10 +34,10 @@ export type UiListState = 'loading' | 'empty' | 'error';
             <path [attr.d]="iconPath"></path>
           </svg>
         }
-        <h3 class="m-0 font-sans text-lg leading-[1.35] font-semibold">{{ resolvedTitle }}</h3>
+        <h3 class="m-0 font-display text-lg leading-[1.35] font-semibold">{{ resolvedTitle }}</h3>
         <p class="m-0 max-w-[48ch] font-sans text-base leading-6 text-ui-muted">{{ message || resolvedMessage }}</p>
         @if (state === 'error') {
-          <button class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-ui-control-border bg-ui-surface px-4 py-2 text-center font-sans text-[14px] leading-[1.2] font-semibold text-ui-text no-underline transition-colors hover:bg-[#f4f6fb] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-ui-border disabled:bg-ui-surface-soft disabled:text-ui-muted" type="button" (click)="retry.emit()">
+          <button class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-ui-control-border bg-ui-surface px-4 py-2 text-center font-sans text-[14px] leading-[1.2] font-semibold text-ui-text no-underline transition-colors hover:bg-ui-surface-soft focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-ui-border disabled:bg-ui-surface-soft disabled:text-ui-muted" type="button" (click)="retry.emit()">
             {{ retryLabel }}
           </button>
         }

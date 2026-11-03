@@ -10,13 +10,12 @@ import { TesoreriaService } from '../../core/services/tesoreria.service';
 import { EvaluacionService } from '../../core/services/evaluacion.service';
 import { AuthStore } from '../../core/state/auth.store';
 import { guardarDescarga } from '../../shared/ui/carga-planilla.component';
-import { fechaActualEnPeru } from '../../core/utils/fecha-nacimiento';
 @Component({ selector: 'app-portal-apoderado-page', standalone: true, imports: [PortalApoderadoComponent, RouterLink], template: `
-  <nav class="mb-4 flex flex-wrap gap-3" aria-label="Servicios de la familia"><a class="min-h-11 rounded-lg border bg-white p-3" routerLink="/admin/tesoreria">Realizar pagos</a><a class="min-h-11 rounded-lg border bg-white p-3" routerLink="/admin/comunicados">Comunicados</a><a class="min-h-11 rounded-lg border bg-white p-3" routerLink="/admin/suplencias">Designar suplente</a></nav>
+  <nav class="mb-4 flex flex-wrap gap-3" aria-label="Servicios de la familia"><a class="min-h-11 rounded-lg border bg-ui-surface p-3" routerLink="/admin/tesoreria">Realizar pagos</a><a class="min-h-11 rounded-lg border bg-ui-surface p-3" routerLink="/admin/comunicados">Comunicados</a><a class="min-h-11 rounded-lg border bg-ui-surface p-3" routerLink="/admin/suplencias">Designar suplente</a></nav>
   <app-portal-apoderado-screen [state]="estado()" [errorMessage]="mensaje()" [children]="opciones()" [schoolYear]="hijoActual()?.anio ?? 0" [periods]="opcionesPeriodos()" [selectedStudentId]="matriculaId()" [selectedPeriodId]="periodoId()" [grades]="notasPeriodo()" [payments]="pagos()" (childSelected)="seleccionar($event)" (periodSelected)="periodoId.set($event)" (reportRequested)="descargar($event.studentId)" (retry)="cargar()" />
   <p role="status" class="mb-4">{{ aviso() }}</p>
   @if(matriculaId() && estado() === 'normal'){
-    <section class="grid gap-3 rounded-xl border bg-white p-5"><h2 class="text-lg font-semibold">Asistencia escolar del año</h2><p>{{ resumenAsistencia() }}</p>
+    <section class="grid gap-3 rounded-xl border bg-ui-surface p-5"><h2 class="text-lg font-semibold">Asistencia escolar del año</h2><p>{{ resumenAsistencia() }}</p>
       <div class="max-h-80 overflow-auto"><table class="w-full text-left text-sm"><thead><tr><th>Fecha</th><th>Estado</th><th>Justificación</th></tr></thead><tbody>@for(a of asistencias();track a.id){<tr class="border-t"><td class="p-2">{{ a.fechaSesion }}</td><td>{{ a.estado }}</td><td>{{ a.justificada ? a.motivoJustificacion : '—' }}</td></tr>}</tbody></table></div>
       @if(!asistencias().length){<p>No hay asistencias registradas para esta matrícula.</p>}
       <p class="text-sm">La libreta PDF incluye todos los periodos registrados del año.</p>
@@ -49,7 +48,9 @@ export class PortalApoderadoPageComponent implements OnInit {
             return 'Sin registros de asistencia.';
         const presentes = this.asistencias().filter(a => a.estado === 'PRESENTE').length;
         const tardanzas = this.asistencias().filter(a => a.estado === 'TARDANZA').length;
-        return `De ${total} registros: ${presentes} asistencias (${Math.round(presentes * 100 / total)}%), ${tardanzas} tardanzas y ${total - presentes - tardanzas} faltas.`;
+        const faltasJustificadas = this.asistencias().filter(a => a.estado === 'FALTA_JUSTIFICADA').length;
+        const faltasInjustificadas = this.asistencias().filter(a => a.estado === 'FALTA_INJUSTIFICADA').length;
+        return `De ${total} registros: ${presentes} presentes (${Math.round(presentes * 100 / total)}%), ${tardanzas} tardanzas, ${faltasJustificadas} faltas justificadas y ${faltasInjustificadas} faltas injustificadas.`;
     });
     ngOnInit() { this.cargar(); }
     cargar() {
@@ -83,8 +84,8 @@ export class PortalApoderadoPageComponent implements OnInit {
                 this.periodos.set(datos.periodos);
                 this.periodoId.set(datos.periodos[0]?.id ?? null);
                 this.asistencias.set(datos.asistencias);
-                this.pagos.set(datos.obligaciones.filter(o => o.matriculaId === id && o.estado !== 'CANCELADO_POR_TRASLADO').map(o => ({ id: o.id, concept: o.saldoPendiente > 0 ? `${o.descripcion} (saldo por pagar)` : o.descripcion, schoolYear: hijo.anio, amount: o.saldoPendiente > 0 ? o.saldoPendiente : o.totalPagado, currency: 'PEN', dueDate: o.fechaVencimiento,
-                    status: o.saldoPendiente <= 0 ? 'PAGADO' : o.fechaVencimiento < fechaActualEnPeru() ? 'VENCIDO' : 'PENDIENTE' })));
+                this.pagos.set(datos.obligaciones.filter(o => o.matriculaId === id && o.estado !== 'CANCELADO_POR_TRASLADO').map(o => ({ id: o.id, concept: o.saldoPendiente > 0 ? `${o.descripcion} (saldo por pagar)` : o.descripcion, schoolYear: hijo.anio, amount: o.saldoPendiente > 0 ? o.saldoPendiente : o.totalPagado, amountLabel: o.saldoPendiente > 0 ? 'Saldo pendiente' : 'Pagado', currency: 'PEN', dueDate: o.fechaVencimiento,
+                    status: o.estado === 'PAGADO_TOTAL' ? 'PAGADO' : o.estado === 'PAGADO_PARCIAL' ? 'PAGO PARCIAL' : o.estado === 'VENCIDO' ? 'VENCIDO' : o.estado === 'PENDIENTE' ? 'PENDIENTE' : 'SIN ESTADO' })));
                 this.estado.set('normal');
             }, error: e => { if (revision !== this.revision)
                 return; this.estado.set('error'); this.mensaje.set(e?.error?.message ?? 'No se pudo consultar la información del estudiante.'); } });

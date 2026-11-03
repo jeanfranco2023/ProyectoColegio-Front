@@ -15,6 +15,7 @@ export interface MatriculaResponseDto {
   estadoMatricula: EstadoMatricula;
   reservaExpiraAt?: string;
   observaciones?: string;
+  estadoPagoMatricula?: 'PAGADO' | 'PARCIAL' | 'PENDIENTE' | 'SIN_OBLIGACION' | null;
 }
 
 export type TipoDocumento = 'DNI';
@@ -42,6 +43,7 @@ export interface RegistrarEstudianteRequestDto {
 
 export interface EstudianteResponseDto {
   id: number;
+  codigoInterno?: string;
   tipoDocumento?: TipoDocumento;
   numeroDocumento: string;
   nombres: string;
@@ -55,6 +57,7 @@ export interface EstudianteResponseDto {
   grupoSanguineo?: string;
   alergiasCondiciones?: string;
   activo?: boolean;
+  estado?: string;
   createdAt?: string;
 }
 

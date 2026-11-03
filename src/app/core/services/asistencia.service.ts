@@ -6,6 +6,7 @@ import {
   AsistenciaAulaResponseDto,
   ConciliacionAsistenciaResponseDto,
   DiscrepanciaAlertaResponseDto,
+  DocenteAsistenciaDiariaResponseDto,
   ImportarLoteBiometricoRequestDto,
   JustificarInasistenciaRequestDto,
   LoteBiometricoResponseDto,
@@ -25,12 +26,21 @@ export class AsistenciaService {
     return this.http.get<ReporteAsistenciaDiariaResponseDto>(`${this.baseUrl}/aula`, { params });
   }
 
+  obtenerReporteDocente(fecha: string): Observable<DocenteAsistenciaDiariaResponseDto[]> {
+    const params = new HttpParams().set('fecha', fecha);
+    return this.http.get<DocenteAsistenciaDiariaResponseDto[]>(`${this.baseUrl}/aula/docente`, { params });
+  }
+
   registrarAsistenciaAula(request: RegistrarAsistenciaAulaRequestDto): Observable<AsistenciaAulaResponseDto> {
     return this.http.post<AsistenciaAulaResponseDto>(`${this.baseUrl}/aula`, request);
   }
 
   justificarInasistencia(request: JustificarInasistenciaRequestDto): Observable<AsistenciaAulaResponseDto> {
-    return this.http.post<AsistenciaAulaResponseDto>(`${this.baseUrl}/aula/justificacion`, request);
+    const body = new FormData();
+    body.append('asistenciaId', String(request.asistenciaId));
+    body.append('motivo', request.motivo);
+    body.append('archivo', request.archivo, request.archivo.name);
+    return this.http.post<AsistenciaAulaResponseDto>(`${this.baseUrl}/aula/justificacion`, body);
   }
 
   importarLoteBiometrico(request: ImportarLoteBiometricoRequestDto): Observable<LoteBiometricoResponseDto> {

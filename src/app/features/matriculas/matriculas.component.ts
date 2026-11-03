@@ -15,6 +15,7 @@ import {
 import { AcademicoService } from '../../core/services/academico.service';
 import { AnioLectivoResponseDto, SeccionResponseDto } from '../../core/models/academico.model';
 import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
+import { AuthStore } from '../../core/state/auth.store';
 
 export interface EstudianteMatriculadoItem {
   id: number;
@@ -30,41 +31,41 @@ export interface EstudianteMatriculadoItem {
   standalone: true,
   imports: [CommonModule, FormsModule, MatDialogModule, MatButtonModule, RouterLink, UiDatePePipe],
   template: `
-    <div class="space-y-6 min-w-0 text-ui-text max-[640px]:text-[13px] [&_*:focus-visible]:outline-[3px] [&_*:focus-visible]:outline-[#2864c5] [&_*:focus-visible]:outline-offset-[3px]">
+    <div class="space-y-6 min-w-0 text-ui-text max-[640px]:text-[13px] [&_*:focus-visible]:outline-[3px] [&_*:focus-visible]:outline-[var(--ui-action)] [&_*:focus-visible]:outline-offset-[3px]">
       <!-- Top Banner / Alert -->
       @if (mensajeExito()) {
-        <div class="p-4 rounded-2xl border-t-[3px] border-t-ui-action/50 pt-3 bg-emerald-500/10 border border-emerald-500/30 text-[#047857] flex items-center justify-between shadow-lg shadow-emerald-950/20">
+        <div class="p-4 rounded-2xl border-t-[3px] border-t-ui-success-border pt-3 bg-ui-success-bg border border-ui-success-border text-ui-success-text flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <span class="p-1.5 rounded-lg bg-emerald-500/20 text-[#047857]">
+            <span class="p-1.5 rounded-lg bg-ui-success-bg text-ui-success-text">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
               </svg>
             </span>
             <div>
-              <p class="font-bold text-sm text-[#047857]">Operación Exitosa</p>
-              <p class="!text-[11px] text-[#047857]">{{ mensajeExito() }}</p>
+              <p class="font-bold text-sm text-ui-success-text">Operación Exitosa</p>
+              <p class="!text-[11px] text-ui-success-text">{{ mensajeExito() }}</p>
             </div>
           </div>
-          <button (click)="mensajeExito.set(null)" class="text-[#047857] hover:text-[#065f46] cursor-pointer !text-[11px] font-semibold px-2 py-1 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+          <button (click)="mensajeExito.set(null)" class="text-ui-success-text hover:text-ui-success-text cursor-pointer !text-[11px] font-semibold px-2 py-1 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
             ✕
           </button>
         </div>
       }
 
       @if (error()) {
-        <div class="p-4 rounded-2xl border-t-[3px] border-t-ui-action/50 pt-3 bg-rose-500/10 border border-rose-500/30 text-[#be123c] flex items-center justify-between shadow-lg shadow-rose-950/20">
+        <div class="p-4 rounded-2xl border-t-[3px] border-t-ui-error-border pt-3 bg-ui-error-bg border border-ui-error-border text-ui-error-text flex items-center justify-between">
           <div class="flex items-center gap-3">
-            <span class="p-1.5 rounded-lg bg-rose-500/20 text-[#be123c]">
+            <span class="p-1.5 rounded-lg bg-ui-error-bg text-ui-error-text">
               <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </span>
             <div>
-              <p class="font-bold text-sm text-[#be123c]">Error</p>
-              <p class="!text-[11px] text-[#be123c]">{{ error() }}</p>
+              <p class="font-bold text-sm text-ui-error-text">Error</p>
+              <p class="!text-[11px] text-ui-error-text">{{ error() }}</p>
             </div>
           </div>
-          <button (click)="error.set(null)" class="text-[#be123c] hover:text-[#9f1239] cursor-pointer !text-[11px] font-semibold px-2 py-1 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+          <button (click)="error.set(null)" class="text-ui-error-text hover:text-ui-error-text cursor-pointer !text-[11px] font-semibold px-2 py-1 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
             ✕
           </button>
         </div>
@@ -90,10 +91,11 @@ export interface EstudianteMatriculadoItem {
 
         <!-- Action Buttons -->
         <div class="flex flex-wrap items-center gap-3">
+          @if (authStore.hasRole('SECRETARIA')) {
           <button
             id="btn-abrir-registro-alumno"
             (click)="abrirModalNuevoAlumno()"
-            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-ui-action rounded-[10px] bg-ui-action text-white font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] shadow-none hover:bg-ui-action/90 focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+            class="inline-flex items-center justify-center gap-2 px-4 py-2 border border-ui-action rounded-[10px] bg-ui-action text-ui-action-text font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] shadow-none hover:bg-ui-action/90 focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-[18px] w-[18px] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
@@ -111,6 +113,7 @@ export interface EstudianteMatriculadoItem {
             </svg>
             <span>Asignar Matrícula</span>
           </button>
+          }
           <a
             routerLink="/admin/solicitudes-matricula"
             class="inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 border border-ui-border rounded-[10px] bg-ui-surface text-ui-text font-semibold text-sm leading-tight text-center no-underline whitespace-nowrap cursor-pointer transition-colors duration-[140ms] ease-[ease] hover:bg-ui-surface-soft focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] max-[640px]:w-full"
@@ -131,7 +134,7 @@ export interface EstudianteMatriculadoItem {
           (click)="pestanaActiva.set('estudiantes')"
           [class]="pestanaActiva() === 'estudiantes'
             ? 'px-4 py-3 border-b-2 border-ui-action text-ui-action font-bold text-sm flex items-center gap-2 transition cursor-pointer'
-            : 'px-4 py-3 border-b-2 border-transparent !text-[#59677a] hover:!text-ui-text font-medium text-sm flex items-center gap-2 transition cursor-pointer'"
+            : 'px-4 py-3 border-b-2 border-transparent !text-[var(--ui-muted)] hover:!text-ui-text font-medium text-sm flex items-center gap-2 transition cursor-pointer'"
          class="max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -147,7 +150,7 @@ export interface EstudianteMatriculadoItem {
           (click)="pestanaActiva.set('matriculas')"
           [class]="pestanaActiva() === 'matriculas'
             ? 'px-4 py-3 border-b-2 border-ui-action text-ui-action font-bold text-sm flex items-center gap-2 transition cursor-pointer'
-            : 'px-4 py-3 border-b-2 border-transparent !text-[#59677a] hover:!text-ui-text font-medium text-sm flex items-center gap-2 transition cursor-pointer'"
+            : 'px-4 py-3 border-b-2 border-transparent !text-[var(--ui-muted)] hover:!text-ui-text font-medium text-sm flex items-center gap-2 transition cursor-pointer'"
          class="max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -211,7 +214,7 @@ export interface EstudianteMatriculadoItem {
                     <th class="px-5 py-3.5 text-right">Acciones</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[#edf0f5] !text-ui-text">
+                <tbody class="divide-y divide-[var(--ui-divider)] !text-ui-text">
                   @if (cargandoEstudiantes()) {
                     <tr>
                       <td colspan="9" class="text-center py-12 !text-ui-muted">
@@ -234,7 +237,7 @@ export interface EstudianteMatriculadoItem {
                             {{ est.apellidoPaterno }} {{ est.apellidoMaterno }}, {{ est.nombres }}
                           </div>
                           @if (est.alergiasCondiciones) {
-                            <div class="!text-[11px] text-[#a16207] truncate max-w-xs mt-0.5">
+                            <div class="!text-[11px] text-ui-warning-text truncate max-w-xs mt-0.5">
                               ⚠️ {{ est.alergiasCondiciones }}
                             </div>
                           }
@@ -256,26 +259,44 @@ export interface EstudianteMatriculadoItem {
                         <td class="px-5 py-3.5 font-mono !text-ui-muted" data-label="Cód. SIAGIE">{{ est.codigoEstudianteSiagie || 'No asignado' }}</td>
                         <td class="px-5 py-3.5 font-mono !text-ui-text" data-label="Grupo Sang.">{{ est.grupoSanguineo || '-' }}</td>
                         <td class="px-5 py-3.5" data-label="Estado BD">
-                          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full !text-[11px] font-bold !bg-[#edf9f3] !text-[#126943] border !border-[#b8dfcc]">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                            Activo
-                          </span>
+                          @if (est.estado || est.activo !== undefined) {
+                            <span
+                              class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full !text-[11px] font-bold border"
+                              [class.!bg-ui-success-bg]="est.estado === 'ACTIVO' || (!est.estado && est.activo === true)"
+                              [class.!text-ui-success-text]="est.estado === 'ACTIVO' || (!est.estado && est.activo === true)"
+                              [class.!border-ui-success-border]="est.estado === 'ACTIVO' || (!est.estado && est.activo === true)"
+                              [class.!bg-ui-error-bg]="est.estado === 'INACTIVO' || (!est.estado && est.activo === false)"
+                              [class.!text-ui-error-text]="est.estado === 'INACTIVO' || (!est.estado && est.activo === false)"
+                              [class.!border-ui-error-border]="est.estado === 'INACTIVO' || (!est.estado && est.activo === false)"
+                            >
+                              <span class="w-1.5 h-1.5 rounded-full" [class.bg-ui-success-text]="est.estado === 'ACTIVO' || (!est.estado && est.activo === true)" [class.bg-ui-error-text]="est.estado === 'INACTIVO' || (!est.estado && est.activo === false)"></span>
+                              {{ est.estado || (est.activo ? 'Activo' : 'Inactivo') }}
+                            </span>
+                          } @else {
+                            <span class="!text-ui-muted">Sin estado disponible</span>
+                          }
                         </td>
                         <td class="px-5 py-3.5 text-right" data-label="Acciones">
+                          @if (authStore.hasRole('SECRETARIA')) {
                           <button
                             (click)="prepararMatriculaParaEstudiante(est)"
                             class="inline-flex min-h-[44px] w-auto min-w-[104px] items-center justify-center gap-2 rounded-[10px] border border-ui-divider bg-ui-surface-soft px-4 py-2 text-center font-sans text-sm font-semibold leading-[1.25] text-ui-action no-underline transition-colors hover:border-ui-control-border hover:bg-ui-surface focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] max-[639px]:!min-h-[44px] !text-[14px] !leading-[1.25]"
                           >
                             Matricular
                           </button>
+                          } @else { <span class="text-xs text-ui-muted">Solo lectura</span> }
                         </td>
                       </tr>
                     } @empty {
                       <tr [hidden]="!!error()">
                         <td colspan="9" class="text-center pt-3 pb-12 !text-ui-muted space-y-2">
-                          <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="#102447" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block h-[42px] w-[42px] mx-auto"><path d="M6 11.5c6-2 12-1 18 2.5v25c-6-3.5-12-4.5-18-2.5z"/><path d="M42 11.5c-6-2-12-1-18 2.5v25c6-3.5 12-4.5 18-2.5z"/><path d="M24 14v25" stroke="#C49A58"/><path d="M11 17c3-.5 6 .1 9 1.5M11 23c3-.5 6 .1 9 1.5M28 18.5c3-1.4 6-2 9-1.5M28 24.5c3-1.4 6-2 9-1.5" stroke="#C49A58"/></svg>
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="var(--ui-action)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block h-[42px] w-[42px] mx-auto"><path d="M6 11.5c6-2 12-1 18 2.5v25c-6-3.5-12-4.5-18-2.5z"/><path d="M42 11.5c-6-2-12-1-18 2.5v25c6-3.5 12-4.5 18-2.5z"/><path d="M24 14v25" stroke="var(--ui-gold)"/><path d="M11 17c3-.5 6 .1 9 1.5M11 23c3-.5 6 .1 9 1.5M28 18.5c3-1.4 6-2 9-1.5M28 24.5c3-1.4 6-2 9-1.5" stroke="var(--ui-gold)"/></svg>
                           <p class="font-medium !text-ui-muted">No se encontraron estudiantes registrados.</p>
-                          <p class="text-[11px] !text-ui-muted">Haz clic en "Registrar Alumno" para dar de alta al primer estudiante en la base de datos.</p>
+                          @if (authStore.hasRole('SECRETARIA')) {
+                            <p class="text-[11px] !text-ui-muted">Haz clic en "Registrar Alumno" para dar de alta al primer estudiante en la base de datos.</p>
+                          } @else {
+                            <p class="text-[11px] !text-ui-muted">No hay estudiantes disponibles para consultar con este acceso.</p>
+                          }
                         </td>
                       </tr>
                     }
@@ -362,7 +383,7 @@ export interface EstudianteMatriculadoItem {
                     <th class="px-5 py-3.5 text-right">Acción</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[#edf0f5] !text-ui-text">
+                <tbody class="divide-y divide-[var(--ui-divider)] !text-ui-text">
                   @if (cargando()) {
                     <tr>
                       <td colspan="7" class="text-center py-10 !text-ui-muted">
@@ -389,7 +410,7 @@ export interface EstudianteMatriculadoItem {
                               type="button"
                               (click)="confirmarMatricula(est.id)"
                               [disabled]="confirmandoMatricula() === est.id"
-                              class="mr-2 rounded-lg bg-emerald-600 px-3 py-2 font-semibold text-white transition hover:bg-emerald-500 disabled:cursor-wait disabled:opacity-60 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                              class="mr-2 rounded-lg bg-ui-action px-3 py-2 font-semibold text-ui-action-text transition hover:bg-ui-text disabled:cursor-wait disabled:opacity-60 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
                             >
                               {{ confirmandoMatricula() === est.id ? 'Validando pago…' : 'Confirmar matrícula' }}
                             </button>
@@ -406,7 +427,7 @@ export interface EstudianteMatriculadoItem {
                     } @empty {
                       <tr [hidden]="!!error()">
                         <td colspan="7" class="text-center pt-3 pb-12 !text-ui-muted space-y-2">
-                          <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="#102447" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block h-[42px] w-[42px] mx-auto"><path d="M6 11.5c6-2 12-1 18 2.5v25c-6-3.5-12-4.5-18-2.5z"/><path d="M42 11.5c-6-2-12-1-18 2.5v25c6-3.5 12-4.5 18-2.5z"/><path d="M24 14v25" stroke="#C49A58"/><path d="M11 17c3-.5 6 .1 9 1.5M11 23c3-.5 6 .1 9 1.5M28 18.5c3-1.4 6-2 9-1.5M28 24.5c3-1.4 6-2 9-1.5" stroke="#C49A58"/></svg>
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="var(--ui-action)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block h-[42px] w-[42px] mx-auto"><path d="M6 11.5c6-2 12-1 18 2.5v25c-6-3.5-12-4.5-18-2.5z"/><path d="M42 11.5c-6-2-12-1-18 2.5v25c6-3.5 12-4.5 18-2.5z"/><path d="M24 14v25" stroke="var(--ui-gold)"/><path d="M11 17c3-.5 6 .1 9 1.5M11 23c3-.5 6 .1 9 1.5M28 18.5c3-1.4 6-2 9-1.5M28 24.5c3-1.4 6-2 9-1.5" stroke="var(--ui-gold)"/></svg>
                           <p class="font-medium !text-ui-muted">No se encontraron matrículas en esta sección.</p>
                           <p class="text-[11px] !text-ui-muted">Los registros generados se sincronizan directamente con PostgreSQL.</p>
                         </td>
@@ -479,13 +500,13 @@ export interface EstudianteMatriculadoItem {
                     placeholder="Ej. 74839201"
                     class="min-w-0 flex-1 px-3 py-2.5 rounded-xl bg-ui-surface-soft border border-ui-border !text-ui-text !text-base placeholder:text-ui-muted focus:outline-none focus:border-ui-action min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base"
                   />
-                  <button type="button" (click)="consultarDni()" [disabled]="consultandoDni() || nuevoAlumno.tipoDocumento !== 'DNI'" class="inline-flex min-h-[44px] items-center justify-center whitespace-nowrap rounded-xl border border-ui-divider bg-ui-surface-soft px-3 py-2.5 text-center font-sans text-sm font-semibold leading-[1.25] text-ui-text transition-colors hover:bg-ui-surface focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] disabled:opacity-50">{{ consultandoDni() ? 'Consultando...' : 'Consultar DNI' }}</button></div>
+                  <button type="button" (click)="consultarDni()" [disabled]="consultandoDni() || nuevoAlumno.tipoDocumento !== 'DNI'" class="inline-flex min-h-[44px] items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-ui-divider bg-ui-surface-soft px-3 py-2.5 text-center font-sans text-sm font-semibold leading-[1.25] text-ui-text transition-colors hover:bg-ui-surface focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-[3px] disabled:opacity-50"><svg class="h-5 w-5 shrink-0" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.8" cy="10.8" r="6.3"></circle><path d="m15.5 15.5 4.2 4.2"></path></svg>{{ consultandoDni() ? 'Consultando...' : 'Consultar DNI' }}</button></div>
                 </div>
               </div>
 
               <p class="text-xs text-ui-muted">Los datos del proveedor externo son referenciales. Revisa nombres y apellidos antes de guardar.</p>
               @if (error()) {
-                <p class="!text-[11px] text-[#be123c]" role="alert">{{ error() }}</p>
+                <p class="!text-[11px] text-ui-error-text" role="alert">{{ error() }}</p>
               }
 
               <!-- Grid Row 2: Nombres y Apellidos -->
@@ -624,7 +645,7 @@ export interface EstudianteMatriculadoItem {
                   id="btn-guardar-alumno"
                   type="submit"
                   [disabled]="guardandoAlumno() || consultandoDni()"
-                  class="px-5 py-2.5 rounded-xl bg-ui-action hover:bg-ui-action/90 text-white text-xs !text-[14px] font-semibold shadow-lg shadow-none transition flex items-center gap-2 cursor-pointer disabled:opacity-50 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+                  class="px-5 py-2.5 rounded-xl bg-ui-action hover:bg-ui-action/90 text-ui-action-text text-xs !text-[14px] font-semibold shadow-lg shadow-none transition flex items-center gap-2 cursor-pointer disabled:opacity-50 max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
                 >
                   @if (guardandoAlumno()) {
                     <span class="inline-block w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
@@ -700,7 +721,7 @@ export interface EstudianteMatriculadoItem {
                 <button type="button" (click)="cerrarSolicitudDialog()" class="px-4 py-2 rounded-xl bg-ui-surface-soft text-ui-muted text-xs !text-sm font-semibold box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
                   Cancelar
                 </button>
-                <button type="submit" [disabled]="guardando()" class="px-5 py-2 rounded-xl bg-ui-action hover:bg-ui-action/90 text-white text-xs !text-sm font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+                <button type="submit" [disabled]="guardando()" class="px-5 py-2 rounded-xl bg-ui-action hover:bg-ui-action/90 text-ui-action-text text-xs !text-sm font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
                   {{ guardando() ? 'Guardando...' : 'Asignar Matrícula' }}
                 </button>
               </div>
@@ -725,7 +746,7 @@ export interface EstudianteMatriculadoItem {
                 <p class="text-ui-muted">Doc: {{ ficha()!.estudiante.numeroDocumento }} · F. Nac: {{ ficha()!.estudiante.fechaNacimiento | uiDatePe }}</p>
               </div>
               <div class="p-3.5 rounded-xl bg-ui-surface-soft border border-ui-border space-y-1">
-                <p class="font-semibold text-[#047857]">Datos de la Matrícula:</p>
+                <p class="font-semibold text-ui-success-text">Datos de la Matrícula:</p>
                 <p>Sección ID: {{ ficha()!.matricula.seccionId }} · Estado: <span class="font-bold text-ui-text">{{ ficha()!.matricula.estadoMatricula }}</span></p>
                 <p class="text-ui-muted">Fecha: {{ ficha()!.matricula.fechaMatricula | uiDatePe }}</p>
               </div>
@@ -745,6 +766,7 @@ export class MatriculasComponent implements OnInit {
   private readonly dialog = inject(MatDialog);
   private readonly matriculaService = inject(MatriculaService);
   private readonly academicoService = inject(AcademicoService);
+  readonly authStore = inject(AuthStore);
 
   @ViewChild('nuevoAlumnoDialog') private nuevoAlumnoDialog!: TemplateRef<unknown>;
   @ViewChild('solicitudDialog') private solicitudDialog!: TemplateRef<unknown>;
@@ -939,6 +961,7 @@ export class MatriculasComponent implements OnInit {
   }
 
   abrirModalNuevoAlumno(): void {
+    if (!this.authStore.hasRole('SECRETARIA')) return;
     this.error.set(null);
     this.mensajeExito.set(null);
     this.nuevoAlumno = {
@@ -993,6 +1016,7 @@ export class MatriculasComponent implements OnInit {
   }
 
   guardarEstudiante(): void {
+    if (!this.authStore.hasRole('SECRETARIA')) return;
     if (!this.nuevoAlumno.numeroDocumento || !this.nuevoAlumno.nombres || !this.nuevoAlumno.apellidoPaterno || !this.nuevoAlumno.apellidoMaterno || !this.nuevoAlumno.fechaNacimiento) {
       this.error.set('Por favor complete todos los campos obligatorios del estudiante.');
       return;
@@ -1020,11 +1044,13 @@ export class MatriculasComponent implements OnInit {
   }
 
   prepararMatriculaParaEstudiante(est: EstudianteResponseDto): void {
+    if (!this.authStore.hasRole('SECRETARIA')) return;
     this.nuevoEstudianteId = est.id;
     this.abrirDialogoSolicitud();
   }
 
   abrirModalNuevaMatricula(): void {
+    if (!this.authStore.hasRole('SECRETARIA')) return;
     this.abrirDialogoSolicitud();
   }
 
@@ -1046,6 +1072,7 @@ export class MatriculasComponent implements OnInit {
   }
 
   solicitar(): void {
+    if (!this.authStore.hasRole('SECRETARIA')) return;
     if (!this.anioLectivoId || !this.seccionIdSeleccionada || !this.nuevoEstudianteId) {
       this.error.set('Complete año, sección y seleccione un estudiante registrado.');
       return;

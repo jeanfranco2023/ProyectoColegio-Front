@@ -2,77 +2,84 @@
 @source './app';
 @source './index.html';
 @import '@angular/material/prebuilt-themes/azure-blue.css';
+@custom-variant dark (&:where(.theme-dark, .theme-dark *));
 
 :root {
   color-scheme: light;
-  --ui-canvas: #f7faf8;
-  --ui-workspace: #f7faf8;
-  --ui-surface: #ffffff;
-  --ui-surface-soft: #e7efeb;
-  --ui-logo-blue: #2E3B4C;
-  --ui-gold: #A0834E;
-  --ui-text: var(--ui-logo-blue);
-  --ui-muted: #4d6870;
-  --ui-action: var(--ui-logo-blue);
-  --ui-action-text: #ffffff;
-  --ui-accent: #b3433b;
-  --ui-accent-text: #ffffff;
-  --ui-control-border: #6f8580;
-  --ui-divider: #c9d9d1;
-  --ui-focus: var(--ui-logo-blue);
-  --ui-focus-shadow: rgb(46 59 76 / 14%);
-  --ui-card-shadow: 0 4px 16px rgb(36 55 61 / 8%);
-  --ui-skeleton-base: #dce6e1;
-  --ui-skeleton-highlight: #f7faf8;
-  --ui-success-bg: #dcfce7;
-  --ui-success-text: #14532d;
-  --ui-success-border: #86efac;
-  --ui-warning-bg: #fef3c7;
-  --ui-warning-text: #78350f;
-  --ui-warning-border: #fcd34d;
-  --ui-error-bg: #fee2e2;
-  --ui-error-text: #7f1d1d;
-  --ui-error-border: #fca5a5;
-  --ui-info-bg: #dbeafe;
-  --ui-info-text: #1e3a8a;
-  --ui-info-border: #93c5fd;
+  --ui-canvas: #FAF9F5;
+  --ui-workspace: #F4F7F4;
+  --ui-surface: #FFFFFF;
+  --ui-surface-soft: #E7F3F0;
+  --ui-footer-bg: #173B67;
+  --ui-footer-text: #FFFFFF;
+  --ui-footer-muted: #E7F3F0;
+  --ui-logo-blue: #173B67;
+  --ui-gold: #8A672F;
+  --ui-text: #20354E;
+  --ui-muted: #526579;
+  --ui-action: #173B67;
+  --ui-action-text: #FFFFFF;
+  --ui-accent: #A9352D;
+  --ui-accent-text: #FFFFFF;
+  --ui-control-border: #788C9A;
+  --ui-divider: #D2DED9;
+  --ui-focus: #2F6797;
+  --ui-focus-shadow: rgb(23 59 103 / 16%);
+  --ui-card-shadow: 0 6px 20px rgb(21 54 88 / 8%);
+  --ui-dialog-shadow: 0 20px 56px rgb(21 54 88 / 14%);
+  --ui-skeleton-base: #DDE8E4;
+  --ui-skeleton-highlight: #FAF9F5;
+  --ui-success-bg: #E4F2E8;
+  --ui-success-text: #1D5E3C;
+  --ui-success-border: #74A388;
+  --ui-warning-bg: #FFF2D8;
+  --ui-warning-text: #744F0A;
+  --ui-warning-border: #B88932;
+  --ui-error-bg: #FCE8E6;
+  --ui-error-text: #83231D;
+  --ui-error-border: #C77A72;
+  --ui-info-bg: #E8F2F8;
+  --ui-info-text: #1C4D70;
+  --ui-info-border: #779EB7;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+:root.theme-dark {
     color-scheme: dark;
-    --ui-canvas: #152124;
-    --ui-workspace: #152124;
-    --ui-surface: #1f2d31;
-    --ui-surface-soft: #293a3d;
-    --ui-logo-blue: #ADC0DA;
-    --ui-gold: #D5BD87;
-    --ui-text: #E7EEF5;
-    --ui-muted: #b6c5bf;
-    --ui-action: var(--ui-logo-blue);
-    --ui-action-text: #152124;
-    --ui-accent: #f08a7e;
-    --ui-accent-text: #152124;
-    --ui-control-border: #859296;
-    --ui-divider: #46575a;
-    --ui-focus: var(--ui-logo-blue);
-    --ui-focus-shadow: rgb(173 192 218 / 24%);
-    --ui-card-shadow: 0 4px 16px rgb(0 0 0 / 28%);
-    --ui-skeleton-base: #293a3d;
-    --ui-skeleton-highlight: #3a4e51;
-    --ui-success-bg: #12351f;
-    --ui-success-text: #86efac;
-    --ui-success-border: #86efac;
-    --ui-warning-bg: #3b2c0d;
-    --ui-warning-text: #fcd34d;
-    --ui-warning-border: #fcd34d;
-    --ui-error-bg: #421b1b;
-    --ui-error-text: #fca5a5;
-    --ui-error-border: #fca5a5;
-    --ui-info-bg: #1d2c43;
-    --ui-info-text: #93c5fd;
-    --ui-info-border: #93c5fd;
-  }
+    --ui-canvas: #101C29;
+    --ui-workspace: #142335;
+    --ui-surface: #1B2C3D;
+    --ui-surface-soft: #253A4A;
+    --ui-footer-bg: #102A46;
+    --ui-footer-text: #F4F7FA;
+    --ui-footer-muted: #E1E8EE;
+    --ui-logo-blue: #A8C6E6;
+    --ui-gold: #D9BC7A;
+    --ui-text: #EDF1F5;
+    --ui-muted: #C1CBD4;
+    --ui-action: #A8C6E6;
+    --ui-action-text: #102033;
+    --ui-accent: #F19A91;
+    --ui-accent-text: #28171A;
+    --ui-control-border: #8396A7;
+    --ui-divider: #405365;
+    --ui-focus: #B9D4F2;
+    --ui-focus-shadow: rgb(168 198 230 / 24%);
+    --ui-card-shadow: 0 6px 20px rgb(0 0 0 / 28%);
+    --ui-dialog-shadow: 0 20px 56px rgb(0 0 0 / 38%);
+    --ui-skeleton-base: #2B3D4E;
+    --ui-skeleton-highlight: #3A4D5E;
+    --ui-success-bg: #143622;
+    --ui-success-text: #98E2B2;
+    --ui-success-border: #397852;
+    --ui-warning-bg: #4A3515;
+    --ui-warning-text: #F4D58A;
+    --ui-warning-border: #A3772B;
+    --ui-error-bg: #4B2222;
+    --ui-error-text: #FFB6AE;
+    --ui-error-border: #9C4E4A;
+    --ui-info-bg: #1C3449;
+    --ui-info-text: #B9D7F0;
+    --ui-info-border: #4C7697;
 }
 
 @theme {
@@ -115,6 +122,15 @@
   --radius-control: 8px;
   --radius-card: 16px;
   --radius-pill: 999px;
+  --radius-sm: 4px;
+  --radius-md: 7px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --shadow-sm: 0 1px 3px rgb(23 59 103 / 6%);
+  --shadow-md: 0 4px 14px rgb(23 59 103 / 8%);
+  --shadow-lg: 0 8px 24px rgb(23 59 103 / 10%);
+  --shadow-xl: 0 16px 40px rgb(23 59 103 / 12%);
   --shadow-card: var(--ui-card-shadow);
 }
 
@@ -300,7 +316,7 @@ table[data-mobile-table-cards], table[data-mobile-table-scroll] { min-width: 620
   table[data-mobile-table-cards] thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
   table[data-mobile-table-cards] tbody { display: grid; gap: 12px; }
   table[data-mobile-table-cards] tbody tr { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: hidden; border: 1px solid var(--ui-divider) !important; border-radius: 12px; background: var(--ui-surface); box-shadow: var(--ui-card-shadow); }
-  table[data-mobile-table-cards] tbody tr:hover { border-color: #d8e0ea !important; background: var(--ui-surface) !important; box-shadow: var(--ui-card-shadow); }
+  table[data-mobile-table-cards] tbody tr:hover { border-color: var(--ui-divider) !important; background: var(--ui-surface) !important; box-shadow: var(--ui-card-shadow); }
   table[data-mobile-table-cards] tbody td { box-sizing: border-box; display: flex; min-width: 0; flex-direction: column; align-items: flex-start; gap: 5px; padding: 11px 10px; border-bottom: 1px solid var(--ui-divider); color: var(--ui-text) !important; font: 400 13px/1.4 'IBM Plex Sans', sans-serif; white-space: normal !important; overflow-wrap: anywhere; }
   table[data-mobile-table-cards] tbody td[data-label="ID BD"] { color: var(--ui-muted) !important; }
   table[data-mobile-table-cards] tbody td[data-label="Saldo Pendiente"] { color: var(--ui-warning-text) !important; }
@@ -320,7 +336,7 @@ table[data-mobile-table-cards], table[data-mobile-table-scroll] { min-width: 620
   scrollbar-color: var(--ui-control-border) var(--ui-surface-soft);
 }
 :is([data-enrollments-table-scroll], [data-attendance-table-scroll], [data-app-content] [class~="overflow-x-auto"]:has(> table[data-mobile-table-cards]))::-webkit-scrollbar { height: 12px; }
-:is([data-enrollments-table-scroll], [data-attendance-table-scroll], [data-app-content] [class~="overflow-x-auto"]:has(> table[data-mobile-table-cards]))::-webkit-scrollbar-thumb { border: 3px solid var(--ui-surface-soft); border-radius: 999px; background: #8a9ab1; }
+:is([data-enrollments-table-scroll], [data-attendance-table-scroll], [data-app-content] [class~="overflow-x-auto"]:has(> table[data-mobile-table-cards]))::-webkit-scrollbar-thumb { border: 3px solid var(--ui-surface-soft); border-radius: 999px; background: var(--ui-control-border); }
 @media (max-width: 640px) {
   [data-enrollments-table-scroll]::before,
   [data-attendance-table-scroll]::before { display: block; padding: 9px 12px; background: var(--ui-surface-soft); color: var(--ui-text); font: 650 11px/1.4 'IBM Plex Sans', sans-serif; content: 'Desliza horizontalmente para ver todas las columnas'; }
@@ -334,4 +350,1379 @@ table[data-mobile-table-cards], table[data-mobile-table-scroll] { min-width: 620
   table[data-mobile-table-scroll] th:first-child,
   table[data-mobile-table-scroll] td:first-child { position: sticky; left: 0; z-index: 2; background: var(--ui-surface); box-shadow: 5px 0 10px rgb(16 36 71 / 9%); }
   table[data-mobile-table-scroll] th:first-child { z-index: 3; background: var(--ui-surface-soft); }
+}
+
+
+/* Etapa visual: Angular Material sigue los tokens institucionales. */
+:root {
+  --mat-sys-primary: var(--ui-action);
+  --mat-sys-on-primary: var(--ui-action-text);
+  --mat-sys-primary-container: var(--ui-surface-soft);
+  --mat-sys-on-primary-container: var(--ui-text);
+  --mat-sys-secondary: var(--ui-muted);
+  --mat-sys-on-secondary: var(--ui-surface);
+  --mat-sys-secondary-container: var(--ui-surface-soft);
+  --mat-sys-on-secondary-container: var(--ui-text);
+  --mat-sys-tertiary: var(--ui-gold);
+  --mat-sys-on-tertiary: var(--ui-text);
+  --mat-sys-tertiary-container: var(--ui-surface-soft);
+  --mat-sys-on-tertiary-container: var(--ui-text);
+  --mat-sys-background: var(--ui-canvas);
+  --mat-sys-on-background: var(--ui-text);
+  --mat-sys-surface: var(--ui-surface);
+  --mat-sys-on-surface: var(--ui-text);
+  --mat-sys-surface-variant: var(--ui-surface-soft);
+  --mat-sys-on-surface-variant: var(--ui-muted);
+  --mat-sys-surface-container: var(--ui-surface);
+  --mat-sys-surface-container-low: var(--ui-canvas);
+  --mat-sys-surface-container-high: var(--ui-surface-soft);
+  --mat-sys-surface-container-highest: var(--ui-surface-soft);
+  --mat-sys-surface-container-lowest: var(--ui-surface);
+  --mat-sys-surface-bright: var(--ui-surface);
+  --mat-sys-surface-dim: var(--ui-canvas);
+  --mat-sys-outline: var(--ui-control-border);
+  --mat-sys-outline-variant: var(--ui-divider);
+  --mat-sys-error: var(--ui-error-text);
+  --mat-sys-error-container: var(--ui-error-bg);
+}
+@theme { --shadow-dialog: var(--ui-dialog-shadow); }
+
+
+:root.theme-dark {
+    --mat-sys-primary: var(--ui-action);
+    --mat-sys-on-primary: var(--ui-action-text);
+    --mat-sys-primary-container: var(--ui-surface-soft);
+    --mat-sys-on-primary-container: var(--ui-text);
+    --mat-sys-secondary: var(--ui-muted);
+    --mat-sys-on-secondary: var(--ui-surface);
+    --mat-sys-secondary-container: var(--ui-surface-soft);
+    --mat-sys-on-secondary-container: var(--ui-text);
+    --mat-sys-tertiary: var(--ui-gold);
+    --mat-sys-on-tertiary: var(--ui-text);
+    --mat-sys-tertiary-container: var(--ui-surface-soft);
+    --mat-sys-on-tertiary-container: var(--ui-text);
+    --mat-sys-background: var(--ui-canvas);
+    --mat-sys-on-background: var(--ui-text);
+    --mat-sys-surface: var(--ui-surface);
+    --mat-sys-on-surface: var(--ui-text);
+    --mat-sys-surface-variant: var(--ui-surface-soft);
+    --mat-sys-on-surface-variant: var(--ui-muted);
+    --mat-sys-surface-container: var(--ui-surface);
+    --mat-sys-surface-container-low: var(--ui-canvas);
+    --mat-sys-surface-container-high: var(--ui-surface-soft);
+    --mat-sys-surface-container-highest: var(--ui-surface-soft);
+    --mat-sys-surface-container-lowest: var(--ui-surface);
+    --mat-sys-surface-bright: var(--ui-surface);
+    --mat-sys-surface-dim: var(--ui-canvas);
+    --mat-sys-outline: var(--ui-control-border);
+    --mat-sys-outline-variant: var(--ui-divider);
+    --mat-sys-error: var(--ui-error-text);
+    --mat-sys-error-container: var(--ui-error-bg);
+}
+
+/* Landing institucional: bloques alternos, ritmo amplio y una identidad de archivo escolar. */
+.admission-page.public-landing .public-home-band {
+  width: 100%; max-width: 1440px; margin: 0 auto; padding: clamp(44px, 6.2vw, 82px) clamp(4px, 2.2vw, 30px);
+  color: var(--ui-text); background: var(--ui-canvas); border-top: 1px solid var(--ui-divider);
+}
+.admission-page.public-landing .public-home-inner { width: min(100%, 1260px); margin: 0 auto; }
+.admission-page.public-landing .public-home-values { background: var(--ui-surface); }
+.admission-page.public-landing .public-home-levels { background: var(--ui-surface-soft); }
+.admission-page.public-landing .public-home-admission { background: var(--ui-canvas); }
+.admission-page.public-landing .public-home-faq { background: var(--ui-surface); }
+.admission-page.public-landing .public-home-contact { background: var(--ui-surface-soft); }
+.admission-page.public-landing .public-home-heading { display: grid; justify-items: start; gap: 11px; margin: 0 0 28px; }
+.admission-page.public-landing .public-home-heading h2 { margin: 0; color: var(--ui-text); font: 500 clamp(27px, 3vw, 37px)/1.12 var(--font-display); letter-spacing: -.025em; }
+.admission-page.public-landing .public-home-heading > span { display: block; width: 36px; height: 2px; background: var(--ui-gold); }
+.admission-page.public-landing .home-values-grid,
+.admission-page.public-landing .home-levels-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.admission-page.public-landing .home-value { min-width: 0; display: grid; grid-template-columns: 50px minmax(0, 1fr); align-items: start; gap: 15px; padding: 22px 20px; border: 1px solid var(--ui-divider); border-radius: 3px 18px 3px 3px; background: var(--ui-canvas); }
+.admission-page.public-landing .home-value > svg,
+.admission-page.public-landing .home-level > svg { width: 46px; height: 46px; padding: 10px; color: var(--ui-action); border: 1px solid var(--ui-divider); border-radius: 50%; background: var(--ui-surface-soft); stroke-width: 1.6; }
+.admission-page.public-landing .home-value h3,
+.admission-page.public-landing .home-level h3 { margin: 1px 0 7px; color: var(--ui-text); font: 600 19px/1.2 var(--font-display); }
+.admission-page.public-landing .home-value p,
+.admission-page.public-landing .home-level p { margin: 0; color: var(--ui-muted); font: 400 13px/1.65 var(--font-sans); }
+.admission-page.public-landing .home-level { min-width: 0; display: grid; grid-template-columns: 52px minmax(0, 1fr); align-items: center; gap: 16px; padding: 19px 18px; border-inline-start: 1px solid var(--ui-control-border); }
+.admission-page.public-landing .home-level:first-child { border-inline-start: 0; }
+.admission-page.public-landing .home-level > svg { background: var(--ui-canvas); }
+.admission-page.public-landing .home-admission-grid { display: grid; grid-template-columns: minmax(250px, .8fr) minmax(0, 1.2fr); align-items: center; gap: clamp(28px, 6vw, 88px); padding: clamp(25px, 4vw, 48px); border: 1px solid var(--ui-divider); border-inline-start: 4px solid var(--ui-gold); background: var(--ui-surface-soft); }
+.admission-page.public-landing .home-admission-copy .public-home-heading { margin-bottom: 16px; }
+.admission-page.public-landing .home-admission-copy > p { max-width: 370px; margin: 0 0 23px; color: var(--ui-muted); font-size: 14px; line-height: 1.75; }
+.admission-page.public-landing .home-admission-copy .button { min-height: 46px; }
+.admission-page.public-landing .home-documents-panel { min-width: 0; padding-inline-start: clamp(18px, 3vw, 42px); border-inline-start: 1px solid var(--ui-control-border); }
+.admission-page.public-landing .home-documents-panel h3 { margin: 0 0 12px; color: var(--ui-text); font: 600 17px/1.3 var(--font-display); }
+.admission-page.public-landing .home-documents-panel ul { margin: 0; padding: 0; list-style: none; }
+.admission-page.public-landing .home-documents-panel li { display: flex; min-height: 48px; align-items: center; gap: 13px; border-top: 1px solid var(--ui-divider); color: var(--ui-text); font-size: 13px; }
+.admission-page.public-landing .home-documents-panel li svg { width: 21px; height: 21px; flex: 0 0 21px; color: var(--ui-action); stroke-width: 1.6; }
+.admission-page.public-landing .home-faq-heading { margin-bottom: 30px; }
+.admission-page.public-landing .home-faq-heading p { max-width: 560px; margin: 2px 0 0; color: var(--ui-muted); font-size: 14px; line-height: 1.65; }
+.admission-page.public-landing .home-faq-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: clamp(22px, 5vw, 68px); }
+.admission-page.public-landing .home-faq-item { min-width: 0; border-top: 1px solid var(--ui-divider); }
+.admission-page.public-landing .home-faq-item:last-child,
+.admission-page.public-landing .home-faq-item:nth-last-child(2) { border-bottom: 1px solid var(--ui-divider); }
+.admission-page.public-landing .home-faq-item summary { display: flex; min-height: 54px; align-items: center; justify-content: space-between; gap: 15px; color: var(--ui-text); cursor: pointer; list-style: none; font-size: 13px; font-weight: 600; }
+.admission-page.public-landing .home-faq-item summary::-webkit-details-marker { display: none; }
+.admission-page.public-landing .home-faq-item summary span { color: var(--ui-action); font-size: 19px; transition: transform .18s ease; }
+.admission-page.public-landing .home-faq-item[open] summary span { transform: rotate(180deg); }
+.admission-page.public-landing .home-faq-item > p { margin: 0; padding: 0 28px 18px 0; color: var(--ui-muted); font-size: 13px; line-height: 1.7; }
+.admission-page.public-landing .home-contact-grid { display: grid; grid-template-columns: minmax(160px, .8fr) repeat(3, minmax(0, 1fr)); align-items: center; gap: 18px; }
+.admission-page.public-landing .home-contact-heading .public-home-heading { margin: 0 0 8px; }
+.admission-page.public-landing .home-contact-heading p { margin: 0; color: var(--ui-muted); font-size: 13px; }
+.admission-page.public-landing .home-contact-item { min-width: 0; min-height: 64px; display: flex; align-items: center; gap: 13px; padding: 10px 15px; border-inline-start: 1px solid var(--ui-control-border); color: var(--ui-text); text-decoration: none; font-size: 12px; line-height: 1.5; }
+.admission-page.public-landing .home-contact-item svg { width: 23px; height: 23px; flex: 0 0 23px; color: var(--ui-action); stroke-width: 1.8; }
+.admission-page.public-landing .home-contact-item:hover span { text-decoration: underline; text-underline-offset: 3px; }
+.admission-page.public-landing .public-home-footer { padding: 38px 0 16px; border-top: 4px solid var(--ui-gold); background: var(--ui-footer-bg); color: var(--ui-footer-text); }
+.admission-page.public-landing .home-footer-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(130px, .7fr) minmax(0, 1fr); gap: clamp(26px, 5vw, 70px); padding-bottom: 28px; }
+.admission-page.public-landing .footer-brand { display: flex; align-items: center; gap: 14px; color: inherit; text-decoration: none; }
+.admission-page.public-landing .footer-brand img { width: 58px; height: 58px; flex: 0 0 58px; border: 1px solid var(--ui-gold); border-radius: 50%; background: #fff; object-fit: contain; }
+.admission-page.public-landing .footer-brand b { display: block; color: var(--ui-footer-text); font: 500 24px/1.1 var(--font-display); }
+.admission-page.public-landing .footer-brand small { display: block; margin-top: 7px; color: var(--ui-footer-muted); font-size: 12px; }
+.admission-page.public-landing .home-footer-grid nav,
+.admission-page.public-landing .home-footer-contact { display: flex; flex-direction: column; align-items: flex-start; gap: 7px; }
+.admission-page.public-landing .home-footer-grid h2 { margin: 0 0 5px; color: var(--ui-footer-text); font: 600 13px/1.2 var(--font-sans); }
+.admission-page.public-landing .home-footer-grid nav a,
+.admission-page.public-landing .home-footer-contact a,
+.admission-page.public-landing .home-footer-contact p { margin: 0; color: var(--ui-footer-muted); font-size: 12px; line-height: 1.55; text-decoration: none; }
+.admission-page.public-landing .home-footer-grid nav a:hover,
+.admission-page.public-landing .home-footer-contact a:hover { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+.admission-page.public-landing .home-footer-bottom { padding-top: 13px; border-top: 1px solid rgb(255 255 255 / 24%); color: var(--ui-footer-muted); font-size: 11px; }
+.admission-page.public-landing :where(a, button, summary):focus-visible { outline: 3px solid var(--ui-focus); outline-offset: 3px; }
+@media (max-width: 900px) {
+  .admission-page.public-landing .home-values-grid { grid-template-columns: 1fr; gap: 12px; }
+  .admission-page.public-landing .home-value { padding: 18px; }
+  .admission-page.public-landing .home-contact-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admission-page.public-landing .home-contact-heading { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .admission-page.public-landing .public-home-band { padding: 43px 2px 48px; }
+  .admission-page.public-landing .public-home-heading { gap: 9px; margin-bottom: 22px; }
+  .admission-page.public-landing .public-home-heading h2 { font-size: 29px; }
+  .admission-page.public-landing .home-levels-grid { grid-template-columns: 1fr; gap: 0; }
+  .admission-page.public-landing .home-level { grid-template-columns: 48px minmax(0, 1fr); padding: 17px 6px; border-inline-start: 0; border-top: 1px solid var(--ui-control-border); }
+  .admission-page.public-landing .home-level:first-child { border-top: 0; }
+  .admission-page.public-landing .home-level > svg { width: 42px; height: 42px; padding: 9px; }
+  .admission-page.public-landing .home-admission-grid { grid-template-columns: 1fr; gap: 27px; padding: 24px 18px; }
+  .admission-page.public-landing .home-documents-panel { padding: 20px 0 0; border-inline-start: 0; border-top: 1px solid var(--ui-control-border); }
+  .admission-page.public-landing .home-faq-grid { grid-template-columns: 1fr; }
+  .admission-page.public-landing .home-faq-item:nth-last-child(2) { border-bottom: 0; }
+  .admission-page.public-landing .home-faq-item summary { min-height: 52px; font-size: 13px; }
+  .admission-page.public-landing .home-contact-grid { grid-template-columns: 1fr; gap: 0; }
+  .admission-page.public-landing .home-contact-heading { grid-column: auto; margin-bottom: 14px; }
+  .admission-page.public-landing .home-contact-item { min-height: 58px; padding: 10px 2px; border-inline-start: 0; border-top: 1px solid var(--ui-control-border); }
+  .admission-page.public-landing .home-footer-grid { grid-template-columns: 1fr 1fr; gap: 27px 18px; }
+  .admission-page.public-landing .footer-brand { grid-column: 1 / -1; }
+  .admission-page.public-landing .footer-brand b { font-size: 22px; }
+  .admission-page.public-landing .public-home-footer { padding-top: 31px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admission-page.public-landing .home-faq-item summary span { transition: none; }
+}
+
+.admission-page.public-landing > .final-cta,
+.admission-page.public-landing > .public-footer { display: none !important; }
+/* Hybrid archive + atlas + registry: scoped light treatment; public landing remains unchanged. */
+:root:not(.theme-dark) .school-admin-shell,
+:root:not(.theme-dark) .ui-login-page,
+:root:not(.theme-dark) .modal-backdrop .ui-admission-wizard {
+  --ui-canvas: #FAF9F5;
+  --ui-workspace: #F0F4F2;
+  --ui-surface: #FFFEFA;
+  --ui-surface-soft: #E5F1EE;
+  --ui-text: #19334D;
+  --ui-muted: #526579;
+  --ui-action: #173B67;
+  --ui-action-text: #FFFFFF;
+  --ui-gold: #85632F;
+  --ui-divider: #D4DFDA;
+  --ui-control-border: #748995;
+  --ui-focus: #2F6797;
+  --ui-card-shadow: 0 5px 16px rgb(23 59 103 / 7%);
+}
+
+:root:not(.theme-dark) .school-admin-shell .school-admin-sidebar {
+  background-color: #173B67 !important;
+  color: #F7FAFC;
+  border-right-color: rgb(255 255 255 / 14%) !important;
+}
+:root:not(.theme-dark) .school-admin-sidebar > a { border-bottom: 1px solid rgb(255 255 255 / 14%); }
+:root:not(.theme-dark) .school-admin-sidebar > a > span > span:first-child { color: #FFFFFF !important; }
+:root:not(.theme-dark) .school-admin-sidebar > a > span > span:last-child { color: #D5E2EB !important; }
+:root:not(.theme-dark) .school-admin-sidebar nav > p { color: #C8D8E2 !important; }
+:root:not(.theme-dark) .school-admin-sidebar nav > a {
+  color: #E7EFF4 !important;
+  border-left-color: transparent;
+}
+:root:not(.theme-dark) .school-admin-sidebar nav > a:hover:not(.router-link-active) {
+  color: #FFFFFF !important;
+  background-color: rgb(255 255 255 / 10%) !important;
+}
+:root:not(.theme-dark) .school-admin-sidebar nav > a.router-link-active {
+  color: #FFFFFF !important;
+  background-color: rgb(255 255 255 / 14%) !important;
+  border-left-color: var(--ui-gold) !important;
+}
+:root:not(.theme-dark) .school-admin-sidebar > div:last-child {
+  border-color: rgb(255 255 255 / 20%) !important;
+  background-color: rgb(255 255 255 / 9%) !important;
+}
+:root:not(.theme-dark) .school-admin-sidebar > div:last-child .text-ui-text { color: #FFFFFF !important; }
+:root:not(.theme-dark) .school-admin-sidebar > div:last-child .text-ui-muted { color: #D5E2EB !important; }
+:root:not(.theme-dark) .school-admin-sidebar > div:last-child span.bg-ui-action {
+  background-color: rgb(255 255 255 / 16%) !important;
+  color: #FFFFFF !important;
+}
+:root:not(.theme-dark) .school-admin-sidebar > div:last-child .mat-mdc-button,
+:root:not(.theme-dark) .school-admin-sidebar > div:last-child .mat-mdc-button .mdc-button__label { color: #FFFFFF !important; }
+:root:not(.theme-dark) .school-admin-sidebar > div:last-child .mat-mdc-button:hover { background-color: rgb(255 255 255 / 10%) !important; }
+:root:not(.theme-dark) .school-admin-topbar {
+  background-color: var(--ui-canvas) !important;
+  border-bottom: 2px solid var(--ui-gold) !important;
+}
+:root:not(.theme-dark) .school-admin-workspace { background-color: var(--ui-workspace) !important; }
+:root:not(.theme-dark) .school-admin-workspace h1 {
+  color: var(--ui-text);
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -.025em;
+  text-wrap: balance;
+}
+:root:not(.theme-dark) .school-admin-workspace h2 {
+  color: var(--ui-text);
+  font-family: var(--font-display);
+  text-wrap: balance;
+}
+:root:not(.theme-dark) .school-admin-workspace table thead tr { background-color: var(--ui-surface-soft); }
+:root:not(.theme-dark) .school-admin-workspace table thead th {
+  color: var(--ui-action);
+  border-color: var(--ui-divider);
+}
+:root:not(.theme-dark) .school-admin-workspace table :is(th, td) { border-color: var(--ui-divider); }
+@media (min-width: 601px) {
+  :root:not(.theme-dark) .school-admin-workspace table tbody tr:hover { background-color: var(--ui-surface-soft); }
+}
+:root:not(.theme-dark) .school-admin-workspace :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not(.mat-mdc-input-element), select, textarea:not(.mat-mdc-input-element)) {
+  border-color: var(--ui-control-border);
+  background-color: var(--ui-surface);
+  color: var(--ui-text);
+}
+:root:not(.theme-dark) .school-admin-workspace :is(input, select, textarea):focus-visible {
+  border-color: var(--ui-focus);
+}
+:root:not(.theme-dark) .school-admin-workspace .school-dashboard-welcome {
+  border-top-width: 3px;
+  border-top-color: var(--ui-gold);
+  background-color: var(--ui-canvas) !important;
+  box-shadow: var(--ui-card-shadow);
+}
+@media (max-width: 639px) {
+  :root:not(.theme-dark) .school-admin-workspace h1 { font-size: clamp(24px, 7vw, 30px); }
+}
+@media (max-width: 359px) {
+  .school-admin-topbar .school-admin-brand > p:first-child {
+    font-size: 10px !important;
+    letter-spacing: 0.01em !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+}
+/* Landing institucional aprobado: expediente azul, papel cálido y secciones claras. */
+:root:not(.theme-dark) .admission-page.public-landing {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #fff !important;
+  color: #173B67 !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .admission-topline { display: none !important; }
+:root:not(.theme-dark) .admission-page.public-landing .public-nav {
+  width: min(100%, 1440px) !important;
+  height: 76px !important;
+  padding: 0 clamp(20px, 5vw, 72px) !important;
+  background: #fff !important;
+  border-bottom: 1px solid #E3E9EF !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .public-brand .brand-logo {
+  width: 54px !important; height: 54px !important; flex-basis: 54px !important;
+  border-color: transparent !important; box-shadow: none !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .public-brand strong {
+  color: #12376E !important; font-size: clamp(20px, 2.1vw, 28px) !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .public-brand small {
+  color: #204A82 !important; font-family: var(--font-display) !important;
+  font-size: 15px !important; font-style: italic !important; font-weight: 500 !important;
+  letter-spacing: 0 !important; text-transform: none !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .admission-nav-links a { color: #173B67 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .nav-apply {
+  min-height: 44px !important; padding-inline: 20px !important; border-radius: 5px !important;
+  background: #12376E !important; color: #fff !important; box-shadow: 0 5px 14px rgb(18 55 110 / 16%) !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .admission-hero {
+  width: min(100%, 1440px) !important; min-height: clamp(420px, 43vw, 560px) !important;
+  grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr) !important;
+  gap: clamp(18px, 3.5vw, 52px) !important; margin: 0 auto !important;
+  padding: clamp(32px, 4vw, 58px) clamp(24px, 5vw, 72px) 38px !important;
+  border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  background: linear-gradient(105deg, #FFFEFC 0%, #FBF8F1 45%, #E8E0D2 100%) !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .admission-hero::before {
+  content: '' !important; display: block !important; position: absolute !important; inset: 0 !important;
+  pointer-events: none !important;
+  background: radial-gradient(ellipse at 75% 49%, rgb(196 154 88 / 12%), transparent 38%),
+              linear-gradient(90deg, transparent 45%, rgb(255 255 255 / 20%) 75%, transparent 100%) !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .admission-hero::after { content: none !important; display: none !important; }
+:root:not(.theme-dark) .admission-page.public-landing .hero-copy { max-width: 590px !important; z-index: 2 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .hero-kicker {
+  color: #9A6B23 !important; font-size: 13px !important; letter-spacing: .16em !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .hero-kicker i { background: #C49A58 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .hero-copy .admission-title {
+  margin: 18px 0 12px !important; color: #102F65 !important;
+  font-family: var(--font-display) !important; font-size: clamp(46px, 5.5vw, 76px) !important;
+  font-weight: 600 !important; line-height: .96 !important; letter-spacing: -.045em !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .hero-copy .admission-title em { color: #102F65 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .public-motto {
+  margin: 0 0 16px !important; color: #173F7C !important;
+  font-family: var(--font-display) !important; font-size: clamp(22px, 2.5vw, 30px) !important;
+  font-style: italic !important; font-weight: 500 !important; letter-spacing: -.015em !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .hero-copy .admission-lead {
+  max-width: 480px !important; margin-top: 0 !important; color: #315B8F !important;
+  font-size: 16px !important; line-height: 1.65 !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .hero-actions { align-items: center !important; gap: 14px !important; margin-top: 20px !important; }
+:root:not(.theme-dark) .admission-page.public-landing .hero-actions .button-gold {
+  min-height: 46px !important; border: 0 !important; border-radius: 5px !important;
+  padding-inline: 20px !important; background: #12376E !important; color: #fff !important;
+  box-shadow: 0 5px 14px rgb(18 55 110 / 16%) !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .hero-secondary { color: #173B67 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .hero-secondary b { border-color: #AFC3D6 !important; color: #173B67 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .hero-trust { gap: 8px 16px !important; margin-top: 17px !important; color: #315B8F !important; font-size: 11px !important; }
+:root:not(.theme-dark) .admission-page.public-landing .hero-trust i { color: #2D7E78 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .hero-art {
+  position: relative !important; min-height: 390px !important; display: grid !important;
+  place-items: center !important; align-content: center !important; isolation: isolate !important;
+  overflow: visible !important; background: radial-gradient(ellipse at 52% 52%, rgb(177 157 125 / 18%), transparent 62%) !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .hero-art::before {
+  content: '' !important; display: block !important; position: absolute !important; z-index: 0 !important;
+  top: 5% !important; right: 7% !important; width: 84% !important; height: 88% !important;
+  border: 1px solid #C49A58 !important; border-left: 12px solid #0F477C !important; border-radius: 7px !important;
+  background: linear-gradient(135deg, #164F83 0%, #0E376A 62%, #0B2C54 100%) !important;
+  box-shadow: 0 24px 38px rgb(30 38 47 / 22%) !important; transform: rotate(5deg) !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .hero-art::after {
+  content: '' !important; display: block !important; position: absolute !important; z-index: 0 !important;
+  top: 18% !important; right: 1% !important; width: 9px !important; height: 64% !important;
+  border-radius: 8px !important; background: linear-gradient(90deg, #7B5B33, #F8E8B4 48%, #8A6B3C) !important;
+  box-shadow: 2px 3px 5px rgb(25 33 44 / 22%) !important; transform: rotate(12deg) !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .hero-emblem-card {
+  position: relative !important; z-index: 2 !important; width: min(77%, 405px) !important;
+  min-height: 340px !important; display: flex !important; flex-direction: column !important;
+  align-items: center !important; justify-content: center !important; gap: 12px !important;
+  padding: 35px 28px 26px !important; border: 1px solid #E5DDCF !important; border-radius: 2px !important;
+  background: #FFFEFA !important; box-shadow: 0 14px 28px rgb(27 40 58 / 20%) !important;
+  transform: rotate(-4deg) !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .emblem-caption { color: #173B67 !important; letter-spacing: .14em !important; }
+:root:not(.theme-dark) .admission-page.public-landing .emblem-image-wrap { width: 98px !important; height: 98px !important; }
+:root:not(.theme-dark) .admission-page.public-landing .archive-seal { border-color: #B94A43 !important; color: #A83A34 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .hero-emblem-card strong { color: #102F65 !important; font-size: 25px !important; }
+:root:not(.theme-dark) .admission-page.public-landing .hero-emblem-card small { color: #315B8F !important; }
+:root:not(.theme-dark) .admission-page.public-landing .hero-art-note {
+  position: absolute !important; z-index: 3 !important; right: 2% !important; bottom: 1% !important;
+  width: min(66%, 300px) !important; border-left: 3px solid #173B67 !important;
+  border-radius: 3px !important; background: rgb(255 254 250 / 96%) !important;
+  box-shadow: 0 8px 20px rgb(23 59 103 / 12%) !important; transform: rotate(1deg) !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .hero-art-note b,
+:root:not(.theme-dark) .admission-page.public-landing .hero-art-note a { color: #173B67 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .hero-art-note small { color: #526579 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .scroll-cue { color: #526579 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .public-home-band {
+  width: 100% !important; max-width: none !important; padding: 50px clamp(20px, 5vw, 72px) !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .public-home-inner { width: min(100%, 1260px) !important; margin-inline: auto !important; }
+:root:not(.theme-dark) .admission-page.public-landing .public-home-values { background: #fff !important; }
+:root:not(.theme-dark) .admission-page.public-landing .public-home-levels { background: #E4F7F6 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .public-home-admission,
+:root:not(.theme-dark) .admission-page.public-landing .public-home-faq { background: #fff !important; }
+:root:not(.theme-dark) .admission-page.public-landing .public-home-contact { background: #E4F7F6 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .public-home-heading { margin-bottom: 26px !important; }
+:root:not(.theme-dark) .admission-page.public-landing .public-home-heading h2 { color: #12376E !important; font-size: clamp(29px, 3.2vw, 40px) !important; }
+:root:not(.theme-dark) .admission-page.public-landing .public-home-heading > span { background: #C49A58 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-values-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 0 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-value {
+  display: flex !important; flex-direction: column !important; align-items: center !important;
+  gap: 10px !important; padding: 8px clamp(16px, 3vw, 40px) !important;
+  border-inline-end: 1px solid #D5E2EE !important; background: transparent !important; text-align: center !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .home-value:last-child { border-inline-end: 0 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-value > svg,
+:root:not(.theme-dark) .admission-page.public-landing .home-level > svg {
+  width: 82px !important; height: 82px !important; padding: 18px !important;
+  color: #123D83 !important; border: 0 !important; border-radius: 50% !important;
+  background: #DDF6F7 !important; stroke-width: 1.6 !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .home-value h3,
+:root:not(.theme-dark) .admission-page.public-landing .home-level h3 { color: #12376E !important; font-size: 23px !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-value p,
+:root:not(.theme-dark) .admission-page.public-landing .home-level p { color: #315B8F !important; font-size: 15px !important; line-height: 1.55 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-levels-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 14px !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-level {
+  grid-template-columns: 82px minmax(0, 1fr) !important; gap: 16px !important;
+  padding: 16px !important; border: 1px solid rgb(255 255 255 / 82%) !important;
+  border-radius: 8px !important; background: #FFFEFC !important; box-shadow: 0 4px 14px rgb(22 55 83 / 6%) !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .home-level > svg { background: #F0FBFA !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-admission-grid { gap: clamp(30px, 5vw, 66px) !important; padding: 42px clamp(22px, 4vw, 50px) !important; border: 0 !important; background: #fff !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-documents-panel {
+  padding: 24px !important; border: 0 !important; border-radius: 7px !important; background: #E7F8F9 !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .home-documents-panel li { border-color: #C8E4E9 !important; color: #214C83 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-documents-panel li svg { color: #123D83 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-faq-grid { column-gap: 18px !important; row-gap: 8px !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-faq-item {
+  border: 1px solid #D6E3F0 !important; border-radius: 6px !important; background: #fff !important; padding-inline: 16px !important;
+}
+:root:not(.theme-dark) .admission-page.public-landing .home-faq-item:last-child,
+:root:not(.theme-dark) .admission-page.public-landing .home-faq-item:nth-last-child(2) { border-bottom: 1px solid #D6E3F0 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-faq-item summary { color: #173B67 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-faq-item summary span { color: #173B67 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-faq-item > p { color: #315B8F !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-contact-grid { gap: 12px !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-contact-item { border-color: #C6DEE6 !important; color: #173B67 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .home-contact-item svg { color: #123D83 !important; }
+:root:not(.theme-dark) .admission-page.public-landing .public-home-footer { border-top: 0 !important; background: #0E315E !important; }
+:root:not(.theme-dark) .admission-page.public-landing .footer-brand b,
+:root:not(.theme-dark) .admission-page.public-landing .home-footer-grid h2 { color: #fff !important; }
+:root:not(.theme-dark) .admission-page.public-landing .footer-brand small,
+:root:not(.theme-dark) .admission-page.public-landing .home-footer-grid nav a,
+:root:not(.theme-dark) .admission-page.public-landing .home-footer-contact a,
+:root:not(.theme-dark) .admission-page.public-landing .home-footer-contact p,
+:root:not(.theme-dark) .admission-page.public-landing .home-footer-bottom { color: #D8E6F3 !important; }
+@media (max-width: 760px) {
+  :root:not(.theme-dark) .admission-page.public-landing .public-nav { height: 68px !important; padding-inline: 14px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .public-brand { gap: 8px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .public-brand .brand-logo { width: 44px !important; height: 44px !important; flex-basis: 44px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .public-brand strong { font-size: clamp(16px, 4.5vw, 20px) !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .public-brand small { font-size: 11px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .nav-apply { min-height: 42px !important; padding-inline: 11px !important; font-size: 11px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .admission-hero {
+    min-height: 0 !important; grid-template-columns: minmax(0, 1fr) !important; gap: 18px !important;
+    padding: 34px 20px 26px !important; background: linear-gradient(160deg, #FFFEFC 0%, #FBF7EF 58%, #E8E0D2 100%) !important;
+  }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-copy .admission-title { margin: 15px 0 9px !important; font-size: clamp(40px, 11.5vw, 54px) !important; line-height: .98 !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .public-motto { font-size: clamp(21px, 6vw, 26px) !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-copy .admission-lead { font-size: 15px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-actions { align-items: flex-start !important; flex-direction: column !important; gap: 9px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-actions .button-gold { width: auto !important; min-width: 190px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-secondary { min-height: 38px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-trust { grid-template-columns: 1fr 1fr !important; margin-top: 8px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-art { min-height: 300px !important; margin-top: 3px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-art::before { width: 88% !important; height: 88% !important; right: 5% !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-emblem-card { width: min(76%, 300px) !important; min-height: 252px !important; padding: 68px 18px 22px !important; gap: 8px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .emblem-image-wrap { width: 76px !important; height: 76px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-emblem-card strong { font-size: 21px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-art-note { right: 0 !important; bottom: 0 !important; width: min(72%, 250px) !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .public-home-band { padding: 38px 20px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .home-values-grid,
+  :root:not(.theme-dark) .admission-page.public-landing .home-levels-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 8px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .home-value { flex-direction: row !important; align-items: center !important; gap: 16px !important; border-inline-end: 0 !important; border-bottom: 1px solid #E0EAF1 !important; padding: 13px 0 !important; text-align: left !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .home-value:last-child { border-bottom: 0 !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .home-value > svg,
+  :root:not(.theme-dark) .admission-page.public-landing .home-level > svg { width: 58px !important; height: 58px !important; flex: 0 0 58px !important; padding: 13px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .home-level { grid-template-columns: 58px minmax(0, 1fr) !important; padding: 14px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .home-admission-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 22px !important; padding: 35px 20px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .home-documents-panel { padding: 18px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .home-faq-grid { grid-template-columns: minmax(0, 1fr) !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .home-contact-grid { grid-template-columns: minmax(0, 1fr) !important; gap: 0 !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .home-footer-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; gap: 24px 18px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .footer-brand { grid-column: 1 / -1 !important; }
+}
+@media (max-width: 380px) {
+  :root:not(.theme-dark) .admission-page.public-landing .public-nav { padding-inline: 10px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .public-brand .brand-logo { width: 38px !important; height: 38px !important; flex-basis: 38px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .public-brand strong { font-size: 15px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .public-brand small { font-size: 10px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .nav-apply { padding-inline: 8px !important; font-size: 10px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .admission-hero { padding-inline: 16px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-copy .admission-title { font-size: clamp(38px, 11vw, 44px) !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-art { min-height: 270px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-emblem-card { width: min(77%, 265px) !important; min-height: 230px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .hero-art-note { width: min(74%, 235px) !important; }
+}
+/* Ajustes de cierre del landing institucional: limpia el hero y asegura contraste del pie. */
+:root:not(.theme-dark) body .admission-page.public-landing .admission-hero::before {
+  width: auto !important; height: auto !important; border: 0 !important; border-radius: 0 !important;
+  box-shadow: none !important; transform: none !important; top: 0 !important; right: 0 !important;
+}
+:root:not(.theme-dark) body .admission-page.public-landing .hero-art-note { display: none !important; }
+:root:not(.theme-dark) body .admission-page.public-landing footer.public-home-footer,
+:root:not(.theme-dark) body .admission-page.public-landing footer.public-home-footer * {
+  color: #D8E6F3 !important;
+}
+:root:not(.theme-dark) body .admission-page.public-landing footer.public-home-footer .footer-brand b,
+:root:not(.theme-dark) body .admission-page.public-landing footer.public-home-footer .home-footer-grid h2 {
+  color: #FFFFFF !important;
+}
+/* Responsive landing and admin-shell alignment: same identity, fluid composition. */
+.admission-page.public-landing,
+.admission-page.public-landing *,
+.admission-page.public-landing *::before,
+.admission-page.public-landing *::after {
+  box-sizing: border-box;
+}
+.admission-page.public-landing {
+  width: 100%;
+  max-width: none;
+  overflow-x: clip;
+}
+.admission-page.public-landing .public-home-band {
+  width: 100%;
+  max-width: none;
+}
+.admission-page.public-landing .public-home-inner {
+  width: min(100%, 1260px);
+  margin-inline: auto;
+}
+
+@media (max-width: 780px) {
+  :root:not(.theme-dark) body .admission-page.public-landing .public-nav,
+  :root.theme-dark body .admission-page.public-landing .public-nav {
+    display: grid !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto !important;
+    align-items: center !important;
+    justify-content: initial !important;
+    gap: 8px 10px !important;
+    padding: 10px clamp(12px, 4vw, 20px) 8px !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .public-brand,
+  :root.theme-dark body .admission-page.public-landing .public-brand {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0 !important;
+    max-width: 100%;
+    gap: 8px !important;
+    flex: initial !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .public-brand .brand-logo,
+  :root.theme-dark body .admission-page.public-landing .public-brand .brand-logo {
+    width: clamp(36px, 11vw, 46px) !important;
+    height: clamp(36px, 11vw, 46px) !important;
+    flex-basis: clamp(36px, 11vw, 46px) !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .public-brand > span,
+  :root.theme-dark body .admission-page.public-landing .public-brand > span {
+    min-width: 0;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .public-brand strong,
+  :root.theme-dark body .admission-page.public-landing .public-brand strong {
+    font-size: clamp(13px, 4vw, 18px) !important;
+    line-height: 1.12;
+    overflow-wrap: normal;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .public-brand small,
+  :root.theme-dark body .admission-page.public-landing .public-brand small {
+    font-size: clamp(10px, 2.9vw, 12px) !important;
+    line-height: 1.25;
+    white-space: normal;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .nav-apply,
+  :root.theme-dark body .admission-page.public-landing .nav-apply {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    width: auto;
+    min-width: 0 !important;
+    max-width: 136px;
+    min-height: 44px !important;
+    padding-inline: clamp(8px, 2.5vw, 12px) !important;
+    font-size: clamp(10px, 2.8vw, 12px) !important;
+    white-space: nowrap;
+    flex: 0 0 auto !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .admission-nav-links,
+  :root.theme-dark body .admission-page.public-landing .admission-nav-links {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: flex !important;
+    width: 100% !important;
+    min-width: 0;
+    max-width: 100%;
+    gap: clamp(13px, 4vw, 20px) !important;
+    margin: 0;
+    padding: 3px 0 5px !important;
+    overflow-x: auto !important;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    flex-wrap: nowrap !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .admission-nav-links::-webkit-scrollbar,
+  :root.theme-dark body .admission-page.public-landing .admission-nav-links::-webkit-scrollbar {
+    display: none;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .admission-nav-links a,
+  :root.theme-dark body .admission-page.public-landing .admission-nav-links a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .admission-hero,
+  :root.theme-dark body .admission-page.public-landing .admission-hero {
+    width: 100% !important;
+    min-height: 0 !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 18px !important;
+    margin: 0 auto !important;
+    padding: clamp(30px, 8vw, 42px) clamp(17px, 5vw, 24px) 30px !important;
+    overflow: hidden;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .hero-copy,
+  :root.theme-dark body .admission-page.public-landing .hero-copy {
+    width: 100%;
+    min-width: 0;
+    max-width: 620px !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .hero-copy .admission-title,
+  :root.theme-dark body .admission-page.public-landing .hero-copy .admission-title {
+    margin-block: 15px 11px !important;
+    font-size: clamp(39px, 11vw, 54px) !important;
+    line-height: 1 !important;
+    overflow-wrap: normal;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .public-motto,
+  :root.theme-dark body .admission-page.public-landing .public-motto {
+    font-size: clamp(20px, 6vw, 26px) !important;
+    line-height: 1.2;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .hero-copy .admission-lead,
+  :root.theme-dark body .admission-page.public-landing .hero-copy .admission-lead {
+    width: 100%;
+    max-width: 48ch !important;
+    overflow-wrap: anywhere;
+    line-height: 1.65 !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .hero-actions,
+  :root.theme-dark body .admission-page.public-landing .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .hero-trust,
+  :root.theme-dark body .admission-page.public-landing .hero-trust {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px 12px !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .hero-art,
+  :root.theme-dark body .admission-page.public-landing .hero-art {
+    width: 100%;
+    min-width: 0;
+    min-height: clamp(245px, 72vw, 320px) !important;
+    margin: 0 !important;
+    overflow: hidden;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .hero-art-note,
+  :root.theme-dark body .admission-page.public-landing .hero-art-note {
+    display: none !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .scroll-cue,
+  :root.theme-dark body .admission-page.public-landing .scroll-cue {
+    display: none !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .public-home-band,
+  :root.theme-dark body .admission-page.public-landing .public-home-band {
+    padding: 42px clamp(15px, 4.5vw, 22px) 46px !important;
+  }
+}
+/* Final readability overrides for public enrollment navigation and CTAs. */
+:root body main.admission-page.public-page nav.public-nav .admission-nav-links > a {
+  font-size: 17px !important;
+  font-weight: 750 !important;
+}
+:root body main.admission-page.public-page nav.public-nav > .nav-apply,
+:root body main.admission-page.public-page .hero-actions > button.button.button-gold,
+:root body main.admission-page.public-page .home-admission-copy > button.button,
+:root body main.admission-page.public-page .process-intro > button.button,
+:root body main.admission-page.public-page .documents-copy > button.button,
+:root body main.admission-page.public-page .final-cta button.button {
+  font-size: 19px !important;
+  font-weight: 800 !important;
+}
+:root body main.admission-page.public-landing .hero-actions > a.hero-secondary {
+  font-size: 18px !important;
+  font-weight: 750 !important;
+}
+:root body main.admission-page.public-landing p.inline-error {
+  color: var(--ui-muted) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+@media (max-width: 780px) {
+  :root body main.admission-page.public-page nav.public-nav .admission-nav-links > a {
+    font-size: 15px !important;
+  }
+  :root body main.admission-page.public-page nav.public-nav > .nav-apply,
+  :root body main.admission-page.public-page .hero-actions > button.button.button-gold,
+  :root body main.admission-page.public-page .home-admission-copy > button.button,
+  :root body main.admission-page.public-page .process-intro > button.button,
+  :root body main.admission-page.public-page .documents-copy > button.button,
+  :root body main.admission-page.public-page .final-cta button.button {
+    font-size: 17px !important;
+  }
+  :root body main.admission-page.public-landing .hero-actions > a.hero-secondary {
+    font-size: 16px !important;
+  }
+}
+@media (max-width: 380px) {
+  :root body main.admission-page.public-page nav.public-nav .admission-nav-links > a {
+    font-size: 14px !important;
+  }
+  :root body main.admission-page.public-page nav.public-nav > .nav-apply,
+  :root body main.admission-page.public-page .hero-actions > button.button.button-gold,
+  :root body main.admission-page.public-page .home-admission-copy > button.button,
+  :root body main.admission-page.public-page .process-intro > button.button,
+  :root body main.admission-page.public-page .documents-copy > button.button,
+  :root body main.admission-page.public-page .final-cta button.button {
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 380px) {
+  :root:not(.theme-dark) body .admission-page.public-landing .public-nav,
+  :root.theme-dark body .admission-page.public-landing .public-nav {
+    column-gap: 7px !important;
+    padding-inline: 11px !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .public-brand,
+  :root.theme-dark body .admission-page.public-landing .public-brand {
+    gap: 7px !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .nav-apply,
+  :root.theme-dark body .admission-page.public-landing .nav-apply {
+    max-width: 128px;
+    padding-inline: 8px !important;
+    font-size: 10px !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .admission-nav-links,
+  :root.theme-dark body .admission-page.public-landing .admission-nav-links {
+    gap: 13px !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .hero-copy .admission-title,
+  :root.theme-dark body .admission-page.public-landing .hero-copy .admission-title {
+    font-size: clamp(37px, 11.4vw, 43px) !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .hero-art,
+  :root.theme-dark body .admission-page.public-landing .hero-art {
+    min-height: 245px !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .public-home-band,
+  :root.theme-dark body .admission-page.public-landing .public-home-band {
+    padding-inline: 14px !important;
+  }
+}
+
+/* The internal workspace keeps the school's navy rail and token-based theme in both modes. */
+:root.theme-dark body .school-admin-sidebar {
+  background-color: #102A46 !important;
+  color: #F4F7FA !important;
+  border-right-color: rgb(255 255 255 / 14%) !important;
+}
+:root.theme-dark body .school-admin-sidebar > a {
+  border-bottom: 1px solid rgb(255 255 255 / 14%);
+}
+:root.theme-dark body .school-admin-sidebar > a > span > span:first-child {
+  color: #FFFFFF !important;
+}
+:root.theme-dark body .school-admin-sidebar > a > span > span:last-child,
+:root.theme-dark body .school-admin-sidebar nav > p {
+  color: #D5E2EB !important;
+}
+:root.theme-dark body .school-admin-sidebar nav > a {
+  color: #E7EFF4 !important;
+}
+:root.theme-dark body .school-admin-sidebar nav > a:hover:not(.router-link-active) {
+  color: #FFFFFF !important;
+  background-color: rgb(255 255 255 / 10%) !important;
+}
+:root.theme-dark body .school-admin-sidebar nav > a.router-link-active {
+  color: #FFFFFF !important;
+  background-color: rgb(255 255 255 / 14%) !important;
+  border-left-color: var(--ui-gold) !important;
+}
+:root.theme-dark body .school-admin-sidebar > div:last-child {
+  border-color: rgb(255 255 255 / 20%) !important;
+  background-color: rgb(255 255 255 / 9%) !important;
+}
+:root.theme-dark body .school-admin-sidebar > div:last-child .text-ui-text {
+  color: #FFFFFF !important;
+}
+:root.theme-dark body .school-admin-sidebar > div:last-child .text-ui-muted {
+  color: #D5E2EB !important;
+}
+:root.theme-dark body .school-admin-sidebar > div:last-child .mat-mdc-button,
+:root.theme-dark body .school-admin-sidebar > div:last-child .mat-mdc-button .mdc-button__label {
+  color: #FFFFFF !important;
+}
+:root.theme-dark body .school-admin-topbar {
+  background-color: var(--ui-canvas) !important;
+  border-bottom: 2px solid var(--ui-gold) !important;
+}
+:root.theme-dark body .school-admin-workspace {
+  background-color: var(--ui-workspace) !important;
+}
+:root.theme-dark body .school-admin-workspace .school-dashboard-welcome {
+  border-top: 3px solid var(--ui-gold) !important;
+  background-color: var(--ui-surface-soft) !important;
+  box-shadow: var(--ui-card-shadow);
+}
+
+/* Final mobile width safeguards for the approved public landing. */
+@media (max-width: 780px) {
+  :root:not(.theme-dark) body .admission-page.public-landing,
+  :root.theme-dark body .admission-page.public-landing {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-inline: auto !important;
+    padding-inline: 0 !important;
+    box-sizing: border-box !important;
+    overflow-x: clip !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .public-nav,
+  :root.theme-dark body .admission-page.public-landing .public-nav {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    padding-inline: 16px !important;
+    gap: 6px !important;
+    overflow: hidden;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .public-brand,
+  :root.theme-dark body .admission-page.public-landing .public-brand {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .nav-apply,
+  :root.theme-dark body .admission-page.public-landing .nav-apply {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    justify-self: start !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    min-height: 44px !important;
+    white-space: nowrap !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .admission-nav-links,
+  :root.theme-dark body .admission-page.public-landing .admission-nav-links {
+    grid-column: 1 !important;
+    grid-row: 3 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    overflow-x: auto !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .admission-hero,
+  :root.theme-dark body .admission-page.public-landing .admission-hero {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .hero-copy,
+  :root.theme-dark body .admission-page.public-landing .hero-copy {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .hero-copy .admission-title,
+  :root.theme-dark body .admission-page.public-landing .hero-copy .admission-title {
+    width: 100% !important;
+    max-width: 100% !important;
+    font-size: clamp(35px, 10.2vw, 44px) !important;
+    line-height: 1.02 !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .hero-copy .admission-lead,
+  :root.theme-dark body .admission-page.public-landing .hero-copy .admission-lead {
+    width: 100% !important;
+    max-width: 100% !important;
+    white-space: normal !important;
+    overflow-wrap: anywhere !important;
+    box-sizing: border-box !important;
+  }
+  :root:not(.theme-dark) body .admission-page.public-landing .hero-trust > span,
+  :root.theme-dark body .admission-page.public-landing .hero-trust > span {
+    min-width: 0 !important;
+    overflow-wrap: anywhere !important;
+  }
+}
+/* Stronger section-title hierarchy for the public landing. */
+:root body .admission-page.public-landing .public-home-heading h2 {
+  font-weight: 600 !important;
+}
+:root body .admission-page.public-landing .home-faq-heading p,
+:root body .admission-page.public-landing .home-admission-copy > p {
+  color: var(--ui-text) !important;
+  font-weight: 500 !important;
+}
+
+/* Tarjetas completas y separadas para la propuesta en móvil. */
+@media (max-width: 760px) {
+  :root:not(.theme-dark) .admission-page.public-landing .home-values-grid { gap: 12px !important; }
+  :root:not(.theme-dark) .admission-page.public-landing .home-value,
+  :root:not(.theme-dark) .admission-page.public-landing .home-value:last-child {
+    border: 1px solid #D5E2EE !important;
+    border-radius: 12px !important;
+    padding: 13px 14px !important;
+  }
+}
+/* Landing readability and footer refinement 2026-11-02. */
+:root body .admission-page.public-landing .admission-nav-links a {
+  display: inline-flex !important;
+  min-height: 44px !important;
+  align-items: center !important;
+  color: #173B67 !important;
+  font-size: 15px !important;
+  font-weight: 650 !important;
+  letter-spacing: 0 !important;
+}
+:root body .admission-page.public-landing .hero-copy .admission-lead { font-size: 18px !important; line-height: 1.65 !important; }
+:root body .admission-page.public-landing .home-value p,
+:root body .admission-page.public-landing .home-level p,
+:root body .admission-page.public-landing .home-admission-copy > p,
+:root body .admission-page.public-landing .home-faq-heading p,
+:root body .admission-page.public-landing .home-faq-item > p {
+  font-size: 16px !important;
+  line-height: 1.7 !important;
+}
+:root body .admission-page.public-landing .home-documents-panel li { font-size: 15px !important; }
+:root body .admission-page.public-landing .home-faq-item summary { min-height: 56px !important; font-size: 15px !important; }
+:root body .admission-page.public-landing footer.public-home-footer {
+  padding: 44px 0 18px !important;
+  border-top: 3px solid #C49A58 !important;
+}
+:root body .admission-page.public-landing footer.public-home-footer .home-footer-grid {
+  width: min(calc(100% - 64px), 1280px) !important;
+  max-width: 1280px !important;
+  margin-inline: auto !important;
+  grid-template-columns: minmax(0, 1.2fr) minmax(150px, .62fr) minmax(280px, 1fr) !important;
+  align-items: start !important;
+  gap: clamp(24px, 4vw, 58px) !important;
+  padding-bottom: 30px !important;
+}
+:root body .admission-page.public-landing footer.public-home-footer .home-footer-grid nav,
+:root body .admission-page.public-landing footer.public-home-footer .home-footer-contact {
+  min-width: 0 !important;
+  padding-inline-start: clamp(18px, 2.4vw, 32px) !important;
+  border-inline-start: 1px solid rgb(216 230 243 / 24%) !important;
+}
+:root body .admission-page.public-landing footer.public-home-footer .footer-brand img { width: 64px !important; height: 64px !important; flex-basis: 64px !important; }
+:root body .admission-page.public-landing footer.public-home-footer .footer-brand b { font-size: 25px !important; line-height: 1.15 !important; }
+:root body .admission-page.public-landing footer.public-home-footer .footer-brand small { font-size: 14px !important; line-height: 1.45 !important; }
+:root body .admission-page.public-landing footer.public-home-footer .home-footer-grid h2 {
+  margin-bottom: 12px !important;
+  font-size: 14px !important;
+  font-weight: 750 !important;
+  letter-spacing: .06em !important;
+  text-transform: uppercase !important;
+}
+:root body .admission-page.public-landing footer.public-home-footer .home-footer-grid nav { gap: 9px !important; }
+:root body .admission-page.public-landing footer.public-home-footer .home-footer-grid nav a,
+:root body .admission-page.public-landing footer.public-home-footer .home-footer-contact a,
+:root body .admission-page.public-landing footer.public-home-footer .home-footer-contact p {
+  font-size: 15px !important;
+  line-height: 1.6 !important;
+}
+:root body .admission-page.public-landing footer.public-home-footer .home-footer-contact { gap: 13px !important; }
+:root body .admission-page.public-landing footer.public-home-footer .footer-contact-row {
+  display: grid !important;
+  width: 100% !important;
+  grid-template-columns: 20px minmax(0, 1fr) auto !important;
+  align-items: start !important;
+  gap: 12px !important;
+}
+:root body .admission-page.public-landing footer.public-home-footer .footer-contact-row svg {
+  width: 20px !important;
+  height: 20px !important;
+  margin-top: 2px !important;
+  color: #A8DAD8 !important;
+  stroke-width: 1.8 !important;
+}
+:root body .admission-page.public-landing footer.public-home-footer .footer-external { color: #F0D9B4 !important; }
+:root body .admission-page.public-landing footer.public-home-footer .home-footer-bottom {
+  width: min(calc(100% - 64px), 1280px) !important;
+  max-width: 1280px !important;
+  margin-inline: auto !important;
+  padding-top: 16px !important;
+  font-size: 13px !important;
+}
+@media (max-width: 1000px) and (min-width: 781px) {
+  :root body .admission-page.public-landing footer.public-home-footer .home-footer-grid {
+    width: calc(100% - 48px) !important;
+    grid-template-columns: minmax(0, 1fr) minmax(130px, .55fr) minmax(220px, .95fr) !important;
+    gap: 24px !important;
+  }
+  :root body .admission-page.public-landing footer.public-home-footer .footer-brand b { font-size: 21px !important; }
+  :root body .admission-page.public-landing footer.public-home-footer .home-footer-grid nav a,
+  :root body .admission-page.public-landing footer.public-home-footer .home-footer-contact a,
+  :root body .admission-page.public-landing footer.public-home-footer .home-footer-contact p { font-size: 14px !important; }
+}
+@media (max-width: 780px) {
+  :root body .admission-page.public-landing .admission-nav-links a { min-height: 44px !important; font-size: 14px !important; }
+  :root body .admission-page.public-landing .hero-copy .admission-lead { font-size: 16px !important; }
+  :root body .admission-page.public-landing .home-value p,
+  :root body .admission-page.public-landing .home-level p,
+  :root body .admission-page.public-landing .home-admission-copy > p,
+  :root body .admission-page.public-landing .home-faq-heading p,
+  :root body .admission-page.public-landing .home-faq-item > p { font-size: 15px !important; }
+  :root body .admission-page.public-landing footer.public-home-footer { padding: 34px 0 16px !important; }
+  :root body .admission-page.public-landing footer.public-home-footer .home-footer-grid {
+    width: min(calc(100% - 36px), 560px) !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 24px !important;
+    padding-bottom: 22px !important;
+  }
+  :root body .admission-page.public-landing footer.public-home-footer .footer-brand { grid-column: auto !important; }
+  :root body .admission-page.public-landing footer.public-home-footer .home-footer-grid nav,
+  :root body .admission-page.public-landing footer.public-home-footer .home-footer-contact {
+    padding: 20px 0 0 !important;
+    border-inline-start: 0 !important;
+    border-top: 1px solid rgb(216 230 243 / 24%) !important;
+  }
+  :root body .admission-page.public-landing footer.public-home-footer .home-footer-grid nav {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px 18px !important;
+  }
+  :root body .admission-page.public-landing footer.public-home-footer .home-footer-grid nav h2 { grid-column: 1 / -1 !important; }
+  :root body .admission-page.public-landing footer.public-home-footer .footer-brand b { font-size: 22px !important; }
+  :root body .admission-page.public-landing footer.public-home-footer .footer-brand small { font-size: 13px !important; }
+  :root body .admission-page.public-landing footer.public-home-footer .home-footer-grid nav a,
+  :root body .admission-page.public-landing footer.public-home-footer .home-footer-contact a,
+  :root body .admission-page.public-landing footer.public-home-footer .home-footer-contact p { font-size: 15px !important; }
+  :root body .admission-page.public-landing footer.public-home-footer .home-footer-bottom { width: calc(100% - 36px) !important; }
+}
+/* Public enrollment calls to action and navigation at readable sizes. */
+:root body main.admission-page.public-page .public-nav .nav-apply.nav-apply {
+  min-height: 52px !important;
+  max-width: none !important;
+  padding-inline: 22px !important;
+  font-size: 16px !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+  white-space: nowrap !important;
+}
+:root body main.admission-page.public-page .public-nav .admission-nav-links a {
+  min-height: 44px !important;
+  font-size: 16px !important;
+  font-weight: 750 !important;
+  line-height: 1.25 !important;
+}
+:root body main.admission-page.public-page .hero-actions > .button.button-gold.button-gold,
+:root body main.admission-page.public-page .home-admission-copy > .button.button.button,
+:root body main.admission-page.public-page .process-intro > .button.button.button,
+:root body main.admission-page.public-page .documents-copy > .button.button.button,
+:root body main.admission-page.public-page .final-cta > .button.button.button {
+  min-height: 56px !important;
+  padding-inline: 28px !important;
+  font-size: 18px !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+  letter-spacing: .005em !important;
+  white-space: nowrap !important;
+}
+:root body main.admission-page.public-landing .hero-actions > .hero-secondary {
+  min-height: 44px !important;
+  gap: 12px !important;
+  font-size: 17px !important;
+  font-weight: 750 !important;
+  line-height: 1.3 !important;
+}
+:root body main.admission-page.public-landing .hero-actions > .hero-secondary b {
+  width: 42px !important;
+  height: 42px !important;
+  font-size: 18px !important;
+}
+:root body main.admission-page.public-landing .hero-trust > span {
+  gap: 8px !important;
+  font-size: 15px !important;
+  line-height: 1.45 !important;
+}
+:root body main.admission-page.public-landing .hero-trust > span > i {
+  width: 24px !important;
+  height: 24px !important;
+  flex: 0 0 24px !important;
+  font-size: 15px !important;
+}
+:root:not(.theme-dark) body main.admission-page.public-landing p.inline-error.inline-error {
+  color: #526579 !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+:root.theme-dark body main.admission-page.public-landing p.inline-error.inline-error {
+  color: #C1CBD4 !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+@media (max-width: 780px) {
+  :root body main.admission-page.public-page .public-nav .nav-apply.nav-apply {
+    min-height: 48px !important;
+    width: fit-content !important;
+    max-width: 100% !important;
+    padding-inline: 16px !important;
+    font-size: 15px !important;
+  }
+  :root body main.admission-page.public-page .public-nav .admission-nav-links {
+    gap: 12px !important;
+  }
+  :root body main.admission-page.public-page .public-nav .admission-nav-links a {
+    font-size: 14px !important;
+  }
+  :root body main.admission-page.public-page .hero-actions > .button.button-gold.button-gold,
+  :root body main.admission-page.public-page .home-admission-copy > .button.button.button,
+  :root body main.admission-page.public-page .process-intro > .button.button.button,
+  :root body main.admission-page.public-page .documents-copy > .button.button.button,
+  :root body main.admission-page.public-page .final-cta > .button.button.button {
+    min-height: 52px !important;
+    padding-inline: 21px !important;
+    font-size: 16px !important;
+  }
+  :root body main.admission-page.public-landing .hero-actions > .hero-secondary {
+    font-size: 16px !important;
+  }
+  :root body main.admission-page.public-landing .hero-trust > span { font-size: 14px !important; }
+  :root body main.admission-page.public-landing .hero-trust > span > i {
+    width: 22px !important;
+    height: 22px !important;
+    flex-basis: 22px !important;
+    font-size: 14px !important;
+  }
+}
+@media (max-width: 380px) {
+  :root body main.admission-page.public-page .public-nav .nav-apply.nav-apply {
+    padding-inline: 13px !important;
+    font-size: 14px !important;
+  }
+  :root body main.admission-page.public-page .public-nav .admission-nav-links {
+    gap: 10px !important;
+  }
+  :root body main.admission-page.public-page .public-nav .admission-nav-links a {
+    font-size: 13px !important;
+  }
+}
+
+/* Landing institucional: portada editorial, secciones enlazadas y lectura adaptable. */
+:root:not(.theme-dark) body main.admission-page.public-landing { padding: 0 !important; overflow: clip !important; background: #fbfaf7 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .admission-topline { display: none !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing nav.public-nav {
+  position: sticky !important; top: 0 !important; z-index: 30 !important; width: min(calc(100% - 48px), 1320px) !important;
+  height: 72px !important; margin: 0 auto !important; padding: 0 !important; display: grid !important;
+  grid-template-columns: minmax(225px, .95fr) auto auto !important; gap: clamp(18px, 3vw, 48px) !important;
+  background: rgb(255 255 255 / 96%) !important; border-bottom: 1px solid #d9e4ea !important;
+  box-shadow: 0 4px 20px rgb(16 47 89 / 5%) !important; backdrop-filter: blur(16px) !important;
+}
+:root:not(.theme-dark) body main.admission-page.public-landing .public-brand { gap: 12px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .public-brand .brand-logo {
+  width: 48px !important; height: 48px !important; flex-basis: 48px !important; border: 0 !important; background: transparent !important; box-shadow: none !important;
+}
+:root:not(.theme-dark) body main.admission-page.public-landing .public-brand strong { color: #102f65 !important; font-size: 18px !important; line-height: 1.15 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .public-brand small { display: none !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .admission-nav-links { display: flex !important; align-items: center !important; justify-content: center !important; gap: clamp(12px, 2.3vw, 34px) !important; padding: 0 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .admission-nav-links a {
+  position: relative !important; min-height: 44px !important; padding: 0 2px !important; display: inline-flex !important; align-items: center !important;
+  justify-content: center !important; color: #173b67 !important; font-size: 15px !important; font-weight: 650 !important; text-decoration: none !important; white-space: nowrap !important;
+}
+:root:not(.theme-dark) body main.admission-page.public-landing .admission-nav-links a::after { content: ''; position: absolute; right: 0; bottom: 3px; left: 0; height: 2px; background: #c49a58; transform: scaleX(0); transform-origin: left; transition: transform .2s ease; }
+:root:not(.theme-dark) body main.admission-page.public-landing .admission-nav-links a:hover::after,
+:root:not(.theme-dark) body main.admission-page.public-landing .admission-nav-links a:focus-visible::after { transform: scaleX(1); }
+:root:not(.theme-dark) body main.admission-page.public-landing .nav-apply { min-height: 46px !important; padding: 0 20px !important; border: 0 !important; border-radius: 5px !important; background: #12376e !important; color: #fff !important; font-size: 15px !important; font-weight: 750 !important; box-shadow: 0 6px 17px rgb(18 55 110 / 17%) !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .admission-hero.public-home-hero {
+  width: 100% !important; max-width: none !important; min-height: clamp(410px, 38vw, 540px) !important; margin: 0 !important;
+  padding: clamp(42px, 6vw, 80px) max(6vw, calc((100vw - 1320px) / 2)) !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr) !important;
+  gap: clamp(24px, 4vw, 58px) !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important;
+  background-image: linear-gradient(90deg, rgb(251 250 247 / 98%) 0%, rgb(251 250 247 / 94%) 36%, rgb(251 250 247 / 70%) 59%, rgb(251 250 247 / 34%) 100%), url('/images/landing-values-background.png') !important;
+  background-position: center, 58% 45% !important; background-size: cover !important;
+}
+:root:not(.theme-dark) body main.admission-page.public-landing .hero-copy .admission-title { max-width: 620px !important; margin: 14px 0 9px !important; color: #102f65 !important; font-size: clamp(46px, 5.2vw, 72px) !important; line-height: .99 !important; letter-spacing: -.045em !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .hero-copy .admission-lead { max-width: 510px !important; margin-top: 0 !important; color: #294c76 !important; font-family: var(--font-display) !important; font-size: clamp(17px, 1.55vw, 21px) !important; line-height: 1.48 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .hero-kicker { color: #8f641f !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .hero-actions { margin-top: 19px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .hero-actions .button-gold { min-height: 48px !important; padding-inline: 22px !important; border-radius: 5px !important; background: #12376e !important; color: #fff !important; box-shadow: 0 7px 18px rgb(18 55 110 / 17%) !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .hero-art { min-height: 380px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .hero-emblem-card { width: min(100%, 430px) !important; min-height: 360px !important; background: rgb(255 254 250 / 96%) !important; box-shadow: 0 18px 36px rgb(20 43 72 / 20%) !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .scroll-cue { display: none !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .public-home-band { width: 100% !important; max-width: none !important; padding: clamp(48px, 5.2vw, 76px) 24px !important; scroll-margin-top: 28px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .public-home-inner { width: min(100%, 1240px) !important; margin-inline: auto !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .public-home-values { background-color: #fbfaf7 !important; background-image: linear-gradient(90deg, rgb(251 250 247 / 97%), rgb(251 250 247 / 87%)), url('/images/landing-values-background.png') !important; background-position: center, right 42% !important; background-size: cover !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .public-home-levels { background: #e4f7f6 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .public-home-admission { background-color: #fbfaf7 !important; background-image: linear-gradient(90deg, rgb(251 250 247 / 95%), rgb(251 250 247 / 82%)), url('/images/landing-admission-background.png') !important; background-position: center, 60% center !important; background-size: cover !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .public-home-faq { background-color: #e8f8f7 !important; background-image: radial-gradient(ellipse at 100% 0%, rgb(255 255 255 / 78%), transparent 38%), linear-gradient(135deg, #e5f7f6, #f4fbf9) !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .public-home-heading { margin-bottom: 14px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .public-home-heading h2 { margin: 0 !important; color: #102f65 !important; font-size: clamp(32px, 3.25vw, 44px) !important; line-height: 1.08 !important; letter-spacing: -.025em !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .public-home-heading > span { margin-top: 11px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .public-home-subtitle { margin: 10px 0 0 !important; color: #315b8f !important; font-size: 17px !important; line-height: 1.55 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-values-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 16px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-value { min-height: 230px !important; padding: 24px 20px !important; border: 1px solid #d9e4e8 !important; border-radius: 9px !important; background: rgb(255 255 255 / 96%) !important; box-shadow: 0 8px 22px rgb(16 47 89 / 6%) !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-value > svg,
+:root:not(.theme-dark) body main.admission-page.public-landing .home-level > svg { width: 72px !important; height: 72px !important; padding: 16px !important; color: #123d83 !important; background: #dff6f7 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-value h3,
+:root:not(.theme-dark) body main.admission-page.public-landing .home-level h3 { margin: 6px 0 4px !important; color: #102f65 !important; font-size: 23px !important; line-height: 1.2 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-value p,
+:root:not(.theme-dark) body main.admission-page.public-landing .home-level p,
+:root:not(.theme-dark) body main.admission-page.public-landing .home-admission-copy > p,
+:root:not(.theme-dark) body main.admission-page.public-landing .home-faq-heading p,
+:root:not(.theme-dark) body main.admission-page.public-landing .home-faq-item > p { color: #294c76 !important; font-size: 16px !important; line-height: 1.65 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-levels-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 16px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-level { min-width: 0 !important; min-height: 190px !important; padding: 22px !important; grid-template-columns: 74px minmax(0, 1fr) !important; gap: 15px !important; border: 1px solid rgb(255 255 255 / 90%) !important; border-radius: 9px !important; background: rgb(255 255 255 / 94%) !important; box-shadow: 0 7px 18px rgb(28 75 91 / 7%) !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-admission-grid { width: min(100%, 1240px) !important; padding: 0 !important; gap: clamp(28px, 5vw, 66px) !important; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr) !important; background: transparent !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-admission-copy > p { max-width: 540px !important; margin: 18px 0 22px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-documents-panel { padding: clamp(22px, 3vw, 34px) !important; border: 1px solid #d5e6e8 !important; border-radius: 8px !important; background: rgb(232 248 247 / 94%) !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-documents-panel h3 { margin: 0 0 14px !important; color: #102f65 !important; font-size: 22px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-documents-panel li { min-height: 52px !important; color: #173b67 !important; font-size: 16px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-documents-panel li svg { width: 23px !important; height: 23px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-faq-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-faq-item { min-width: 0 !important; padding: 0 18px !important; border: 1px solid #cfdee6 !important; border-radius: 8px !important; background: rgb(255 255 255 / 94%) !important; box-shadow: 0 4px 13px rgb(16 47 89 / 4%) !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-faq-item summary { min-height: 56px !important; color: #173b67 !important; font-size: 15px !important; line-height: 1.4 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing .home-faq-heading p { margin-top: 12px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer { width: 100% !important; max-width: none !important; padding: 36px 24px 16px !important; border: 0 !important; border-top: 3px solid #c49a58 !important; background: #0e315e !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-grid { width: min(100%, 1240px) !important; grid-template-columns: minmax(0, 1.2fr) minmax(220px, .8fr) minmax(220px, .8fr) !important; gap: clamp(24px, 4vw, 64px) !important; padding-bottom: 28px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-grid nav,
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-contact { min-width: 0 !important; padding-inline-start: clamp(20px, 3vw, 38px) !important; border-inline-start: 1px solid rgb(216 230 243 / 24%) !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .footer-brand img { width: 62px !important; height: 62px !important; flex-basis: 62px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .footer-brand b { color: #fff !important; font-size: 22px !important; line-height: 1.2 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .footer-brand small,
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-grid nav a,
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-contact a,
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-contact p,
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-bottom { color: #d8e6f3 !important; font-size: 15px !important; line-height: 1.65 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-grid h2 { margin: 0 0 14px !important; color: #fff !important; font-size: 14px !important; font-weight: 750 !important; letter-spacing: .06em !important; text-transform: uppercase !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-grid nav { gap: 8px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-contact { align-content: start !important; gap: 10px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .footer-contact-row { display: inline-flex !important; width: fit-content !important; min-height: 44px !important; align-items: center !important; gap: 12px !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .footer-contact-row svg { width: 22px !important; height: 22px !important; color: #cfe9e8 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .footer-external { color: #f0d9b4 !important; }
+:root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-bottom { width: min(100%, 1240px) !important; padding-top: 14px !important; border-top: 1px solid rgb(216 230 243 / 24%) !important; font-size: 13px !important; }
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-value,
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-level,
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-faq-item,
+  :root:not(.theme-dark) body main.admission-page.public-landing .public-home-footer a { transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, color .2s ease !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-value:hover,
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-level:hover { transform: translateY(-4px) !important; box-shadow: 0 14px 28px rgb(16 47 89 / 12%) !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-faq-item:hover { transform: translateY(-2px) !important; border-color: #a9c8d1 !important; }
+}
+:root body main.admission-page.public-landing :where(a, button, summary):focus-visible { outline: 3px solid #377fbb !important; outline-offset: 3px !important; }
+@media (max-width: 900px) {
+  :root:not(.theme-dark) body main.admission-page.public-landing nav.public-nav { width: calc(100% - 32px) !important; height: auto !important; min-height: 112px !important; padding: 8px 0 !important; grid-template-columns: minmax(0, 1fr) auto !important; grid-template-rows: 56px 44px !important; gap: 4px 10px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .public-brand { grid-column: 1 !important; grid-row: 1 !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .public-brand .brand-logo { width: 42px !important; height: 42px !important; flex-basis: 42px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .public-brand strong { font-size: 16px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .admission-nav-links { grid-column: 1 / -1 !important; grid-row: 2 !important; width: 100% !important; display: grid !important; grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 4px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .admission-nav-links a { min-width: 0 !important; font-size: 14px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .nav-apply { grid-column: 2 !important; grid-row: 1 !important; min-height: 44px !important; max-width: 100% !important; padding-inline: 14px !important; font-size: 14px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .admission-hero.public-home-hero { min-height: 0 !important; padding: 42px clamp(20px, 6vw, 52px) 34px !important; grid-template-columns: minmax(0, 1fr) !important; gap: 22px !important; background-image: linear-gradient(180deg, rgb(251 250 247 / 96%), rgb(251 250 247 / 87%)), url('/images/landing-values-background.png') !important; background-position: center, 72% center !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .hero-copy .admission-title { font-size: clamp(42px, 10vw, 58px) !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .hero-copy .admission-lead { max-width: 620px !important; font-size: 18px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .hero-art { min-height: 350px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .hero-emblem-card { width: min(100%, 380px) !important; min-height: 332px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .public-home-band { padding: 46px 22px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-values-grid,
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-levels-grid { grid-template-columns: 1fr !important; gap: 14px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-value { min-height: 0 !important; flex-direction: row !important; justify-content: flex-start !important; align-items: center !important; gap: 18px !important; padding: 18px !important; text-align: left !important; border: 1px solid #d9e4e8 !important; border-radius: 9px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-value > svg,
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-level > svg { flex: 0 0 64px !important; width: 64px !important; height: 64px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-level { min-height: 0 !important; grid-template-columns: 64px minmax(0, 1fr) !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-admission-grid { grid-template-columns: 1fr !important; gap: 24px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-faq-grid { grid-template-columns: 1fr !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-grid { width: min(100%, 620px) !important; grid-template-columns: 1fr 1fr !important; gap: 22px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .footer-brand { grid-column: 1 / -1 !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-grid nav,
+  :root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-contact { padding: 18px 0 0 !important; border-inline-start: 0 !important; border-top: 1px solid rgb(216 230 243 / 24%) !important; }
+}
+@media (max-width: 520px) {
+  :root:not(.theme-dark) body main.admission-page.public-landing { padding: 0 12px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing nav.public-nav { width: 100% !important; min-height: 106px !important; grid-template-rows: 54px 44px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .public-brand .brand-logo { width: 38px !important; height: 38px !important; flex-basis: 38px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .public-brand strong { font-size: 15px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .admission-nav-links { gap: 1px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .admission-nav-links a { font-size: 12px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .nav-apply { min-height: 44px !important; padding-inline: 10px !important; font-size: 13px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .admission-hero.public-home-hero { padding: 34px 16px 28px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .hero-copy .admission-title { font-size: clamp(39px, 11.2vw, 48px) !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .hero-copy .admission-lead { font-size: 17px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .hero-art { min-height: 322px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .hero-emblem-card { width: min(100%, 330px) !important; min-height: 305px !important; padding: 38px 18px 20px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .emblem-image-wrap { width: 82px !important; height: 82px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .hero-emblem-card strong { font-size: 22px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-value { align-items: flex-start !important; gap: 13px !important; padding: 16px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-value > svg,
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-level > svg { flex: 0 0 54px !important; width: 54px !important; height: 54px !important; padding: 12px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-value h3,
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-level h3 { font-size: 21px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-value p,
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-level p,
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-admission-copy > p,
+  :root:not(.theme-dark) body main.admission-page.public-landing .home-faq-heading p { font-size: 16px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer { padding: 32px 18px 14px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-grid { grid-template-columns: 1fr !important; gap: 18px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .footer-brand { grid-column: auto !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-grid nav,
+  :root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .home-footer-contact { padding-top: 16px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing footer.public-home-footer .footer-brand b { font-size: 20px !important; }
+}
+@media (max-width: 360px) {
+  :root:not(.theme-dark) body main.admission-page.public-landing .public-brand strong { font-size: 13px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .admission-nav-links a { font-size: 11px !important; }
+  :root:not(.theme-dark) body main.admission-page.public-landing .nav-apply { padding-inline: 7px !important; font-size: 12px !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  :root body main.admission-page.public-landing *,
+  :root body main.admission-page.public-landing *::before,
+  :root body main.admission-page.public-landing *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* Action feedback: restrained lift, clear press, and theme-aware darkening. */
+button:not(:disabled), a.button, [role="button"],
+a[href][class*="rounded"][class*="border"],
+a[href][class*="rounded"][class*="bg-"] {
+  transition: transform 160ms cubic-bezier(.2, .7, .2, 1), filter 160ms ease, box-shadow 160ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  button:not(:disabled):hover, a.button:hover, [role="button"]:hover {
+    transform: translateY(-2px);
+    filter: brightness(.95);
+    box-shadow: 0 5px 12px var(--ui-focus-shadow);
+  }
+  a[href][class*="rounded"][class*="border"]:hover,
+  a[href][class*="rounded"][class*="bg-"]:hover {
+    transform: translateY(-2px);
+    filter: brightness(.98);
+    box-shadow: var(--ui-card-shadow);
+  }
+}
+button:not(:disabled):active, a.button:active, [role="button"]:active {
+  transform: translateY(0) scale(.985);
+  filter: brightness(.91);
 }
