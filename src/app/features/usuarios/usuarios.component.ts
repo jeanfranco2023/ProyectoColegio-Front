@@ -280,7 +280,7 @@ import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
 
                   <mat-form-field appearance="outline" subscriptSizing="dynamic">
                     <mat-label>Contraseña temporal inicial</mat-label>
-                    <input matInput type="password" [(ngModel)]="nuevoPassword" name="nuevoPassword" placeholder="Mínimo 6 caracteres" minlength="6" required autocomplete="new-password" class="!bg-white !text-[#14213d]" />
+                    <input matInput type="password" [(ngModel)]="nuevoPassword" name="nuevoPassword" placeholder="Mínimo 8 caracteres" minlength="8" required autocomplete="new-password" class="!bg-white !text-[#14213d]" />
                   </mat-form-field>
 
                   <!-- SELECTOR DE ROLES: EXCLUYE TERMINANTEMENTE APODERADO -->
@@ -492,7 +492,7 @@ import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
             </mat-dialog-content>
             <mat-dialog-actions align="end" class="!gap-2 !px-6 !pb-6 !pt-3 border-t border-[#edf0f5]">
               <button mat-button type="button" mat-dialog-close>Cancelar</button>
-              <button mat-flat-button color="primary" type="submit" [disabled]="creando() || !nuevoUsername.trim() || !nuevoEmail.trim() || nuevoPassword.length < 6" class="box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+              <button mat-flat-button color="primary" type="submit" [disabled]="creando() || !nuevoUsername.trim() || !nuevoEmail.trim() || nuevoPassword.length < 8" class="box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
                 {{ creando() ? 'Guardando empleado…' : 'Registrar Empleado en BD' }}
               </button>
             </mat-dialog-actions>
@@ -838,7 +838,7 @@ export class UsuariosComponent implements OnInit {
   }
 
   guardarNuevoUsuario(): void {
-    if (!this.nuevoUsername.trim() || !this.nuevoEmail.trim() || this.nuevoPassword.length < 6 || this.creando()) return;
+    if (!this.nuevoUsername.trim() || !this.nuevoEmail.trim() || this.nuevoPassword.length < 8 || this.creando()) return;
     this.error.set(null);
     this.creando.set(true);
     const payload = {

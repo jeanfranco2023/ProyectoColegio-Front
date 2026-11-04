@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ApiResponse } from '../models/api-response.model';
-import { AuthResponseDto, LoginRequestDto, RefreshTokenRequestDto } from '../models/auth.model';
+import { AuthResponseDto, CambiarPasswordInicialRequestDto, LoginRequestDto, RefreshTokenRequestDto } from '../models/auth.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -18,5 +18,13 @@ export class AuthService {
 
   refreshToken(body: RefreshTokenRequestDto): Observable<ApiResponse<AuthResponseDto>> {
     return this.http.post<ApiResponse<AuthResponseDto>>(`${this.baseUrl}/refresh`, body);
+  }
+
+  cambiarPasswordInicial(body: CambiarPasswordInicialRequestDto): Observable<ApiResponse<void>> {
+    return this.http.post<ApiResponse<void>>(`${this.baseUrl}/cambiar-password-inicial`, body);
+  }
+
+  logout(body?: RefreshTokenRequestDto): Observable<ApiResponse<void>> {
+    return this.http.post<ApiResponse<void>>(`${this.baseUrl}/logout`, body ?? { refreshToken: '' });
   }
 }

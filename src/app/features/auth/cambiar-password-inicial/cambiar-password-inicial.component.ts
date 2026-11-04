@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
-import { UsuarioService } from '../../../core/services/usuario.service';
+import { AuthService } from '../../../core/services/auth.service';
 import { AuthStore } from '../../../core/state/auth.store';
 
 @Component({
@@ -195,7 +195,7 @@ import { AuthStore } from '../../../core/state/auth.store';
   `
 })
 export class CambiarPasswordInicialComponent {
-  private readonly usuarioService = inject(UsuarioService);
+  private readonly authService = inject(AuthService);
   private readonly store = inject(AuthStore);
   private readonly router = inject(Router);
 
@@ -249,10 +249,10 @@ export class CambiarPasswordInicialComponent {
     this.error.set(null);
     this.guardando.set(true);
 
-    this.usuarioService
-      .cambiarPassword({
+    this.authService
+      .cambiarPasswordInicial({
         passwordActual: this.passwordActual,
-        passwordNuevo: this.passwordNuevo
+        nuevoPassword: this.passwordNuevo
       })
       .pipe(finalize(() => this.guardando.set(false)))
       .subscribe({

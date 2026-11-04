@@ -21,6 +21,14 @@ export interface PaginaAuditoriaDto {
   totalPages: number;
 }
 
+export interface PaginaCambiosAuditoriaDto {
+  content: CambioAuditoriaDto[];
+  number: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
 export interface CambioAuditoriaDto {
   id: number;
   tablaAfectada: string;

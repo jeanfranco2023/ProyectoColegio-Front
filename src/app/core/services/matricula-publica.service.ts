@@ -102,6 +102,11 @@ export class MatriculaPublicaService {
     return this.http.get<SolicitudMatriculaPublicaAdminDto[]>(`${this.baseUrl}/admin`);
   }
 
+  darVistoBuenoAdmin(id: string, motivo?: string): Observable<SolicitudMatriculaPublicaAdminDto> {
+    return this.http.post<SolicitudMatriculaPublicaAdminDto>(
+      `${this.baseUrl}/admin/${encodeURIComponent(id)}/dar-visto-bueno`, { motivo: motivo ?? null });
+  }
+
   observarAdmin(id: string, tipo: TipoDocumentoSolicitud, observacion: string): Observable<SolicitudMatriculaPublicaAdminDto> {
     return this.http.put<SolicitudMatriculaPublicaAdminDto>(`${this.baseUrl}/admin/${encodeURIComponent(id)}/observar`, {
       tipo, observacion

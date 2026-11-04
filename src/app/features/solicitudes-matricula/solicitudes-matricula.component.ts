@@ -175,6 +175,23 @@ export class SolicitudesMatriculaComponent implements OnInit {
     });
   }
 
+  darVistoBueno(solicitud: SolicitudMatriculaPublicaAdminDto): void {
+    if (this.guardando()) return;
+    this.guardando.set(true);
+    this.error.set('');
+    this.api.darVistoBuenoAdmin(solicitud.id).subscribe({
+      next: updated => {
+        this.solicitudes.update(current => current.map(s => s.id === updated.id ? updated : s));
+        this.aviso.set('Se otorgó el visto bueno a la solicitud. Se notificó al apoderado con el enlace directo actualizado.');
+        this.guardando.set(false);
+      },
+      error: err => {
+        this.error.set(err?.error?.message || 'No se pudo otorgar el visto bueno a la solicitud.');
+        this.guardando.set(false);
+      }
+    });
+  }
+
   rechazar(): void {
     const item = this.seleccion();
     if (!item) return;

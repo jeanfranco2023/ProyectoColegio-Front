@@ -50,4 +50,32 @@ describe('UsuariosComponent', () => {
     expect(rowUser.activo).toBe(true);
     expect(dialogRef.close).toHaveBeenCalledOnce();
   });
+
+  it('no envía solicitud de crear usuario si la contraseña tiene menos de 8 caracteres', async () => {
+    const usuarioService = {
+      listarUsuarios: vi.fn(() => of([])),
+      crearUsuario: vi.fn(() => of(void 0)),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [UsuariosComponent],
+      providers: [
+        { provide: UsuarioService, useValue: usuarioService },
+        { provide: AuthStore, useValue: { hasRole: () => false } },
+      ],
+    }).compileComponents();
+
+    const fixture = TestBed.createComponent(UsuariosComponent);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.nuevoUsername = 'nuevo.docente';
+    component.nuevoEmail = 'docente@colegio.edu.pe';
+    component.nuevoPassword = '1234567'; // 7 caracteres (< 8)
+
+    component.guardarNuevoUsuario();
+
+    expect(usuarioService.crearUsuario).not.toHaveBeenCalled();
+    expect(component.creando()).toBe(false);
+  });
 });

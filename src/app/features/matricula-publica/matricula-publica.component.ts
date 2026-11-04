@@ -75,7 +75,6 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   celularApoderado = '';
   emailApoderado = '';
   direccionApoderado = '';
-  ubigeoApoderado = '';
   parentesco: CrearSolicitudMatriculaPublicaDto['parentesco'] = 'MADRE';
   consentimientoGemini = false;
 
@@ -293,7 +292,6 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     this.celularApoderado = '';
     this.emailApoderado = '';
     this.direccionApoderado = '';
-    this.ubigeoApoderado = '';
     this.parentesco = 'MADRE';
     this.consentimientoGemini = false;
     this.gradoId.set(null);
@@ -337,7 +335,6 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
           celularApoderado: this.celularApoderado.trim(),
           emailApoderado: this.emailApoderado.trim() || null,
           direccionApoderado: this.direccionApoderado.trim(),
-          ubigeoApoderado: this.ubigeoApoderado.trim(),
           parentesco: this.parentesco,
           consentimientoGemini: true
         };
@@ -454,9 +451,8 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       if (!doc || doc.estado !== 'VALIDADO' || doc.iaValida !== true) return false;
       if (tipo === 'RECIBO_SERVICIO') return true;
       if (doc.dniApiCoincide !== true) return false;
-      return tipo === 'PARTIDA_NACIMIENTO'
-        ? doc.estadoFirma === 'VALIDA' && doc.vinculoParentalCoincide === true
-        : doc.estadoFirma === 'VALIDA' || doc.estadoFirma === 'NO_APLICA';
+      return (doc.estadoFirma === 'VALIDA' || doc.estadoFirma === 'NO_APLICA')
+        && (tipo !== 'PARTIDA_NACIMIENTO' || doc.vinculoParentalCoincide === true);
     });
   }
 
@@ -518,8 +514,8 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     if (!/^\d{8}$/.test(this.documentoEstudiante) || !/^\d{8}$/.test(this.documentoApoderado)) {
       return this.error.set('Los DNI deben tener 8 dígitos.'), false;
     }
-    if (!/^9\d{8}$/.test(this.celularApoderado) || (this.ubigeoApoderado && !/^\d{6}$/.test(this.ubigeoApoderado))) {
-      return this.error.set('Verifica el celular (9 dígitos) y, si ingresas el ubigeo, que tenga 6 dígitos.'), false;
+    if (!/^9\d{8}$/.test(this.celularApoderado)) {
+      return this.error.set('Verifica el celular (9 dígitos).'), false;
     }
     if (this.emailApoderado.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.emailApoderado.trim())) {
       return this.error.set('Ingresa un correo electrónico válido o deja el campo vacío.'), false;
@@ -533,6 +529,20 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   }
 
   private restaurarSolicitud(): void {
+    const tokenQuery = this.route.snapshot.queryParamMap.get('token');
+    if (tokenQuery) {
+      this.api.consultarPorToken(tokenQuery.trim()).subscribe({
+        next: solicitud => {
+          this.guardarCredencial(solicitud);
+          this.solicitud.set(solicitud);
+          this.abrirEtapaActualizada(solicitud);
+        },
+        error: () => {
+          this.error.set('El enlace de seguimiento ha vencido o no es válido.');
+        }
+      });
+      return;
+    }
     const id = sessionStorage.getItem('shuji-solicitud-matricula-id');
     const token = sessionStorage.getItem('shuji-solicitud-matricula-token');
     const paymentId = this.paymentIdFromReturn();

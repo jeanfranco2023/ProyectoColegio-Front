@@ -28,6 +28,11 @@ export interface CambiarPasswordRequestDto {
   passwordNuevo: string;
 }
 
+export interface CambiarPasswordInicialRequestDto {
+  passwordActual: string;
+  nuevoPassword: string;
+}
+
 export interface LoginRequestDto {
   username: string;
   password: string;

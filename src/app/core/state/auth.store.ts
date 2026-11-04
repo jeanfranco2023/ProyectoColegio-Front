@@ -1,6 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, tap, throwError } from 'rxjs';
+import { catchError, finalize, of, tap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { AuthResponseDto, LoginRequestDto, RolNombre, UserResponseDto } from '../models/auth.model';
 
@@ -96,8 +96,22 @@ export class AuthStore {
   }
 
   logout() {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (refreshToken) {
+      this.authService
+        .logout({ refreshToken })
+        .pipe(
+          catchError(() => of(null)),
+          finalize(() => {
+            this.clearSession();
+            void this.router.navigate(['/auth/login']).catch(() => {});
+          })
+        )
+        .subscribe();
+      return;
+    }
     this.clearSession();
-    this.router.navigate(['/auth/login']).catch(() => {});
+    void this.router.navigate(['/auth/login']).catch(() => {});
   }
 
   homeRoute(): string {

@@ -251,13 +251,12 @@
               <summary><span class="form-step-number">2</span><span><b>Datos del apoderado</b><small>Contacto responsable para la comunicación institucional.</small></span></summary>
               <div class="form-grid form-step-content">
               <div class="dni-lookup span-2"><label>DNI del apoderado <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="documentoApoderado" name="documentoApoderado" inputmode="numeric" maxlength="8" minlength="8" placeholder="8 dígitos" required></label><button class="button button-quiet" type="button" (click)="consultarDni('apoderado')" [disabled]="consultandoDniApoderado()"><svg class="h-5 w-5 shrink-0" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.8" cy="10.8" r="6.3"></circle><path d="m15.5 15.5 4.2 4.2"></path></svg>{{ consultandoDniApoderado() ? 'Consultando…' : 'Consultar DNI' }}</button></div>
-              <label>Nombres <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="nombresApoderado" name="nombresApoderado" maxlength="20" required></label>
+              <label class="span-2">Nombres <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="nombresApoderado" name="nombresApoderado" maxlength="20" required></label>
               <label>Apellido paterno <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="apellidoPaternoApoderado" name="apellidoPaternoApoderado" maxlength="20" required></label>
               <label>Apellido materno <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="apellidoMaternoApoderado" name="apellidoMaternoApoderado" maxlength="20" required></label>
               <label>Celular <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="celularApoderado" name="celularApoderado" inputmode="tel" maxlength="9" placeholder="9 dígitos" required></label>
               <label>Correo electrónico<input type="email" [(ngModel)]="emailApoderado" name="emailApoderado" maxlength="100"></label>
-              <label>Parentesco<select [(ngModel)]="parentesco" name="parentesco"><option value="MADRE">Madre</option><option value="PADRE">Padre</option></select></label>
-              <label>Ubigeo INEI <input [(ngModel)]="ubigeoApoderado" name="ubigeo" inputmode="numeric" maxlength="6" minlength="6" placeholder="Opcional · 6 dígitos"></label>
+              <label class="span-2">Parentesco <span class="required-mark" aria-hidden="true">*</span><select [(ngModel)]="parentesco" name="parentesco"><option value="MADRE">Madre</option><option value="PADRE">Padre</option></select></label>
               <label class="span-2">Dirección <span class="required-mark" aria-hidden="true">*</span><input [(ngModel)]="direccionApoderado" name="direccion" maxlength="150" required></label>
               </div>
               <label class="consent-row"><input type="checkbox" [(ngModel)]="consentimientoGemini" name="consentimientoGemini"><span>Autorizo guardar estos archivos en almacenamiento privado de la institución y enviarlos a Google Gemini para revisar tipo, legibilidad y coherencia, y extraer de la partida los datos del padre y la madre para contrastarlos. Autorizo consultar la identidad del estudiante y del progenitor con el proveedor de DNI configurado. La revisión automática no sustituye la validación oficial. <span class="required-mark" aria-hidden="true">*</span></span></label>
@@ -265,7 +264,7 @@
           }
 
           <details class="form-step" name="ui-public-form-steps" [open]="!!solicitud()">
-            <summary><span class="form-step-number">3</span><span><b>Documentos del estudiante</b><small>Adjunta los tres PDF completos y legibles; la partida debe ser el original firmado por RENIEC.</small></span></summary>
+            <summary><span class="form-step-number">3</span><span><b>Documentos del estudiante</b><small>Adjunta los tres documentos en PDF legibles (acta o partida emitida por RENIEC en formato original o escaneado).</small></span></summary>
             <div class="form-step-content">
               @if (solicitud()?.estado === 'DOCUMENTOS_OBSERVADOS') {
                 <div class="mb-4 rounded-xl border border-rose-300 bg-rose-50/90 p-3.5 text-rose-900 shadow-sm">
@@ -352,7 +351,7 @@
             </div>
             @if (solicitud()?.estado === 'AUTORIZACION_EDAD_PENDIENTE') { <div class="notice-warning">Los documentos pueden estar validados, pero la solicitud requiere autorización institucional por edad antes de habilitar el pago.</div> }
             @else if (documentosAprobados()) { <div class="notice-success">Los tres documentos completaron las verificaciones automáticas. El pago se habilita cuando la solicitud esté autorizada.</div> }
-            @else { <div class="notice-warning">Hay comprobaciones pendientes o documentos observados. La partida requiere el PDF original firmado digitalmente por RENIEC.</div> }
+            @else { <div class="notice-warning">Hay comprobaciones pendientes o documentos observados. Revisa las observaciones para corregir o actualizar la documentación.</div> }
             @if (error()) { <p class="form-error" role="alert">{{ error() }}</p> }
           }
         </div>

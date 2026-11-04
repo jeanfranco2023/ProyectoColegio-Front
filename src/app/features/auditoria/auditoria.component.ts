@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { AuditoriaService } from '../../core/services/auditoria.service';
-import { AuditoriaAccesoDto, CambioAuditoriaDto, PaginaAuditoriaDto } from '../../core/models/auditoria.model';
+import { AuditoriaAccesoDto, CambioAuditoriaDto, PaginaAuditoriaDto, PaginaCambiosAuditoriaDto } from '../../core/models/auditoria.model';
 
 @Component({
   selector: 'app-auditoria',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <section class="space-y-5 text-[#172b4d]">
       <header class="flex flex-wrap items-end justify-between gap-4 border-t-4 border-[#d9c39b] pt-5">
@@ -24,8 +25,69 @@ import { AuditoriaAccesoDto, CambioAuditoriaDto, PaginaAuditoriaDto } from '../.
 
       <div class="flex gap-2 border-b border-[#dce4ef]" role="tablist" aria-label="Tipo de auditoría">
         <button type="button" role="tab" [attr.aria-selected]="vista() === 'accesos'" (click)="vista.set('accesos')" class="border-b-2 px-4 py-3 text-sm font-semibold" [class.border-blue-600]="vista() === 'accesos'" [class.text-blue-700]="vista() === 'accesos'" [class.border-transparent]="vista() !== 'accesos'">Accesos a la API</button>
-        <button type="button" role="tab" [attr.aria-selected]="vista() === 'cambios'" (click)="cargarCambios()" class="border-b-2 px-4 py-3 text-sm font-semibold" [class.border-blue-600]="vista() === 'cambios'" [class.text-blue-700]="vista() === 'cambios'" [class.border-transparent]="vista() !== 'cambios'">Cambios de datos</button>
+        <button type="button" role="tab" [attr.aria-selected]="vista() === 'cambios'" (click)="cargarCambios(0)" class="border-b-2 px-4 py-3 text-sm font-semibold" [class.border-blue-600]="vista() === 'cambios'" [class.text-blue-700]="vista() === 'cambios'" [class.border-transparent]="vista() !== 'cambios'">Cambios de datos</button>
       </div>
+
+      @if (vista() === 'cambios') {
+        <div class="rounded-xl border border-[#dce4ef] bg-white p-4">
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div>
+              <label class="block text-xs font-semibold text-[#52627a] mb-1">Fecha Desde</label>
+              <input
+                type="date"
+                [(ngModel)]="filtroFechaInicio"
+                aria-label="Fecha Desde"
+                class="w-full rounded-lg border border-[#d9e2ef] bg-[#f8fafd] px-3 py-2 text-xs text-[#172b4d] focus:border-[#3268c8] focus:bg-white focus:outline-none"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#52627a] mb-1">Fecha Hasta</label>
+              <input
+                type="date"
+                [(ngModel)]="filtroFechaFin"
+                aria-label="Fecha Hasta"
+                class="w-full rounded-lg border border-[#d9e2ef] bg-[#f8fafd] px-3 py-2 text-xs text-[#172b4d] focus:border-[#3268c8] focus:bg-white focus:outline-none"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#52627a] mb-1">Usuario ID</label>
+              <input
+                type="number"
+                [(ngModel)]="filtroUsuarioId"
+                placeholder="Ej. 1"
+                aria-label="Usuario ID"
+                class="w-full rounded-lg border border-[#d9e2ef] bg-[#f8fafd] px-3 py-2 text-xs text-[#172b4d] focus:border-[#3268c8] focus:bg-white focus:outline-none"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-[#52627a] mb-1">Tabla afectada</label>
+              <input
+                type="text"
+                [(ngModel)]="filtroTabla"
+                placeholder="Ej. usuarios"
+                aria-label="Tabla afectada"
+                class="w-full rounded-lg border border-[#d9e2ef] bg-[#f8fafd] px-3 py-2 text-xs text-[#172b4d] focus:border-[#3268c8] focus:bg-white focus:outline-none"
+              />
+            </div>
+          </div>
+          <div class="mt-3 flex justify-end gap-2">
+            <button
+              type="button"
+              (click)="limpiarFiltrosCambios()"
+              class="rounded-lg border border-[#d9e2ef] bg-white px-3 py-1.5 text-xs font-semibold text-[#52627a] hover:bg-[#f7f9fc] cursor-pointer"
+            >
+              Limpiar
+            </button>
+            <button
+              type="button"
+              (click)="filtrarCambios()"
+              class="rounded-lg bg-[#285bad] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#1d4689] cursor-pointer"
+            >
+              Filtrar
+            </button>
+          </div>
+        </div>
+      }
 
       @if (error()) {
         <div role="alert" class="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800">{{ error() }}</div>
@@ -64,23 +126,62 @@ import { AuditoriaAccesoDto, CambioAuditoriaDto, PaginaAuditoriaDto } from '../.
           </footer>
         </div>
       } @else {
-        <div class="overflow-x-auto rounded-xl border border-[#dce4ef] bg-white shadow-sm">
-          <table class="w-full min-w-[900px] border-collapse text-left text-sm">
-            <thead class="bg-[#f5f7fb] text-[11px] uppercase tracking-wide text-[#59677a]"><tr><th class="px-4 py-3">Fecha y hora</th><th class="px-4 py-3">Actor / rol</th><th class="px-4 py-3">Acción</th><th class="px-4 py-3">Registro</th><th class="px-4 py-3">Detalle</th></tr></thead>
-            <tbody class="divide-y divide-[#edf1f6]">
-              @for (cambio of cambios(); track cambio.id) {
-                <tr class="align-top hover:bg-[#fafcff]">
-                  <td class="whitespace-nowrap px-4 py-3 text-[#52627a]">{{ cambio.fechaCreacion | date:'dd/MM/yyyy HH:mm:ss' }}</td>
-                  <td class="px-4 py-3"><div class="font-semibold">{{ nombreActorCambio(cambio) }}</div><div class="mt-1 text-xs text-[#68778d]">{{ etiquetaRolCambio(cambio) }}</div></td>
-                  <td class="px-4 py-3"><span class="rounded bg-[#eaf1fd] px-2 py-1 text-[11px] font-bold text-[#285bad]">{{ cambio.accion }}</span></td>
-                  <td class="px-4 py-3"><div class="font-semibold">{{ cambio.tablaAfectada }}</div><div class="mt-1 break-all text-xs text-[#68778d]">Clave {{ cambio.registroClave }}</div></td>
-                  <td class="px-4 py-3"><details><summary class="cursor-pointer font-semibold text-[#285bad]">Ver valores registrados</summary><div class="mt-2 grid gap-2 xl:grid-cols-2"><div><p class="mb-1 text-xs font-semibold text-[#68778d]">Antes</p><pre class="max-h-52 overflow-auto whitespace-pre-wrap break-all rounded bg-[#f5f7fb] p-2 text-[11px]">{{ cambio.datosAnteriores || 'Sin estado anterior' }}</pre></div><div><p class="mb-1 text-xs font-semibold text-[#68778d]">Después</p><pre class="max-h-52 overflow-auto whitespace-pre-wrap break-all rounded bg-[#f5f7fb] p-2 text-[11px]">{{ cambio.datosNuevos || 'Sin estado nuevo' }}</pre></div></div></details></td>
+        <div class="overflow-hidden rounded-xl border border-[#dce4ef] bg-white shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[900px] border-collapse text-left text-sm">
+              <thead class="bg-[#f5f7fb] text-[11px] uppercase tracking-wide text-[#59677a]">
+                <tr>
+                  <th class="px-4 py-3">Fecha y hora</th>
+                  <th class="px-4 py-3">Actor / rol</th>
+                  <th class="px-4 py-3">Acción</th>
+                  <th class="px-4 py-3">Registro</th>
+                  <th class="px-4 py-3">Detalle</th>
                 </tr>
-              } @empty {
-                <tr><td colspan="5" class="px-4 py-12 text-center text-[#68778d]">Aún no hay cambios de datos registrados.</td></tr>
-              }
-            </tbody>
-          </table>
+              </thead>
+              <tbody class="divide-y divide-[#edf1f6]">
+                @for (cambio of paginaCambios()?.content ?? []; track cambio.id) {
+                  <tr class="align-top hover:bg-[#fafcff]">
+                    <td class="whitespace-nowrap px-4 py-3 text-[#52627a]">{{ cambio.fechaCreacion | date:'dd/MM/yyyy HH:mm:ss' }}</td>
+                    <td class="px-4 py-3">
+                      <div class="font-semibold">{{ nombreActorCambio(cambio) }}</div>
+                      <div class="mt-1 text-xs text-[#68778d]">{{ etiquetaRolCambio(cambio) }}</div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <span class="rounded bg-[#eaf1fd] px-2 py-1 text-[11px] font-bold text-[#285bad]">{{ cambio.accion }}</span>
+                    </td>
+                    <td class="px-4 py-3">
+                      <div class="font-semibold">{{ cambio.tablaAfectada }}</div>
+                      <div class="mt-1 break-all text-xs text-[#68778d]">Clave {{ cambio.registroClave }}</div>
+                    </td>
+                    <td class="px-4 py-3">
+                      <details>
+                        <summary class="cursor-pointer font-semibold text-[#285bad]">Ver valores registrados</summary>
+                        <div class="mt-2 grid gap-2 xl:grid-cols-2">
+                          <div>
+                            <p class="mb-1 text-xs font-semibold text-[#68778d]">Antes</p>
+                            <pre class="max-h-52 overflow-auto whitespace-pre-wrap break-all rounded bg-[#f5f7fb] p-2 text-[11px]">{{ cambio.datosAnteriores || 'Sin estado anterior' }}</pre>
+                          </div>
+                          <div>
+                            <p class="mb-1 text-xs font-semibold text-[#68778d]">Después</p>
+                            <pre class="max-h-52 overflow-auto whitespace-pre-wrap break-all rounded bg-[#f5f7fb] p-2 text-[11px]">{{ cambio.datosNuevos || 'Sin estado nuevo' }}</pre>
+                          </div>
+                        </div>
+                      </details>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr><td colspan="5" class="px-4 py-12 text-center text-[#68778d]">Aún no hay cambios de datos registrados.</td></tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          <footer class="flex flex-wrap items-center justify-between gap-3 border-t border-[#edf1f6] px-4 py-3 text-xs text-[#59677a]">
+            <span>{{ paginaCambios()?.totalElements ?? 0 }} registros · página {{ (paginaCambios()?.number ?? 0) + 1 }} de {{ paginaCambios()?.totalPages || 1 }}</span>
+            <div class="flex gap-2">
+              <button type="button" (click)="cargarCambios((paginaCambios()?.number ?? 0) - 1)" [disabled]="!paginaCambios() || paginaCambios()!.number <= 0" class="rounded-lg border border-[#d9e2ef] px-3 py-2 font-semibold disabled:cursor-not-allowed disabled:opacity-40">Anterior</button>
+              <button type="button" (click)="cargarCambios((paginaCambios()?.number ?? 0) + 1)" [disabled]="!paginaCambios() || paginaCambios()!.number + 1 >= paginaCambios()!.totalPages" class="rounded-lg border border-[#d9e2ef] px-3 py-2 font-semibold disabled:cursor-not-allowed disabled:opacity-40">Siguiente</button>
+            </div>
+          </footer>
         </div>
       }
     </section>
@@ -89,10 +190,16 @@ import { AuditoriaAccesoDto, CambioAuditoriaDto, PaginaAuditoriaDto } from '../.
 export class AuditoriaComponent {
   private readonly auditoria = inject(AuditoriaService);
   readonly pagina = signal<PaginaAuditoriaDto | null>(null);
+  readonly paginaCambios = signal<PaginaCambiosAuditoriaDto | null>(null);
   readonly cambios = signal<CambioAuditoriaDto[]>([]);
   readonly vista = signal<'accesos' | 'cambios'>('accesos');
   readonly cargando = signal(false);
   readonly error = signal('');
+
+  filtroFechaInicio = '';
+  filtroFechaFin = '';
+  filtroUsuarioId: number | string = '';
+  filtroTabla = '';
 
   nombreActor(evento: AuditoriaAccesoDto): string {
     return evento.usuarioNombre || (evento.usuarioId === null ? 'Actor no identificado' : `Usuario #${evento.usuarioId}`);
@@ -132,12 +239,26 @@ export class AuditoriaComponent {
     });
   }
 
-  cargarCambios(): void {
+  cargarCambios(page = 0): void {
+    if (page < 0) return;
     this.vista.set('cambios');
     this.cargando.set(true);
     this.error.set('');
-    this.auditoria.listarCambios().subscribe({
-      next: resultado => this.cambios.set(resultado),
+
+    const filtros: { fechaInicio?: string; fechaFin?: string; usuarioId?: number; tabla?: string } = {};
+    if (this.filtroFechaInicio) filtros.fechaInicio = this.filtroFechaInicio;
+    if (this.filtroFechaFin) filtros.fechaFin = this.filtroFechaFin;
+    if (this.filtroUsuarioId !== '' && this.filtroUsuarioId !== null && this.filtroUsuarioId !== undefined) {
+      const uid = Number(this.filtroUsuarioId);
+      if (!isNaN(uid)) filtros.usuarioId = uid;
+    }
+    if (this.filtroTabla?.trim()) filtros.tabla = this.filtroTabla.trim();
+
+    this.auditoria.listarCambios(page, 50, filtros).subscribe({
+      next: resultado => {
+        this.paginaCambios.set(resultado);
+        this.cambios.set(resultado.content);
+      },
       error: () => {
         this.error.set('No se pudieron cargar los cambios de datos.');
         this.cargando.set(false);
@@ -146,8 +267,20 @@ export class AuditoriaComponent {
     });
   }
 
+  filtrarCambios(): void {
+    this.cargarCambios(0);
+  }
+
+  limpiarFiltrosCambios(): void {
+    this.filtroFechaInicio = '';
+    this.filtroFechaFin = '';
+    this.filtroUsuarioId = '';
+    this.filtroTabla = '';
+    this.cargarCambios(0);
+  }
+
   actualizar(): void {
     if (this.vista() === 'accesos') this.cargar(this.pagina()?.number ?? 0);
-    else this.cargarCambios();
+    else this.cargarCambios(this.paginaCambios()?.number ?? 0);
   }
 }

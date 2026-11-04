@@ -60,14 +60,17 @@
           </div>
           <footer class="mt-[14px] flex flex-wrap items-center justify-between gap-2 border-t border-ui-divider pt-[13px] text-[13px] text-ui-muted max-[600px]:items-start">
             <span>ID {{ solicitud.id }}</span>
-            @if (solicitud.estado === 'AUTORIZACION_EDAD_PENDIENTE' && store.hasRole('DIRECCION')) {
+            @if (solicitud.estado === 'AUTORIZACION_EDAD_PENDIENTE' && store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) {
               <button type="button" class="rounded-[9px] border border-ui-action bg-ui-action px-3 text-[11px] font-bold text-ui-action-text box-border inline-flex min-w-0 min-h-11 items-center justify-center gap-2 font-sans text-sm font-semibold text-center" (click)="abrirAutorizacionEdad(solicitud)" [disabled]="!documentosValidados(solicitud)">Autorizar excepción de edad</button>
             }
-            @if (solicitud.estado === 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION' && store.hasRole('SECRETARIA')) {
+            @if (solicitud.estado === 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION' && store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) {
               <button type="button" class="rounded-[9px] border border-ui-action bg-ui-action px-3 text-[11px] font-bold text-ui-action-text box-border inline-flex min-w-0 min-h-11 items-center justify-center gap-2 font-sans text-sm font-semibold text-center" (click)="abrirAsignacionSeccion(solicitud)">Asignar sección</button>
             }
-            @if (solicitud.estado !== 'MATRICULADA' && solicitud.estado !== 'RECHAZADA' && solicitud.estado !== 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION' && store.hasRole('SECRETARIA')) {
+            @if (solicitud.estado !== 'MATRICULADA' && solicitud.estado !== 'RECHAZADA' && solicitud.estado !== 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION' && store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) {
               <div class="flex flex-wrap gap-2 max-[600px]:grid max-[600px]:w-full max-[600px]:grid-cols-1">
+                @if (solicitud.estado !== 'DOCUMENTOS_VALIDADOS') {
+                  <button type="button" class="rounded-[9px] border border-emerald-600 bg-emerald-600 text-white px-3 text-[11px] font-bold max-[600px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle hover:bg-emerald-700 transition-colors" (click)="darVistoBueno(solicitud)" [disabled]="guardando()">Dar visto bueno / Admitir</button>
+                }
                 <button type="button" class="rounded-[9px] border border-ui-border bg-ui-surface px-3 text-[11px] font-bold text-ui-text max-[600px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]" (click)="abrirObservacion(solicitud)">Solicitar corrección</button>
                 <button type="button" class="rounded-[9px] border border-ui-border bg-ui-surface px-3 text-[11px] font-bold text-ui-text max-[600px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]" (click)="abrirRechazo(solicitud)">Rechazar solicitud</button>
               </div>
