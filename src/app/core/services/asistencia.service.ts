@@ -7,8 +7,8 @@ import {
   ConciliacionAsistenciaResponseDto,
   DiscrepanciaAlertaResponseDto,
   ImportarLoteBiometricoRequestDto,
+  ImportacionBiometricaResponseDto,
   JustificarInasistenciaRequestDto,
-  LoteBiometricoResponseDto,
   RegistrarAsistenciaAulaRequestDto,
   ReporteAsistenciaDiariaResponseDto
 } from '../models/asistencia.model';
@@ -39,6 +39,11 @@ export class AsistenciaService {
     return this.http.get<ReporteAsistenciaDiariaResponseDto>(`${this.baseUrl}/aula`, { params });
   }
 
+  obtenerFechasConRegistros(desde: string, hasta: string): Observable<string[]> {
+    const params = new HttpParams().set('desde', desde).set('hasta', hasta);
+    return this.http.get<string[]>(`${this.baseUrl}/aula/fechas`, { params });
+  }
+
   obtenerMatriculasDocente(): Observable<MatriculaAsistenciaDocenteDto[]> {
     return this.http.get<MatriculaAsistenciaDocenteDto[]>(`${this.baseUrl}/aula/docente/matriculas`);
   }
@@ -64,14 +69,18 @@ export class AsistenciaService {
     return this.http.get<{ url: string }>(`${this.baseUrl}/aula/${asistenciaId}/justificacion/documento`);
   }
 
-  importarLoteBiometrico(request: ImportarLoteBiometricoRequestDto): Observable<LoteBiometricoResponseDto> {
-    return this.http.post<LoteBiometricoResponseDto>(`${this.baseUrl}/biometrico/importar`, request);
+  importarLoteBiometrico(request: ImportarLoteBiometricoRequestDto): Observable<ImportacionBiometricaResponseDto> {
+    return this.http.post<ImportacionBiometricaResponseDto>(`${this.baseUrl}/biometrico/importar`, request);
   }
 
-  importarArchivoBiometrico(archivo: File): Observable<LoteBiometricoResponseDto> {
+  importarArchivoBiometrico(archivo: File): Observable<ImportacionBiometricaResponseDto> {
     const form = new FormData();
     form.append('archivo', archivo);
-    return this.http.post<LoteBiometricoResponseDto>(`${this.baseUrl}/biometrico/importar-csv`, form);
+    return this.http.post<ImportacionBiometricaResponseDto>(`${this.baseUrl}/biometrico/importar-csv`, form);
+  }
+
+  obtenerEstadoImportacion(id: string): Observable<ImportacionBiometricaResponseDto> {
+    return this.http.get<ImportacionBiometricaResponseDto>(`${this.baseUrl}/biometrico/importaciones/${id}`);
   }
 
   listarAlertasConciliacion(fecha: string): Observable<DiscrepanciaAlertaResponseDto[]> {

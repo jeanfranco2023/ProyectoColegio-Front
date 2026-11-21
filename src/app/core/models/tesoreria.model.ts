@@ -5,7 +5,15 @@ export type EstadoPago = 'APROBADO' | 'RECHAZADO' | 'REVERTIDO';
 export type PasarelaProveedor = 'CULQI' | 'NIUBIZ' | 'MERCADO_PAGO' | 'CAJA_EFECTIVO' | 'TRANSFERENCIA';
 export type TipoComprobante = 'BOLETA' | 'RECIBO_INTERNO';
 export type EstadoComprobante = 'EMITIDO' | 'ANULADO';
-export interface ConceptoCobroResponseDto { id: number; codigo: string; nombre: string; tipoConcepto: TipoConcepto; montoSugerido: number; }
+export interface ConceptoCobroResponseDto { id: number; codigo: string; nombre: string; tipoConcepto: TipoConcepto; montoSugerido: number; activo?: boolean; diaVencimiento?: number; }
+export interface MatriculaParaCobro { id: number; estudiante: string; anio: number; }
+export interface ConceptoExtraordinario {
+  nombre: string;
+  tipo: 'OTRO' | 'CERTIFICADO';
+  monto: number | null;
+  activo: boolean;
+  vencimiento?: string | null;
+}
 export interface GenerarObligacionesAnualesRequestDto { matriculaId: number; conceptoMatriculaId: number; conceptoPensionId: number; primerVencimiento: string; }
 export interface CrearObligacionMatriculaRequestDto { matriculaId: number; fechaVencimiento: string; }
 
@@ -68,6 +76,12 @@ export interface RegistrarPagoCajaRequestDto {
 
 export interface CrearPreferenciaMercadoPagoDto {
   obligacionPagoId: number;
+  backUrlSuccess?: string;
+  backUrlFailure?: string;
+}
+
+export interface CrearPreferenciaAdelantoMercadoPagoDto {
+  obligacionPagoIds: number[];
   backUrlSuccess?: string;
   backUrlFailure?: string;
 }

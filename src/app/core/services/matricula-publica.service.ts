@@ -24,6 +24,10 @@ export class MatriculaPublicaService {
     return this.http.get<CatalogoMatriculaPublicaDto>(`${this.baseUrl}/public/catalogo`);
   }
 
+  modoPresentacion(): Observable<{ activo: boolean }> {
+    return this.http.get<{ activo: boolean }>(`${this.baseUrl}/public/modo-presentacion`);
+  }
+
   crear(payload: CrearSolicitudMatriculaPublicaDto): Observable<SolicitudMatriculaPublicaDto> {
     return this.http.post<SolicitudMatriculaPublicaDto>(`${this.baseUrl}/public`, payload);
   }
@@ -84,8 +88,21 @@ export class MatriculaPublicaService {
     );
   }
 
+  simularPago(
+    id: string,
+    token: string,
+    metodoPago: import('../../shared/ui/simulador-checkout.component').MetodoPagoOnline,
+    referenciaOperacion?: string
+  ): Observable<SolicitudMatriculaPublicaDto> {
+    return this.http.post<SolicitudMatriculaPublicaDto>(
+      `${this.baseUrl}/public/${encodeURIComponent(id)}/simular-pago`,
+      { metodoPago, referenciaOperacion: referenciaOperacion ?? null },
+      { headers: this.tokenHeaders(token) }
+    );
+  }
+
   descargarComprobante(id: string, token: string): Observable<Blob> {
-    return this.http.get(`${this.baseUrl}/public/${encodeURIComponent(id)}/comprobante`, {
+    return this.http.get(`${this.baseUrl}/public/${encodeURIComponent(id)}/comprobante-pdf`, {
       headers: this.tokenHeaders(token),
       responseType: 'blob'
     });

@@ -58,4 +58,61 @@ describe('Ranking por sección', () => {
     expect(component.rankingDisclaimer()).toContain('no representa una escala oficial');
     expect(component.rankingAlumnos()[0].beneficioInstitucional).toBeNull();
   });
+
+  it('calcula condición de Alumno Destacado cuando predominan AD/A sin notas C', () => {
+    const evaluacion = {
+      consultarLibreta: vi.fn(() => of({
+        matriculaId: 900,
+        calificaciones: [
+          { id: 1, matriculaId: 900, calificacionCualitativa: 'AD', competenciaId: 10, areaCurricularId: 2 },
+          { id: 2, matriculaId: 900, calificacionCualitativa: 'A', competenciaId: 11, areaCurricularId: 2 },
+          { id: 3, matriculaId: 900, calificacionCualitativa: 'A', competenciaId: 12, areaCurricularId: 2 }
+        ]
+      }))
+    };
+    TestBed.configureTestingModule({ providers: [
+      { provide: EvaluacionService, useValue: evaluacion },
+      { provide: AcademicoService, useValue: {} },
+      { provide: AuthStore, useValue: { hasRole: () => true } }
+    ] });
+    const component = TestBed.runInInjectionContext(() => new CalificacionesComponent());
+    component.alumnoMetricas.set({
+      matriculaId: 900, numeroOrden: 1, estudiante: 'Alumno Destacado QA', c1: 'AD', c2: '-', c3: '-',
+      conclusionDescriptiva: 'Excelente', requiereRefuerzo: false, competenciaId: 10
+    });
+    component.libretaCalificaciones.set([
+      { id: 1, matriculaId: 900, anioLectivoId: 1, seccionId: 1, periodoAcademicoId: 1, calificacionCualitativa: 'AD', competenciaId: 10 },
+      { id: 2, matriculaId: 900, anioLectivoId: 1, seccionId: 1, periodoAcademicoId: 1, calificacionCualitativa: 'A', competenciaId: 11 }
+    ]);
+
+    expect(component.esAlumnoDestacado()).toBe(true);
+    expect(component.tieneProblemas()).toBe(false);
+    expect(component.cantAdMetrica()).toBe(1);
+    expect(component.cantAMetrica()).toBe(1);
+    expect(component.cantCMetrica()).toBe(0);
+  });
+
+  it('detecta Alumno en Riesgo con dificultades cuando tiene al menos una nota C', () => {
+    TestBed.configureTestingModule({ providers: [
+      { provide: EvaluacionService, useValue: {} },
+      { provide: AcademicoService, useValue: {} },
+      { provide: AuthStore, useValue: { hasRole: () => true } }
+    ] });
+    const component = TestBed.runInInjectionContext(() => new CalificacionesComponent());
+    component.competencias.set([{ id: 15, areaId: 5, numeroOrden: 1, nombre: 'Resuelve problemas de cantidad', descripcion: 'D1' }]);
+    component.areas.set([{ id: 5, nombre: 'Matemática' }]);
+    component.alumnoMetricas.set({
+      matriculaId: 901, numeroOrden: 2, estudiante: 'Alumno con Dificultad QA', c1: 'C', c2: '-', c3: '-',
+      conclusionDescriptiva: 'Requiere refuerzo', requiereRefuerzo: true, competenciaId: 15
+    });
+    component.libretaCalificaciones.set([
+      { id: 4, matriculaId: 901, anioLectivoId: 1, seccionId: 1, periodoAcademicoId: 1, calificacionCualitativa: 'C', competenciaId: 15, areaCurricularId: 5 }
+    ]);
+
+    expect(component.tieneProblemas()).toBe(true);
+    expect(component.esAlumnoDestacado()).toBe(false);
+    expect(component.cantCMetrica()).toBe(1);
+    expect(component.cursosOCompetenciasConDificultad()).toEqual(['Matemática (Resuelve problemas de cantidad)']);
+  });
+
 });

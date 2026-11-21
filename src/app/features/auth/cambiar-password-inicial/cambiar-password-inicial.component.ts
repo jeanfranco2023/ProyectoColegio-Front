@@ -23,9 +23,9 @@ import { AuthStore } from '../../../core/state/auth.store';
         </div>
 
         <div class="mb-6">
-          <h1 class="text-2xl font-bold tracking-tight text-[#14213d]">Actualiza tu contraseña</h1>
+          <h1 class="text-2xl font-bold tracking-tight text-[#14213d]">Crea tu nueva contraseña</h1>
           <p class="mt-2 text-xs leading-5 text-slate-500">
-            Por política de seguridad institucional, debes cambiar la clave temporal asignada para activar tu cuenta de forma definitiva.
+            Ingresa tu nueva contraseña personal y segura para activar tu cuenta y acceder directamente al portal.
           </p>
         </div>
 
@@ -47,37 +47,6 @@ import { AuthStore } from '../../../core/state/auth.store';
         }
 
         <form (ngSubmit)="guardar()" class="space-y-4">
-          <!-- Contraseña actual -->
-          <div>
-            <label for="passwordActual" class="block text-xs font-bold text-[#34445d] mb-1">
-              Contraseña actual (temporal) <span class="text-[#c49a58]">*</span>
-            </label>
-            <div class="relative">
-              <input
-                id="passwordActual"
-                [type]="verActual() ? 'text' : 'password'"
-                [(ngModel)]="passwordActual"
-                name="passwordActual"
-                placeholder="Ingresa la clave temporal con la que accediste"
-                required
-                autocomplete="current-password"
-                class="w-full h-11 px-3.5 pr-10 text-xs rounded-xl border border-[#dce3ec] focus:border-[#2563eb] focus:outline-none focus:ring-2 focus:ring-[#2563eb]/20 text-[#14213d]"
-              />
-              <button
-                type="button"
-                (click)="verActual.set(!verActual())"
-                class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
-                [attr.aria-label]="verActual() ? 'Ocultar contraseña actual' : 'Ver contraseña actual'"
-              >
-                @if (verActual()) {
-                  <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"/></svg>
-                } @else {
-                  <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                }
-              </button>
-            </div>
-          </div>
-
           <!-- Nueva contraseña -->
           <div>
             <label for="passwordNuevo" class="block text-xs font-bold text-[#34445d] mb-1">
@@ -199,11 +168,9 @@ export class CambiarPasswordInicialComponent {
   private readonly store = inject(AuthStore);
   private readonly router = inject(Router);
 
-  passwordActual = '';
   passwordNuevo = '';
   passwordConfirmacion = '';
 
-  verActual = signal(false);
   verNuevo = signal(false);
   verConfirmacion = signal(false);
 
@@ -233,13 +200,11 @@ export class CambiarPasswordInicialComponent {
 
   formularioValido(): boolean {
     return (
-      !!this.passwordActual.trim() &&
       this.tieneMinimo8() &&
       this.tieneMayuscula() &&
       this.tieneMinuscula() &&
       this.tieneNumero() &&
-      this.coinciden() &&
-      this.passwordNuevo !== this.passwordActual
+      this.coinciden()
     );
   }
 
@@ -251,7 +216,6 @@ export class CambiarPasswordInicialComponent {
 
     this.authService
       .cambiarPasswordInicial({
-        passwordActual: this.passwordActual,
         nuevoPassword: this.passwordNuevo
       })
       .pipe(finalize(() => this.guardando.set(false)))
@@ -266,7 +230,7 @@ export class CambiarPasswordInicialComponent {
         error: (err) => {
           const msg =
             err?.error?.message ||
-            'No se pudo actualizar la contraseña. Verifica que tu contraseña actual sea la correcta.';
+            'No se pudo actualizar la contraseña. Inténtalo nuevamente.';
           this.error.set(msg);
         }
       });

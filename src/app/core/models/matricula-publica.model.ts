@@ -1,4 +1,5 @@
-export type TipoDocumentoSolicitud = 'PARTIDA_NACIMIENTO' | 'DNI_C4' | 'RECIBO_SERVICIO';
+export type ModalidadIngreso = 'REGULAR' | 'TRASLADO';
+export type TipoDocumentoSolicitud = 'PARTIDA_NACIMIENTO' | 'DNI_C4' | 'RECIBO_SERVICIO' | 'CERTIFICADO_ESTUDIOS';
 export type EstadoValidacionDocumento = 'PENDIENTE' | 'EN_VALIDACION' | 'VALIDADO' | 'OBSERVADO';
 export type EstadoFirmaDigital = 'VALIDA' | 'INVALIDA' | 'NO_APLICA' | 'NO_VERIFICABLE' | 'ERROR_SERVICIO';
 export type EstadoSolicitudMatriculaPublica =
@@ -63,11 +64,13 @@ export interface CrearSolicitudMatriculaPublicaDto {
   apellidoPaternoApoderado: string;
   apellidoMaternoApoderado: string;
   celularApoderado: string;
-  emailApoderado: string | null;
+  emailApoderado: string;
   direccionApoderado: string;
   ubigeoApoderado?: string;
   parentesco: 'PADRE' | 'MADRE';
   consentimientoGemini: true;
+  modalidadIngreso?: ModalidadIngreso;
+  colegioProcedencia?: string;
 }
 
 export interface ReniecPersonaDto {
@@ -88,6 +91,8 @@ export interface SolicitudMatriculaPublicaDto {
   montoPago: number;
   estudianteId: number | null;
   matriculaId: number | null;
+  modalidadIngreso?: ModalidadIngreso;
+  colegioProcedencia?: string | null;
 }
 
 export interface PagoMatriculaPublicaDto {

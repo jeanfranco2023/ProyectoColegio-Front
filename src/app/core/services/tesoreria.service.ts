@@ -6,6 +6,7 @@ import {
   ConceptoCobroResponseDto,
   CrearObligacionMatriculaRequestDto,
   GenerarObligacionesAnualesRequestDto,
+  CrearPreferenciaAdelantoMercadoPagoDto,
   CrearPreferenciaMercadoPagoDto,
   ObligacionResponseDto,
   PreferenciaMercadoPagoResponseDto,
@@ -19,6 +20,38 @@ import {
 export class TesoreriaService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/tesoreria`;
+
+  conceptosExtraordinarios() {
+    return this.http.get<ConceptoCobroResponseDto[]>(this.baseUrl + '/extraordinarios/conceptos');
+  }
+
+  guardarConceptoExtraordinario(id: number | null, concepto: import('../models/tesoreria.model').ConceptoExtraordinario) {
+    const url = this.baseUrl + '/extraordinarios/conceptos';
+    return id === null
+      ? this.http.post<ConceptoCobroResponseDto>(url, concepto)
+      : this.http.put<ConceptoCobroResponseDto>(url + '/' + id, concepto);
+  }
+
+  configurarPension(diaVencimiento: number) {
+    return this.http.put<ConceptoCobroResponseDto>(this.baseUrl + '/pensiones/configuracion', { diaVencimiento });
+  }
+
+  matriculasParaCobro() {
+    return this.http.get<import('../models/tesoreria.model').MatriculaParaCobro[]>(this.baseUrl + '/extraordinarios/matriculas');
+  }
+
+  generarExtraordinarios(conceptoId: number, matriculaIds: number[], vencimiento: string) {
+    return this.http.post<ObligacionResponseDto[]>(this.baseUrl + '/extraordinarios/obligaciones',
+      { conceptoId, matriculaIds, vencimiento });
+  }
+
+  listarExtraordinarios(matriculaId: number) {
+    return this.http.get<ObligacionResponseDto[]>(this.baseUrl + '/extraordinarios/obligaciones', { params: { matriculaId } });
+  }
+
+  descargarConstancia(id: number) {
+    return this.http.get(this.baseUrl + '/extraordinarios/obligaciones/' + id + '/constancia', { responseType: 'blob' });
+  }
 
   listarConceptos(): Observable<ConceptoCobroResponseDto[]> {
     return this.http.get<ConceptoCobroResponseDto[]>(`${this.baseUrl}/conceptos`);
@@ -54,5 +87,43 @@ export class TesoreriaService {
 
   confirmarPago(id: number): Observable<TransaccionResponseDto | null> {
     return this.http.post<TransaccionResponseDto | null>(`${this.baseUrl}/obligaciones/${id}/confirmar-pago`, {});
+  }
+
+  simularPagoMercadoPago(
+    id: number,
+    metodoPago: import('../../shared/ui/simulador-checkout.component').MetodoPagoOnline,
+    referenciaOperacion?: string
+  ): Observable<TransaccionResponseDto> {
+    return this.http.post<TransaccionResponseDto>(
+      `${this.baseUrl}/obligaciones/${id}/simular-pago`,
+      { metodoPago, referenciaOperacion: referenciaOperacion ?? null }
+    );
+  }
+
+  crearPreferenciaAdelantoMercadoPago(
+    payload: CrearPreferenciaAdelantoMercadoPagoDto
+  ): Observable<PreferenciaMercadoPagoResponseDto> {
+    return this.http.post<PreferenciaMercadoPagoResponseDto>(
+      `${this.baseUrl}/pagos/mercadopago/preferencia-adelanto`,
+      payload
+    );
+  }
+
+  confirmarPagoAdelanto(obligacionPagoIds: number[]): Observable<TransaccionResponseDto[]> {
+    return this.http.post<TransaccionResponseDto[]>(
+      `${this.baseUrl}/obligaciones/adelanto/confirmar-pago`,
+      { obligacionPagoIds }
+    );
+  }
+
+  simularPagoAdelantoMercadoPago(
+    obligacionPagoIds: number[],
+    metodoPago: import('../../shared/ui/simulador-checkout.component').MetodoPagoOnline,
+    referenciaOperacion?: string
+  ): Observable<TransaccionResponseDto[]> {
+    return this.http.post<TransaccionResponseDto[]>(
+      `${this.baseUrl}/obligaciones/adelanto/simular-pago`,
+      { obligacionPagoIds, metodoPago, referenciaOperacion: referenciaOperacion ?? null }
+    );
   }
 }

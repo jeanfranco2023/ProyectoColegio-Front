@@ -1,4 +1,4 @@
-export type RolNombre = 'DIRECCION' | 'SECRETARIA' | 'DOCENTE' | 'AUXILIAR' | 'TUTOR' | 'APODERADO';
+export type RolNombre = 'DIRECCION' | 'SECRETARIA' | 'DOCENTE' | 'AUXILIAR' | 'TUTOR' | 'APODERADO' | 'ADMINISTRADOR';
 
 export interface RolResponseDto {
   id: number;
@@ -9,8 +9,11 @@ export interface RolResponseDto {
 export interface UserResponseDto {
   id: number;
   username: string;
+  nombreCompleto?: string | null;
+  dni?: string | null;
   email: string;
   activo: boolean;
+  especialidad?: string | null;
   roles: RolResponseDto[];
   createdAt: string;
   updatedAt: string;
@@ -18,6 +21,8 @@ export interface UserResponseDto {
 
 export interface CrearUsuarioRequestDto {
   username: string;
+  dni?: string;
+  nombreCompleto?: string;
   email: string;
   password: string;
   roles: RolNombre[];
@@ -29,7 +34,7 @@ export interface CambiarPasswordRequestDto {
 }
 
 export interface CambiarPasswordInicialRequestDto {
-  passwordActual: string;
+  passwordActual?: string;
   nuevoPassword: string;
 }
 
@@ -54,11 +59,11 @@ export interface AuthResponseDto {
 export type EstadoValidacionIa = 'VALIDADO_IA' | 'OBSERVADO_IA' | 'PENDIENTE';
 
 export interface DocumentoLegajoDto {
-  tipo: 'CV' | 'TITULO' | 'ANTECEDENTES';
+  tipoDocumento: 'CV' | 'TITULO_PROFESIONAL' | 'ANTECEDENTES_POLICIALES' | 'ANTECEDENTES_PENALES' | 'OTRO';
   nombreArchivo: string | null;
   estadoIa: EstadoValidacionIa;
-  observacionIa: string | null;
-  fechaSubida?: string | null;
+  observacionesIa: string | null;
+  fechaCreacion?: string | null;
 }
 
 export interface ExpedienteEmpleadoDto {

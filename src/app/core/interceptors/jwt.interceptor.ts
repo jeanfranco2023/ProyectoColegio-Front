@@ -12,7 +12,10 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
 
   // The public enrollment flow uses its own one-time request token, not a user session.
   // Avoid attaching stale admin credentials or logging a family out on public API errors.
-  if (req.url.includes('/api/v1/auth/')
+  // Note: /api/v1/auth/login and /api/v1/auth/refresh do not require Bearer token,
+  // but authenticated endpoints like /api/v1/auth/cambiar-password-inicial DO require Bearer token.
+  if (req.url.includes('/api/v1/auth/login')
+      || req.url.includes('/api/v1/auth/refresh')
       || /\/api\/v1\/solicitudes-matricula\/public(?:\/|$)/.test(req.url)) {
     return next(req);
   }

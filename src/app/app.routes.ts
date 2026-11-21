@@ -121,6 +121,14 @@ export const routes: Routes = [
           import('./features/usuarios/usuarios.component').then(m => m.UsuariosComponent)
       },
       {
+        path: 'solicitudes-cambio',
+        canActivate: [roleGuard(ADMIN_ROUTE_ACCESS['solicitudes-cambio'])],
+        loadComponent: () =>
+          import('./features/solicitudes-cambio/solicitudes-cambio.component').then(
+            m => m.SolicitudesCambioComponent
+          )
+      },
+      {
         path: 'auditoria',
         canActivate: [roleGuard(ADMIN_ROUTE_ACCESS.auditoria)],
         loadComponent: () =>

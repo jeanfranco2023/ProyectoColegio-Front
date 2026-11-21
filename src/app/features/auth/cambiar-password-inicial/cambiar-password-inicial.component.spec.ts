@@ -30,7 +30,6 @@ describe('CambiarPasswordInicialComponent', () => {
 
     const fixture = TestBed.createComponent(CambiarPasswordInicialComponent);
     const component = fixture.componentInstance;
-    component.passwordActual = 'Temp1234#';
     component.passwordNuevo = 'corta';
     component.passwordConfirmacion = 'corta';
 
@@ -62,7 +61,6 @@ describe('CambiarPasswordInicialComponent', () => {
 
     const fixture = TestBed.createComponent(CambiarPasswordInicialComponent);
     const component = fixture.componentInstance;
-    component.passwordActual = 'Temp1234#';
     component.passwordNuevo = 'NuevaPass2026!';
     component.passwordConfirmacion = 'NuevaPass2026!';
 
@@ -71,7 +69,6 @@ describe('CambiarPasswordInicialComponent', () => {
     component.guardar();
 
     expect(authService.cambiarPasswordInicial).toHaveBeenCalledWith({
-      passwordActual: 'Temp1234#',
       nuevoPassword: 'NuevaPass2026!',
     });
     expect(component.exito()).toBe(true);
@@ -81,7 +78,7 @@ describe('CambiarPasswordInicialComponent', () => {
   it('muestra el mensaje de error cuando el backend rechaza', () => {
     const authService = {
       cambiarPasswordInicial: vi.fn(() =>
-        throwError(() => ({ error: { message: 'La contraseña actual no es correcta' } }))
+        throwError(() => ({ error: { message: 'La nueva contraseña no cumple los requisitos' } }))
       ),
     };
     const store = {
@@ -103,14 +100,13 @@ describe('CambiarPasswordInicialComponent', () => {
 
     const fixture = TestBed.createComponent(CambiarPasswordInicialComponent);
     const component = fixture.componentInstance;
-    component.passwordActual = 'Incorrecta1#';
     component.passwordNuevo = 'NuevaPass2026!';
     component.passwordConfirmacion = 'NuevaPass2026!';
 
     component.guardar();
 
     expect(authService.cambiarPasswordInicial).toHaveBeenCalled();
-    expect(component.error()).toBe('La contraseña actual no es correcta');
+    expect(component.error()).toBe('La nueva contraseña no cumple los requisitos');
     expect(store.marcarPasswordCambiado).not.toHaveBeenCalled();
   });
 });

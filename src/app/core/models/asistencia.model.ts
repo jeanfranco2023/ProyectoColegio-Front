@@ -14,6 +14,8 @@ export interface AsistenciaAulaResponseDto {
   id: number;
   matriculaId: number;
   nombreEstudiante?: string;
+  seccionId?: number | null;
+  seccion?: string | null;
   fechaSesion: string;
   horaRegistro?: string;
   estado: EstadoAsistenciaAula;
@@ -70,4 +72,20 @@ export interface LoteBiometricoResponseDto {
   marcasErroneas: number;
   importadoPorUsuarioId: number;
   createdAt: string;
+}
+
+export type EstadoImportacionBiometrica = 'EN_COLA' | 'PROCESANDO' | 'COMPLETADO' | 'ERROR';
+
+export interface ImportacionBiometricaResponseDto {
+  id: string;
+  nombreArchivo: string;
+  estado: EstadoImportacionBiometrica;
+  totalFilas: number;
+  marcasValidas: number;
+  marcasErroneas: number;
+  loteId: number | null;
+  mensajeError: string | null;
+  creadoEn: string;
+  iniciadoEn: string | null;
+  finalizadoEn: string | null;
 }

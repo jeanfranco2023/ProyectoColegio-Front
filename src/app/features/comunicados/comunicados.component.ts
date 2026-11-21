@@ -23,7 +23,7 @@ export interface ComunicadoEscolar {
   selector: 'app-comunicados',
   standalone: true,
   imports: [CommonModule, FormsModule, UiDatePePipe],
-template: `
+  template: `
     <div class="space-y-6 min-w-0 font-inter text-[#172b4d] [&_button]:min-h-11 [&_input]:min-h-11 [&_select]:min-h-11 [&_textarea]:min-h-11 [&_:focus-visible]:outline-[3px] [&_:focus-visible]:outline-[#2864c5] [&_:focus-visible]:outline-offset-[3px] [&_.grid>div]:min-w-0 [&_.grid>article]:min-w-0">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t-[3px] border-[#c49a58]/50 pt-3">
@@ -62,6 +62,20 @@ template: `
             <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Título *<input [(ngModel)]="titulo" name="titulo" required maxlength="40" placeholder="Asunto del comunicado" class="min-w-0 !min-h-[46px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
             <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Contenido *<textarea [(ngModel)]="contenido" name="contenido" required maxlength="20000" rows="6" placeholder="Escribe el mensaje para la comunidad" class="min-w-0 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base py-[10px] resize-y !min-h-[110px] !font-[650]"></textarea></label>
             <label class="inline-flex items-center gap-3 text-sm text-slate-700"><input type="checkbox" class="w-[18px] accent-[#2563eb] !font-[650]" [(ngModel)]="requiereAcuse" name="requiereAcuse"> Solicitar confirmación de lectura</label>
+
+            <!-- Vista previa antes de publicar (Hito 3) -->
+            <section class="rounded-xl border border-[#d9e1ec] bg-[#f8fafd] p-4 space-y-2" aria-label="Vista previa antes de publicar">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-[#2563eb]">Vista previa antes de publicar</span>
+                <span class="rounded-md bg-white px-2.5 py-0.5 text-[11px] font-bold text-[#14213d] border border-[#e5eaf2]">Audiencia: {{ audienciaSeleccionadaTexto() }}</span>
+              </div>
+              <h4 class="m-0 text-sm font-bold text-[#14213d]">{{ titulo.trim() || 'Asunto del comunicado (sin título aún)' }}</h4>
+              <p class="m-0 text-xs text-[#59677a] whitespace-pre-wrap leading-relaxed">{{ contenido.trim() || 'El contenido del comunicado se mostrará aquí para su revisión previa antes de publicarlo.' }}</p>
+              <div class="pt-2 border-t border-[#e5eaf2] flex items-center justify-between text-[11px] text-[#59677a]">
+                <span>{{ requiereAcuse ? 'Requiere confirmación de lectura familiar' : 'Informativo general (sin acuse obligatorio)' }}</span>
+                <span>Alcance oficial</span>
+              </div>
+            </section>
           </div><footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]"><button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogo()">Cancelar</button><button type="submit" [disabled]="publicando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ publicando() ? 'Publicando…' : 'Publicar comunicado' }}</button></footer></form>
         </div>
       </dialog>
@@ -79,7 +93,7 @@ template: `
               <div>
                 <div class="flex items-center justify-between gap-2">
                   <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold tracking-wide uppercase bg-[#f3f6fa] text-[#2563eb] border border-[#e5eaf2]">
-                    Para: {{ item.destinatarios }}
+                    Audiencia: {{ item.destinatarios }}
                   </span>
                   @switch (item.prioridad) {
                     @case ('URGENTE') {
@@ -157,6 +171,11 @@ export class ComunicadosComponent implements OnInit {
     }
   }
 
+  audienciaSeleccionadaTexto(): string {
+    const anio = this.anios().find(a => a.id === this.anioLectivoId);
+    return anio ? `Comunidad educativa · Año ${anio.anio}` : 'Comunidad educativa (Familias y Personal)';
+  }
+
   cargarComunicados(): void {
     this.error.set(null);
     this.paginaBandejaApoderado = 0;
@@ -211,14 +230,21 @@ export class ComunicadosComponent implements OnInit {
   }
 
   private mapearComunicado(c: import('../../core/models/comunicado.model').ComunicadoResponseDto): ComunicadoEscolar {
+    const anioId = (c as { anioLectivoId?: number }).anioLectivoId;
+    const anioObj = anioId ? this.anios().find(a => a.id === anioId) : undefined;
+    const audiencia = anioObj
+      ? `Comunidad educativa · Año ${anioObj.anio}`
+      : anioId
+        ? `Comunidad educativa · Año lectivo #${anioId}`
+        : 'Comunidad educativa (Familias y Personal)';
     return {
       id: c.id,
       titulo: c.titulo || 'Sin título',
       resumen: c.contenido || 'Sin contenido adicional',
-      destinatarios: 'Destinatario no informado',
-      prioridad: '—',
+      destinatarios: audiencia,
+      prioridad: c.requiereAcuse ? 'IMPORTANTE' : 'INFORMATIVO',
       fechaPublicacion: c.fechaPublicacion ? String(c.fechaPublicacion).split('T')[0] : '—',
-      autor: c.remitenteUsuarioId ? `Usuario #${c.remitenteUsuarioId}` : '—',
+      autor: c.remitenteUsuarioId ? `Usuario #${c.remitenteUsuarioId}` : 'Dirección / Secretaría',
       requiereAcuse: c.requiereAcuse,
       acuseConfirmado: c.acuseConfirmado === true || this.acusesConfirmados().has(c.id)
     };

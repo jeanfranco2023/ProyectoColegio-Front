@@ -29,6 +29,9 @@ export interface Stage9Payment {
   currency: 'PEN';
   dueDate: string;
   status: 'PAGADO' | 'PAGO PARCIAL' | 'PENDIENTE' | 'VENCIDO' | 'SIN ESTADO';
+  rawAmount?: number;
+  canPay?: boolean;
+  canDownloadReceipt?: boolean;
 }
 
 export interface Stage9ObservationDraft {

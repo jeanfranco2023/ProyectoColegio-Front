@@ -6,6 +6,7 @@ import { ApiResponse } from '../models/api-response.model';
 import {
   CambiarPasswordRequestDto,
   CrearUsuarioRequestDto,
+  DocumentoLegajoDto,
   UserResponseDto
 } from '../models/auth.model';
 import { ReniecPersonaDto } from '../models/matricula-publica.model';
@@ -55,7 +56,7 @@ export class UsuarioService {
     return this.http.get<ReniecPersonaDto>(`${environment.apiUrl}/personas/reniec/${encodeURIComponent(dni)}`);
   }
 
-  corregirDni(id: number, payload: { nuevoDni: string; motivo: string }): Observable<UserResponseDto> {
+  corregirDni(id: number, payload: { nuevoDni: string; motivo: string; nombreCompleto?: string }): Observable<UserResponseDto> {
     return this.http
       .patch<ApiResponse<UserResponseDto>>(`${this.baseUrl}/${id}/dni`, payload)
       .pipe(map(res => res.data));
@@ -64,6 +65,16 @@ export class UsuarioService {
   revocarRol(usuarioId: number, rolId: number): Observable<UserResponseDto> {
     return this.http
       .delete<ApiResponse<UserResponseDto>>(`${this.baseUrl}/${usuarioId}/roles/${rolId}`)
+      .pipe(map(res => res.data));
+  }
+
+  subirDocumentoLegajo(usuarioId: number, tipo: string, archivo: File): Observable<DocumentoLegajoDto> {
+    const formData = new FormData();
+    formData.append('archivo', archivo);
+    formData.append('tipoDocumento', tipo === 'TITULO' ? 'TITULO_PROFESIONAL'
+      : tipo === 'ANTECEDENTES' ? 'ANTECEDENTES_POLICIALES' : tipo);
+    return this.http
+      .post<ApiResponse<DocumentoLegajoDto>>(`${this.baseUrl}/${usuarioId}/documentos`, formData)
       .pipe(map(res => res.data));
   }
 }

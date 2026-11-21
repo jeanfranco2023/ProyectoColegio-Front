@@ -16,4 +16,17 @@ describe('portal familiar conectado', () => {
     it('no consulta una matrícula ajena al selector autorizado', () => { componente.seleccionar(99); componente.descargar(99); http.expectNone(() => true); expect(componente.matriculaId()).toBeNull(); });
     it('una respuesta tardía de otro hijo no reemplaza la selección actual', () => { componente.seleccionar(1); const primeras = http.match(() => true); componente.seleccionar(2); completar(2); for (const peticion of primeras)
         peticion.flush([]); expect(componente.matriculaId()).toBe(2); expect(componente.estado()).toBe('normal'); });
+
+    it('abre el modal Mercado Pago desde el portal para pagar todas las cuotas por adelantado', () => {
+        componente.seleccionar(1);
+        http.expectOne(r => r.url.endsWith('/matriculas/1/calificaciones')).flush([]);
+        http.expectOne(r => r.url.endsWith('/matriculas/1/periodos')).flush([{ id: 1, nombre: 'I Bimestre' }]);
+        http.expectOne(r => r.url.endsWith('/matriculas/1/asistencia')).flush([]);
+        http.expectOne(r => r.url.endsWith('/tesoreria/mis-obligaciones')).flush([
+            { id: 50, matriculaId: 1, conceptoId: 2, tipoConcepto: 'PENSION', numeroCuota: 9, descripcion: 'Pensión Noviembre', fechaVencimiento: '2026-11-20', montoBase: 120, montoMora: 0, montoDescuento: 0, totalPagado: 0, saldoPendiente: 120, estado: 'PENDIENTE', nombreEstudiante: 'Ana Perez' },
+            { id: 51, matriculaId: 1, conceptoId: 2, tipoConcepto: 'PENSION', numeroCuota: 10, descripcion: 'Pensión Diciembre', fechaVencimiento: '2026-12-20', montoBase: 120, montoMora: 0, montoDescuento: 0, totalPagado: 0, saldoPendiente: 120, estado: 'PENDIENTE', nombreEstudiante: 'Ana Perez' }
+        ]);
+        expect(componente.pagosPendientes().length).toBe(2);
+        expect(componente.totalPendientePortal()).toBe(240);
+    });
 });

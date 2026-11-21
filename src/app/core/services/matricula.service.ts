@@ -10,7 +10,11 @@ import {
   EstudianteResponseDto,
   ConsultaDniResponseDto,
   ApoderadoResponseDto,
-  VincularApoderadoRequestDto
+  ApoderadoFichaResponseDto,
+  VincularApoderadoRequestDto,
+  MatriculaPresencialResponseDto,
+  PagoPresencialEnLinea,
+  EstadoPagoPresencial
 } from '../models/matricula.model';
 import { CambiarEstadoMatriculaRequestDto } from '../models/matricula.model';
 
@@ -79,6 +83,10 @@ export class MatriculaService {
     return this.http.get<EstudianteResponseDto>(`${this.estudiantesUrl}/${id}`);
   }
 
+  listarApoderadosPorEstudiante(estudianteId: number): Observable<ApoderadoFichaResponseDto[]> {
+    return this.http.get<ApoderadoFichaResponseDto[]>(`${this.estudiantesUrl}/${estudianteId}/apoderados`);
+  }
+
   listarApoderados(): Observable<ApoderadoResponseDto[]> {
     return this.http.get<ApoderadoResponseDto[]>(this.apoderadosUrl);
   }
@@ -106,6 +114,32 @@ export class MatriculaService {
   consultarReniecPersona(dni: string): Observable<{ nombres?: string; apellidoPaterno?: string; apellidoMaterno?: string; numeroDocumento?: string }> {
     return this.http.get<{ nombres?: string; apellidoPaterno?: string; apellidoMaterno?: string; numeroDocumento?: string }>(
       `${environment.apiUrl}/personas/reniec/${encodeURIComponent(dni)}`
+    );
+  }
+
+  importeEfectivoPresencial(): Observable<number> {
+    return this.http.get<number>(this.baseUrl + '/presencial/importe');
+  }
+
+  registrarPresencial(formData: FormData): Observable<MatriculaPresencialResponseDto> {
+    return this.http.post<MatriculaPresencialResponseDto>(`${this.baseUrl}/presencial`, formData);
+  }
+  iniciarPagoPresencialEnLinea(formData: FormData): Observable<PagoPresencialEnLinea> {
+    return this.http.post<PagoPresencialEnLinea>(this.baseUrl + '/presencial/pago-en-linea', formData);
+  }
+
+  estadoPagoPresencial(id: string): Observable<EstadoPagoPresencial> {
+    return this.http.post<EstadoPagoPresencial>(this.baseUrl + '/presencial/' + encodeURIComponent(id) + '/verificar-pago', null);
+  }
+
+  simularPagoPresencialEnLinea(
+    id: string,
+    metodoPago: import('../../shared/ui/simulador-checkout.component').MetodoPagoOnline,
+    referenciaOperacion?: string
+  ): Observable<EstadoPagoPresencial> {
+    return this.http.post<EstadoPagoPresencial>(
+      this.baseUrl + '/presencial/' + encodeURIComponent(id) + '/simular-pago',
+      { metodoPago, referenciaOperacion: referenciaOperacion ?? null }
     );
   }
 }

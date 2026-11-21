@@ -1,3 +1,5 @@
+import { ModalidadIngreso } from './matricula-publica.model';
+
 export type EstadoMatricula =
   | 'SOLICITADA'
   | 'RESERVADA_TEMPORAL'
@@ -25,6 +27,8 @@ export interface MatriculaResponseDto {
   estadoPagoMatricula: EstadoPagoMatricula;
   reservaExpiraAt?: string;
   observaciones?: string;
+  modalidadIngreso?: ModalidadIngreso;
+  colegioProcedencia?: string | null;
 }
 
 export type TipoDocumento = 'DNI';
@@ -47,6 +51,20 @@ export interface RegistrarEstudianteRequestDto {
   genero: Genero;
   grupoSanguineo?: string;
   alergiasCondiciones?: string;
+  apoderado?: ApoderadoMatriculaRequestDto;
+}
+
+export interface ApoderadoMatriculaRequestDto {
+  tipoDocumento: TipoDocumento;
+  numeroDocumento: string;
+  nombres: string;
+  apellidoPaterno: string;
+  apellidoMaterno: string;
+  celular: string;
+  email?: string;
+  direccion: string;
+  ubigeoInei: string;
+  parentesco: ParentescoApoderado;
 }
 
 export interface EstudianteResponseDto {
@@ -66,6 +84,7 @@ export interface EstudianteResponseDto {
   alergiasCondiciones?: string;
   activo?: boolean;
   estado?: 'ACTIVO' | 'INACTIVO';
+  tieneApoderado?: boolean;
   createdAt?: string;
 }
 
@@ -116,4 +135,33 @@ export interface SolicitarMatriculaRequestDto {
   seccionId: number;
   reservaExpiraAt?: string;
   observaciones?: string;
+  modalidadIngreso?: ModalidadIngreso;
+  colegioProcedencia?: string | null;
+}
+
+export interface MatriculaPresencialResponseDto {
+  matriculaId: number;
+  estudianteId: number;
+  apoderadoId: number;
+  solicitudId: string;
+  comprobanteCodigo: string;
+  montoCobrado: number;
+  metodoPago: string;
+  fechaEmision: string;
+  usernameApoderado: string;
+  emailApoderado: string;
+  cuentaNueva: boolean;
+  voucherPdfBase64?: string;
+  mensaje: string;
+}
+
+export interface PagoPresencialEnLinea {
+  solicitudId: string;
+  enlacePago: string;
+  monto: number;
+}
+
+export interface EstadoPagoPresencial {
+  estado: string;
+  comprobanteCodigo: string | null;
 }

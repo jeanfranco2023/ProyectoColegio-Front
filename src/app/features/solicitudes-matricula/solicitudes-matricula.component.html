@@ -10,7 +10,7 @@
 
   <div class="flex items-start gap-[11px] rounded-[13px] border border-ui-border bg-ui-surface-soft px-[15px] py-[13px] text-[11px] leading-[1.6] text-ui-muted">
     <span class="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-ui-surface-soft font-extrabold text-ui-text">i</span>
-    <span>Las verificaciones son automáticas: firma digital RENIEC en la partida, contraste de DNI con la API y análisis documental. El pago se habilita cuando los tres documentos cumplen las comprobaciones.</span>
+    <span>Revisa el resultado y el alcance de cada documento antes de continuar. En modo presentación se comparan únicamente los datos de identidad indicados en la observación.</span>
   </div>
   @if (aviso()) { <p class="m-0 flex justify-between gap-2 rounded-[11px] border border-ui-success-border bg-ui-success-bg px-[13px] py-[11px] text-[11px] leading-[1.5] text-ui-success-text" role="status">{{ aviso() }} <button class="border-0 bg-transparent text-[18px] text-inherit box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" type="button" (click)="aviso.set('')">×</button></p> }
   @if (error()) { <p class="m-0 rounded-[11px] border border-ui-accent/30 bg-ui-accent/10 px-[13px] py-[11px] text-[11px] leading-[1.5] text-ui-error-text" role="alert">{{ error() }}</p> }
@@ -19,23 +19,128 @@
     @if (cargando()) { <div class="flex min-h-[220px] flex-col items-center justify-center gap-2 rounded-[17px] border border-ui-border bg-ui-surface text-center text-ui-muted"><span class="h-[25px] w-[25px] animate-spin rounded-full border-[3px] border-ui-divider border-t-[var(--ui-action)]"></span><b class="text-[13px]">Cargando solicitudes…</b></div> }
     @else if (!solicitudes().length) { <div class="relative pt-[62px] flex min-h-[220px] flex-col items-center justify-center gap-2 rounded-[17px] border border-ui-border bg-ui-surface px-4 text-center text-ui-muted"><svg class="absolute left-1/2 top-3 h-[42px] w-[42px] -translate-x-1/2 text-ui-text" aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 11.5c6-2 12-1 18 2.5v25c-6-3.5-12-4.5-18-2.5z"/><path d="M42 11.5c-6-2-12-1-18 2.5v25c6-3.5 12-4.5 18-2.5z"/><path d="M24 14v25" stroke="var(--ui-action)"/><path d="M11 17c3-.5 6 .1 9 1.5M11 23c3-.5 6 .1 9 1.5M28 18.5c3-1.4 6-2 9-1.5M28 24.5c3-1.4 6-2 9-1.5" stroke="var(--ui-action)"/></svg><b class="text-[14px]">No hay solicitudes públicas todavía</b><p class="m-0 text-[11px] text-ui-muted">Los trámites iniciados desde la página pública aparecerán aquí.</p></div> }
     @else {
-      @for (solicitud of solicitudes(); track solicitud.id) {
+      <!-- Resumen rápido por estado (1 clic) y barra de filtros -->
+      <div class="rounded-[15px] border border-ui-border bg-ui-surface p-4 shadow-[0_5px_17px_rgb(22_42_73_/_3%)] space-y-3" aria-label="Filtros rápidos de solicitudes de matrícula">
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            (click)="aplicarFiltroEstadoRapido('')"
+            [class.bg-ui-action]="filtroEstado() === ''"
+            [class.text-ui-action-text]="filtroEstado() === ''"
+            [class.border-ui-action]="filtroEstado() === ''"
+            [class.bg-ui-surface]="filtroEstado() !== ''"
+            [class.text-ui-text]="filtroEstado() !== ''"
+            class="rounded-full border border-ui-border px-3 py-1.5 text-[11px] font-bold transition-colors"
+          >
+            Todas ({{ solicitudes().length }})
+          </button>
+          @for (item of conteoPorEstado(); track item.estado) {
+            @if (item.cantidad > 0) {
+              <button
+                type="button"
+                (click)="aplicarFiltroEstadoRapido(item.estado)"
+                [class.bg-ui-action]="filtroEstado() === item.estado"
+                [class.text-ui-action-text]="filtroEstado() === item.estado"
+                [class.border-ui-action]="filtroEstado() === item.estado"
+                [class.bg-ui-surface]="filtroEstado() !== item.estado"
+                [class.text-ui-text]="filtroEstado() !== item.estado"
+                class="rounded-full border border-ui-border px-3 py-1.5 text-[11px] font-bold transition-colors"
+              >
+                {{ item.etiqueta }} ({{ item.cantidad }})
+              </button>
+            }
+          }
+        </div>
+        <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+          <select
+            aria-label="Filtrar por estado de solicitud"
+            [ngModel]="filtroEstado()"
+            (ngModelChange)="filtroEstado.set($event)"
+            class="min-h-10 rounded-[10px] border border-ui-control-border bg-ui-surface px-3 text-xs text-ui-text"
+          >
+            <option value="">Todos los estados</option>
+            @for (item of conteoPorEstado(); track item.estado) {
+              <option [value]="item.estado">{{ item.etiqueta }} ({{ item.cantidad }})</option>
+            }
+          </select>
+          <select
+            aria-label="Filtrar por modalidad de ingreso"
+            [ngModel]="filtroModalidad()"
+            (ngModelChange)="filtroModalidad.set($event)"
+            class="min-h-10 rounded-[10px] border border-ui-control-border bg-ui-surface px-3 text-xs text-ui-text"
+          >
+            <option value="">Todas las modalidades</option>
+            <option value="REGULAR">Ingreso regular</option>
+            <option value="TRASLADO">Ingreso por traslado</option>
+          </select>
+          <select
+            aria-label="Filtrar por grado"
+            [ngModel]="filtroGradoId()"
+            (ngModelChange)="filtroGradoId.set($event === null || $event === '' ? null : +$event)"
+            class="min-h-10 rounded-[10px] border border-ui-control-border bg-ui-surface px-3 text-xs text-ui-text"
+          >
+            <option [ngValue]="null">Todos los grados</option>
+            @for (g of gradosCatalogo(); track g.id) {
+              <option [ngValue]="g.id">{{ nombreNivelGrado(g.id) }}</option>
+            }
+          </select>
+          <input
+            type="text"
+            aria-label="Buscar estudiante, DNI o colegio"
+            [ngModel]="busqueda()"
+            (ngModelChange)="busqueda.set($event)"
+            placeholder="Buscar alumno, DNI o procedencia..."
+            class="min-h-10 rounded-[10px] border border-ui-control-border bg-ui-surface px-3 text-xs text-ui-text"
+          />
+        </div>
+        <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-ui-muted">
+          <span>Mostrando {{ solicitudesFiltradas().length }} de {{ solicitudes().length }} solicitudes</span>
+          @if (filtroEstado() || filtroModalidad() || filtroGradoId() !== null || busqueda()) {
+            <button type="button" (click)="limpiarFiltros()" class="rounded-lg border border-ui-border bg-ui-surface px-2.5 py-1 text-[11px] font-semibold text-ui-text hover:bg-ui-surface-soft">
+              Limpiar filtros
+            </button>
+          }
+        </div>
+      </div>
+
+      @if (!solicitudesFiltradas().length) {
+        <div class="flex min-h-[140px] flex-col items-center justify-center gap-2 rounded-[17px] border border-ui-border bg-ui-surface p-5 text-center text-ui-muted">
+          <b class="text-[13px] text-ui-text">Ninguna solicitud coincide con los filtros seleccionados</b>
+          <button type="button" (click)="limpiarFiltros()" class="rounded-[9px] border border-ui-border bg-ui-surface px-3 py-1.5 text-xs font-semibold text-ui-text">
+            Mostrar todas
+          </button>
+        </div>
+      }
+
+      @for (solicitud of solicitudesFiltradas(); track solicitud.id) {
         <article class="min-w-0 rounded-[17px] border border-ui-border bg-ui-surface p-[19px] shadow-[0_5px_17px_rgb(22_42_73_/_3%)] max-[700px]:p-[15px]">
           <div class="flex min-w-0 items-center gap-[13px] max-[600px]:items-start">
             <div class="grid h-[42px] w-[42px] shrink-0 place-items-center rounded-[14px] bg-ui-surface-soft font-extrabold text-ui-text">{{ solicitud.nombreEstudiante.slice(0, 1) }}</div>
             <div class="min-w-0 flex-1">
               <div class="flex flex-wrap items-center gap-[9px]">
                 <h2 class="m-0 text-[14px] font-normal text-ui-text tracking-[-.025em]">{{ solicitud.nombreEstudiante }}</h2>
+                @if (solicitud.modalidadIngreso === 'TRASLADO') {
+                  <span class="inline-flex items-center rounded-full border border-indigo-200 bg-indigo-50 px-2.5 py-[4px] text-[11px] font-bold text-indigo-800">
+                    Ingreso por Traslado
+                  </span>
+                }
                 @if (solicitud.estado === 'DOCUMENTOS_PENDIENTES') {<ui-status-badge [label]="estadoLabel(solicitud.estado)" tone="warning" />}
                 @else {<span class="inline-flex items-center rounded-full bg-ui-surface-soft px-2 py-[5px] text-[11px] font-bold text-ui-muted" [class.bg-ui-success-bg]="solicitud.estado === 'MATRICULADA'" [class.text-ui-success-text]="solicitud.estado === 'MATRICULADA'" [class.bg-ui-warning-bg]="solicitud.estado === 'PAGO_PENDIENTE' || solicitud.estado === 'DOCUMENTOS_VALIDADOS' || solicitud.estado === 'AUTORIZACION_EDAD_PENDIENTE' || solicitud.estado === 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION'" [class.text-ui-warning-text]="solicitud.estado === 'PAGO_PENDIENTE' || solicitud.estado === 'DOCUMENTOS_VALIDADOS' || solicitud.estado === 'AUTORIZACION_EDAD_PENDIENTE' || solicitud.estado === 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION'" [class.bg-ui-error-bg]="solicitud.estado === 'DOCUMENTOS_OBSERVADOS' || solicitud.estado === 'RECHAZADA'" [class.text-ui-error-text]="solicitud.estado === 'DOCUMENTOS_OBSERVADOS' || solicitud.estado === 'RECHAZADA'">{{ estadoLabel(solicitud.estado) }}</span>}
               </div>
               <p class="mb-0 mt-[5px] text-[13px] text-ui-muted">DNI {{ solicitud.documentoEstudiante }} · Apoderado: {{ solicitud.nombreApoderado }}</p>
               <small class="text-[13px] text-ui-muted">{{ solicitud.emailApoderado || solicitud.celularApoderado }} · Solicitud {{ solicitud.creadaAt | uiDatePe:true }}</small>
+              @if (solicitud.modalidadIngreso === 'TRASLADO' && solicitud.colegioProcedencia) {
+                <p class="mb-0 mt-1 text-[12px] font-semibold text-indigo-900">Colegio de procedencia: {{ solicitud.colegioProcedencia }}</p>
+              }
             </div>
-            <div class="shrink-0 rounded-[10px] bg-ui-surface-soft px-[11px] py-2 text-right text-[12px] leading-[1.6] text-ui-muted max-[700px]:hidden">Año {{ solicitud.anioLectivoId }}<br><span>Grado #{{ solicitud.gradoId }}</span><br><span>{{ solicitud.seccionId ? 'Sección #' + solicitud.seccionId : 'Sección pendiente' }}</span></div>
+            <div class="shrink-0 rounded-[10px] bg-ui-surface-soft px-[11px] py-2 text-right text-[12px] leading-[1.6] text-ui-muted max-[700px]:hidden">Año {{ nombreAnio(solicitud.anioLectivoId) }}<br><span>{{ nombreNivelGrado(solicitud.gradoId) }}</span><br><span>{{ solicitud.seccionId ? 'Sección asignada' : 'Sección pendiente' }}</span></div>
           </div>
           @if (solicitud.requiereAutorizacionEdad) {<p class="mb-0 mt-3 rounded-[10px] border border-ui-warning-border bg-ui-warning-bg px-3 py-2 text-[12px] leading-[1.5] text-ui-warning-text">@if (solicitud.estado === 'AUTORIZACION_EDAD_PENDIENTE') { <b>Requiere autorización institucional por edad.</b> } @else if (solicitud.autorizadoPorUsuarioId) { <b>Excepción de edad autorizada.</b> } @else { <b>Solicitud con excepción de edad.</b> }@if (solicitud.motivoAutorizacionEdad) { {{ solicitud.motivoAutorizacionEdad }} }</p>}
-          <div class="mt-[17px] grid grid-cols-3 gap-[9px] max-[700px]:grid-cols-1">
+          <div class="mt-3 flex flex-wrap items-center justify-between gap-2 rounded-[10px] border border-ui-divider bg-ui-surface-soft px-3 py-2 text-[12px] text-ui-muted">
+            <span><b class="text-ui-text">Resumen documental:</b> {{ solicitud.documentos.length }} documentos adjuntos · {{ documentosValidados(solicitud) ? (solicitud.documentos.length + ' de ' + solicitud.documentos.length + ' verificados') : 'Verificación en curso o con observaciones' }}</span>
+            <span>Revisa documentos adjuntos, estado de verificación y observaciones antes de aprobar o rechazar</span>
+          </div>
+          <div class="mt-[13px] grid gap-[9px] max-[700px]:grid-cols-1" [ngClass]="solicitud.documentos.length > 3 ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-3'" aria-label="Documentos adjuntos y estado de verificación">
             @for (doc of solicitud.documentos; track doc.tipo) {
               <div class="flex min-w-0 items-start gap-2 rounded-[11px] border border-ui-divider bg-ui-surface p-[11px]">
                 <span class="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-ui-surface-soft text-ui-muted [&_svg]:h-5 [&_svg]:w-5 [&_svg]:fill-none [&_svg]:stroke-current [&_svg]:stroke-[1.8] [&_svg]:[stroke-linecap:round] [&_svg]:[stroke-linejoin:round]" [class.bg-ui-success-bg]="doc.estado === 'VALIDADO'" [class.text-ui-success-text]="doc.estado === 'VALIDADO'" [class.bg-ui-warning-bg]="doc.estado === 'OBSERVADO'" [class.text-ui-warning-text]="doc.estado === 'OBSERVADO'">
@@ -45,14 +150,21 @@
                 </span>
                 <div class="min-w-0 flex-1">
                   <b class="block text-[14px] text-ui-text">{{ etiquetaDocumento(doc.tipo) }}</b>
-                  <small class="mt-1 block text-[12px] font-bold text-ui-text">{{ doc.estado === 'VALIDADO' ? 'Válido' : doc.estado === 'OBSERVADO' ? 'Observado' : 'Pendiente' }}</small>
-                  <small class="mt-1 block break-words text-[14px] leading-[1.45] text-ui-muted">{{ doc.observacion || 'Pendiente de carga' }}</small>
+                  <small class="mt-1 block text-[12px] font-bold text-ui-text">Estado de verificación: {{ doc.estado === 'VALIDADO' ? 'Válido' : doc.estado === 'OBSERVADO' ? 'Observado' : 'Pendiente' }}</small>
+                  <small class="mt-1 block break-words text-[13px] leading-[1.45] text-ui-muted"><b class="text-ui-text">Observación:</b> {{ doc.observacion || 'Pendiente de carga' }}</small>
                   @if (doc.versionId) {
-                    <small class="mt-1 block text-[13px] text-ui-muted">Análisis auxiliar: {{ doc.iaValida === null ? 'no disponible' : doc.iaValida ? 'compatible' : 'requiere revisión' }}</small>
-                    @if (doc.tipo !== 'RECIBO_SERVICIO') { <small class="mt-1 block text-[13px] text-ui-muted">Consulta DNI: {{ doc.dniApiCoincide === null ? 'pendiente' : doc.dniApiCoincide ? 'coincide' : 'no coincide' }}</small> }
-                    <small class="mt-1 block text-[13px] text-ui-muted">Firma: {{ firmaLabel(doc.estadoFirma) }}. {{ doc.detalleFirma }}</small>
+                    @if (doc.observacion?.startsWith('Modo presentación:')) {
+                      <small class="mt-1 block text-[13px] font-semibold text-ui-warning-text">Presentación: sin verificación oficial de identidad, firma ni autenticidad.</small>
+                    } @else {
+                      <small class="mt-1 block text-[13px] text-ui-muted">Análisis auxiliar: {{ doc.iaValida === null ? 'no disponible' : doc.iaValida ? 'compatible' : 'requiere revisión' }}</small>
+                      @if (doc.tipo !== 'RECIBO_SERVICIO') { <small class="mt-1 block text-[13px] text-ui-muted">Consulta DNI: {{ doc.dniApiCoincide === null ? 'pendiente' : doc.dniApiCoincide ? 'coincide' : 'no coincide' }}</small> }
+                      <small class="mt-1 block text-[13px] text-ui-muted">Firma: {{ firmaLabel(doc.estadoFirma) }}. {{ doc.detalleFirma }}</small>
+                    }
                     <button type="button" class="mt-2 rounded-[9px] border border-ui-border bg-ui-surface px-3 text-[11px] font-bold text-ui-text box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="verDocumento(solicitud, doc)">Obtener acceso al archivo</button>
                     @if (urlsDocumentos()[solicitud.id + ':' + doc.tipo]) { <a class="mt-2 block text-[11px] text-ui-action underline" [href]="urlsDocumentos()[solicitud.id + ':' + doc.tipo]" target="_blank" rel="noopener noreferrer">Abrir documento · acceso temporal</a> }
+                  }
+                  @if (solicitud.estado !== 'MATRICULADA' && solicitud.estado !== 'RECHAZADA' && solicitud.estado !== 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION' && store.hasAnyRole(['DIRECCION', 'SECRETARIA'])) {
+                    <button type="button" class="mt-2 rounded-[9px] border border-ui-border bg-ui-surface-soft px-3 py-1.5 text-[11px] font-bold text-ui-text hover:bg-ui-surface transition-colors" (click)="abrirObservacionDocumento(solicitud, doc.tipo)">Observar documento</button>
                   }
                 </div>
               </div>
@@ -83,24 +195,81 @@
   </section>
 </main>
 
-@if (seleccion()) {
+@if (seleccion(); as actual) {
   <div class="fixed inset-0 z-[2100] grid place-items-center bg-[rgb(12_25_43_/_48%)] p-[15px] backdrop-blur-[4px]" (click)="cerrarModal()" (keydown.escape)="cerrarModal()">
-    <section class="max-h-[calc(100dvh-30px)] w-full max-w-[500px] overflow-y-auto rounded-[18px] border border-ui-border bg-ui-surface p-[23px] shadow-[0_25px_80px_rgb(10_24_45_/_25%)] max-[600px]:p-[18px]" role="dialog" aria-modal="true" cdkTrapFocus cdkTrapFocusAutoCapture (click)="$event.stopPropagation()">
+    <section class="max-h-[calc(100dvh-30px)] w-full max-w-[540px] overflow-y-auto rounded-[18px] border border-ui-border bg-ui-surface p-[23px] shadow-[0_25px_80px_rgb(10_24_45_/_25%)] max-[600px]:p-[18px]" role="dialog" aria-modal="true" aria-labelledby="modal-solicitud-matricula-titulo" aria-label="Diálogo de gestión de solicitud de matrícula" cdkTrapFocus cdkTrapFocusAutoCapture (click)="$event.stopPropagation()">
+      <div class="mb-4 rounded-xl border border-ui-divider bg-ui-surface-soft p-3 text-xs text-ui-muted">
+        <div class="font-semibold text-ui-text">{{ actual.nombreEstudiante }} · DNI {{ actual.documentoEstudiante }}</div>
+        <div class="mt-1">Estado: <b class="text-ui-text">{{ estadoLabel(actual.estado) }}</b> · Apoderado: {{ actual.nombreApoderado }}</div>
+        <div class="mt-2 grid gap-1 border-t border-ui-divider pt-2">
+          @for (doc of actual.documentos; track doc.tipo) {
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <span class="font-medium text-ui-text">{{ etiquetaDocumento(doc.tipo) }} ({{ doc.estado }})</span>
+              <span>{{ doc.observacion || 'Sin observaciones' }}</span>
+            </div>
+          }
+        </div>
+      </div>
       @if (autorizandoEdad()) {
-        <header><span class="text-[11px] font-bold tracking-[.12em] text-ui-action">AUTORIZACIÓN DE DIRECCIÓN</span><h2 class="mb-[7px] mt-[7px] text-[21px] font-normal text-ui-text tracking-[-.025em]">Autorizar excepción de edad</h2><p class="m-0 text-[12px] leading-[1.65] text-ui-muted">El backend exige que los tres documentos estén validados y una justificación institucional de 10 a 500 caracteres.</p></header>
-        <label class="my-5 grid gap-[6px] text-[12px] font-bold text-ui-text">Motivo de autorización<textarea class="min-h-[120px] w-full resize-y rounded-xl border border-ui-control-border bg-ui-surface px-3 py-[10px] text-sm text-ui-text focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)]" [ngModel]="motivoEdad()" (ngModelChange)="motivoEdad.set($event)" minlength="10" maxlength="500" required placeholder="Describe el motivo y el sustento institucional"></textarea></label>
+        <header><span class="text-[11px] font-bold tracking-[.12em] text-ui-action">AUTORIZACIÓN DE DIRECCIÓN</span><h2 id="modal-solicitud-matricula-titulo" class="mb-[7px] mt-[7px] text-[21px] font-normal text-ui-text tracking-[-.025em]">Autorizar excepción de edad</h2><p class="m-0 text-[12px] leading-[1.65] text-ui-muted">El backend exige que los tres documentos estén validados y una justificación institucional de 10 a 500 caracteres.</p></header>
+        <label class="mt-4 grid gap-[6px] text-[12px] font-bold text-ui-text">Sustento institucional frecuente (opcional)
+          <select aria-label="Seleccionar sustento frecuente de edad" (change)="aplicarMotivoEdad($event)" class="min-h-11 w-full rounded-xl border border-ui-control-border bg-ui-surface px-3 py-[10px] text-sm text-ui-text focus:border-ui-action focus:outline-none">
+            <option value="">Elegir justificación predefinida...</option>
+            @for (motivo of motivosAutorizacionEdad; track motivo) {
+              <option [value]="motivo">{{ motivo }}</option>
+            }
+          </select>
+        </label>
+        <label class="my-4 grid gap-[6px] text-[12px] font-bold text-ui-text">Motivo de autorización<textarea class="min-h-[120px] w-full resize-y rounded-xl border border-ui-control-border bg-ui-surface px-3 py-[10px] text-sm text-ui-text focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)]" [ngModel]="motivoEdad()" (ngModelChange)="motivoEdad.set($event)" minlength="10" maxlength="500" required placeholder="Seleccione una justificación arriba o escriba el sustento"></textarea></label>
         @if (error()) {<p class="m-0 rounded-[11px] border border-ui-accent/30 bg-ui-accent/10 px-[13px] py-[11px] text-[12px] leading-[1.5] text-ui-error-text" role="alert">{{ error() }}</p>}
-        <footer class="mt-5 flex flex-wrap items-end justify-end gap-2"><button type="button" class="rounded-[9px] border border-ui-border bg-ui-surface px-3 box-border inline-flex min-w-0 min-h-11 items-center justify-center gap-2 font-sans text-sm font-semibold" (click)="cerrarModal()">Cancelar</button><button type="button" class="rounded-[9px] border border-ui-action bg-ui-action px-3 text-ui-action-text box-border inline-flex min-w-0 min-h-11 items-center justify-center gap-2 font-sans text-sm font-semibold" (click)="autorizarEdad()" [disabled]="guardando() || !documentosValidados(seleccion()!) || motivoEdad().trim().length < 10">{{ guardando() ? 'Autorizando…' : 'Confirmar autorización' }}</button></footer>
+        <footer class="mt-5 flex flex-wrap items-end justify-end gap-2"><button type="button" class="rounded-[9px] border border-ui-border bg-ui-surface px-3 box-border inline-flex min-w-0 min-h-11 items-center justify-center gap-2 font-sans text-sm font-semibold" (click)="cerrarModal()">Cancelar</button><button type="button" class="rounded-[9px] border border-ui-action bg-ui-action px-3 text-ui-action-text box-border inline-flex min-w-0 min-h-11 items-center justify-center gap-2 font-sans text-sm font-semibold" (click)="autorizarEdad()" [disabled]="guardando() || !documentosValidados(actual) || motivoEdad().trim().length < 10">{{ guardando() ? 'Autorizando…' : 'Confirmar autorización' }}</button></footer>
       } @else if (asignandoSeccion()) {
-        <header><span class="text-[11px] font-bold tracking-[.12em] text-ui-action">ASIGNACIÓN DE SECCIÓN</span><h2 class="mb-[7px] mt-[7px] text-[21px] font-normal text-ui-text tracking-[-.025em]">Asignar sección a matrícula pagada</h2><p class="m-0 text-[12px] leading-[1.65] text-ui-muted">Se muestran las secciones con vacantes del mismo año y grado de la solicitud.</p></header>
-        <label class="my-5 grid gap-[6px] text-[12px] font-bold text-ui-text">Sección disponible<select class="min-h-11 w-full rounded-xl border border-ui-control-border bg-ui-surface px-3 py-[10px] text-sm text-ui-text focus:border-ui-action focus:outline-none" [ngModel]="seccionAsignarId()" (ngModelChange)="seccionAsignarId.set($event === null ? null : +$event)"><option [ngValue]="null">Selecciona</option>@for (seccion of seccionesAsignables(); track seccion.id) {<option [ngValue]="seccion.id">Grado #{{ seccion.gradoId }} · Sección {{ seccion.letra }} ({{ seccion.cupoMaximo - seccion.vacantesOcupadas }} vacantes)</option>}</select></label>
+        <header><span class="text-[11px] font-bold tracking-[.12em] text-ui-action">ASIGNACIÓN DE SECCIÓN</span><h2 id="modal-solicitud-matricula-titulo" class="mb-[7px] mt-[7px] text-[21px] font-normal text-ui-text tracking-[-.025em]">Asignar sección a matrícula pagada</h2><p class="m-0 text-[12px] leading-[1.65] text-ui-muted">El nivel y el grado vienen asignados desde la solicitud pública; selecciona únicamente la sección para confirmar la matrícula.</p></header>
+        <div class="my-5 grid gap-3 sm:grid-cols-3">
+          <label class="grid gap-[6px] text-[12px] font-bold text-ui-text">Nivel (asignado)
+            <select class="min-h-11 w-full rounded-xl border border-ui-control-border bg-ui-surface-soft px-3 py-[10px] text-sm text-ui-text disabled:cursor-not-allowed disabled:opacity-80" [ngModel]="nivelAsignarId()" disabled>
+              @if (!nivelesCatalogo().length) {
+                <option [ngValue]="nivelAsignarId()">Nivel #{{ nivelAsignarId() || '—' }}</option>
+              }
+              @for (n of nivelesCatalogo(); track n.id) {
+                <option [ngValue]="n.id">{{ n.nombre }}</option>
+              }
+            </select>
+          </label>
+          <label class="grid gap-[6px] text-[12px] font-bold text-ui-text">Grado (asignado)
+            <select class="min-h-11 w-full rounded-xl border border-ui-control-border bg-ui-surface-soft px-3 py-[10px] text-sm text-ui-text disabled:cursor-not-allowed disabled:opacity-80" [ngModel]="actual.gradoId" disabled>
+              @if (!gradosCatalogo().length) {
+                <option [ngValue]="actual.gradoId">{{ nombreGrado(actual.gradoId) }}</option>
+              }
+              @for (g of gradosCatalogo(); track g.id) {
+                <option [ngValue]="g.id">{{ g.nombre }}</option>
+              }
+            </select>
+          </label>
+          <label class="grid gap-[6px] text-[12px] font-bold text-ui-text">Sección disponible *
+            <select class="min-h-11 w-full rounded-xl border border-ui-control-border bg-ui-surface px-3 py-[10px] text-sm text-ui-text focus:border-ui-action focus:outline-none" [ngModel]="seccionAsignarId()" (ngModelChange)="seccionAsignarId.set($event === null ? null : +$event)">
+              <option [ngValue]="null">Selecciona sección</option>
+              @for (seccion of seccionesAsignables(); track seccion.id) {
+                <option [ngValue]="seccion.id">Sección {{ seccion.letra }} ({{ seccion.cupoMaximo - seccion.vacantesOcupadas }} vacantes)</option>
+              }
+            </select>
+          </label>
+        </div>
         @if (error()) {<p class="m-0 rounded-[11px] border border-ui-accent/30 bg-ui-accent/10 px-[13px] py-[11px] text-[12px] leading-[1.5] text-ui-error-text" role="alert">{{ error() }}</p>}
         <footer class="mt-5 flex flex-wrap items-end justify-end gap-2"><button type="button" class="rounded-[9px] border border-ui-border bg-ui-surface px-3 box-border inline-flex min-w-0 min-h-11 items-center justify-center gap-2 font-sans text-sm font-semibold" (click)="cerrarModal()">Cancelar</button><button type="button" class="rounded-[9px] border border-ui-action bg-ui-action px-3 text-ui-action-text box-border inline-flex min-w-0 min-h-11 items-center justify-center gap-2 font-sans text-sm font-semibold" (click)="asignarSeccion()" [disabled]="guardando() || !seccionAsignarId()">{{ guardando() ? 'Asignando…' : 'Confirmar sección' }}</button></footer>
       } @else if (!confirmandoRechazo()) {
-        <header><span class="text-[11px] font-bold tracking-[.12em] text-ui-action">GESTIÓN DE SOLICITUD</span><h2 class="mb-[7px] mt-[7px] text-[21px] font-normal text-ui-text tracking-[-.025em]">Solicitar corrección</h2><p class="m-0 text-[11px] leading-[1.65] text-ui-muted">La familia podrá volver a subir el documento observado con el código privado de su trámite.</p></header>
+        <header><span class="text-[11px] font-bold tracking-[.12em] text-ui-action">GESTIÓN DE SOLICITUD</span><h2 id="modal-solicitud-matricula-titulo" class="mb-[7px] mt-[7px] text-[21px] font-normal text-ui-text tracking-[-.025em]">Solicitar corrección</h2><p class="m-0 text-[11px] leading-[1.65] text-ui-muted">La familia podrá volver a subir el documento observado con el código privado de su trámite.</p></header>
         <div class="my-5 grid gap-[14px]">
-          <label class="grid gap-[6px] text-[11px] font-bold text-ui-muted">Documento<select class="min-h-11 w-full min-w-0 rounded-[10px] border border-ui-control-border bg-ui-surface p-[10px] text-[12px] text-ui-text min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base" [ngModel]="documento()" (ngModelChange)="documento.set($event)"><option value="PARTIDA_NACIMIENTO">Partida de nacimiento</option><option value="DNI_C4">DNI o C4 del estudiante</option><option value="RECIBO_SERVICIO">Recibo de luz o agua</option></select></label>
-          <label class="grid gap-[6px] text-[11px] font-bold text-ui-muted">Indicación para la familia<textarea class="min-h-11 w-full min-w-0 resize-y rounded-[10px] border border-ui-control-border bg-ui-surface p-[10px] text-[12px] text-ui-text min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base min-h-[100px] py-[10px] resize-y" [ngModel]="observacion()" (ngModelChange)="observacion.set($event)" maxlength="500" rows="4" placeholder="Explica qué debe volver a cargar o corregir…"></textarea></label>
+          <label class="grid gap-[6px] text-[11px] font-bold text-ui-muted">Documento<select class="min-h-11 w-full min-w-0 rounded-[10px] border border-ui-control-border bg-ui-surface p-[10px] text-[12px] text-ui-text min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base" [ngModel]="documento()" (ngModelChange)="documento.set($event)">@for (doc of actual.documentos; track doc.tipo) {<option [value]="doc.tipo">{{ etiquetaDocumento(doc.tipo) }}</option>}</select></label>
+          <label class="grid gap-[6px] text-[11px] font-bold text-ui-muted">Motivo frecuente según documento
+            <select aria-label="Seleccionar motivo frecuente de observación" (change)="aplicarMotivoObservacion($event)" class="min-h-11 w-full rounded-xl border border-ui-control-border bg-ui-surface px-3 py-[10px] text-[12px] text-ui-text focus:border-ui-action focus:outline-none">
+              <option value="">Elegir observación predefinida...</option>
+              @for (motivo of motivosDocumentoActual(); track motivo) {
+                <option [value]="motivo">{{ motivo }}</option>
+              }
+            </select>
+          </label>
+          <label class="grid gap-[6px] text-[11px] font-bold text-ui-muted">Indicación para la familia<textarea class="min-h-11 w-full min-w-0 resize-y rounded-[10px] border border-ui-control-border bg-ui-surface p-[10px] text-[12px] text-ui-text min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-action focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base min-h-[100px] py-[10px] resize-y" [ngModel]="observacion()" (ngModelChange)="observacion.set($event)" maxlength="500" rows="4" placeholder="Seleccione un motivo arriba o explique qué debe corregir…"></textarea></label>
         </div>
         @if (error()) {<p class="m-0 rounded-[11px] border border-ui-accent/30 bg-ui-accent/10 px-[13px] py-[11px] text-[11px] leading-[1.5] text-ui-error-text">{{ error() }}</p>}
         <footer class="mt-5 flex flex-wrap items-end justify-end gap-2 max-[340px]:flex-col">
@@ -108,7 +277,7 @@
           <button type="button" class="rounded-[9px] border border-ui-action bg-ui-action px-3 text-[11px] font-bold text-ui-action-text box-border inline-flex min-w-0 min-h-10 items-center justify-center gap-2 font-sans !text-[14px] font-semibold leading-[1.25] text-center align-middle max-[639px]:min-h-11" (click)="guardarObservacion()" [disabled]="guardando()">{{ guardando() ? 'Guardando…' : 'Enviar observación' }}</button>
         </footer>
       } @else {
-        <header><span class="text-[11px] font-bold tracking-[.12em] text-ui-action">CONFIRMAR ACCIÓN</span><h2 class="mb-[7px] mt-[7px] text-[21px] font-normal text-ui-text tracking-[-.025em]">¿Rechazar esta solicitud?</h2><p class="m-0 text-[11px] leading-[1.65] text-ui-muted">Se cerrará el trámite y se liberará cualquier vacante reservada. La matrícula confirmada no se puede rechazar desde aquí.</p></header>
+        <header><span class="text-[11px] font-bold tracking-[.12em] text-ui-action">CONFIRMAR ACCIÓN</span><h2 id="modal-solicitud-matricula-titulo" class="mb-[7px] mt-[7px] text-[21px] font-normal text-ui-text tracking-[-.025em]">¿Rechazar esta solicitud?</h2><p class="m-0 text-[11px] leading-[1.65] text-ui-muted">Se cerrará el trámite y se liberará cualquier vacante reservada. La matrícula confirmada no se puede rechazar desde aquí.</p></header>
         @if (error()) {<p class="mt-3 rounded-[11px] border border-ui-accent/30 bg-ui-accent/10 px-[13px] py-[11px] text-[11px] leading-[1.5] text-ui-error-text">{{ error() }}</p>}
         <footer class="mt-5 flex flex-wrap items-end justify-end gap-2 max-[340px]:flex-col">
           <button type="button" class="rounded-[9px] border border-ui-border bg-ui-surface px-3 text-[11px] font-bold text-ui-text box-border inline-flex min-w-0 min-h-10 items-center justify-center gap-2 font-sans !text-[14px] font-semibold leading-[1.25] text-center align-middle max-[639px]:min-h-11" (click)="cerrarModal()">Volver</button>

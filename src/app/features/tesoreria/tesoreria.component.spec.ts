@@ -43,7 +43,6 @@ afterEach(() => TestBed.resetTestingModule());
 describe('Cuota única de matrícula en Tesorería', () => {
   it('envía solo matrícula y fecha al endpoint de cuota única y actualiza la lista', () => {
     const {component, tesoreria} = crearComponente();
-    component.modoGeneracion = 'MATRICULA';
     component.matriculaId = 281;
     component.primerVencimiento = '2026-11-30';
 

@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { catchError, finalize, of, tap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { AuthResponseDto, LoginRequestDto, RolNombre, UserResponseDto } from '../models/auth.model';
+import { ADMIN_ROUTE_ACCESS } from '../authorization/admin-route-access';
 
 @Injectable({
   providedIn: 'root'
@@ -115,10 +116,7 @@ export class AuthStore {
   }
 
   homeRoute(): string {
-    if (this.hasAnyRole(['DIRECCION', 'SECRETARIA'])) return '/admin/dashboard';
-    if (this.hasRole('APODERADO')) return '/admin/tesoreria';
-    if (this.hasAnyRole(['AUXILIAR', 'TUTOR'])) return '/admin/asistencia';
-    if (this.hasRole('DOCENTE')) return '/admin/calificaciones';
+    if (this.hasAnyRole(ADMIN_ROUTE_ACCESS.dashboard)) return '/admin/dashboard';
     return '/admin/perfil';
   }
 }

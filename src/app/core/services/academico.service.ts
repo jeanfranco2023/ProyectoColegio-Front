@@ -6,6 +6,7 @@ import {
   AsignacionDocenteResponseDto,
   AnioLectivoResponseDto,
   CompetenciaResponseDto,
+  DocenteOpcionDto,
   AulaResponseDto,
   GradoResponseDto,
   NivelResponseDto,
@@ -28,6 +29,20 @@ export class AcademicoService {
     return this.http.get<AsignacionDocenteResponseDto[]>(`${environment.apiUrl}/curriculo/asignaciones`);
   }
 
+  listarDocentes(areaId: number): Observable<DocenteOpcionDto[]> {
+    return this.http.get<DocenteOpcionDto[]>(`${environment.apiUrl}/curriculo/docentes`, { params: { areaId } });
+  }
+
+  asignarDocente(payload: {
+    docenteUsuarioId: number;
+    seccionId: number;
+    anioLectivoId: number;
+    nivelId: number;
+    areaCurricularId: number;
+  }): Observable<AsignacionDocenteResponseDto> {
+    return this.http.post<AsignacionDocenteResponseDto>(`${environment.apiUrl}/curriculo/asignaciones`, payload);
+  }
+
   listarAnios(): Observable<AnioLectivoResponseDto[]> {
     return this.http.get<AnioLectivoResponseDto[]>(`${this.baseUrl}/anios`);
   }
@@ -42,6 +57,14 @@ export class AcademicoService {
 
   crearAula(payload: { codigo: string; nombre: string; ubicacion?: string; capacidad: number }): Observable<AulaResponseDto> {
     return this.http.post<AulaResponseDto>(`${this.baseUrl}/aulas`, payload);
+  }
+
+  actualizarAula(id: number, payload: { nombre?: string; ubicacion?: string; capacidad: number }): Observable<AulaResponseDto> {
+    return this.http.put<AulaResponseDto>(`${this.baseUrl}/aulas/${id}`, payload);
+  }
+
+  cambiarEstadoAula(id: number, activa: boolean): Observable<AulaResponseDto> {
+    return this.http.put<AulaResponseDto>(`${this.baseUrl}/aulas/${id}/estado`, { activa });
   }
 
   listarNiveles(): Observable<NivelResponseDto[]> {

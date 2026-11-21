@@ -5,13 +5,19 @@ import { MatMenuModule } from '@angular/material/menu';
 import { AuthStore } from '../../core/state/auth.store';
 import { ADMIN_ROUTE_ACCESS } from '../../core/authorization/admin-route-access';
 
-export type AdminMenuRole = 'DIRECCION' | 'SECRETARIA' | 'DOCENTE' | 'AUXILIAR' | 'TUTOR' | 'APODERADO';
+export type AdminMenuRole = 'DIRECCION' | 'SECRETARIA' | 'DOCENTE' | 'AUXILIAR' | 'TUTOR' | 'APODERADO' | 'ADMINISTRADOR';
 
 export interface AdminMenuItem {
   label: string;
   route: string;
   roles: readonly AdminMenuRole[];
-  section: 'Principal' | 'Vida académica' | 'Comunidad y gestión';
+  section:
+    | 'Principal'
+    | 'Admisión y matrícula'
+    | 'Gestión académica'
+    | 'Convivencia y bienestar'
+    | 'Tesorería y personal'
+    | 'Administración y cuenta';
   icon: string;
 }
 
@@ -21,30 +27,32 @@ const ROLE_LABELS: Record<AdminMenuRole, string> = {
   DOCENTE: 'Docente',
   AUXILIAR: 'Auxiliar',
   TUTOR: 'Tutor',
-  APODERADO: 'Apoderado'
+  APODERADO: 'Apoderado',
+  ADMINISTRADOR: 'Administrador'
 };
 
 // This is the single source for both desktop and mobile navigation.
 export const ADMIN_MENU_ITEMS: readonly AdminMenuItem[] = [
   { label: 'Panel general', route: '/admin/dashboard', roles: ADMIN_ROUTE_ACCESS.dashboard, section: 'Principal', icon: 'M3 3h8v8H3z M13 3h8v5h-8z M13 10h8v11h-8z M3 13h8v8H3z' },
-  { label: 'Matrículas', route: '/admin/matriculas', roles: ADMIN_ROUTE_ACCESS.matriculas, section: 'Vida académica', icon: 'M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z' },
-  { label: 'Solicitudes de matrícula', route: '/admin/solicitudes-matricula', roles: ADMIN_ROUTE_ACCESS['solicitudes-matricula'], section: 'Vida académica', icon: 'M7 3h7l5 5v13H7a2 2 0 01-2-2V5a2 2 0 012-2zM14 3v5h5M9 13h6M9 17h6' },
-  { label: 'Aulas y horarios', route: '/admin/academico', roles: ADMIN_ROUTE_ACCESS.academico, section: 'Vida académica', icon: 'M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M8 9h.01M16 9h.01' },
-  { label: 'Malla horaria', route: '/admin/horarios', roles: ADMIN_ROUTE_ACCESS.horarios, section: 'Vida académica', icon: 'M4 4h16v16H4zM4 10h16M10 4v16' },
-  { label: 'Refuerzo académico', route: '/admin/refuerzos', roles: ADMIN_ROUTE_ACCESS.refuerzos, section: 'Vida académica', icon: 'M12 3l9 5-9 5-9-5zM5 11v6l7 4 7-4v-6' },
-  { label: 'Calificaciones', route: '/admin/calificaciones', roles: ADMIN_ROUTE_ACCESS.calificaciones, section: 'Vida académica', icon: 'M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2zM7 8h2m4 0h4M7 12h2m4 0h4M7 16h2m4 0h4' },
-  { label: 'Asistencia', route: '/admin/asistencia', roles: ADMIN_ROUTE_ACCESS.asistencia, section: 'Vida académica', icon: 'M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11' },
-  { label: 'Convivencia', route: '/admin/convivencia', roles: ADMIN_ROUTE_ACCESS.convivencia, section: 'Vida académica', icon: 'M12 21s-8-4.5-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 6.5-8 11-8 11z' },
-  { label: 'Tutoría y seguimiento', route: '/admin/tutoria', roles: ADMIN_ROUTE_ACCESS.tutoria, section: 'Vida académica', icon: 'M4 4h16v16H4zM8 8h8M8 12h8M8 16h5' },
-  { label: 'Incidencias y faltas', route: '/admin/observaciones-conductuales', roles: ADMIN_ROUTE_ACCESS['observaciones-conductuales'], section: 'Vida académica', icon: 'M12 9v2m0 4h.01M3 20h18L12 3z' },
-  { label: 'Tesorería y pagos', route: '/admin/tesoreria', roles: ADMIN_ROUTE_ACCESS.tesoreria, section: 'Comunidad y gestión', icon: 'M3 6h18v14H3zM3 10h18M7 15h4M6 3h12' },
-  { label: 'Comunicados', route: '/admin/comunicados', roles: ADMIN_ROUTE_ACCESS.comunicados, section: 'Comunidad y gestión', icon: 'M4 4h16v16H4zM8 8h8M8 12h8M8 16h5' },
-  { label: 'Usuarios y permisos', route: '/admin/usuarios', roles: ADMIN_ROUTE_ACCESS.usuarios, section: 'Comunidad y gestión', icon: 'M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM20 8v6m3-3h-6' },
-  { label: 'Portal familiar', route: '/admin/portal-apoderado', roles: ADMIN_ROUTE_ACCESS['portal-apoderado'], section: 'Comunidad y gestión', icon: 'M3 11l9-8 9 8M5 10v11h14V10' },
-  { label: 'Designar suplente', route: '/admin/suplencias', roles: ADMIN_ROUTE_ACCESS.suplencias, section: 'Comunidad y gestión', icon: 'M4 21v-4h16v4M12 13a5 5 0 100-10 5 5 0 000 10z' },
-  { label: 'Gestión de suplentes', route: '/admin/aprobacion-suplencias', roles: ADMIN_ROUTE_ACCESS['aprobacion-suplencias'], section: 'Comunidad y gestión', icon: 'M9 12l2 2 4-4M4 3v12l8 6 8-6V3z' },
-  { label: 'Auditoría de accesos', route: '/admin/auditoria', roles: ADMIN_ROUTE_ACCESS.auditoria, section: 'Comunidad y gestión', icon: 'M3 12a9 9 0 1018 0 9 9 0 00-18 0zm9-5v5l3 2' },
-  { label: 'Mi perfil', route: '/admin/perfil', roles: [], section: 'Comunidad y gestión', icon: 'M20 21a8 8 0 00-16 0M12 13a5 5 0 100-10 5 5 0 000 10z' }
+  { label: 'Portal familiar', route: '/admin/portal-apoderado', roles: ADMIN_ROUTE_ACCESS['portal-apoderado'], section: 'Principal', icon: 'M3 11l9-8 9 8M5 10v11h14V10' },
+  { label: 'Comunicados', route: '/admin/comunicados', roles: ADMIN_ROUTE_ACCESS.comunicados, section: 'Principal', icon: 'M4 4h16v16H4zM8 8h8M8 12h8M8 16h5' },
+  { label: 'Solicitudes de matrícula', route: '/admin/solicitudes-matricula', roles: ADMIN_ROUTE_ACCESS['solicitudes-matricula'], section: 'Admisión y matrícula', icon: 'M7 3h7l5 5v13H7a2 2 0 01-2-2V5a2 2 0 012-2zM14 3v5h5M9 13h6M9 17h6' },
+  { label: 'Matrículas', route: '/admin/matriculas', roles: ADMIN_ROUTE_ACCESS.matriculas, section: 'Admisión y matrícula', icon: 'M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v13a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z' },
+  { label: 'Aulas y horarios', route: '/admin/academico', roles: ADMIN_ROUTE_ACCESS.academico, section: 'Admisión y matrícula', icon: 'M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6M8 9h.01M16 9h.01' },
+  { label: 'Malla horaria', route: '/admin/horarios', roles: ADMIN_ROUTE_ACCESS.horarios, section: 'Gestión académica', icon: 'M4 4h16v16H4zM4 10h16M10 4v16' },
+  { label: 'Calificaciones', route: '/admin/calificaciones', roles: ADMIN_ROUTE_ACCESS.calificaciones, section: 'Gestión académica', icon: 'M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2zM7 8h2m4 0h4M7 12h2m4 0h4M7 16h2m4 0h4' },
+  { label: 'Refuerzo académico', route: '/admin/refuerzos', roles: ADMIN_ROUTE_ACCESS.refuerzos, section: 'Gestión académica', icon: 'M12 3l9 5-9 5-9-5zM5 11v6l7 4 7-4v-6' },
+  { label: 'Asistencia', route: '/admin/asistencia', roles: ADMIN_ROUTE_ACCESS.asistencia, section: 'Gestión académica', icon: 'M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11' },
+  { label: 'Tutoría y seguimiento', route: '/admin/tutoria', roles: ADMIN_ROUTE_ACCESS.tutoria, section: 'Convivencia y bienestar', icon: 'M4 4h16v16H4zM8 8h8M8 12h8M8 16h5' },
+  { label: 'Convivencia', route: '/admin/convivencia', roles: ADMIN_ROUTE_ACCESS.convivencia, section: 'Convivencia y bienestar', icon: 'M12 21s-8-4.5-8-11a4.5 4.5 0 018-2.8A4.5 4.5 0 0120 10c0 6.5-8 11-8 11z' },
+  { label: 'Incidencias y faltas', route: '/admin/observaciones-conductuales', roles: ADMIN_ROUTE_ACCESS['observaciones-conductuales'], section: 'Convivencia y bienestar', icon: 'M12 9v2m0 4h.01M3 20h18L12 3z' },
+  { label: 'Tesorería y pagos', route: '/admin/tesoreria', roles: ADMIN_ROUTE_ACCESS.tesoreria, section: 'Tesorería y personal', icon: 'M3 6h18v14H3zM3 10h18M7 15h4M6 3h12' },
+  { label: 'Designar suplente', route: '/admin/suplencias', roles: ADMIN_ROUTE_ACCESS.suplencias, section: 'Tesorería y personal', icon: 'M4 21v-4h16v4M12 13a5 5 0 100-10 5 5 0 000 10z' },
+  { label: 'Gestión de suplentes', route: '/admin/aprobacion-suplencias', roles: ADMIN_ROUTE_ACCESS['aprobacion-suplencias'], section: 'Tesorería y personal', icon: 'M9 12l2 2 4-4M4 3v12l8 6 8-6V3z' },
+  { label: 'Solicitudes de cambio', route: '/admin/solicitudes-cambio', roles: ADMIN_ROUTE_ACCESS['solicitudes-cambio'], section: 'Administración y cuenta', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4' },
+  { label: 'Usuarios y permisos', route: '/admin/usuarios', roles: ADMIN_ROUTE_ACCESS.usuarios, section: 'Administración y cuenta', icon: 'M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8zM20 8v6m3-3h-6' },
+  { label: 'Acciones del sistema', route: '/admin/auditoria', roles: ADMIN_ROUTE_ACCESS.auditoria, section: 'Administración y cuenta', icon: 'M3 12a9 9 0 1018 0 9 9 0 00-18 0zm9-5v5l3 2' },
+  { label: 'Mi perfil', route: '/admin/perfil', roles: [], section: 'Administración y cuenta', icon: 'M20 21a8 8 0 00-16 0M12 13a5 5 0 100-10 5 5 0 000 10z' }
 ];
 
 export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminMenuItem[] {
@@ -57,36 +65,49 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
   standalone: true,
   imports: [RouterOutlet, RouterLink, RouterLinkActive, MatButtonModule, MatMenuModule],
   template: `
+    <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
     <div class="school-admin-shell min-h-screen bg-ui-background font-sans text-ui-text lg:flex">
-      <aside class="school-admin-sidebar hidden w-[268px] shrink-0 flex-col border-r border-ui-border bg-ui-surface text-ui-text lg:sticky lg:top-0 lg:flex lg:h-dvh lg:max-h-dvh lg:overflow-hidden">
-        <a [routerLink]="store.homeRoute()" class="flex min-h-[102px] items-center gap-3 px-6 py-7 no-underline focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2" aria-label="Inicio institucional">
-          <img class="h-[42px] w-[42px] shrink-0 rounded-full bg-white object-contain" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de I.E.P. Shuji Kitamura">
+      <aside class="school-admin-sidebar hidden w-[288px] shrink-0 flex-col border-r border-ui-border bg-ui-surface text-ui-text lg:sticky lg:top-0 lg:self-start lg:flex lg:min-h-dvh">
+        <a [routerLink]="store.homeRoute()" class="shrink-0 flex items-center gap-3 px-4 py-2.5 no-underline focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2" aria-label="Inicio institucional">
+          <img class="h-8 w-8 shrink-0 rounded-full bg-white object-contain ring-1 ring-white/20" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de I.E.P. Shuji Kitamura">
           <span class="min-w-0">
-            <span class="block truncate text-sm font-bold tracking-tight text-ui-text">Shuji Kitamura</span>
-            <span class="mt-0.5 block text-[11px] font-medium tracking-[0.12em] text-ui-muted">GESTIÓN ESCOLAR</span>
+            <span class="block truncate text-[15.5px] font-bold tracking-tight text-ui-text">Shuji Kitamura</span>
+            <span class="sidebar-kicker mt-0.5 block font-semibold tracking-[0.1em] text-ui-muted">GESTIÓN ESCOLAR</span>
           </span>
         </a>
 
-        <nav class="flex min-h-0 flex-1 flex-col gap-[3px] overflow-y-auto px-4 pb-5" aria-label="Navegación principal">
+        <nav class="flex flex-1 flex-col gap-0 px-2.5 py-1.5" aria-label="Navegación principal">
           @for (item of visibleMenuItems; track item.route; let i = $index) {
             @if (i === 0 || visibleMenuItems[i - 1].section !== item.section) {
-              <p class="mt-[19px] mb-[6px] px-3 text-[11px] font-bold leading-[1.4] tracking-[0.11em] text-ui-muted uppercase">{{ item.section }}</p>
+              <p
+                class="shrink-0 mb-0.5 px-3 text-[11px] font-bold leading-none tracking-[0.09em] text-ui-muted uppercase"
+                [class.mt-0.5]="i === 0"
+                [class.mt-1.5]="i > 0"
+                [class.pt-1.5]="i > 0"
+                [class.border-t]="i > 0"
+                [class.border-white/10]="i > 0"
+              >{{ item.section }}</p>
             }
-            <a [routerLink]="item.route" routerLinkActive="border-ui-action bg-ui-surface-soft !text-ui-action font-bold" class="flex min-h-11 items-center gap-3 rounded-[10px] border-l-2 border-transparent px-3 text-[13px] font-medium text-ui-muted no-underline transition-colors duration-[140ms] hover:bg-ui-surface-soft hover:text-ui-text focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2" [attr.aria-label]="item.label">
-              <svg class="h-[19px] w-[19px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" [attr.d]="item.icon" /></svg>
-              <span>{{ item.label }}</span>
+            <a
+              [routerLink]="item.route"
+              routerLinkActive="router-link-active"
+              class="shrink-0 flex min-h-[29px] items-center gap-2.5 rounded-lg border-l-[3px] border-transparent px-3 py-[2.5px] text-[15px] leading-[1.2] font-medium text-ui-muted no-underline transition-colors duration-150 focus-visible:outline-[2px] focus-visible:outline-ui-focus focus-visible:outline-offset-1"
+              [attr.aria-label]="item.label"
+            >
+              <svg class="h-[17px] w-[17px] shrink-0 opacity-85" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" [attr.d]="item.icon" /></svg>
+              <span class="truncate">{{ item.label }}</span>
             </a>
           }
         </nav>
 
-        <div class="mx-4 mb-4 shrink-0 rounded-2xl border border-ui-border bg-ui-surface-soft p-3.5">
-          <button mat-button type="button" (click)="store.logout()" class="w-full !min-h-11 !justify-start !rounded-xl !font-[inherit] !text-ui-text [&_.mdc-button__label]:!text-ui-text hover:bg-ui-surface hover:text-ui-action">
-            <span class="inline-flex items-center gap-2 whitespace-nowrap font-[inherit]"><svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg><span>Cerrar sesión</span></span>
+        <div class="mx-2.5 my-2 shrink-0 rounded-xl border border-ui-border bg-ui-surface-soft px-2 py-0.5">
+          <button mat-button type="button" (click)="store.logout()" class="w-full !min-h-8 !justify-start !rounded-lg !py-1 !font-[inherit] !text-[15px] !text-ui-text [&_.mdc-button__label]:!text-ui-text">
+            <span class="inline-flex items-center gap-2.5 whitespace-nowrap font-[inherit]"><svg class="h-4 w-4 shrink-0 opacity-85" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg><span>Cerrar sesión</span></span>
           </button>
         </div>
       </aside>
 
-      <main class="min-w-0 flex-1">
+      <main id="main-content" tabindex="-1" class="min-w-0 flex-1">
         <header class="school-admin-topbar sticky top-0 z-40 flex h-[72px] items-center justify-between border-b border-ui-border bg-ui-surface px-4 text-ui-text backdrop-blur-[12px] sm:px-7 xl:px-10 max-[639px]:grid max-[639px]:h-16 max-[639px]:grid-cols-[minmax(0,1fr)_112px] max-[639px]:gap-2 max-[639px]:px-3">
           <div class="flex min-w-0 items-center gap-3 max-[639px]:w-full max-[639px]:max-w-full">
             <button mat-icon-button type="button" [matMenuTriggerFor]="mobileNav" class="!flex !h-11 !w-11 !min-h-11 !min-w-11 !text-ui-text focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2 lg:!hidden" aria-label="Abrir navegación" aria-haspopup="menu">
@@ -94,13 +115,13 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
             </button>
             <mat-menu #mobileNav="matMenu" class="admin-mobile-nav-panel mt-3 max-h-[calc(100dvh-24px)] overflow-y-auto" xPosition="after" yPosition="below">
               @for (item of visibleMenuItems; track item.route) {
-                <a mat-menu-item class="admin-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 border-l-2 border-transparent px-3 text-[13px] leading-[1.35] text-ui-muted no-underline" [routerLink]="item.route" routerLinkActive="border-ui-action bg-ui-surface-soft !text-ui-action font-bold" [attr.aria-label]="item.label">
-                  <svg class="h-[19px] w-[19px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" [attr.d]="item.icon" /></svg>
+                <a mat-menu-item class="admin-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 border-l-[3px] border-transparent px-3 text-[15.5px] leading-[1.3] text-ui-muted no-underline" [routerLink]="item.route" routerLinkActive="router-link-active border-ui-gold bg-ui-surface-soft !text-ui-action font-semibold" [attr.aria-label]="item.label">
+                  <svg class="h-[18px] w-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" [attr.d]="item.icon" /></svg>
                   <span>{{ item.label }}</span>
                 </a>
               }
               <div class="my-[6px] h-px bg-ui-border" role="separator"></div>
-              <button mat-menu-item class="admin-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 px-3 text-[13px] leading-[1.35] text-ui-muted no-underline" type="button" (click)="store.logout()">
+              <button mat-menu-item class="admin-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 px-3 text-[15.5px] leading-[1.3] text-ui-muted no-underline" type="button" (click)="store.logout()">
                 <svg class="h-[19px] w-[19px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg>
                 <span>Cerrar sesión</span>
               </button>
@@ -111,9 +132,9 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
             </div>
           </div>
 
-          <a routerLink="/admin/perfil" class="flex min-h-11 items-center gap-2.5 rounded-full border border-ui-border bg-ui-surface px-3 py-2 text-xs font-medium text-ui-muted no-underline hover:border-ui-control-border hover:bg-ui-surface-soft focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2 max-[639px]:w-[112px] max-[639px]:max-w-[112px] max-[639px]:shrink-0 max-[639px]:gap-1.5 max-[639px]:py-2 max-[639px]:pr-[7px] max-[639px]:pl-1">
+          <a routerLink="/admin/perfil" [title]="displayName" class="flex min-h-11 items-center gap-2.5 rounded-full border border-ui-border bg-ui-surface px-3 py-2 text-xs font-medium text-ui-muted no-underline hover:border-ui-control-border hover:bg-ui-surface-soft focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2 max-[639px]:w-[112px] max-[639px]:max-w-[112px] max-[639px]:shrink-0 max-[639px]:gap-1.5 max-[639px]:py-2 max-[639px]:pr-[7px] max-[639px]:pl-1">
             <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ui-action text-[13px] font-bold text-ui-action-text max-[639px]:h-7 max-[639px]:w-7">{{ firstInitial }}</span>
-            <span class="flex min-w-0 flex-col"><span class="block max-w-[180px] truncate font-semibold text-ui-text max-[639px]:max-w-[58px] max-[639px]:text-[11px]">{{ store.user()?.username || 'Usuario' }}</span><span class="block max-w-[180px] truncate text-[11px] text-ui-muted max-[639px]:max-w-[58px]">{{ roleLabel }}</span></span>
+            <span class="flex min-w-0 flex-col"><span class="block max-w-[220px] truncate font-semibold text-ui-text max-[639px]:max-w-[58px] max-[639px]:text-[11px]">{{ displayName }}</span><span class="block max-w-[220px] truncate text-[11px] text-ui-muted max-[639px]:max-w-[58px]">{{ roleLabel }}</span></span>
           </a>
         </header>
 
@@ -136,7 +157,13 @@ export class AdminLayoutComponent {
     return this.store.roles().map(role => ROLE_LABELS[role] ?? role).join(' · ') || 'Usuario';
   }
 
+  get displayName(): string {
+    const user = this.store.user();
+    const full = user?.nombreCompleto?.trim();
+    return full || user?.username || 'Usuario';
+  }
+
   get firstInitial(): string {
-    return (this.store.user()?.username || 'U').substring(0, 1).toUpperCase();
+    return (this.displayName || 'U').substring(0, 1).toUpperCase();
   }
 }

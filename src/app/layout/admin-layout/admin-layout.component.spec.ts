@@ -6,56 +6,80 @@ import { routes } from '../../app.routes';
 const expectedMenuByRole = {
   DIRECCION: [
     ['Panel general', '/admin/dashboard'],
-    ['Matrículas', '/admin/matriculas'],
+    ['Comunicados', '/admin/comunicados'],
     ['Solicitudes de matrícula', '/admin/solicitudes-matricula'],
+    ['Matrículas', '/admin/matriculas'],
     ['Aulas y horarios', '/admin/academico'],
     ['Malla horaria', '/admin/horarios'],
-    ['Refuerzo académico', '/admin/refuerzos'],
     ['Calificaciones', '/admin/calificaciones'],
+    ['Refuerzo académico', '/admin/refuerzos'],
     ['Asistencia', '/admin/asistencia'],
     ['Convivencia', '/admin/convivencia'],
     ['Incidencias y faltas', '/admin/observaciones-conductuales'],
     ['Tesorería y pagos', '/admin/tesoreria'],
-    ['Comunicados', '/admin/comunicados'],
-    ['Usuarios y permisos', '/admin/usuarios'],
     ['Gestión de suplentes', '/admin/aprobacion-suplencias'],
-    ['Auditoría de accesos', '/admin/auditoria'],
+    ['Solicitudes de cambio', '/admin/solicitudes-cambio'],
+    ['Usuarios y permisos', '/admin/usuarios'],
+    ['Mi perfil', '/admin/perfil']
+  ],
+  ADMINISTRADOR: [
+    ['Panel general', '/admin/dashboard'],
+    ['Comunicados', '/admin/comunicados'],
+    ['Solicitudes de matrícula', '/admin/solicitudes-matricula'],
+    ['Matrículas', '/admin/matriculas'],
+    ['Aulas y horarios', '/admin/academico'],
+    ['Malla horaria', '/admin/horarios'],
+    ['Calificaciones', '/admin/calificaciones'],
+    ['Refuerzo académico', '/admin/refuerzos'],
+    ['Asistencia', '/admin/asistencia'],
+    ['Convivencia', '/admin/convivencia'],
+    ['Incidencias y faltas', '/admin/observaciones-conductuales'],
+    ['Tesorería y pagos', '/admin/tesoreria'],
+    ['Gestión de suplentes', '/admin/aprobacion-suplencias'],
+    ['Solicitudes de cambio', '/admin/solicitudes-cambio'],
+    ['Usuarios y permisos', '/admin/usuarios'],
+    ['Acciones del sistema', '/admin/auditoria'],
     ['Mi perfil', '/admin/perfil']
   ],
   SECRETARIA: [
     ['Panel general', '/admin/dashboard'],
-    ['Matrículas', '/admin/matriculas'],
+    ['Comunicados', '/admin/comunicados'],
     ['Solicitudes de matrícula', '/admin/solicitudes-matricula'],
+    ['Matrículas', '/admin/matriculas'],
     ['Asistencia', '/admin/asistencia'],
     ['Convivencia', '/admin/convivencia'],
     ['Tesorería y pagos', '/admin/tesoreria'],
-    ['Comunicados', '/admin/comunicados'],
     ['Mi perfil', '/admin/perfil']
   ],
   DOCENTE: [
+    ['Panel general', '/admin/dashboard'],
     ['Malla horaria', '/admin/horarios'],
-    ['Refuerzo académico', '/admin/refuerzos'],
     ['Calificaciones', '/admin/calificaciones'],
+    ['Refuerzo académico', '/admin/refuerzos'],
     ['Asistencia', '/admin/asistencia'],
     ['Mi perfil', '/admin/perfil']
   ],
   AUXILIAR: [
+    ['Panel general', '/admin/dashboard'],
     ['Asistencia', '/admin/asistencia'],
     ['Convivencia', '/admin/convivencia'],
     ['Incidencias y faltas', '/admin/observaciones-conductuales'],
+    ['Tesorería y pagos', '/admin/tesoreria'],
     ['Mi perfil', '/admin/perfil']
   ],
   TUTOR: [
+    ['Panel general', '/admin/dashboard'],
     ['Asistencia', '/admin/asistencia'],
-    ['Convivencia', '/admin/convivencia'],
     ['Tutoría y seguimiento', '/admin/tutoria'],
+    ['Convivencia', '/admin/convivencia'],
     ['Incidencias y faltas', '/admin/observaciones-conductuales'],
     ['Mi perfil', '/admin/perfil']
   ],
   APODERADO: [
-    ['Tesorería y pagos', '/admin/tesoreria'],
-    ['Comunicados', '/admin/comunicados'],
+    ['Panel general', '/admin/dashboard'],
     ['Portal familiar', '/admin/portal-apoderado'],
+    ['Comunicados', '/admin/comunicados'],
+    ['Tesorería y pagos', '/admin/tesoreria'],
     ['Designar suplente', '/admin/suplencias'],
     ['Mi perfil', '/admin/perfil']
   ]
@@ -110,5 +134,15 @@ describe('admin menu by role', () => {
     const rolesMixtos = visibleAdminMenuItems(['SECRETARIA', 'DOCENTE']).map(item => item.route);
     expect(rolesMixtos).toContain('/admin/calificaciones');
     expect(visibleAdminMenuItems(['SECRETARIA']).some(item => item.route === '/admin/calificaciones')).toBe(false);
+  });
+
+  it('separa Solicitudes de cambio (Dirección y Administrador) de Acciones del sistema (exclusivo de Administrador)', () => {
+    const direccionLabels = visibleAdminMenuItems(['DIRECCION']).map(item => item.label);
+    expect(direccionLabels).toContain('Solicitudes de cambio');
+    expect(direccionLabels).not.toContain('Acciones del sistema');
+
+    const adminLabels = visibleAdminMenuItems(['ADMINISTRADOR']).map(item => item.label);
+    expect(adminLabels).toContain('Solicitudes de cambio');
+    expect(adminLabels).toContain('Acciones del sistema');
   });
 });

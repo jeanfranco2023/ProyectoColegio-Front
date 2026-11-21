@@ -1,4 +1,5 @@
 export type NivelCodigo = 'INICIAL' | 'PRIMARIA' | 'SECUNDARIA';
+export interface DocenteOpcionDto { id: number; username: string; nombreCompleto: string | null; }
 export interface AsignacionDocenteResponseDto { id: number; docenteUsuarioId: number; seccionId: number; anioLectivoId: number; nivelId: number; areaCurricularId: number; }
 export interface CompetenciaResponseDto { id: number; areaId: number; numeroOrden: number; nombre: string; descripcion: string; }
 

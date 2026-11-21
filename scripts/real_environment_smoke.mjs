@@ -16,7 +16,7 @@ const cases = [
   ['calificaciones', 'Matriz de Calificaciones CNEB'],
   ['asistencia', 'Control de Asistencia & Biometría'],
   ['tesoreria', 'Tesorería & Pagos'],
-  ['academico', 'Estructura Académica & Aulas'],
+  ['academico', 'Estructura Académica, Aulas & Secciones'],
   ['convivencia', 'Convivencia Escolar & Tutoría'],
   ['comunicados', 'Comunicados Institucionales'],
   ['usuarios', 'Usuarios & Permisos (RBAC)'],

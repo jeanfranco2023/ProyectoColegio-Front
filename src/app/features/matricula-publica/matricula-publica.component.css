@@ -31,7 +31,7 @@
   font-weight: 500 !important; line-height: .99 !important; letter-spacing: -.045em !important; text-wrap: balance;
 }
 .admission-page .hero-copy .admission-title em { color: var(--ui-text) !important; font-style: normal; font-weight: 500; }
-.admission-page .hero-copy .admission-lead { max-width: 490px !important; color: var(--ui-muted) !important; font-size: 15px !important; line-height: 1.75 !important; }
+.admission-page .hero-copy .admission-lead { max-width: 520px !important; color: var(--ui-muted) !important; font-size: 17.5px !important; line-height: 1.75 !important; }
 .admission-page .hero-actions { gap: 20px !important; margin-top: 24px !important; }
 .admission-page .button-gold {
   min-height: 48px !important; border-radius: 4px !important; padding: 0 21px !important;
@@ -42,7 +42,7 @@
 .admission-page .hero-secondary b { border-color: var(--ui-control-border) !important; color: var(--ui-text) !important; }
 .admission-page .hero-trust { gap: 9px 18px !important; margin-top: 24px !important; color: var(--ui-muted) !important; }
 .admission-page .hero-trust i { color: var(--ui-action) !important; }
-.admission-page .public-motto { margin-top: 22px; color: var(--ui-text) !important; font-family: var(--font-sans) !important; font-size: 13px !important; font-weight: 600 !important; }
+.admission-page .public-motto { margin-top: 22px; color: var(--ui-text) !important; font-family: var(--font-sans) !important; font-size: 15px !important; font-weight: 600 !important; }
 .admission-page .hero-art { min-height: 0 !important; display: grid !important; grid-template-rows: auto auto !important; justify-items: center; align-content: center; gap: 16px !important; }
 .admission-page .hero-art-ring, .admission-page .hero-art-spark, .admission-page .hero-art-year { display: none !important; }
 .admission-page .hero-emblem-card {
@@ -52,13 +52,13 @@
   border-radius: 3px 28px 3px 3px !important; background: var(--ui-surface) !important;
   box-shadow: 10px 12px 0 var(--ui-canvas), 11px 13px 0 var(--ui-divider) !important; transform: none !important;
 }
-.admission-page .emblem-caption { color: var(--ui-muted) !important; font-family: var(--font-sans) !important; font-size: 11px !important; letter-spacing: .15em !important; }
+.admission-page .emblem-caption { color: var(--ui-muted) !important; font-family: var(--font-sans) !important; font-size: 16px !important; letter-spacing: .15em !important; }
 .admission-page .emblem-image-wrap { width: 112px !important; height: 112px !important; border: 1px solid var(--ui-divider) !important; border-radius: 50% !important; background: #fff !important; box-shadow: none !important; }
 .admission-page .emblem-image-wrap img { width: 100% !important; height: 100% !important; object-fit: contain !important; }
-.admission-page .archive-seal { position: absolute; top: 22px; right: 22px; display: grid; place-items: center; min-width: 76px; min-height: 32px; border: 1.5px solid var(--ui-accent); border-radius: 50%; color: var(--ui-accent); font: 700 11px/1 var(--font-sans); letter-spacing: .12em; transform: rotate(7deg); }
+.admission-page .archive-seal { position: absolute; top: 22px; right: 22px; display: grid; place-items: center; min-width: 76px; min-height: 32px; border: 1.5px solid var(--ui-accent); border-radius: 50%; color: var(--ui-accent); font: 700 12px/1 var(--font-sans); letter-spacing: .12em; transform: rotate(7deg); }
 .admission-page .hero-emblem-card strong { color: var(--ui-text) !important; font-family: var(--font-display) !important; font-size: 27px !important; font-weight: 500 !important; line-height: 1.15 !important; text-align: center; }
 .admission-page .emblem-divider { width: 40px !important; height: 1px !important; background: var(--ui-gold) !important; }
-.admission-page .hero-emblem-card small { color: var(--ui-muted) !important; font-family: var(--font-sans) !important; font-size: 11px !important; letter-spacing: .08em !important; }
+.admission-page .hero-emblem-card small { color: var(--ui-muted) !important; font-family: var(--font-sans) !important; font-size: 16px !important; letter-spacing: .08em !important; }
 .admission-page .hero-art-note { position: relative !important; inset: auto !important; width: min(90%, 340px) !important; min-height: 58px; padding: 10px 12px !important; gap: 12px !important; border: 1px solid var(--ui-divider) !important; border-left: 3px solid var(--ui-action) !important; border-radius: 3px !important; background: var(--ui-canvas) !important; box-shadow: none !important; }
 .admission-page .archive-note-mark { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 30px; color: var(--ui-action); border: 1px solid var(--ui-divider); }
 .admission-page .hero-art-note b { color: var(--ui-text) !important; }
@@ -77,7 +77,7 @@
   .admission-page { padding-inline: 14px !important; }
   .admission-page .admission-hero { grid-template-columns: minmax(0, 1fr) !important; gap: 24px !important; margin-top: 14px !important; padding: 26px 20px 24px !important; border-radius: 5px 32px 5px 5px !important; }
   .admission-page .hero-copy .admission-title { margin: 16px 0 13px !important; font-size: clamp(42px, 12vw, 58px) !important; }
-  .admission-page .hero-copy .admission-lead { font-size: 14px !important; }
+  .admission-page .hero-copy .admission-lead { font-size: 16.5px !important; }
   .admission-page .hero-actions { align-items: stretch; flex-direction: column; gap: 12px !important; }
   .admission-page .hero-actions .button { width: 100%; }
   .admission-page .hero-secondary { justify-content: center; min-height: 44px; }
@@ -100,19 +100,20 @@
 .modal-backdrop .ui-wizard-header p { color: var(--ui-muted) !important; }
 .modal-backdrop .ui-form-progress { padding: 12px 20px; border-bottom: 1px solid var(--ui-divider); background: var(--ui-canvas); }
 .modal-backdrop .ui-form-progress ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
-.modal-backdrop .ui-form-progress li { display: flex; min-width: 0; align-items: center; gap: 8px; color: var(--ui-text); font: 600 11px/1.25 var(--font-sans); }
-.modal-backdrop .ui-form-progress li > span { display: grid; width: 28px; height: 28px; flex: 0 0 28px; place-items: center; border: 1px solid var(--ui-control-border); border-radius: 50%; background: var(--ui-surface); color: var(--ui-text); }
-.modal-backdrop .ui-wizard-body { padding: 18px !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; }
+.modal-backdrop .ui-form-progress li { display: flex; min-width: 0; align-items: center; gap: 8px; color: var(--ui-text); font: 600 18px/1.25 var(--font-sans); }
+.modal-backdrop .ui-form-progress li > span { display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; border: 1px solid var(--ui-control-border); border-radius: 50%; background: var(--ui-surface); color: var(--ui-text); font-size: 17.5px; font-weight: 700; }
+.modal-backdrop .ui-wizard-body { padding: 20px !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; }
 .modal-backdrop .form-step { border-color: var(--ui-divider) !important; border-radius: 4px !important; background: var(--ui-surface) !important; }
 .modal-backdrop .form-step + .form-step { margin-top: 10px !important; }
-.modal-backdrop .form-step > summary, .modal-backdrop .form-step > summary b { color: var(--ui-text) !important; }
-.modal-backdrop .form-step > summary small { color: var(--ui-muted) !important; }
+.modal-backdrop .form-step > summary, .modal-backdrop .form-step > summary b { color: var(--ui-text) !important; font-size: 20px !important; }
+.modal-backdrop .form-step > summary small { color: var(--ui-muted) !important; font-size: 17.5px !important; }
 .modal-backdrop .form-step-number { border-color: var(--ui-control-border) !important; background: var(--ui-surface-soft) !important; color: var(--ui-text) !important; }
 .modal-backdrop .form-step[open] > summary .form-step-number { background: var(--ui-action) !important; border-color: var(--ui-action) !important; color: var(--ui-action-text) !important; }
-.modal-backdrop .form-step-content label { color: var(--ui-text) !important; }
-.modal-backdrop .form-step-content input, .modal-backdrop .form-step-content select, .modal-backdrop .form-step-content textarea { border-color: var(--ui-control-border) !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; }
+.modal-backdrop .form-step-content label { color: var(--ui-text) !important; font-size: 18px !important; font-weight: 600 !important; }
+.modal-backdrop .form-step-content input, .modal-backdrop .form-step-content select, .modal-backdrop .form-step-content textarea { border-color: var(--ui-control-border) !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; font-size: 17.5px !important; min-height: 50px !important; }
 .modal-backdrop .form-step:focus-within > summary { outline-color: var(--ui-focus) !important; }
-.modal-backdrop .form-hint, .modal-backdrop .consent-row { color: var(--ui-muted) !important; }
+.modal-backdrop .form-hint { color: var(--ui-muted) !important; font-size: 17px !important; line-height: 1.55 !important; }
+.modal-backdrop .consent-row { color: var(--ui-muted) !important; font-size: 17px !important; line-height: 1.6 !important; }
 .modal-backdrop .consent-row { background: var(--ui-surface-soft) !important; border-color: var(--ui-divider) !important; }
 .modal-backdrop .button-primary { background: var(--ui-action) !important; color: var(--ui-action-text) !important; box-shadow: none !important; }
 .modal-backdrop .button-quiet { border-color: var(--ui-divider) !important; background: var(--ui-surface-soft) !important; color: var(--ui-text) !important; }
@@ -127,7 +128,7 @@
 .admission-page .intro-strip .level-divider { width: 4px; height: 4px; border-radius: 50%; background: var(--ui-control-border); }
 .admission-page .process-icon svg { width: 19px; height: 19px; }
 .modal-backdrop .ui-admission-wizard .modal-footer { border-top: 1px solid var(--ui-divider) !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; }
-@media (max-width: 600px) { .modal-backdrop .ui-form-progress { padding: 10px 12px; } .modal-backdrop .ui-form-progress ol { gap: 5px; } .modal-backdrop .ui-form-progress li { gap: 5px; font-size: 11px; } .modal-backdrop .ui-form-progress li > span { width: 24px; height: 24px; flex-basis: 24px; } .modal-backdrop .ui-wizard-body { padding: 12px !important; } }
+@media (max-width: 600px) { .modal-backdrop .ui-form-progress { padding: 10px 12px; } .modal-backdrop .ui-form-progress ol { gap: 5px; } .modal-backdrop .ui-form-progress li { gap: 5px; font-size: 15.5px; } .modal-backdrop .ui-form-progress li > span { width: 28px; height: 28px; flex-basis: 28px; font-size: 15.5px; } .modal-backdrop .ui-wizard-body { padding: 12px !important; } }
 :root.theme-dark .modal-backdrop .ui-admission-wizard { background: var(--ui-surface) !important; }
 
 
@@ -157,11 +158,11 @@
 .admission-page:not(.public-landing) .documents-format small,
 .admission-page:not(.public-landing) .process-item small,
 .admission-page:not(.public-landing) .process-time {
-  font-size: 14px !important;
+  font-size: 16.5px !important;
   line-height: 1.55 !important;
 }
 .admission-page:not(.public-landing) .level-card-copy > span,
-.admission-page:not(.public-landing) .level-stamp { font-size: 12px !important; }
+.admission-page:not(.public-landing) .level-stamp { font-size: 16px !important; }
 .admission-page:not(.public-landing) .button { font-size: 15px !important; }
 @media (max-width: 780px) {
   .admission-page:not(.public-landing) .route-page-heading > p,
@@ -183,5 +184,5 @@
   .admission-page:not(.public-landing) .documents-checklist small,
   .admission-page:not(.public-landing) .documents-format small,
   .admission-page:not(.public-landing) .process-item small,
-  .admission-page:not(.public-landing) .process-time { font-size: 14px !important; }
+  .admission-page:not(.public-landing) .process-time { font-size: 16.5px !important; }
 }

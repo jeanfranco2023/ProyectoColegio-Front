@@ -1,8 +1,10 @@
-import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, Output, signal } from '@angular/core';
+import { Component, computed, EventEmitter, inject, Input, OnChanges, OnDestroy, Output, signal } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { EvaluacionService, ImportacionCneb } from '../../core/services/evaluacion.service';
+import { UiPaginacionComponent, paginarRegistros } from './ui-paginacion.component';
 @Component({
     selector: 'app-carga-planilla', standalone: true,
+    imports: [UiPaginacionComponent],
     template: `<section class="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-3 rounded-xl border border-ui-border bg-ui-surface p-4 font-sans text-ui-text" aria-label="Importar planilla CNEB">
     <h2 class="font-semibold">Importar calificaciones CSV o Excel</h2>
     <p class="text-sm">Descarga la plantilla de la competencia seleccionada. Conserva el DNI como texto para mantener sus ocho dígitos.</p>
@@ -18,9 +20,19 @@ import { EvaluacionService, ImportacionCneb } from '../../core/services/evaluaci
     @for (error of errores(); track error.campo) { <p role="alert" class="text-sm text-ui-error-text">{{ error.campo }}: {{ error.mensaje }}</p> }
     @if (vista(); as datos) {
       <p>{{ datos.filasValidadas }} filas validadas. Todavía no se guardaron cambios.</p>
-      <div class="max-h-80 overflow-auto"><table class="w-full text-left text-sm"><thead><tr><th>Fila</th><th>DNI</th><th>Estudiante</th><th>Competencia</th><th>Nota</th><th>Conclusión</th></tr></thead><tbody>
-        @for (fila of datos.filas; track fila.fila) { <tr class="border-t border-ui-border"><td class="p-2">{{ fila.fila }}</td><td>{{ fila.dni }}</td><td>{{ fila.estudiante }}</td><td>{{ fila.competenciaId }}</td><td>{{ fila.nota }}</td><td>{{ fila.conclusion }}</td></tr> }
-      </tbody></table></div>
+      <div class="overflow-hidden rounded-lg border border-ui-border">
+        <div class="overflow-x-auto"><table class="w-full text-left text-sm"><thead><tr><th>Fila</th><th>DNI</th><th>Estudiante</th><th>Competencia</th><th>Nota</th><th>Conclusión</th></tr></thead><tbody>
+          @for (fila of filasPaginadas(); track fila.fila) { <tr class="border-t border-ui-border"><td class="p-2">{{ fila.fila }}</td><td>{{ fila.dni }}</td><td>{{ fila.estudiante }}</td><td>{{ fila.competenciaId }}</td><td>{{ fila.nota }}</td><td>{{ fila.conclusion }}</td></tr> }
+        </tbody></table></div>
+        <ui-paginacion
+          [totalRegistros]="datos.filas.length"
+          [paginaActual]="paginaVista()"
+          [tamanoPagina]="10"
+          etiqueta="filas validadas"
+          ariaLabel="Paginación de previsualización de planilla"
+          (cambioPagina)="paginaVista.set($event)"
+        />
+      </div>
     }
   </section>`
 })
@@ -38,6 +50,8 @@ export class CargaPlanillaComponent implements OnChanges, OnDestroy {
     readonly completada = new EventEmitter<number>();
     archivo: File | null = null;
     readonly vista = signal<ImportacionCneb | null>(null);
+    readonly paginaVista = signal<number>(1);
+    readonly filasPaginadas = computed(() => paginarRegistros(this.vista()?.filas ?? [], this.paginaVista(), 10));
     readonly procesando = signal(false);
     readonly mensaje = signal('');
     readonly errores = signal<Array<{

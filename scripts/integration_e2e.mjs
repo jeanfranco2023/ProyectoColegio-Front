@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import puppeteer from 'puppeteer-core';
+import { mkdir } from 'node:fs/promises';
+import { join } from 'node:path';
 
 // Run only against disposable local services. Seed E2E_USERNAME with DIRECCION.
 const frontend = process.env.E2E_FRONT_BASE;
@@ -12,9 +14,12 @@ for (const [name, value] of Object.entries({ E2E_FRONT_BASE: frontend, E2E_API_B
 for (const url of [frontend, backend]) {
   assert.ok(['localhost', '127.0.0.1'].includes(new URL(url).hostname), 'E2E targets must be local');
 }
+assert.equal(process.env.E2E_ISOLATED, '1', 'Use npm run test:e2e:isolated to protect shared databases');
+assert.equal(new URL(backend).port, '18080', 'Write tests require the isolated API on port 18080');
 
 const chrome = process.env.E2E_CHROME ?? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
 const headed = process.env.E2E_HEADED === '1';
+const artifactDir = process.env.E2E_ARTIFACT_DIR ?? 'e2e-artifacts';
 const browser = await puppeteer.launch({
   executablePath: chrome,
   headless: !headed,
@@ -85,11 +90,13 @@ async function waitForDialogClose() {
 }
 async function setInput(selector, value) {
   await page.$eval(selector, (input, value) => {
+    input.focus();
     input.value = '';
     input.dispatchEvent(new Event('input', { bubbles: true }));
     input.value = value;
     input.dispatchEvent(new Event('input', { bubbles: true }));
     input.dispatchEvent(new Event('change', { bubbles: true }));
+    input.blur();
   }, value);
 }
 
@@ -110,15 +117,17 @@ try {
   assert.ok(primary, 'Missing PRIMARIA catalog entry');
   const runSuffix = Date.now();
   const academicYears = await api('GET', '/academico/anios');
-  const currentYear = new Date().getFullYear();
-  let year = academicYears.find(item => item.abierto) ?? academicYears[0];
+  const currentYear = Math.max(2027, new Date().getFullYear());
+  let year = academicYears.find(item => item.anio === currentYear && item.abierto);
   year ??= await api('POST', '/academico/anios', {
     anio: currentYear,
     fechaInicio: `${currentYear}-03-01`,
     fechaFin: `${currentYear}-12-31`
   });
-  const firstDueDate = String(year.fechaInicio ?? '').slice(0, 10);
-  assert.match(firstDueDate, /^\d{4}-\d{2}-\d{2}$/, `El año lectivo ${year.anio ?? year.id} no tiene fecha de inicio válida`);
+  const todayPeru = new Intl.DateTimeFormat('sv-SE', { timeZone: 'America/Lima' }).format(new Date());
+  const rawStartDate = String(year.fechaInicio ?? '').slice(0, 10);
+  assert.match(rawStartDate, /^\d{4}-\d{2}-\d{2}$/, `El año lectivo ${year.anio ?? year.id} no tiene fecha de inicio válida`);
+  const firstDueDate = rawStartDate >= todayPeru ? rawStartDate : todayPeru;
 
   const grades = await api('GET', `/academico/grados?nivelId=${primary.id}`);
   let grade = grades.find(item => item.numeroGrado === 1) ?? grades[0];
@@ -149,7 +158,7 @@ try {
   console.log('OK academic catalog -> year/grade/section');
 
   await page.goto(`${frontend}/admin/matriculas`, { waitUntil: 'domcontentloaded' });
-  await page.waitForSelector('#btn-abrir-registro-alumno');
+  await page.waitForSelector('#btn-abrir-registro-alumno, #btn-abrir-matricula-presencial');
   await page.click('#tab-matriculas');
   await page.waitForFunction((id, label) => [...document.querySelectorAll('select option')].some(option => option.value === String(id) || option.textContent.includes(label)), {}, section.id, sectionLabel);
   await page.click('#tab-estudiantes');
@@ -219,34 +228,51 @@ try {
   console.log('OK enrollment form -> API -> PostgreSQL');
 
   const concepts = await api('GET', '/tesoreria/conceptos');
+  const guardian = await api('POST', '/apoderados', {
+    tipoDocumento: 'DNI',
+    numeroDocumento: String(81000000 + Math.floor(Math.random() * 9000000)),
+    nombres: 'Marina', apellidoPaterno: 'Santos', apellidoMaterno: 'Pruebas',
+    celular: '999111222', email: 'caja-' + process.env.E2E_RUN_ID + '@local.test',
+    direccion: 'Calle de prueba 123', ubigeoInei: '150101'
+  });
+  await api('POST', '/estudiantes/apoderados', {
+    estudianteId: student.id, apoderadoId: guardian.id, parentesco: 'MADRE',
+    esResponsableEconomico: true, tieneCustodia: true, permiteRecojo: true
+  });
   assert.ok(concepts.some(item => item.tipoConcepto === 'MATRICULA'), 'No hay conceptos de tipo MATRICULA en el catálogo local de Tesorería');
-  assert.ok(concepts.some(item => item.tipoConcepto === 'PENSION'), 'No hay conceptos de tipo PENSION en el catálogo local de Tesorería');
   await page.goto(`${frontend}/admin/tesoreria`, { waitUntil: 'domcontentloaded' });
   await waitForText('Tesorería & Pagos');
-  await page.waitForFunction(() => document.body.innerText.includes('Generar Cronograma en BD'));
-  await page.evaluate(() => [...document.querySelectorAll('button')].find(button => button.innerText.includes('Generar Cronograma en BD'))?.click());
-  await page.waitForSelector('input[name="matricula"]');
-  await page.waitForFunction(() => {
-    const hasConcept = selector => [...document.querySelectorAll(`${selector} option`)]
-      .some(option => !option.textContent.includes('Sin conceptos disponibles'));
-    return hasConcept('select[name="conceptoMatricula"]') && hasConcept('select[name="conceptoPension"]');
+  await page.waitForFunction(() =>
+    document.body.innerText.includes('Generar cuota de matrícula')
+    || document.body.innerText.includes('Generar Cronograma en BD')
+  );
+  await page.evaluate(() => {
+    const btn = document.querySelector('#btn-generar-cuota-matricula')
+      ?? [...document.querySelectorAll('button')].find(button =>
+        button.innerText.includes('Generar cuota de matrícula')
+        || button.innerText.includes('Generar Cronograma en BD')
+      );
+    btn?.click();
   });
+  await page.waitForSelector('input[name="matricula"]');
   await setInput('input[name="matricula"]', String(matricula.id));
-  await setInput('input[name="primerVencimiento"]', firstDueDate);
-  await page.waitForFunction((id, date) =>
-    document.querySelector('input[name="matricula"]')?.value === String(id)
-    && document.querySelector('input[name="primerVencimiento"]')?.value === date,
-  {}, matricula.id, firstDueDate);
-  const scheduleResponse = page.waitForResponse(response => response.url().endsWith('/tesoreria/obligaciones') && response.request().method() === 'POST');
+  const dueDateSelector = (await page.$('input[name="primerVencimiento"]'))
+    ? 'input[name="primerVencimiento"]'
+    : 'app-ui-calendar[name="primerVencimiento"] input';
+  await setInput(dueDateSelector, firstDueDate);
+  const scheduleResponse = page.waitForResponse(response =>
+    (response.url().endsWith('/tesoreria/obligaciones/matricula') || response.url().endsWith('/tesoreria/obligaciones'))
+    && response.request().method() === 'POST'
+  );
   await page.click('dialog[aria-labelledby="cronograma-dialog-title"] form button[type="submit"]');
-  assert.equal((await scheduleResponse).status(), 200, 'The payment schedule request failed');
+  assert.ok([200, 201].includes((await scheduleResponse).status()), 'The payment obligation request failed');
   await page.waitForFunction(() => !document.querySelector('dialog[aria-labelledby="cronograma-dialog-title"]')?.open);
   let obligations = await api('GET', `/tesoreria/obligaciones?matriculaId=${matricula.id}`);
-  assert.equal(obligations.length, 11, `El cronograma debe generar 11 obligaciones para la matrícula #${matricula.id}`);
+  assert.ok(obligations.length >= 1, `Debe existir al menos 1 obligación generada para la matrícula #${matricula.id}`);
   await page.waitForFunction(id => [...document.querySelectorAll('table tbody tr')]
-    .filter(row => row.innerText.includes(`Matrícula #${id}`)).length === 11,
+    .filter(row => row.innerText.includes(`Matrícula #${id}`)).length >= 1,
   {}, matricula.id);
-  console.log(`OK payment schedule -> 11 obligations for matrícula #${matricula.id}`);
+  console.log(`OK payment obligation(s) -> ${obligations.length} obligation(s) for matrícula #${matricula.id}`);
 
   const openedPayment = await page.evaluate(id => {
     const row = [...document.querySelectorAll('table tbody tr')].find(item =>
@@ -263,7 +289,11 @@ try {
   const paymentResponse = page.waitForResponse(response => response.url().endsWith('/tesoreria/pagos/caja') && response.request().method() === 'POST');
   const confirmedPayment = await page.evaluate(() => {
     const dialog = document.querySelector('dialog[aria-labelledby="cobro-dialog-title"]');
-    const button = [...(dialog?.querySelectorAll('button') ?? [])].find(item => item.innerText.includes('Confirmar pago en efectivo'));
+    const button = dialog?.querySelector('#btn-confirmar-cobro-caja')
+      ?? [...(dialog?.querySelectorAll('button') ?? [])].find(item =>
+        item.innerText.includes('Registrar pago verificado')
+        || item.innerText.includes('Confirmar pago en efectivo')
+      );
     if (!button) return false;
     button.click();
     return true;
@@ -300,8 +330,10 @@ try {
   console.error('Network /tesoreria/pagos/caja:', JSON.stringify(paymentApiTraffic, null, 2));
   console.error('CDK overlay text:', await page.$eval('.cdk-overlay-container', element => element.innerText).catch(() => '(sin .cdk-overlay-container)'));
   try {
-    await page.screenshot({ path: String.raw`C:\Users\FABRIZIO\.codex\visualizations\2026\10\15\01a13cfb-206e-7d80-9d7f-7f8d7f4d1009\e2e-fallo.png`, fullPage: true });
-    console.error('Failure screenshot saved to the requested visualization path.');
+    await mkdir(artifactDir, { recursive: true });
+    const screenshotPath = join(artifactDir, 'integration-failure.png');
+    await page.screenshot({ path: screenshotPath, fullPage: true });
+    console.error('Failure screenshot saved to ' + screenshotPath);
   } catch (screenshotError) {
     console.error('Failure screenshot could not be saved:', screenshotError.message);
   }

@@ -90,3 +90,101 @@ describe('Reenvío de seguimiento público', () => {
     expect(mensaje().toLowerCase()).not.toContain('reenviado');
   });
 });
+
+describe('Ordenamiento de grados disponibles', () => {
+  it('ordena ascendentemente por nivel (Inicial < Primaria < Secundaria) y por grado/edad (3 < 4 < 5)', () => {
+    const secciones = [
+      { id: 1, anioLectivoId: 2026, gradoId: 105, grado: 'Cinco añitos', nivel: 'INICIAL', vacantesDisponibles: 10 },
+      { id: 2, anioLectivoId: 2026, gradoId: 103, grado: 'Tres añitos', nivel: 'INICIAL', vacantesDisponibles: 5 },
+      { id: 3, anioLectivoId: 2026, gradoId: 104, grado: 'Cuatro añitos', nivel: 'INICIAL', vacantesDisponibles: 8 },
+      { id: 4, anioLectivoId: 2026, gradoId: 202, grado: 'Segundo de Primaria', nivel: 'PRIMARIA', vacantesDisponibles: 12 },
+      { id: 5, anioLectivoId: 2026, gradoId: 201, grado: 'Primer Grado', nivel: 'PRIMARIA', vacantesDisponibles: 15 },
+      { id: 6, anioLectivoId: 2026, gradoId: 305, grado: '5° de Secundaria', nivel: 'SECUNDARIA', vacantesDisponibles: 50 },
+      { id: 7, anioLectivoId: 2026, gradoId: 301, grado: '1° de Secundaria', nivel: 'SECUNDARIA', vacantesDisponibles: 20 }
+    ];
+    const contexto = {
+      anioId: () => 2026,
+      seccionesDisponibles: secciones
+    };
+    const getter = Object.getOwnPropertyDescriptor(MatriculaPublicaComponent.prototype, 'gradosDisponibles')!.get!;
+    const ordenados = getter.call(contexto) as any[];
+
+    expect(ordenados.map(g => g.grado)).toEqual([
+      'Tres añitos',
+      'Cuatro añitos',
+      'Cinco añitos',
+      'Primer Grado',
+      'Segundo de Primaria',
+      '1° de Secundaria',
+      '5° de Secundaria'
+    ]);
+  });
+});
+
+describe('Fotografía del estudiante como evidencia obligatoria', () => {
+  it('rechaza archivos no imagen o mayores a 5MB y acepta imágenes válidas', () => {
+    const error = signal('');
+    const fotoEstudianteArchivo = signal<File | null>(null);
+    const fotoEstudianteBase64 = signal<string | null>(null);
+    const contexto = {
+      error,
+      fotoEstudianteArchivo,
+      fotoEstudianteBase64,
+      documentoEstudiante: '74839201'
+    };
+
+    // 1. Archivo PDF (inválido para foto)
+    const inputPdf = { files: [new File(['pdf'], 'foto.pdf', { type: 'application/pdf' })], value: 'foto.pdf' };
+    MatriculaPublicaComponent.prototype.seleccionarFotoEstudiante.call(contexto as unknown as MatriculaPublicaComponent, { target: inputPdf } as unknown as Event);
+    expect(error()).toContain('imagen válida');
+    expect(inputPdf.value).toBe('');
+    expect(fotoEstudianteArchivo()).toBeNull();
+
+    // 2. Archivo mayor a 5MB
+    const bigBytes = new Uint8Array(6 * 1024 * 1024);
+    const inputBig = { files: [new File([bigBytes], 'grande.jpg', { type: 'image/jpeg' })], value: 'grande.jpg' };
+    MatriculaPublicaComponent.prototype.seleccionarFotoEstudiante.call(contexto as unknown as MatriculaPublicaComponent, { target: inputBig } as unknown as Event);
+    expect(error()).toContain('imagen válida');
+  });
+});
+
+describe('Ingreso por traslado y certificado de estudios', () => {
+  it('exige 4 documentos incluyendo CERTIFICADO_ESTUDIOS cuando la modalidad es TRASLADO', () => {
+    const docTypesGetter = Object.getOwnPropertyDescriptor(MatriculaPublicaComponent.prototype, 'documentTypes')!.get!;
+    const contextoTraslado = {
+      modalidadIngreso: 'TRASLADO' as const,
+      solicitud: () => ({ modalidadIngreso: 'TRASLADO' as const, documentos: documentos() })
+    };
+
+    const tiposTraslado = docTypesGetter.call(contextoTraslado) as TipoDocumentoSolicitud[];
+    expect(tiposTraslado).toEqual(['PARTIDA_NACIMIENTO', 'DNI_C4', 'RECIBO_SERVICIO', 'CERTIFICADO_ESTUDIOS']);
+
+    const aprobadoSinCertificado = MatriculaPublicaComponent.prototype.documentosAprobados.call(
+      Object.defineProperty(contextoTraslado, 'documentTypes', { get: () => tiposTraslado }) as unknown as MatriculaPublicaComponent
+    );
+    expect(aprobadoSinCertificado).toBe(false);
+
+    const docs4: DocumentoSolicitudDto[] = [
+      ...documentos(),
+      {
+        tipo: 'CERTIFICADO_ESTUDIOS',
+        estado: 'VALIDADO',
+        observacion: null,
+        versionId: 'v4',
+        iaValida: true,
+        dniApiCoincide: true,
+        estadoFirma: 'NO_APLICA',
+        detalleFirma: null,
+        vinculoParentalCoincide: null
+      }
+    ];
+    const contextoCompleto = {
+      modalidadIngreso: 'TRASLADO' as const,
+      solicitud: () => ({ modalidadIngreso: 'TRASLADO' as const, documentos: docs4 })
+    };
+    Object.defineProperty(contextoCompleto, 'documentTypes', { get: () => tiposTraslado });
+    expect(MatriculaPublicaComponent.prototype.documentosAprobados.call(contextoCompleto as unknown as MatriculaPublicaComponent)).toBe(true);
+  });
+});
+
+

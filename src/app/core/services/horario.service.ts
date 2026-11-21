@@ -20,6 +20,19 @@ export interface BloqueHorarioDto {
 export interface MallaHorariaDto {
     horarios: HorarioDto[];
 }
+export interface HorarioSeccionDto {
+    id: number;
+    anioLectivoId: number;
+    seccionId: number;
+    docenteUsuarioId: number;
+    asignacionDocenteId: number;
+    diaSemana: number;
+    bloqueHorarioId: number;
+    activo: boolean;
+}
+export interface MallaHorariaSeccionDto {
+    horarios: HorarioSeccionDto[];
+}
 export interface AsignacionHorarioOpcionDto {
     asignacionId: number;
     anioLectivoId: number;
@@ -44,6 +57,13 @@ export class HorarioService {
     obtenerPorGrado(id: number, anioId: number) { return this.http.get<HorarioDto[]>(`${this.url}/grado/${id}`, { params: { anioId } }); }
     bloques() { return this.http.get<BloqueHorarioDto[]>(`${environment.apiUrl}/curriculo/bloques`); }
     catalogo() { return this.http.get<AsignacionHorarioOpcionDto[]>(`${this.url}/catalogo`); }
+    horariosPorSeccion(seccionId: number, anioId: number) {
+        return this.http.get<MallaHorariaSeccionDto>(`${this.url}/seccion/${seccionId}`, { params: { anioId } });
+    }
+    programarAsignacion(payload: { asignacionDocenteId: number; diaSemana: DiaHorario; bloqueHorarioId: number }) {
+        return this.http.post<HorarioSeccionDto>(this.url, payload);
+    }
+    retirarAsignacion(id: number) { return this.http.delete<HorarioSeccionDto>(`${this.url}/${id}`); }
     programar(payload: {
         anioLectivoId: number;
         gradoId: number;

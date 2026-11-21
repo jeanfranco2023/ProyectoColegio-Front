@@ -1,14 +1,25 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { AprobacionSuplenciasComponent } from './aprobacion-suplencias.component';
-import { Stage9ReasonDialog, Stage9ReasonAction, Stage9State } from './stage9.contract';
+import { Stage9ReasonDialog, Stage9ReasonAction, Stage9State, Stage9SubstituteRequest } from './stage9.contract';
 import { SuplenciaDto, SuplenciaService } from '../../core/services/suplencia.service';
 import { HijoPortalDto, PortalFamiliarService } from '../../core/services/portal-familiar.service';
 import { vistaSuplencia } from './suplencia-view';
-@Component({ selector: 'app-aprobacion-suplencias-page', standalone: true, imports: [AprobacionSuplenciasComponent], template: `
+
+export type SolicitudSuplenciaEnriquecida = Stage9SubstituteRequest & {
+  reason?: string;
+  decisionLabel?: string;
+};
+
+@Component({
+  selector: 'app-aprobacion-suplencias-page',
+  standalone: true,
+  imports: [AprobacionSuplenciasComponent],
+  template: `
   <p role="status">{{ mensaje() }}</p>
   <app-aprobacion-suplencias-screen [state]="estado()" [errorMessage]="mensaje()" [requests]="visibles()" [pendingCount]="pendientes()" [activeCount]="activas()" [expiredCount]="vencidas()" [search]="busqueda()" [reasonDialog]="dialogo()" [reasonDraft]="motivo()" (searchChanged)="busqueda.set($event)" (approveRequested)="aprobar($event)" (reasonRequested)="abrirMotivo($event)" (reasonDraftChanged)="motivo.set($event)" (reasonConfirmed)="resolver($event)" (reasonCanceled)="dialogo.set(null)" (retry)="cargar()" />
-` })
+`
+})
 export class AprobacionSuplenciasPageComponent implements OnInit {
     private readonly servicio = inject(SuplenciaService);
     private readonly portal = inject(PortalFamiliarService);
@@ -23,7 +34,26 @@ export class AprobacionSuplenciasPageComponent implements OnInit {
     readonly pendientes = computed(() => this.solicitudes().filter(s => s.estado === 'PENDIENTE_APROBACION').length);
     readonly activas = computed(() => this.solicitudes().filter(s => s.estado === 'ACTIVO').length);
     readonly vencidas = computed(() => this.solicitudes().filter(s => s.estado === 'VENCIDO').length);
-    readonly visibles = computed(() => this.solicitudes().map(s => vistaSuplencia(s, this.hijos())).filter(s => `${s.fullName} ${s.studentName} ${s.dni}`.toLocaleLowerCase('es').includes(this.busqueda().trim().toLocaleLowerCase('es'))));
+    readonly visibles = computed<SolicitudSuplenciaEnriquecida[]>(() =>
+      this.solicitudes()
+        .map(s => {
+          const base = vistaSuplencia(s, this.hijos());
+          return {
+            ...base,
+            reason: s.motivoResolucion?.trim() || (s.estado === 'ACTIVO' ? 'Aprobada por Dirección' : 'Pendiente de resolución'),
+            decisionLabel: s.estado === 'ACTIVO'
+              ? 'Aprobada'
+              : s.estado === 'RECHAZADO'
+                ? 'Rechazada'
+                : s.estado === 'REVOCADO'
+                  ? 'Revocada'
+                  : s.estado === 'VENCIDO'
+                    ? 'Vencida'
+                    : 'Pendiente de decisión'
+          };
+        })
+        .filter(s => `${s.fullName} ${s.studentName} ${s.dni} ${s.reason ?? ''}`.toLocaleLowerCase('es').includes(this.busqueda().trim().toLocaleLowerCase('es')))
+    );
     ngOnInit() { this.cargar(); }
     cargar() { this.estado.set('loading'); forkJoin({ solicitudes: this.servicio.bandeja(), hijos: this.portal.alumnosSeguimiento() }).subscribe({ next: d => { this.solicitudes.set(d.solicitudes); this.hijos.set(d.hijos); this.estado.set(d.solicitudes.length ? 'normal' : 'empty'); }, error: e => { this.estado.set('error'); this.mensaje.set(e?.error?.message ?? 'No se pudo cargar la bandeja.'); } }); }
     abrirMotivo(dialogo: Stage9ReasonDialog) { if (this.ocupado())

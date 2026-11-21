@@ -1,8 +1,12 @@
-import { Component, ElementRef, inject, signal, OnInit, ViewChild } from '@angular/core';
+import { FormatoEntradaDirective } from '../../shared/ui/formato-entrada.directive';
+import { Component, computed, ElementRef, inject, signal, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ConvivenciaService } from '../../core/services/convivencia.service';
+import { HijoPortalDto, PortalFamiliarService } from '../../core/services/portal-familiar.service';
 import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
+import { UiCalendarComponent } from '../../shared/ui/ui-calendar.component';
+import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-paginacion.component';
 import { AuthStore } from '../../core/state/auth.store';
 import { ActualizarEstadoIncidenciaRequestDto, EstadoIncidencia, HistorialEstadoIncidenciaResponseDto } from '../../core/models/convivencia.model';
 
@@ -10,6 +14,7 @@ export interface IncidenciaEscolar {
   id: number;
   matriculaId: number;
   nombreEstudiante?: string;
+  seccionEtiqueta?: string;
   fecha: string;
   tipoFalta: string;
   descripcion: string;
@@ -21,8 +26,8 @@ export interface IncidenciaEscolar {
 @Component({
   selector: 'app-convivencia',
   standalone: true,
-  imports: [CommonModule, FormsModule, UiDatePePipe],
-template: `
+  imports: [FormatoEntradaDirective, CommonModule, FormsModule, UiDatePePipe, UiCalendarComponent, UiPaginacionComponent],
+  template: `
     <div class="space-y-6 min-w-0 font-inter text-[#172b4d] [&_button]:min-h-11 [&_input]:min-h-11 [&_select]:min-h-11 [&_textarea]:min-h-11 [&_:focus-visible]:outline-[3px] [&_:focus-visible]:outline-[#2864c5] [&_:focus-visible]:outline-offset-[3px] [&_.grid>div]:min-w-0 [&_.grid>article]:min-w-0">
       <!-- Header -->
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t-[3px] border-[#c49a58]/50 pt-3">
@@ -32,40 +37,168 @@ template: `
             Libro de incidencias, seguimiento formativo de estudiantes y citaciones registradas en la base de datos.
           </p>
         </div>
-        @if (puedeRegistrar()) { <div class="flex items-center gap-3">
-          <button
-            (click)="nuevaIncidencia()"
-            class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs !text-[11px] sm:!text-[11px] shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            <span>Registrar Incidencia en BD</span>
-          </button>
-        </div> } @else if (puedeGestionarEstados()) {
+        @if (puedeRegistrar()) {
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              (click)="nuevaIncidencia()"
+              class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs !text-[11px] sm:!text-[11px] shadow-lg shadow-blue-600/30 transition flex items-center gap-2 cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Registrar Incidencia en BD</span>
+            </button>
+          </div>
+        } @else if (puedeGestionarEstados()) {
           <span class="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-800">Gestión de incidencias</span>
-        } @else { <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600">Consulta</span> }
+        } @else {
+          <span class="rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600">Consulta</span>
+        }
       </div>
 
-      @if (error()) { <p class="text-[#b91c1c] text-sm" role="alert">{{ error() }}</p> }
-      @if (mensaje()) { <p class="text-emerald-700 text-sm" role="status">{{ mensaje() }}</p> }
-      <dialog #incidenciaDialog class="box-border w-[min(680px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden border border-[#e4eaf3] rounded-[22px] bg-white text-[#14213d] p-0 shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px] max-[639px]:w-[calc(100vw-16px)] max-[639px]:max-w-[calc(100vw-16px)] max-[639px]:max-h-[calc(100dvh-16px)] max-[639px]:rounded-[18px] !w-[min(620px,calc(100vw_-_24px))] !max-w-[calc(100vw_-_24px)] !max-h-[calc(100dvh_-_24px)] !overflow-auto" aria-labelledby="incidencia-dialog-title">
-        <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col"><header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4"><div><h3 id="incidencia-dialog-title" class="tracking-[-.025em]">Registrar incidencia escolar</h3><p>Documenta el hecho y define si requiere citación.</p></div><button type="button" class="min-h-11 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] !grid !h-11 !w-11 !min-h-11 !min-w-11 !flex-none !place-items-center !p-0 !font-[650]" (click)="cerrarDialogo()" aria-label="Cerrar">✕</button></header>
-          <form (ngSubmit)="registrar()" class="flex min-h-0 flex-[1_1_auto] flex-col"><div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
-            @if (error()) { <p class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-xs text-[#b91c1c]" role="alert">{{ error() }}</p> }
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Matrícula ID *<input type="number" [(ngModel)]="matriculaId" name="matricula" min="1" required class="min-w-0 !min-h-[46px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
-              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full">Fecha *<input type="date" [(ngModel)]="fechaIncidencia" name="fecha" required class="min-w-0 !min-h-[46px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"></label>
-              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full sm:col-span-2">Tipo de falta<select [(ngModel)]="tipoFalta" name="tipoFalta" class="min-w-0 !min-h-[46px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"><option value="LEVE">Leve</option><option value="GRAVE">Grave</option><option value="MUY_GRAVE">Muy grave</option></select></label>
-              <label class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] [&_input]:mt-[6px] [&_input]:block [&_input]:w-full [&_select]:mt-[6px] [&_select]:block [&_select]:w-full [&_textarea]:mt-[6px] [&_textarea]:block [&_textarea]:w-full sm:col-span-2">Descripción *<textarea [(ngModel)]="descripcion" name="descripcion" required maxlength="10000" rows="4" placeholder="Describe lo ocurrido con lenguaje objetivo" class="min-w-0 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base py-[10px] resize-y !min-h-[110px] !font-[650]"></textarea></label>
-              <label class="inline-flex items-center gap-3 text-sm text-slate-700 sm:col-span-2"><input type="checkbox" class="w-[18px] accent-[#2563eb] !font-[650]" [(ngModel)]="requiereCitacion" name="requiereCitacion"> Requiere citación al apoderado</label>
+      @if (error()) { <p class="text-[#b91c1c] text-sm rounded-xl border border-[#fecaca] bg-[#fef2f2] px-4 py-2.5 m-0" role="alert">{{ error() }}</p> }
+      @if (mensaje()) { <p class="text-emerald-700 text-sm rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 m-0" role="status">{{ mensaje() }}</p> }
+
+      <!-- DIALOG: REGISTRAR INCIDENCIA -->
+      <dialog #incidenciaDialog class="box-border w-[min(680px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden border border-[#e4eaf3] rounded-[22px] bg-white text-[#14213d] p-0 shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px] max-[639px]:w-[calc(100vw-16px)] max-[639px]:max-w-[calc(100vw-16px)] max-[639px]:max-h-[calc(100dvh-16px)] max-[639px]:rounded-[18px] !w-[min(640px,calc(100vw_-_24px))] !max-w-[calc(100vw_-_24px)] !max-h-[calc(100dvh_-_24px)] !overflow-auto" aria-labelledby="incidencia-dialog-title">
+        <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col">
+          <header class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-[#e5eaf2] px-6 py-5 [&_h3]:m-0 [&_h3]:text-[#14213d] [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-[#64748b] [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4">
+            <div>
+              <h3 id="incidencia-dialog-title" class="tracking-[-.025em]">Registrar incidencia escolar</h3>
+              <p>Busca al estudiante por nombre o DNI, verifica su grado y sección y documenta el hecho.</p>
             </div>
-          </div><footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]"><button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogo()">Cancelar</button><button type="submit" [disabled]="guardando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ guardando() ? 'Guardando…' : 'Registrar incidencia' }}</button></footer></form>
+            <button type="button" class="min-h-11 rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] !grid !h-11 !w-11 !min-h-11 !min-w-11 !flex-none !place-items-center !p-0 !font-[650]" (click)="cerrarDialogo()" aria-label="Cerrar">✕</button>
+          </header>
+          <form (ngSubmit)="registrar()" class="flex min-h-0 flex-[1_1_auto] flex-col" novalidate>
+            <div class="min-h-0 flex-[1_1_auto] overflow-auto overscroll-contain px-6 py-5 max-[639px]:p-4 space-y-4">
+              @if (error()) { <p id="incidencia-form-error" class="m-0 rounded-xl border border-[#fecaca] bg-[#fef2f2] px-3 py-[10px] text-xs text-[#b91c1c]" role="alert">{{ error() }}</p> }
+
+              <!-- Búsqueda de estudiante por nombre o DNI -->
+              <div class="rounded-xl border border-[#dce4ef] bg-[#f8fafc] p-3.5 space-y-3">
+                <div>
+                  <label for="buscar-alumno-incidencia" class="block text-xs font-semibold text-[#475569] mb-1">Buscar estudiante por nombre o DNI</label>
+                  <input
+                    id="buscar-alumno-incidencia"
+                    type="search"
+                    [ngModel]="busquedaEstudianteModal()"
+                    (ngModelChange)="busquedaEstudianteModal.set($event)"
+                    name="buscarAlumnoIncidencia"
+                    placeholder="Escribe apellidos, nombres o DNI (8 dígitos)"
+                    aria-describedby="buscar-alumno-incidencia-help"
+                    class="w-full min-h-[44px] rounded-xl border border-[#d9e1ec] bg-white px-3 py-2 text-xs text-[#14213d] focus:border-[#5b83d6] focus:outline-none"
+                  />
+                  <span id="buscar-alumno-incidencia-help" class="text-[11px] text-slate-500 mt-1 block">Selecciona un estudiante para autocompletar su matrícula, grado y sección.</span>
+                </div>
+
+                @if (estudiantesSugeridosModal().length > 0) {
+                  <div class="max-h-36 overflow-y-auto rounded-lg border border-slate-200 bg-white divide-y divide-slate-100">
+                    @for (al of estudiantesSugeridosModal(); track al.matriculaId) {
+                      <button
+                        type="button"
+                        (click)="seleccionarEstudianteModal(al)"
+                        class="w-full px-3 py-2 text-left text-xs hover:bg-blue-50 flex items-center justify-between gap-2 transition cursor-pointer"
+                        [class.bg-blue-50]="matriculaId === al.matriculaId"
+                      >
+                        <span class="font-semibold text-[#14213d]">{{ al.nombres }} {{ al.apellidoPaterno }} {{ al.apellidoMaterno }} <span class="font-normal text-slate-500">· DNI {{ al.numeroDocumento }}</span></span>
+                        <span class="shrink-0 rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700">{{ al.nivel }} · {{ al.grado }} "{{ al.seccion }}"</span>
+                      </button>
+                    }
+                  </div>
+                }
+
+                @if (estudianteSeleccionadoModal(); as sel) {
+                  <div class="rounded-xl border border-emerald-200 bg-emerald-50/90 px-3.5 py-2.5 text-xs text-emerald-950 flex flex-wrap items-center justify-between gap-2" role="status">
+                    <div>
+                      <span class="font-bold block">{{ sel.nombres }} {{ sel.apellidoPaterno }} {{ sel.apellidoMaterno }}</span>
+                      <span class="text-[11px] text-emerald-800">DNI {{ sel.numeroDocumento }} · Matrícula #{{ sel.matriculaId }}</span>
+                    </div>
+                    <span class="rounded-lg bg-white border border-emerald-300 px-2.5 py-1 text-xs font-extrabold text-emerald-900">
+                      {{ sel.nivel }} · {{ sel.grado }} "{{ sel.seccion }}"
+                    </span>
+                  </div>
+                }
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="incidencia-matricula-id" class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] mb-1">Matrícula ID *</label>
+                  <input
+                    id="incidencia-matricula-id"
+                    appFormatoEntrada="entero"
+                    type="number"
+                    [(ngModel)]="matriculaId"
+                    name="matricula"
+                    min="1"
+                    required
+                    aria-describedby="incidencia-matricula-error"
+                    class="w-full min-w-0 !min-h-[46px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"
+                  />
+                  @if (intentoEnvio() && (!matriculaId || matriculaId < 1)) {
+                    <p id="incidencia-matricula-error" class="mt-1 text-xs font-semibold text-[#b91c1c]" role="alert">Seleccione un estudiante o indique un ID de matrícula válido.</p>
+                  } @else {
+                    <span id="incidencia-matricula-error" class="sr-only">Identificador numérico de la matrícula del alumno</span>
+                  }
+                </div>
+
+                <div>
+                  <label for="incidencia-fecha" class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] mb-1">Fecha *</label>
+                  <app-ui-calendar id="incidencia-fecha" [(ngModel)]="fechaIncidencia" name="fecha" [required]="true" aria-label="Fecha de incidencia"></app-ui-calendar>
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label for="incidencia-tipo-falta" class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] mb-1">Tipo de falta *</label>
+                  <select
+                    id="incidencia-tipo-falta"
+                    [(ngModel)]="tipoFalta"
+                    name="tipoFalta"
+                    class="w-full min-w-0 !min-h-[46px] max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base !font-[650]"
+                  >
+                    <option value="LEVE">Leve</option>
+                    <option value="GRAVE">Grave</option>
+                    <option value="MUY_GRAVE">Muy grave</option>
+                  </select>
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label for="incidencia-descripcion" class="block min-w-0 text-xs font-semibold leading-normal text-[#475569] mb-1">Descripción objetiva del hecho *</label>
+                  <textarea
+                    id="incidencia-descripcion"
+                    [(ngModel)]="descripcion"
+                    name="descripcion"
+                    required
+                    maxlength="10000"
+                    rows="4"
+                    placeholder="Describe lo ocurrido con lenguaje formativo y objetivo"
+                    aria-describedby="incidencia-descripcion-error"
+                    class="w-full min-w-0 max-w-full border px-3 py-[10px] !border-[#d9e1ec] rounded-xl !bg-white !text-[#14213d] transition-colors focus:border-[#5b83d6] focus:outline-none focus:shadow-[0_0_0_3px_rgb(59_110_214_/_13%)] max-[639px]:text-base resize-y !min-h-[110px] !font-[650]"
+                  ></textarea>
+                  @if (intentoEnvio() && !descripcion.trim()) {
+                    <p id="incidencia-descripcion-error" class="mt-1 text-xs font-semibold text-[#b91c1c]" role="alert">Ingresa una descripción objetiva de la incidencia.</p>
+                  } @else {
+                    <span id="incidencia-descripcion-error" class="sr-only">Relato objetivo de la incidencia escolar</span>
+                  }
+                </div>
+
+                <div class="sm:col-span-2">
+                  <label for="incidencia-requiere-citacion" class="inline-flex items-center gap-3 text-sm text-slate-700 cursor-pointer">
+                    <input id="incidencia-requiere-citacion" type="checkbox" class="w-[18px] accent-[#2563eb] !font-[650]" [(ngModel)]="requiereCitacion" name="requiereCitacion" />
+                    <span>Requiere citación al apoderado</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <footer class="sticky bottom-0 z-[1] flex flex-[0_0_auto] flex-wrap justify-end gap-[10px] border-t border-[#e5eaf2] bg-white px-6 py-[14px] max-[639px]:px-4 max-[639px]:py-3 max-[639px]:[&>button]:flex-[1_1_auto]">
+              <button type="button" class="rounded-xl border border-[#e5eaf2] bg-[#f5f7fb] px-4 font-semibold text-[#334155] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]" (click)="cerrarDialogo()">Cancelar</button>
+              <button type="submit" [disabled]="guardando()" class="rounded-xl bg-[#2563eb] px-[18px] font-bold text-white shadow-[0_8px_18px_rgb(37_99_235_/_18%)] disabled:cursor-wait disabled:opacity-[.55] max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">{{ guardando() ? 'Guardando…' : 'Registrar incidencia' }}</button>
+            </footer>
+          </form>
         </div>
       </dialog>
 
+      <!-- DIALOG: GESTIÓN DE ESTADO -->
       <dialog #gestionDialog class="!fixed !left-1/2 !top-1/2 !m-0 !-translate-x-1/2 !-translate-y-1/2 box-border h-fit w-[min(620px,calc(100vw-32px))] max-w-[calc(100vw-32px)] max-h-[calc(100dvh-32px)] overflow-auto rounded-2xl border border-[#dce4ef] bg-white p-0 text-[#14213d] shadow-[0_24px_64px_rgb(15_31_57_/_22%)] backdrop:bg-[rgb(15_31_57_/_42%)] backdrop:backdrop-blur-[2px]" aria-labelledby="gestion-dialog-title">
-        <form (ngSubmit)="confirmarGestion()" class="space-y-5 p-6 max-[639px]:space-y-4 max-[639px]:p-4">
+        <form (ngSubmit)="confirmarGestion()" class="space-y-5 p-6 max-[639px]:space-y-4 max-[639px]:p-4" novalidate>
           <header class="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
             <div class="min-w-0">
               <h3 id="gestion-dialog-title" class="m-0 text-lg font-bold tracking-tight text-[#14213d]">{{ estadoNuevo() === 'ATENDIDA' ? 'Registrar atención' : 'Cerrar caso' }}</h3>
@@ -85,27 +218,72 @@ template: `
             </p>
           }
           @if (error()) { <p class="m-0 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700" role="alert">{{ error() }}</p> }
-          <label class="block text-sm font-semibold text-slate-800">
-            {{ estadoNuevo() === 'CERRADA' ? 'Acción final realizada' : 'Acción realizada' }} *
-            <span class="mt-1 block text-xs font-normal leading-relaxed text-slate-500">Describe la medida aplicada y cómo se llevó a cabo.</span>
-            <textarea [(ngModel)]="observacionGestion" name="observacionGestion" required minlength="12" [attr.maxlength]="estadoNuevo() === 'CERRADA' ? 350 : 1000" rows="3" placeholder="Ej.: se realizó una conversación restaurativa y se acordaron medidas concretas." class="mt-2 block min-h-24 w-full resize-y rounded-xl border border-slate-300 p-3 font-normal leading-relaxed focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"></textarea>
+          <div>
+            <label for="gestion-observacion" class="block text-sm font-semibold text-slate-800">
+              {{ estadoNuevo() === 'CERRADA' ? 'Acción final realizada' : 'Acción realizada' }} *
+            </label>
+            <span id="gestion-observacion-help" class="mt-1 block text-xs font-normal leading-relaxed text-slate-500">Describe la medida aplicada y cómo se llevó a cabo (mínimo 12 caracteres).</span>
+            <textarea
+              id="gestion-observacion"
+              [(ngModel)]="observacionGestion"
+              name="observacionGestion"
+              required
+              minlength="12"
+              [attr.maxlength]="estadoNuevo() === 'CERRADA' ? 350 : 1000"
+              rows="3"
+              aria-describedby="gestion-observacion-help"
+              placeholder="Ej.: se realizó una conversación restaurativa y se acordaron medidas concretas."
+              class="mt-2 block min-h-24 w-full resize-y rounded-xl border border-slate-300 p-3 font-normal leading-relaxed focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            ></textarea>
             <span class="mt-1 block text-right text-xs font-normal text-slate-500">{{ observacionGestion.length }} / {{ estadoNuevo() === 'CERRADA' ? 350 : 1000 }} caracteres</span>
-          </label>
+          </div>
           @if (estadoNuevo() === 'CERRADA') {
             <div class="space-y-4 border-t border-slate-100 pt-4">
-              <label class="block text-sm font-semibold text-slate-800">Resultado verificado *
-                <span class="mt-1 block text-xs font-normal leading-relaxed text-slate-500">¿Qué evidencia permite confirmar que el caso quedó resuelto?</span>
-                <textarea [(ngModel)]="resultadoCierre" name="resultadoCierre" required minlength="15" maxlength="300" rows="3" placeholder="Describe el acuerdo cumplido, el cambio observado o la medida completada." class="mt-2 block min-h-24 w-full resize-y rounded-xl border border-slate-300 p-3 font-normal leading-relaxed focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"></textarea>
+              <div>
+                <label for="gestion-resultado-cierre" class="block text-sm font-semibold text-slate-800">Resultado verificado *</label>
+                <span id="gestion-resultado-help" class="mt-1 block text-xs font-normal leading-relaxed text-slate-500">¿Qué evidencia permite confirmar que el caso quedó resuelto? (mínimo 15 caracteres)</span>
+                <textarea
+                  id="gestion-resultado-cierre"
+                  [(ngModel)]="resultadoCierre"
+                  name="resultadoCierre"
+                  required
+                  minlength="15"
+                  maxlength="300"
+                  rows="3"
+                  aria-describedby="gestion-resultado-help"
+                  placeholder="Describe el acuerdo cumplido, el cambio observado o la medida completada."
+                  class="mt-2 block min-h-24 w-full resize-y rounded-xl border border-slate-300 p-3 font-normal leading-relaxed focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                ></textarea>
                 <span class="mt-1 block text-right text-xs font-normal text-slate-500">{{ resultadoCierre.length }} / 300 caracteres</span>
-              </label>
-              <label class="block text-sm font-semibold text-slate-800">Participantes <span class="font-normal text-slate-500">(opcional)</span>
-                <input [(ngModel)]="participantesCierre" name="participantesCierre" maxlength="120" placeholder="Ej.: auxiliar, tutor y estudiante" class="mt-2 block min-h-11 w-full rounded-xl border border-slate-300 px-3 py-2 font-normal focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100">
-              </label>
-              <label class="block text-sm font-semibold text-slate-800">
-                {{ incidenciaSeleccionada()?.citacionPadre === true ? 'Constancia de comunicación con la familia *' : 'Comunicación con la familia (opcional)' }}
-                <span class="mt-1 block text-xs font-normal leading-relaxed text-slate-500">Indica fecha, medio y resultado del contacto, si corresponde.</span>
-                <textarea [(ngModel)]="comunicacionApoderadoCierre" name="comunicacionApoderadoCierre" [required]="incidenciaSeleccionada()?.citacionPadre === true" maxlength="130" rows="2" placeholder="Ej.: apoderado informado por llamada el 14/10; confirmó el acuerdo." class="mt-2 block min-h-20 w-full resize-y rounded-xl border border-slate-300 p-3 font-normal leading-relaxed focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"></textarea>
-              </label>
+              </div>
+              <div>
+                <label for="gestion-participantes" class="block text-sm font-semibold text-slate-800">Participantes <span class="font-normal text-slate-500">(opcional)</span></label>
+                <input
+                  id="gestion-participantes"
+                  [(ngModel)]="participantesCierre"
+                  name="participantesCierre"
+                  maxlength="120"
+                  placeholder="Ej.: auxiliar, tutor y estudiante"
+                  class="mt-2 block min-h-11 w-full rounded-xl border border-slate-300 px-3 py-2 font-normal focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                />
+              </div>
+              <div>
+                <label for="gestion-comunicacion-apoderado" class="block text-sm font-semibold text-slate-800">
+                  {{ incidenciaSeleccionada()?.citacionPadre === true ? 'Constancia de comunicación con la familia *' : 'Comunicación con la familia (opcional)' }}
+                </label>
+                <span id="gestion-comunicacion-help" class="mt-1 block text-xs font-normal leading-relaxed text-slate-500">Indica fecha, medio y resultado del contacto, si corresponde.</span>
+                <textarea
+                  id="gestion-comunicacion-apoderado"
+                  [(ngModel)]="comunicacionApoderadoCierre"
+                  name="comunicacionApoderadoCierre"
+                  [required]="incidenciaSeleccionada()?.citacionPadre === true"
+                  maxlength="130"
+                  rows="2"
+                  aria-describedby="gestion-comunicacion-help"
+                  placeholder="Ej.: apoderado informado por llamada el 14/10; confirmó el acuerdo."
+                  class="mt-2 block min-h-20 w-full resize-y rounded-xl border border-slate-300 p-3 font-normal leading-relaxed focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                ></textarea>
+              </div>
             </div>
           }
           <footer class="flex justify-end gap-2 border-t border-slate-100 pt-4 max-[480px]:[&>button]:flex-1">
@@ -115,6 +293,7 @@ template: `
         </form>
       </dialog>
 
+      <!-- DIALOGOS DE RESPALDO / MÓVIL -->
       <dialog #historialDialog class="!fixed !left-1/2 !top-1/2 !m-0 !-translate-x-1/2 !-translate-y-1/2 box-border h-fit w-[min(700px,calc(100vw-32px))] max-w-[calc(100vw-32px)] max-h-[calc(100dvh-32px)] overflow-auto rounded-2xl border border-[#dce4ef] bg-white p-0 text-[#14213d] shadow-[0_24px_64px_rgb(15_31_57_/_22%)] backdrop:bg-[rgb(15_31_57_/_42%)] backdrop:backdrop-blur-[2px]" aria-labelledby="historial-dialog-title">
         <section class="space-y-5 p-6 max-[639px]:space-y-4 max-[639px]:p-4">
           <header class="flex items-start justify-between gap-4 border-b border-slate-100 pb-4">
@@ -131,179 +310,296 @@ template: `
             </div>
           </header>
           @if (errorHistorial()) { <p class="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700" role="alert">{{ errorHistorial() }}</p> }
-          <section aria-label="Resumen del caso" class="overflow-hidden rounded-xl border border-slate-200">
-            <div class="border-b border-slate-200 bg-slate-50 px-4 py-3">
-              <h4 class="m-0 text-sm font-semibold text-slate-800">Datos del caso</h4>
-              <p class="mb-0 mt-1 text-xs text-slate-500">Información original registrada para esta incidencia.</p>
-            </div>
-            <dl class="grid grid-cols-2 divide-x divide-y divide-slate-100 sm:grid-cols-4">
-              <div class="min-w-0 p-3">
-                <dt class="text-[11px] font-medium text-slate-500">Tipo de falta</dt>
-                <dd class="mt-1 m-0 text-sm font-semibold text-slate-800">{{ incidenciaHistorial()?.tipoFalta }}</dd>
-              </div>
-              <div class="min-w-0 p-3">
-                <dt class="text-[11px] font-medium text-slate-500">Fecha del hecho</dt>
-                <dd class="mt-1 m-0 text-sm font-semibold text-slate-800">{{ incidenciaHistorial()?.fecha | date:'dd/MM/yyyy' }}</dd>
-              </div>
-              <div class="min-w-0 p-3">
-                <dt class="text-[11px] font-medium text-slate-500">Matrícula</dt>
-                <dd class="mt-1 m-0 text-sm font-semibold text-slate-800">#{{ incidenciaHistorial()?.matriculaId }}</dd>
-              </div>
-              <div class="min-w-0 p-3">
-                <dt class="text-[11px] font-medium text-slate-500">Citación a familia</dt>
-                <dd class="mt-1 m-0 text-sm font-semibold text-slate-800">{{ incidenciaHistorial()?.citacionPadre === true ? 'Requerida' : incidenciaHistorial()?.citacionPadre === false ? 'No requerida' : 'Sin definir' }}</dd>
-              </div>
-            </dl>
-            <div class="border-t border-slate-100 px-4 py-3">
-              <div class="flex flex-wrap items-center justify-between gap-2">
-                <h5 class="m-0 text-xs font-semibold text-slate-600">Relato inicial</h5>
-                <span class="text-xs text-slate-500">Reportado por {{ incidenciaHistorial()?.reportadoPor || 'No especificado' }}</span>
-              </div>
-              <p class="mb-0 mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">{{ incidenciaHistorial()?.descripcion || 'No se registró una descripción.' }}</p>
-            </div>
-          </section>
-          @if (cargandoHistorial()) {
-            <p role="status" class="text-sm text-slate-600">Cargando historial…</p>
-          } @else if (eventosHistorial().length === 0) {
-            <p class="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600">No hay eventos de auditoría disponibles para esta incidencia.</p>
-          } @else {
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <h4 class="m-0 text-sm font-semibold text-slate-800">Seguimiento y resolución</h4>
-                <p class="mb-0 mt-1 text-xs text-slate-500">Acciones registradas en el sistema.</p>
-              </div>
-              <span class="rounded-full bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-800">{{ eventosHistorial().length }} {{ eventosHistorial().length === 1 ? 'evento' : 'eventos' }}</span>
-            </div>
-            <ol aria-label="Cambios de estado" class="relative ms-2 space-y-3 border-s border-slate-200 ps-5">
-              @for (evento of eventosHistorial(); track evento.id) {
-                <li class="relative rounded-xl border border-slate-200 bg-white p-4 shadow-[0_1px_2px_rgb(15_31_57_/_5%)] max-[639px]:p-3">
-                  <span aria-hidden="true" class="absolute -left-[26px] top-5 h-2.5 w-2.5 rounded-full border-2 border-white bg-blue-600 ring-1 ring-blue-200"></span>
-                  <div class="flex flex-wrap items-center justify-between gap-2">
-                    <div class="flex flex-wrap items-center gap-2">
-                      <span class="grid h-7 w-7 place-items-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">{{ $index + 1 }}</span>
-                      <strong class="text-sm font-semibold text-slate-800">{{ evento.estadoAnterior ? evento.estadoAnterior + ' → ' + evento.estadoNuevo : 'Estado inicial: ' + evento.estadoNuevo }}</strong>
-                    </div>
-                    <time class="text-xs tabular-nums text-slate-500">{{ evento.fechaCambio | date:'dd/MM/yyyy HH:mm' }}</time>
-                  </div>
-                  <dl class="mt-3 grid gap-3 border-t border-slate-100 pt-3 text-sm">
-                    <div>
-                      <dt class="text-xs font-medium text-slate-500">Responsable</dt>
-                      <dd class="mt-1 m-0 font-semibold text-slate-800">{{ evento.nombreUsuario }} <span class="font-normal text-slate-500">· usuario #{{ evento.usuarioId }}</span></dd>
-                    </div>
-                    <div>
-                      <dt class="text-xs font-medium text-slate-500">Detalle registrado</dt>
-                      <dd class="mt-1 m-0 whitespace-pre-wrap leading-relaxed text-slate-700">{{ evento.observacion }}</dd>
-                    </div>
-                    @if (evento.resultadoVerificado) {
-                      <div class="rounded-lg border border-emerald-100 bg-emerald-50/70 p-3">
-                        <dt class="text-xs font-semibold text-emerald-800">Resultado verificado</dt>
-                        <dd class="mt-1 m-0 whitespace-pre-wrap leading-relaxed text-slate-700">{{ evento.resultadoVerificado }}</dd>
-                      </div>
-                    }
-                    @if (evento.participantes) {
-                      <div>
-                        <dt class="text-xs font-medium text-slate-500">Participantes</dt>
-                        <dd class="mt-1 m-0 leading-relaxed text-slate-700">{{ evento.participantes }}</dd>
-                      </div>
-                    }
-                    @if (evento.comunicacionApoderado) {
-                      <div>
-                        <dt class="text-xs font-medium text-slate-500">Comunicación con la familia</dt>
-                        <dd class="mt-1 m-0 whitespace-pre-wrap leading-relaxed text-slate-700">{{ evento.comunicacionApoderado }}</dd>
-                      </div>
-                    }
-                  </dl>
-                </li>
-              }
-            </ol>
-          }
           <footer class="flex justify-end border-t border-slate-100 pt-4"><button type="button" class="rounded-xl border border-slate-200 px-4 font-semibold text-slate-700 hover:bg-slate-50" (click)="cerrarHistorial()">Cerrar</button></footer>
         </section>
       </dialog>
 
-      <!-- Incidents Table -->
-      <div class="rounded-2xl bg-white border border-[#e5eaf2] overflow-hidden shadow-sm">
-        <div class="px-4 py-4 sm:px-6 bg-white border-b border-[#e5eaf2] flex flex-wrap items-center justify-between gap-3">
-          <h3 class="text-sm font-bold text-[#14213d] tracking-[-.025em]">Registro Formativo y Medidas Correctivas</h3>
-          <button
-            (click)="cargarIncidencias()"
-            class="px-3 py-1.5 rounded-xl bg-[#f3f6fa] hover:bg-slate-700 text-[#34445d] text-xs !text-[11px] font-semibold cursor-pointer max-[640px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]"
-          >
-            Actualizar BD
-          </button>
-        </div>
+      <dialog #detalleDialog class="!fixed !left-1/2 !top-1/2 !m-0 !-translate-x-1/2 !-translate-y-1/2 box-border w-[min(560px,calc(100vw-32px))] max-w-[calc(100vw-32px)] max-h-[calc(100dvh-32px)] overflow-auto rounded-2xl border border-[#dce4ef] bg-white p-0 text-[#14213d] shadow-[0_24px_64px_rgb(15_31_57_/_22%)] backdrop:bg-[rgb(15_31_57_/_42%)] backdrop:backdrop-blur-[2px]" aria-labelledby="detalle-dialog-title">
+        <section class="space-y-4 p-6">
+          <header class="border-b border-slate-100 pb-3">
+            <h3 id="detalle-dialog-title" class="m-0 text-xl font-bold tracking-tight text-[#14213d]">Detalle formativo</h3>
+          </header>
+          <footer class="flex justify-end border-t border-slate-100 pt-3"><button type="button" class="min-h-11 rounded-xl border border-slate-200 px-5 font-semibold text-slate-700 hover:bg-slate-50" (click)="cerrarDetalle()">Cerrar</button></footer>
+        </section>
+      </dialog>
 
-        <div class="overflow-x-auto">
-          <table class="w-full min-w-[850px] max-[640px]:min-w-[760px] text-left text-xs !text-[11px] [&_thead]:!bg-[#f7f9fc] [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-[#f8faff]" data-mobile-table-cards="">
-            <thead class="bg-[#f5f7fb] border-b border-[#e5eaf2] text-[#59677a] uppercase tracking-wider font-semibold">
-              <tr>
-                <th class="px-5 py-3.5">ID BD</th>
-                <th class="px-5 py-3.5">Matrícula ID</th>
-                <th class="px-5 py-3.5">Fecha</th>
-                <th class="px-5 py-3.5">Tipo Falta</th>
-                <th class="px-5 py-3.5">Detalle Formativo</th>
-                <th class="px-5 py-3.5">Citación</th>
-                <th class="px-5 py-3.5">Estado en BD</th>
-                <th class="px-5 py-3.5">Gestión / auditoría</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[#edf0f5] text-[#34445d]">
-              @if (cargando()) {
+      <!-- Barra de Filtros con Contador de Casos -->
+      <section class="rounded-2xl border border-ui-divider bg-ui-surface-soft p-4 shadow-sm space-y-3" aria-label="Filtros de incidencias">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-end">
+          <div>
+            <label for="filtro-convivencia-busqueda" class="block text-xs font-semibold text-ui-muted mb-1">Buscar alumno</label>
+            <input
+              id="filtro-convivencia-busqueda"
+              type="search"
+              [ngModel]="busquedaTexto()"
+              (ngModelChange)="busquedaTexto.set($event)"
+              placeholder="Nombre o matrícula"
+              class="w-full min-h-11 rounded-xl border border-ui-control-border bg-ui-surface px-3 text-xs text-ui-text focus:border-ui-focus focus:outline-none"
+            />
+          </div>
+
+          <div>
+            <label for="filtro-convivencia-seccion" class="block text-xs font-semibold text-ui-muted mb-1">Sección</label>
+            <select
+              id="filtro-convivencia-seccion"
+              [ngModel]="filtroSeccion()"
+              (ngModelChange)="filtroSeccion.set($event)"
+              class="w-full min-h-11 rounded-xl border border-ui-control-border bg-ui-surface px-3 text-xs text-ui-text focus:border-ui-focus focus:outline-none"
+            >
+              <option value="TODAS">Todas las secciones</option>
+              @for (sec of seccionesDisponibles(); track sec) {
+                <option [value]="sec">{{ sec }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label for="filtro-convivencia-estado" class="block text-xs font-semibold text-ui-muted mb-1">Estado del caso</label>
+            <select
+              id="filtro-convivencia-estado"
+              [ngModel]="filtroEstado()"
+              (ngModelChange)="filtroEstado.set($event); paginaActual.set(1)"
+              class="w-full min-h-11 rounded-xl border border-ui-control-border bg-ui-surface px-3 text-xs text-ui-text focus:border-ui-focus focus:outline-none"
+            >
+              <option value="TODOS">Todos los estados</option>
+              <option value="ABIERTA">Abierta</option>
+              <option value="ATENDIDA">Atendida</option>
+              <option value="CERRADA">Cerrada</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="filtro-convivencia-citacion" class="block text-xs font-semibold text-ui-muted mb-1">Citación familiar</label>
+            <select
+              id="filtro-convivencia-citacion"
+              [ngModel]="filtroCitacion()"
+              (ngModelChange)="filtroCitacion.set($event)"
+              class="w-full min-h-11 rounded-xl border border-ui-control-border bg-ui-surface px-3 text-xs text-ui-text focus:border-ui-focus focus:outline-none"
+            >
+              <option value="TODAS">Todas</option>
+              <option value="CON_CITACION">Con citación requerida</option>
+              <option value="SIN_CITACION">Sin citación requerida</option>
+            </select>
+          </div>
+
+          <div class="flex items-center justify-between lg:justify-end gap-2">
+            <span class="rounded-xl border border-ui-divider bg-ui-surface px-3 py-2 text-xs font-bold text-ui-text" role="status">
+              {{ incidenciasFiltradas().length }} de {{ incidencias().length }} casos
+            </span>
+            <button
+              type="button"
+              (click)="cargarIncidencias()"
+              class="px-3 py-1.5 rounded-xl bg-ui-surface border border-ui-divider hover:bg-ui-action hover:text-ui-surface text-ui-action text-xs font-semibold cursor-pointer inline-flex !min-h-[44px] items-center justify-center transition-colors"
+            >
+              Actualizar BD
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Espacio de Trabajo: Tabla Compacta + Ficha Lateral Unificada -->
+      <div class="grid grid-cols-1 gap-6 items-start" [class.lg:grid-cols-[minmax(0,1fr)_420px]]="!!incidenciaDetalle()">
+        <!-- Incidents Compact Table -->
+        <div class="rounded-2xl bg-ui-surface border border-ui-divider overflow-hidden shadow-sm min-w-0">
+          <div class="px-4 py-3.5 sm:px-6 bg-ui-surface border-b border-ui-divider flex flex-wrap items-center justify-between gap-3">
+            <h3 class="text-base sm:text-lg font-bold text-ui-text tracking-[-.025em] m-0">Registro Formativo y Medidas Correctivas</h3>
+            <span class="text-xs text-ui-muted">Los filtros activos se conservan al abrir o cerrar el detalle</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[680px] text-left text-sm [&_thead]:!bg-ui-surface-soft [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-ui-surface-soft/75" data-mobile-table-cards="">
+              <thead class="bg-ui-surface-soft border-b border-ui-divider text-ui-action uppercase tracking-wider font-bold text-xs">
                 <tr>
-                  <td colspan="8" class="text-center py-10 text-[#59677a]">
-                    <span class="inline-block w-5 h-5 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-2"></span>
-                    <p>Consultando incidencias formativas en la base de datos...</p>
-                  </td>
+                  <th class="px-4 py-3">Alumno</th>
+                  <th class="px-4 py-3">Fecha</th>
+                  <th class="px-4 py-3">Tipo de falta</th>
+                  <th class="px-4 py-3">Estado</th>
+                  <th class="px-4 py-3 text-right">Acción</th>
                 </tr>
-              } @else {
-                @for (item of incidencias(); track item.id) {
-                  <tr class="!bg-[#f1f4f9] hover:bg-[#f1f4f9] transition">
-                    <td class="px-5 py-3.5 font-mono text-[#59677a]" data-label="ID BD">{{ item.id }}</td>
-                    <td class="px-5 py-3.5 font-bold text-[#14213d]" data-label="Estudiante">{{ item.nombreEstudiante || 'Estudiante sin datos' }}</td>
-                    <td class="px-5 py-3.5 font-mono !text-[#59677a]" data-label="Fecha">{{ item.fecha | uiDatePe }}</td>
-                    <td class="px-5 py-3.5" data-label="Tipo Falta">
-                      <span class="px-2 py-0.5 rounded bg-[#f3f6fa] text-[#34445d]">
-                        {{ item.tipoFalta }}
-                      </span>
-                    </td>
-                    <td class="px-5 py-3.5 text-[#34445d] max-w-xs truncate" [title]="item.descripcion" data-label="Detalle Formativo">
-                      {{ item.descripcion }}
-                    </td>
-                    <td class="px-5 py-3.5" data-label="Citación">
-                      @if (item.citacionPadre === true) {
-                        <span class="text-[#a16207] font-semibold text-[11px]">Citado a Dirección</span>
-                      } @else if (item.citacionPadre === false) {
-                        <span class="text-[#59677a] text-[11px]">No requerida</span>
-                      } @else {
-                        <span class="text-[#59677a] text-[11px]">Sin dato</span>
-                      }
-                    </td>
-                    <td class="px-5 py-3.5" data-label="Estado en BD">
-                      <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#edf9f3] border border-[#b8dfcc] text-[#126943]">
-                        {{ item.estado }}
-                      </span>
-                    </td>
-                    <td class="px-5 py-3.5" data-label="Gestión / auditoría">
-                      <div class="flex flex-wrap items-center gap-2">
-                        <button type="button" (click)="verHistorial(item)" class="rounded-lg border border-slate-200 bg-white px-3 py-2 font-semibold text-slate-700">Historial</button>
-                        @if (puedeGestionarEstados() && item.estado === 'ABIERTA') {
-                          <button type="button" (click)="iniciarGestion(item, 'ATENDIDA')" class="rounded-lg bg-amber-600 px-3 py-2 font-semibold text-white">Atender</button>
-                        } @else if (puedeGestionarEstados() && item.estado === 'ATENDIDA') {
-                          <button type="button" (click)="iniciarGestion(item, 'CERRADA')" class="rounded-lg bg-emerald-700 px-3 py-2 font-semibold text-white">Cerrar</button>
-                        }
-                      </div>
+              </thead>
+              <tbody class="divide-y divide-ui-divider text-ui-text">
+                @if (cargando()) {
+                  <tr>
+                    <td colspan="5" class="text-center py-10 text-ui-muted">
+                      <span class="inline-block w-5 h-5 border-2 border-ui-divider border-t-ui-action rounded-full animate-spin mb-2"></span>
+                      <p>Consultando incidencias formativas en la base de datos...</p>
                     </td>
                   </tr>
+                } @else {
+                  @for (item of incidenciasPaginadas(); track item.id) {
+                    <tr class="transition-colors hover:bg-ui-surface-soft/75" [class.!bg-ui-surface-soft]="incidenciaDetalle()?.id === item.id" [class.bg-ui-surface]="incidenciaDetalle()?.id !== item.id">
+                      <td class="px-4 py-3 font-bold text-ui-text" data-label="Alumno">
+                        <div>{{ item.nombreEstudiante || 'Estudiante sin datos' }}</div>
+                        <small class="block font-normal text-xs text-ui-muted">
+                          Matrícula #{{ item.matriculaId }}@if (item.seccionEtiqueta) { · {{ item.seccionEtiqueta }} }
+                        </small>
+                      </td>
+                      <td class="px-4 py-3 text-ui-muted whitespace-nowrap" data-label="Fecha">{{ item.fecha | uiDatePe }}</td>
+                      <td class="px-4 py-3" data-label="Tipo de falta">
+                        <span class="inline-flex rounded-full border border-ui-divider bg-ui-surface-soft px-2.5 py-0.5 text-xs font-semibold text-ui-text">
+                          {{ item.tipoFalta }}
+                        </span>
+                      </td>
+                      <td class="px-4 py-3" data-label="Estado">
+                        <span
+                          class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold border"
+                          [class.bg-amber-50]="item.estado === 'ABIERTA'"
+                          [class.text-amber-900]="item.estado === 'ABIERTA'"
+                          [class.border-amber-200]="item.estado === 'ABIERTA'"
+                          [class.bg-blue-50]="item.estado === 'ATENDIDA'"
+                          [class.text-blue-900]="item.estado === 'ATENDIDA'"
+                          [class.border-blue-200]="item.estado === 'ATENDIDA'"
+                          [class.bg-emerald-50]="item.estado === 'CERRADA'"
+                          [class.text-emerald-900]="item.estado === 'CERRADA'"
+                          [class.border-emerald-200]="item.estado === 'CERRADA'"
+                        >
+                          {{ item.estado }}
+                        </span>
+                      </td>
+                      <td class="px-4 py-3 text-right" data-label="Acción">
+                        <div class="flex flex-wrap items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            (click)="verDetalle(item)"
+                            class="min-h-11 rounded-xl border border-blue-200 bg-blue-50 px-3.5 text-xs font-semibold text-blue-800 transition hover:bg-blue-100 cursor-pointer"
+                            [attr.aria-label]="'Ver detalle formativo de ' + (item.nombreEstudiante || 'estudiante')"
+                          >
+                            Ver detalle
+                          </button>
+                          @if (puedeGestionarEstados() && item.estado === 'ABIERTA') {
+                            <button type="button" (click)="iniciarGestion(item, 'ATENDIDA')" class="rounded-xl bg-amber-600 px-3 py-2 text-xs font-semibold text-white cursor-pointer">Atender</button>
+                          } @else if (puedeGestionarEstados() && item.estado === 'ATENDIDA') {
+                            <button type="button" (click)="iniciarGestion(item, 'CERRADA')" class="rounded-xl bg-emerald-700 px-3 py-2 text-xs font-semibold text-white cursor-pointer">Cerrar</button>
+                          }
+                        </div>
+                      </td>
+                    </tr>
+                  }
                 }
-              }
-            </tbody>
-          </table>
-        </div>
-        @if (!cargando() && !error() && incidencias().length === 0) {
-          <div class="grid w-full justify-items-center gap-2 p-[36px_20px] text-center text-[#59677a] whitespace-normal [overflow-wrap:anywhere] relative pt-[62px]">
-            <p class="font-medium text-[#59677a]">No se encontraron incidencias registradas en la base de datos.</p>
-            <p class="text-[11px] text-[#59677a]">Cuando existan observaciones, aparecerán aquí.</p>
+              </tbody>
+            </table>
           </div>
+          @if (!cargando() && !error() && incidenciasFiltradas().length === 0) {
+            <div class="grid w-full justify-items-center gap-2 p-[36px_20px] text-center text-[#59677a] whitespace-normal [overflow-wrap:anywhere] relative pt-[62px]">
+              <p class="font-medium text-[#59677a]">No se encontraron incidencias para los filtros seleccionados.</p>
+              <p class="text-[11px] text-[#59677a]">Ajusta los filtros o registra una nueva observación formativa.</p>
+            </div>
+          }
+          <ui-paginacion
+            [totalRegistros]="incidenciasFiltradas().length"
+            [paginaActual]="paginaActual()"
+            [tamanoPagina]="10"
+            etiqueta="incidencias"
+            ariaLabel="Paginación de incidencias formativas"
+            (cambioPagina)="paginaActual.set($event)"
+          />
+        </div>
+
+        <!-- Ficha Lateral Unificada de Detalle (Escritorio y Móvil) -->
+        @if (incidenciaDetalle(); as detalle) {
+          <aside class="rounded-2xl border border-[#dce4ef] bg-white p-5 shadow-md space-y-4 lg:sticky lg:top-4" aria-labelledby="ficha-lateral-incidencia-title">
+            <header class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
+              <div class="min-w-0">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-[#8b6425] block">Ficha Integral del Caso #{{ detalle.id }}</span>
+                <h4 id="ficha-lateral-incidencia-title" class="m-0 mt-0.5 text-lg font-extrabold text-[#14213d] truncate">
+                  {{ detalle.nombreEstudiante || 'Estudiante sin datos' }}
+                </h4>
+                <p class="m-0 mt-0.5 text-xs text-slate-500">
+                  Matrícula #{{ detalle.matriculaId }}@if (detalle.seccionEtiqueta) { · {{ detalle.seccionEtiqueta }} } · {{ detalle.fecha | uiDatePe }}
+                </p>
+              </div>
+              <button
+                type="button"
+                (click)="cerrarDetalle()"
+                aria-label="Cerrar detalle"
+                class="grid h-11 w-11 shrink-0 place-items-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 cursor-pointer"
+              >
+                ✕
+              </button>
+            </header>
+
+            <!-- 1. Estado, Tipo de falta y Citación -->
+            <div class="grid grid-cols-2 gap-2.5">
+              <div class="rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <span class="text-[11px] font-semibold text-slate-500 block">Estado y Falta</span>
+                <span class="mt-1 inline-block text-xs font-extrabold text-[#14213d]">{{ detalle.estado }} · {{ detalle.tipoFalta }}</span>
+              </div>
+              <div class="rounded-xl border border-amber-200 bg-amber-50 p-3">
+                <span class="text-[11px] font-semibold text-amber-900 block">Estado de citación</span>
+                <span class="mt-1 inline-block text-xs font-extrabold text-amber-950">
+                  {{ detalle.citacionPadre === true ? 'Citación requerida' : detalle.citacionPadre === false ? 'No requerida' : 'Sin dato' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- 2. Detalle formativo -->
+            <section class="rounded-xl border border-slate-200 bg-[#f8fafc] p-3.5" aria-label="Detalle formativo">
+              <div class="flex items-center justify-between gap-2">
+                <h5 class="m-0 text-xs font-bold uppercase tracking-wide text-slate-700">Detalle formativo</h5>
+                <span class="text-[11px] text-slate-500">Reportado por {{ detalle.reportadoPor }}</span>
+              </div>
+              <p class="m-0 mt-2 whitespace-pre-wrap text-xs leading-relaxed text-slate-700">
+                {{ detalle.descripcion || 'No se registró una descripción.' }}
+              </p>
+            </section>
+
+            <!-- 3. Próxima acción -->
+            <section class="rounded-xl border border-blue-200 bg-blue-50/70 p-3.5 space-y-2" aria-label="Próxima acción">
+              <h5 class="m-0 text-xs font-bold uppercase tracking-wide text-blue-950">Próxima acción recomendada</h5>
+              @if (detalle.estado === 'ABIERTA') {
+                <p class="m-0 text-xs text-blue-900">Realizar diálogo formativo con el estudiante y registrar la medida correctiva aplicada.</p>
+                @if (puedeGestionarEstados()) {
+                  <button type="button" (click)="iniciarGestion(detalle, 'ATENDIDA')" class="w-full rounded-xl bg-amber-600 hover:bg-amber-700 px-3 py-2 text-xs font-bold text-white cursor-pointer">
+                    Registrar atención del caso
+                  </button>
+                }
+              } @else if (detalle.estado === 'ATENDIDA') {
+                <p class="m-0 text-xs text-blue-900">Verificar el cumplimiento del compromiso reparador y dejar constancia antes del cierre definitivo.</p>
+                @if (puedeGestionarEstados()) {
+                  <button type="button" (click)="iniciarGestion(detalle, 'CERRADA')" class="w-full rounded-xl bg-emerald-700 hover:bg-emerald-800 px-3 py-2 text-xs font-bold text-white cursor-pointer">
+                    Verificar resultado y cerrar caso
+                  </button>
+                }
+              } @else {
+                <p class="m-0 text-xs text-emerald-900 font-medium">✓ Caso cerrado con seguimiento verificable en la auditoría.</p>
+              }
+            </section>
+
+            <!-- 4. Historial del caso unificado -->
+            <section class="space-y-2.5 border-t border-slate-100 pt-3" aria-label="Historial del caso">
+              <div class="flex items-center justify-between">
+                <h5 class="m-0 text-xs font-bold uppercase tracking-wide text-slate-700">Historial del caso</h5>
+                <span class="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-semibold text-slate-700">
+                  {{ eventosHistorial().length }} {{ eventosHistorial().length === 1 ? 'evento' : 'eventos' }}
+                </span>
+              </div>
+              @if (cargandoHistorial()) {
+                <p class="text-xs text-slate-500 m-0" role="status">Cargando historial del caso…</p>
+              } @else if (errorHistorial()) {
+                <p class="text-xs text-red-700 m-0" role="alert">{{ errorHistorial() }}</p>
+              } @else if (eventosHistorial().length === 0) {
+                <p class="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600 m-0">
+                  Sin transiciones registradas aún para esta incidencia.
+                </p>
+              } @else {
+                <ol class="space-y-2 m-0 p-0 list-none max-h-60 overflow-y-auto">
+                  @for (evento of eventosHistorial(); track evento.id) {
+                    <li class="rounded-xl border border-slate-200 bg-white p-3 text-xs space-y-1">
+                      <div class="flex items-center justify-between gap-2">
+                        <strong class="font-bold text-slate-800">{{ evento.estadoAnterior ? evento.estadoAnterior + ' → ' + evento.estadoNuevo : evento.estadoNuevo }}</strong>
+                        <time class="text-[11px] text-slate-500">{{ evento.fechaCambio | date:'dd/MM/yyyy HH:mm' }}</time>
+                      </div>
+                      <p class="m-0 text-slate-600">{{ evento.observacion }}</p>
+                      @if (evento.resultadoVerificado) {
+                        <p class="m-0 text-[11px] font-medium text-emerald-800">Resultado: {{ evento.resultadoVerificado }}</p>
+                      }
+                      <span class="block text-[10px] text-slate-400">Por {{ evento.nombreUsuario }}</span>
+                    </li>
+                  }
+                </ol>
+              }
+            </section>
+          </aside>
         }
       </div>
     </div>
@@ -311,23 +607,74 @@ template: `
 })
 export class ConvivenciaComponent implements OnInit {
   private readonly convivenciaService = inject(ConvivenciaService);
+  private readonly portalService = inject(PortalFamiliarService, { optional: true });
   private readonly auth = inject(AuthStore);
   @ViewChild('incidenciaDialog') private incidenciaDialog!: ElementRef<HTMLDialogElement>;
   @ViewChild('gestionDialog') private gestionDialog!: ElementRef<HTMLDialogElement>;
   @ViewChild('historialDialog') private historialDialog!: ElementRef<HTMLDialogElement>;
+  @ViewChild('detalleDialog') private detalleDialog!: ElementRef<HTMLDialogElement>;
   readonly error = signal<string | null>(null);
   readonly mensaje = signal<string | null>(null);
   readonly guardando = signal(false);
   readonly guardandoCambio = signal(false);
+  readonly intentoEnvio = signal(false);
   matriculaId = 0;
   fechaIncidencia = new Date().toLocaleDateString('sv-SE');
   tipoFalta: 'LEVE' | 'GRAVE' | 'MUY_GRAVE' = 'LEVE';
   descripcion = '';
   requiereCitacion = false;
 
+  readonly directorioAlumnos = signal<HijoPortalDto[]>([]);
+  readonly busquedaEstudianteModal = signal('');
+  readonly estudianteSeleccionadoModal = computed(() =>
+    this.directorioAlumnos().find(a => a.matriculaId === Number(this.matriculaId)) ?? null
+  );
+  readonly estudiantesSugeridosModal = computed(() => {
+    const q = this.busquedaEstudianteModal().trim().toLocaleLowerCase('es-PE');
+    const lista = this.directorioAlumnos();
+    if (!q) return lista.slice(0, 8);
+    return lista.filter(a =>
+      `${a.nombres} ${a.apellidoPaterno} ${a.apellidoMaterno} ${a.numeroDocumento}`.toLocaleLowerCase('es-PE').includes(q)
+    ).slice(0, 10);
+  });
+
   cargando = signal(false);
   readonly incidencias = signal<IncidenciaEscolar[]>([]);
+  readonly paginaActual = signal<number>(1);
+  readonly filtroSeccion = signal<string>('TODAS');
+  readonly filtroEstado = signal<EstadoIncidencia | 'TODOS'>('TODOS');
+  readonly filtroCitacion = signal<'TODAS' | 'CON_CITACION' | 'SIN_CITACION'>('TODAS');
+  readonly busquedaTexto = signal<string>('');
+
+  readonly seccionesDisponibles = computed(() => {
+    const set = new Set<string>();
+    for (const inc of this.incidencias()) {
+      if (inc.seccionEtiqueta) set.add(inc.seccionEtiqueta);
+    }
+    return [...set].sort((a, b) => a.localeCompare(b));
+  });
+
+  readonly incidenciasFiltradas = computed(() => {
+    const sec = this.filtroSeccion();
+    const est = this.filtroEstado();
+    const cit = this.filtroCitacion();
+    const q = this.busquedaTexto().trim().toLocaleLowerCase('es-PE');
+    return this.incidencias().filter(item => {
+      if (sec !== 'TODAS' && (item.seccionEtiqueta ?? '') !== sec) return false;
+      if (est !== 'TODOS' && item.estado !== est) return false;
+      if (cit === 'CON_CITACION' && item.citacionPadre !== true) return false;
+      if (cit === 'SIN_CITACION' && item.citacionPadre === true) return false;
+      if (q && !`${item.nombreEstudiante ?? ''} ${item.matriculaId} ${item.descripcion}`.toLocaleLowerCase('es-PE').includes(q)) return false;
+      return true;
+    });
+  });
+
+  readonly incidenciasPaginadas = computed(() =>
+    paginarRegistros(this.incidenciasFiltradas(), this.paginaActual(), 10)
+  );
+
   readonly incidenciaSeleccionada = signal<IncidenciaEscolar | null>(null);
+  readonly incidenciaDetalle = signal<IncidenciaEscolar | null>(null);
   readonly estadoNuevo = signal<EstadoIncidencia | null>(null);
   readonly incidenciaHistorial = signal<IncidenciaEscolar | null>(null);
   readonly eventosHistorial = signal<HistorialEstadoIncidenciaResponseDto[]>([]);
@@ -337,6 +684,7 @@ export class ConvivenciaComponent implements OnInit {
   resultadoCierre = '';
   participantesCierre = '';
   comunicacionApoderadoCierre = '';
+
   puedeRegistrar(): boolean { return this.auth.hasRole('TUTOR'); }
   puedeGestionarEstados(): boolean {
     return (['AUXILIAR', 'SECRETARIA', 'DIRECCION'] as const)
@@ -344,7 +692,35 @@ export class ConvivenciaComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.cargarDirectorioAlumnos();
     this.cargarIncidencias();
+  }
+
+  private cargarDirectorioAlumnos(): void {
+    if (!this.portalService || typeof this.portalService.alumnosSeguimiento !== 'function') return;
+    this.portalService.alumnosSeguimiento().subscribe({
+      next: lista => {
+        if (Array.isArray(lista)) {
+          this.directorioAlumnos.set(lista);
+          this.sincronizarSeccionesEnIncidencias();
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  private sincronizarSeccionesEnIncidencias(): void {
+    const mapa = new Map(this.directorioAlumnos().map(a => [a.matriculaId, `${a.grado} "${a.seccion}" · ${a.nivel}`]));
+    if (mapa.size === 0) return;
+    this.incidencias.update(actual => actual.map(item => ({
+      ...item,
+      seccionEtiqueta: mapa.get(item.matriculaId) ?? item.seccionEtiqueta
+    })));
+  }
+
+  seleccionarEstudianteModal(alumno: HijoPortalDto): void {
+    this.matriculaId = alumno.matriculaId;
+    this.busquedaEstudianteModal.set(`${alumno.nombres} ${alumno.apellidoPaterno} (${alumno.numeroDocumento})`);
   }
 
   cargarIncidencias(): void {
@@ -353,20 +729,26 @@ export class ConvivenciaComponent implements OnInit {
     this.convivenciaService.listarIncidencias().subscribe({
       next: (res) => {
         this.cargando.set(false);
+        const mapa = new Map(this.directorioAlumnos().map(a => [a.matriculaId, `${a.grado} "${a.seccion}" · ${a.nivel}`]));
         if (Array.isArray(res)) {
-          this.incidencias.set(
-            res.map(i => ({
-              id: i.id,
-              matriculaId: i.matriculaId,
-              nombreEstudiante: i.nombreEstudiante,
-              fecha: i.fechaIncidencia ? String(i.fechaIncidencia) : '-',
-              tipoFalta: i.tipoFalta || '—',
-              descripcion: i.descripcion || '',
-              reportadoPor: i.reportadoPorUsuarioId ? `Usuario #${i.reportadoPorUsuarioId}` : '—',
-              citacionPadre: i.requiereCitacion ?? null,
-              estado: i.estado
-            }))
-          );
+          const mapeadas: IncidenciaEscolar[] = res.map(i => ({
+            id: i.id,
+            matriculaId: i.matriculaId,
+            nombreEstudiante: i.nombreEstudiante,
+            seccionEtiqueta: mapa.get(i.matriculaId),
+            fecha: i.fechaIncidencia ? String(i.fechaIncidencia) : '-',
+            tipoFalta: i.tipoFalta || '—',
+            descripcion: i.descripcion || '',
+            reportadoPor: i.reportadoPorUsuarioId ? `Usuario #${i.reportadoPorUsuarioId}` : '—',
+            citacionPadre: i.requiereCitacion ?? null,
+            estado: i.estado
+          }));
+          this.incidencias.set(mapeadas);
+          const detalleActual = this.incidenciaDetalle();
+          if (detalleActual) {
+            const actualizada = mapeadas.find(m => m.id === detalleActual.id) ?? null;
+            this.incidenciaDetalle.set(actualizada);
+          }
         } else {
           this.incidencias.set([]);
         }
@@ -383,7 +765,9 @@ export class ConvivenciaComponent implements OnInit {
     if (!this.puedeRegistrar()) return;
     this.error.set(null);
     this.mensaje.set(null);
+    this.intentoEnvio.set(false);
     this.matriculaId = 0;
+    this.busquedaEstudianteModal.set('');
     this.fechaIncidencia = new Date().toLocaleDateString('sv-SE');
     this.descripcion = '';
     this.requiereCitacion = false;
@@ -445,6 +829,9 @@ export class ConvivenciaComponent implements OnInit {
         this.cerrarGestion();
         this.mensaje.set(`Incidencia ${estado.toLocaleLowerCase('es-PE')} y cambio auditado.`);
         this.cargarIncidencias();
+        if (this.incidenciaDetalle()?.id === incidencia.id) {
+          this.cargarHistorialDeIncidencia(incidencia.id);
+        }
       },
       error: err => {
         this.guardandoCambio.set(false);
@@ -453,13 +840,12 @@ export class ConvivenciaComponent implements OnInit {
     });
   }
 
-  verHistorial(item: IncidenciaEscolar): void {
-    this.incidenciaHistorial.set(item);
+  private cargarHistorialDeIncidencia(id: number): void {
+    if (typeof this.convivenciaService.historialEstados !== 'function') return;
     this.eventosHistorial.set([]);
     this.errorHistorial.set(null);
     this.cargandoHistorial.set(true);
-    this.historialDialog.nativeElement.showModal();
-    this.convivenciaService.historialEstados(item.id).subscribe({
+    this.convivenciaService.historialEstados(id).subscribe({
       next: eventos => {
         this.eventosHistorial.set(eventos);
         this.cargandoHistorial.set(false);
@@ -471,14 +857,55 @@ export class ConvivenciaComponent implements OnInit {
     });
   }
 
-  cerrarHistorial(): void { this.historialDialog.nativeElement.close(); }
+  verHistorial(item: IncidenciaEscolar): void {
+    this.incidenciaHistorial.set(item);
+    this.incidenciaDetalle.set(item);
+    this.cargarHistorialDeIncidencia(item.id);
+  }
+
+  cerrarHistorial(): void { this.historialDialog?.nativeElement?.close(); }
+
+  verDetalle(item: IncidenciaEscolar): void {
+    this.incidenciaDetalle.set(item);
+    this.incidenciaHistorial.set(item);
+    this.cargarHistorialDeIncidencia(item.id);
+  }
+
+  cerrarDetalle(): void {
+    if (this.detalleDialog?.nativeElement?.open) {
+      this.detalleDialog.nativeElement.close();
+    }
+    this.incidenciaDetalle.set(null);
+  }
 
   registrar(): void {
-    if (!this.matriculaId || !this.fechaIncidencia || !this.descripcion.trim()) { this.error.set('Complete matrícula, fecha y descripción.'); return; }
-    this.guardando.set(true); this.error.set(null);
-    this.convivenciaService.registrarIncidencia({ matriculaId: this.matriculaId, fechaIncidencia: this.fechaIncidencia, tipoFalta: this.tipoFalta, descripcion: this.descripcion.trim(), requiereCitacion: this.requiereCitacion }).subscribe({
-      next: () => { this.guardando.set(false); this.cerrarDialogo(); this.error.set(null); this.mensaje.set('Incidencia registrada correctamente.'); this.descripcion = ''; this.cargarIncidencias(); },
-      error: err => { this.guardando.set(false); this.error.set(err?.error?.message ?? 'No se pudo registrar la incidencia.'); }
+    this.intentoEnvio.set(true);
+    if (!this.matriculaId || !this.fechaIncidencia || !this.descripcion.trim()) {
+      this.error.set('Complete matrícula, fecha y descripción.');
+      return;
+    }
+    this.guardando.set(true);
+    this.error.set(null);
+    this.convivenciaService.registrarIncidencia({
+      matriculaId: this.matriculaId,
+      fechaIncidencia: this.fechaIncidencia,
+      tipoFalta: this.tipoFalta,
+      descripcion: this.descripcion.trim(),
+      requiereCitacion: this.requiereCitacion
+    }).subscribe({
+      next: () => {
+        this.guardando.set(false);
+        this.intentoEnvio.set(false);
+        this.cerrarDialogo();
+        this.error.set(null);
+        this.mensaje.set('Incidencia registrada correctamente.');
+        this.descripcion = '';
+        this.cargarIncidencias();
+      },
+      error: err => {
+        this.guardando.set(false);
+        this.error.set(err?.error?.message ?? 'No se pudo registrar la incidencia.');
+      }
     });
   }
 }

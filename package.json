@@ -3,13 +3,15 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --proxy-config proxy.conf.json",
     "start:render": "ng serve --proxy-config proxy.render.conf.json",
     "build": "ng build",
     "test:integration": "node scripts/integration_e2e.mjs",
     "test:modules:isolated": "node scripts/module_integration_e2e.mjs",
     "test:real:ui": "node scripts/real_environment_smoke.mjs",
     "test:real:api": "node scripts/real_api_read_smoke.mjs",
+    "test:e2e:isolated": "pwsh -NoProfile -File scripts/run-e2e-isolated.ps1",
+    "test:academic:isolated": "node scripts/academic-isolated-e2e.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
