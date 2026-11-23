@@ -56,6 +56,23 @@ describe('Documentos PDF y vínculo parental', () => {
     expect(permitePago(documentos().slice(1))).toBe(false);
   });
 
+  it('aprueba documentos validados en modo presentación aunque dniApiCoincide sea null', () => {
+    const docsPresentacion: DocumentoSolicitudDto[] = tipos.map(tipo => ({
+      tipo,
+      estado: 'VALIDADO',
+      observacion: tipo === 'RECIBO_SERVICIO'
+        ? 'Modo presentación: archivo recibido; su contenido no se evaluó.'
+        : 'Modo presentación: identidad coincide; se compararon el DNI y nombre del estudiante.',
+      versionId: 'version-pres',
+      iaValida: tipo === 'RECIBO_SERVICIO' ? null : true,
+      dniApiCoincide: null,
+      estadoFirma: 'NO_APLICA',
+      detalleFirma: 'No se verifica firma digital en el modo de presentación.',
+      vinculoParentalCoincide: tipo === 'PARTIDA_NACIMIENTO' ? true : null
+    }));
+    expect(permitePago(docsPresentacion)).toBe(true);
+  });
+
   it('rechaza imágenes en las tres cargas y descarta un archivo seleccionado previamente', () => {
     for (const tipo of tipos) {
       const archivos: Partial<Record<TipoDocumentoSolicitud, File | null>> = {[tipo]: new File(['viejo'], 'viejo.pdf', {type:'application/pdf'})};

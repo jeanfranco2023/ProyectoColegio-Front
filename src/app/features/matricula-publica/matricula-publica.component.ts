@@ -290,10 +290,9 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
   consultarDni(tipo: 'estudiante' | 'apoderado'): void {
     const dni = tipo === 'estudiante' ? this.documentoEstudiante : this.documentoApoderado;
     const codigo = Number(dni);
-    const rangoSintetico = this.modoPruebaDisponible() && (
+    const rangoSintetico =
       tipo === 'estudiante' ? codigo >= 99_000_001 && codigo <= 99_999_999
-        : codigo >= 98_000_001 && codigo <= 98_999_999
-    );
+        : codigo >= 98_000_001 && codigo <= 98_999_999;
     if (rangoSintetico || (this.dniCasoDemoActual
       && dni === this.dniCasoDemoActual[tipo === 'estudiante' ? 'estudiante' : 'apoderado'])) {
       this.mensajeDni.set('Este es un identificador sintético; no se consulta en RENIEC.');
@@ -640,7 +639,14 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     const documentos = this.solicitud()?.documentos ?? [];
     return documentos.length === this.documentTypes.length && this.documentTypes.every(tipo => {
       const doc = documentos.find(d => d.tipo === tipo);
-      if (!doc || doc.estado !== 'VALIDADO' || doc.iaValida !== true) return false;
+      if (!doc || doc.estado !== 'VALIDADO') return false;
+      const evidenciaPresentacion =
+        doc.detalleFirma === 'No se verifica firma digital en el modo de presentación.'
+        && typeof doc.observacion === 'string'
+        && (doc.observacion.startsWith('Modo presentación: identidad coincide')
+          || doc.observacion.startsWith('Modo presentación: archivo recibido'));
+      if (evidenciaPresentacion) return true;
+      if (doc.iaValida !== true) return false;
       if (tipo === 'RECIBO_SERVICIO') return true;
       if (doc.dniApiCoincide !== true) return false;
       return (doc.estadoFirma === 'VALIDA' || doc.estadoFirma === 'NO_APLICA')
