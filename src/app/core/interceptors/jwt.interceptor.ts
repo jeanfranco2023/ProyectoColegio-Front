@@ -35,7 +35,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
           tap(response => store.setSession(response.data)),
           map(response => response.data.accessToken),
           catchError(refreshError => {
-            if (refreshError.status >= 400 && refreshError.status < 500) store.logout();
+            if (refreshError.status === 401) store.logout();
             return throwError(() => refreshError);
           }),
           finalize(() => { refreshInFlight = null; }),

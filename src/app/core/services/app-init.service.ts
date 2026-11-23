@@ -25,10 +25,10 @@ export function initAuthApp(): Promise<void> {
       }
     })
     .catch((error: HttpErrorResponse) => {
-      // A rejected refresh means the stored session is no longer valid. Clear all
-      // credentials together so the guards cannot mistake a stale access token for
-      // an authenticated user. Keep tokens on network/server errors for retry.
-      if (error?.status >= 400 && error?.status < 500) {
+      // A rejected refresh (401) means the stored session is no longer valid. Clear all
+      // credentials together so guards cannot mistake a stale access token for an
+      // authenticated user. Keep tokens on network, timeout, 403 CORS, or 5xx errors.
+      if (error?.status === 401) {
         authStore.clearSession();
       }
       return Promise.resolve();
