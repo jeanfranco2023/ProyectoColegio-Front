@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, timeout } from 'rxjs';
 import { AuthService } from './auth.service';
 import { AuthStore } from '../state/auth.store';
 
@@ -18,7 +18,7 @@ export function initAuthApp(): Promise<void> {
     return Promise.resolve();
   }
 
-  return firstValueFrom(authService.refreshToken({ refreshToken }))
+  return firstValueFrom(authService.refreshToken({ refreshToken }).pipe(timeout(5000)))
     .then((response) => {
       if (response && response.data) {
         authStore.setSession(response.data);
@@ -28,7 +28,7 @@ export function initAuthApp(): Promise<void> {
       // A rejected refresh means the stored session is no longer valid. Clear all
       // credentials together so the guards cannot mistake a stale access token for
       // an authenticated user. Keep tokens on network/server errors for retry.
-      if (error.status >= 400 && error.status < 500) {
+      if (error?.status >= 400 && error?.status < 500) {
         authStore.clearSession();
       }
       return Promise.resolve();
