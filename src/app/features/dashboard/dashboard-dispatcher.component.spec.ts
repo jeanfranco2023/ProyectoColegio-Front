@@ -224,4 +224,138 @@ describe('DashboardDispatcherComponent (Hito 2 y Hito 4)', () => {
     expect(component.ocupacionFilaPorcentaje(component.seccionesCuposFiltradas()[0])).toBe(100);
     expect(component.ocupacionFilaPorcentaje(component.seccionesCuposFiltradas()[1])).toBe(50);
   });
+
+  it('filtra en el modal de desempeño, abre la ficha visual del estudiante (drill-down) y regresa a la lista', () => {
+    const { component, http } = configurarDashboard(['DIRECCION']);
+    component.indicadores.set({
+      desempeno: { AD: 1, A: 1, B: 0, C: 0 },
+      cobertura: { evaluados: 2, matriculados: 2, sinEvaluacion: 0, porcentajeCobertura: 100 },
+      asistencia: {
+        porcentajePeriodo: 95, variacionPeriodoAnterior: null, tieneCortePrevio: false,
+        presentes: 2, tardanzas: 0, inasistencias: 0, faltasJustificadas: 0, faltasInjustificadas: 0
+      },
+      seccionesCupos: [],
+      estudiantesDetalle: [
+        { matriculaId: 501, nombreCompleto: 'Lucía Paredes Flores', grado: '5° de Secundaria A', nivelLogro: 'AD' },
+        { matriculaId: 502, nombreCompleto: 'Carlos Mendoza Vega', grado: '4° de Secundaria B', nivelLogro: 'AD' }
+      ]
+    });
+
+    component.seleccionarGrupoDesempeno('AD');
+    expect(component.grupoSeleccionado()).toBe('AD');
+    expect(component.estudiantesGrupoModalFiltrados().length).toBe(2);
+
+    component.alBuscarEnModal('lucía');
+    expect(component.estudiantesGrupoModalFiltrados().length).toBe(1);
+    const lucia = component.estudiantesGrupoModalFiltrados()[0];
+
+    component.abrirDetalleEstudianteModal(lucia);
+    expect(component.estudianteModalSeleccionado()?.matriculaId).toBe(501);
+    expect(component.cargandoDetalleEstudiante()).toBe(true);
+
+    const reqFicha = http.expectOne(r => r.url.endsWith('/matriculas/501'));
+    reqFicha.flush({
+      matricula: { id: 501, anioLectivoId: 1, estudianteId: 10, seccionId: 37, fechaMatricula: '2026-03-01', estadoMatricula: 'MATRICULADO', estadoPagoMatricula: 'PAGADO', modalidadIngreso: 'REGULAR' },
+      estudiante: { id: 10, numeroDocumento: '85000001', nombres: 'Lucía', apellidoPaterno: 'Paredes', apellidoMaterno: 'Flores', genero: 'F', fechaNacimiento: '2010-05-10' },
+      apoderados: [{ apoderado: { id: 4, numeroDocumento: '40000001', nombres: 'Ana', apellidoPaterno: 'Flores', apellidoMaterno: 'Ruiz', celular: '999111222' }, parentesco: 'MADRE', esResponsableEconomico: true }],
+      estadoPagoMatricula: 'PAGADO'
+    });
+
+    const reqLibreta = http.expectOne(r => r.url.endsWith('/evaluacion/libreta/501'));
+    reqLibreta.flush({
+      matriculaId: 501,
+      calificaciones: [
+        { id: 1, matriculaId: 501, anioLectivoId: 1, seccionId: 37, periodoAcademicoId: 1, calificacionCualitativa: 'AD', conclusionDescriptiva: 'Logro destacado sostenido', requiereRefuerzo: false },
+        { id: 2, matriculaId: 501, anioLectivoId: 1, seccionId: 37, periodoAcademicoId: 1, calificacionCualitativa: 'A', conclusionDescriptiva: 'Cumple competencias', requiereRefuerzo: false }
+      ]
+    });
+
+    expect(component.cargandoDetalleEstudiante()).toBe(false);
+    expect(component.fichaEstudianteModal()?.estudiante.numeroDocumento).toBe('85000001');
+    expect(component.apoderadoPrincipalModal()?.apoderado.nombres).toBe('Ana');
+    expect(component.resumenCalificacionesModal()).toEqual({ AD: 1, A: 1, B: 0, C: 0, refuerzo: 0 });
+    expect(component.conclusionesDestacadasModal().length).toBe(2);
+
+    component.volverAListaDesempeno();
+    expect(component.estudianteModalSeleccionado()).toBeNull();
+    expect(component.grupoSeleccionado()).toBe('AD');
+
+    component.cerrarModalDesempeno();
+    expect(component.grupoSeleccionado()).toBeNull();
+  });
+
+  it('selecciona automáticamente el bimestre pendiente y filtra las notas del modal sin mezclar bimestres concluidos', () => {
+    const { component, http } = configurarDashboard(['DIRECCION']);
+    component.periodosDisponibles.set([
+      { id: 1, anioLectivoId: 1, numeroPeriodo: 1, nombre: 'I Bimestre', fechaInicio: '2026-03-01', fechaFin: '2026-05-08', cerrado: false },
+      { id: 4, anioLectivoId: 1, numeroPeriodo: 4, nombre: 'IV Bimestre', fechaInicio: '2026-10-19', fechaFin: '2099-12-31', cerrado: false }
+    ]);
+
+    expect(component.periodoVigenteId()).toBe(4);
+    expect(component.esPeriodoConcluido(component.periodosDisponibles()[0])).toBe(true);
+    expect(component.esPeriodoConcluido(component.periodosDisponibles()[1])).toBe(false);
+
+    component.periodoFiltroId = 4;
+    expect(component.esPeriodoActualAplicableRefuerzo()).toBe(true);
+
+    component.abrirDetalleEstudianteModal({
+      matriculaId: 501,
+      nombreCompleto: 'Lucía Paredes Flores',
+      grado: '5° de Secundaria A',
+      nivelLogro: 'AD'
+    });
+    http.expectOne(r => r.url.endsWith('/matriculas/501')).flush(null);
+    http.expectOne(r => r.url.endsWith('/evaluacion/libreta/501')).flush({
+      matriculaId: 501,
+      calificaciones: [
+        { id: 1, matriculaId: 501, anioLectivoId: 1, seccionId: 37, periodoAcademicoId: 1, calificacionCualitativa: 'C', conclusionDescriptiva: 'Nota previa en inicio', requiereRefuerzo: true },
+        { id: 2, matriculaId: 501, anioLectivoId: 1, seccionId: 37, periodoAcademicoId: 4, calificacionCualitativa: 'AD', conclusionDescriptiva: 'Superado en IV Bimestre', requiereRefuerzo: false }
+      ]
+    });
+
+    expect(component.resumenCalificacionesModal()).toEqual({ AD: 1, A: 0, B: 0, C: 0, refuerzo: 0 });
+    expect(component.conclusionesDestacadasModal().map(c => c.conclusionDescriptiva)).toEqual(['Superado en IV Bimestre']);
+
+    component.periodoFiltroId = 1;
+    expect(component.esPeriodoActualAplicableRefuerzo()).toBe(false);
+    expect(component.resumenCalificacionesModal()).toEqual({ AD: 0, A: 0, B: 0, C: 1, refuerzo: 1 });
+  });
+
+  it('abre el modal apilado de detalles de notas sin cerrar la ficha y permite cambiar entre bimestres y cursos', () => {
+    const { component, http } = configurarDashboard(['DIRECCION']);
+    component.periodosDisponibles.set([
+      { id: 1, anioLectivoId: 1, numeroPeriodo: 1, nombre: 'I Bimestre', fechaInicio: '2026-03-01', fechaFin: '2026-05-08', cerrado: false },
+      { id: 4, anioLectivoId: 1, numeroPeriodo: 4, nombre: 'IV Bimestre', fechaInicio: '2026-10-19', fechaFin: '2099-12-31', cerrado: false }
+    ]);
+    component.periodoFiltroId = 4;
+    component.grupoSeleccionado.set('AD');
+    component.abrirDetalleEstudianteModal({
+      matriculaId: 501,
+      nombreCompleto: 'Lucía Paredes Flores',
+      grado: '5° de Secundaria A',
+      nivelLogro: 'AD'
+    });
+    http.expectOne(r => r.url.endsWith('/matriculas/501')).flush(null);
+    http.expectOne(r => r.url.endsWith('/evaluacion/libreta/501')).flush({
+      matriculaId: 501,
+      calificaciones: [
+        { id: 1, matriculaId: 501, anioLectivoId: 1, seccionId: 37, periodoAcademicoId: 1, areaCurricularId: 21, competenciaId: 54, calificacionCualitativa: 'B', conclusionDescriptiva: 'Oralidad en progreso', requiereRefuerzo: true },
+        { id: 2, matriculaId: 501, anioLectivoId: 1, seccionId: 37, periodoAcademicoId: 25, areaCurricularId: 25, competenciaId: 66, calificacionCualitativa: 'AD', conclusionDescriptiva: 'Dominio numérico', requiereRefuerzo: false }
+      ].map(item => (item.id === 2 ? { ...item, periodoAcademicoId: 4 } : item))
+    });
+
+    component.abrirModalDetalleNotas();
+    expect(component.mostrarModalDetalleNotas()).toBe(true);
+    expect(component.estudianteModalSeleccionado()?.matriculaId).toBe(501);
+    expect(component.bimestreDetalleNotasId()).toBe(4);
+    expect(component.cursosDetalleNotasModal().map(c => c.areaNombre)).toEqual(['Matemática']);
+
+    component.seleccionarBimestreDetalleNotas(1);
+    expect(component.bimestreDetalleNotasId()).toBe(1);
+    expect(component.cursosDetalleNotasModal().map(c => c.areaNombre)).toEqual(['Comunicación']);
+
+    component.cerrarModalDetalleNotas();
+    expect(component.mostrarModalDetalleNotas()).toBe(false);
+    expect(component.estudianteModalSeleccionado()?.matriculaId).toBe(501);
+  });
 });

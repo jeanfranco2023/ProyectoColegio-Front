@@ -17,34 +17,36 @@ import {
   standalone: true,
   imports: [FormatoEntradaDirective, CommonModule, FormsModule, UiCalendarComponent, UiPaginacionComponent],
   template: `
-    <section class="space-y-5 text-[#20354E]">
-      <header class="flex flex-wrap items-end justify-between gap-4 border-t-4 border-[#8A672F] pt-5">
+    <section class="space-y-5 text-slate-900">
+      <header class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#1E3A8A]/40 bg-gradient-to-r from-[#0A192F] via-[#0F294D] to-[#173B67] p-6 text-white shadow-md">
         <div>
-          <p class="text-[11px] font-bold uppercase tracking-[.16em] text-[#8A672F]">Supervisión exclusiva de Administración</p>
-          <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-[#20354E]">Acciones del sistema</h1>
-          <p class="mt-1 text-sm text-[#526579]">
+          <span class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[.14em] text-sky-100">
+            Supervisión exclusiva de Administración
+          </span>
+          <h1 class="mt-2 mb-0 font-sans text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Acciones del sistema</h1>
+          <p class="mt-1.5 mb-0 text-sm text-slate-200">
             Trazabilidad inmutable de accesos HTTP y cambios de datos con identidad real del actor, origen técnico y estado anterior/posterior.
           </p>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="rounded-full border border-[#D4DFDA] bg-white px-3 py-1.5 text-xs font-semibold text-[#173B67]" data-testid="auditoria-contador">
+        <div class="flex items-center gap-3">
+          <span class="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-bold text-white" data-testid="auditoria-contador">
             {{ totalResultadosActivos() }} resultados
           </span>
           <button
             type="button"
             (click)="actualizar()"
-            class="min-h-11 rounded-lg border border-[#D4DFDA] bg-white px-4 py-2.5 text-sm font-semibold text-[#20354E] hover:bg-[#F4F7F4] focus-visible:outline-2 focus-visible:outline-[#173B67]"
+            class="min-h-11 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-[#0F294D] shadow-sm transition hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-white cursor-pointer"
           >
             Actualizar
           </button>
         </div>
       </header>
 
-      <div class="rounded-xl border border-[#D4DFDA] bg-white p-4 text-sm text-[#526579]">
+      <div class="rounded-xl border border-[#E2E8F0] bg-white p-4 text-sm text-[#526579]">
         Se conserva el registro íntegro de rutas, métodos HTTP y snapshots de base de datos sin exponer contraseñas ni tokens de sesión.
       </div>
 
-      <div class="flex gap-2 border-b border-[#D4DFDA]" role="tablist" aria-label="Secciones de acciones del sistema">
+      <div class="flex gap-2 border-b border-[#E2E8F0]" role="tablist" aria-label="Secciones de acciones del sistema">
         <button
           type="button"
           role="tab"
@@ -78,7 +80,7 @@ import {
       </div>
 
       @if (vista() === 'accesos') {
-        <div class="rounded-xl border border-[#D4DFDA] bg-white p-4" aria-label="Filtros de accesos">
+        <div class="rounded-xl border border-[#E2E8F0] bg-white p-4" aria-label="Filtros de accesos">
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <div>
               <label class="mb-1 block text-xs font-semibold text-[#526579]" for="filtro-acceso-usuario">Usuario o actor</label>
@@ -89,7 +91,7 @@ import {
                 (ngModelChange)="filtroAccesoUsuario.set($event)"
                 placeholder="Ej. admin.colegio o #10"
                 aria-label="Usuario o actor"
-                class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-xs text-[#20354E]"
+                class="w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-xs text-[#20354E]"
               />
             </div>
             <div>
@@ -99,7 +101,7 @@ import {
                 [ngModel]="filtroAccesoMetodo()"
                 (ngModelChange)="filtroAccesoMetodo.set($event)"
                 aria-label="Método HTTP"
-                class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-xs text-[#20354E]"
+                class="w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-xs text-[#20354E]"
               >
                 <option value="">Todos los métodos</option>
                 <option value="GET">GET</option>
@@ -118,7 +120,7 @@ import {
                 (ngModelChange)="filtroAccesoRuta.set($event)"
                 placeholder="Ej. /api/v1/usuarios"
                 aria-label="Ruta u operación"
-                class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-xs text-[#20354E]"
+                class="w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-xs text-[#20354E]"
               />
             </div>
             <div>
@@ -137,7 +139,7 @@ import {
             <button
               type="button"
               (click)="limpiarFiltrosAccesos()"
-              class="min-h-10 rounded-lg border border-[#D4DFDA] bg-white px-3 py-1.5 text-xs font-semibold text-[#526579] hover:bg-[#F4F7F4]"
+              class="min-h-10 rounded-lg border border-[#E2E8F0] bg-white px-3 py-1.5 text-xs font-semibold text-[#526579] hover:bg-[#F8FAFC]"
             >
               Limpiar filtros
             </button>
@@ -146,7 +148,7 @@ import {
       }
 
       @if (vista() === 'cambios') {
-        <div class="rounded-xl border border-[#D4DFDA] bg-white p-4" aria-label="Filtros de cambios">
+        <div class="rounded-xl border border-[#E2E8F0] bg-white p-4" aria-label="Filtros de cambios">
           <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <div>
               <label class="mb-1 block text-xs font-semibold text-[#526579]">Fecha Desde</label>
@@ -165,7 +167,7 @@ import {
                 [(ngModel)]="filtroUsuarioId"
                 placeholder="Ej. 1"
                 aria-label="Usuario ID"
-                class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-xs text-[#20354E]"
+                class="w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-xs text-[#20354E]"
               />
             </div>
             <div>
@@ -176,7 +178,7 @@ import {
                 [(ngModel)]="filtroTabla"
                 placeholder="Ej. usuarios"
                 aria-label="Tabla afectada"
-                class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-xs text-[#20354E]"
+                class="w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-xs text-[#20354E]"
               />
             </div>
             <div>
@@ -186,7 +188,7 @@ import {
                 [ngModel]="filtroAccionCambio()"
                 (ngModelChange)="filtroAccionCambio.set($event)"
                 aria-label="Operación"
-                class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-xs text-[#20354E]"
+                class="w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-xs text-[#20354E]"
               >
                 <option value="">Todas las operaciones</option>
                 <option value="INSERT">INSERT</option>
@@ -203,7 +205,7 @@ import {
               <button
                 type="button"
                 (click)="limpiarFiltrosCambios()"
-                class="min-h-10 rounded-lg border border-[#D4DFDA] bg-white px-3 py-1.5 text-xs font-semibold text-[#526579] hover:bg-[#F4F7F4] cursor-pointer"
+                class="min-h-10 rounded-lg border border-[#E2E8F0] bg-white px-3 py-1.5 text-xs font-semibold text-[#526579] hover:bg-[#F8FAFC] cursor-pointer"
               >
                 Limpiar
               </button>
@@ -224,15 +226,15 @@ import {
       }
 
       @if (cargando()) {
-        <div role="status" class="rounded-xl border border-[#D4DFDA] bg-white p-8 text-center text-sm text-[#526579]">
+        <div role="status" class="rounded-xl border border-[#E2E8F0] bg-white p-8 text-center text-sm text-[#526579]">
           Cargando registros de acciones del sistema…
         </div>
       } @else if (vista() === 'accesos') {
         <div id="panel-accesos" role="tabpanel" aria-labelledby="tab-accesos" class="grid grid-cols-1 gap-5 lg:grid-cols-12">
-          <div class="overflow-hidden rounded-xl border border-[#D4DFDA] bg-white shadow-sm" [class.lg:col-span-7]="!!accesoSeleccionado()" [class.lg:col-span-12]="!accesoSeleccionado()">
+          <div class="overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-sm" [class.lg:col-span-7]="!!accesoSeleccionado()" [class.lg:col-span-12]="!accesoSeleccionado()">
             <div class="overflow-x-auto">
               <table class="w-full min-w-[780px] border-collapse text-left text-sm" data-mobile-table-cards>
-                <thead class="bg-[#E5F1EE] text-[11px] uppercase tracking-wide text-[#173B67]">
+                <thead class="bg-[#F1F5F9] text-[11px] uppercase tracking-wide text-[#173B67]">
                   <tr>
                     <th class="px-4 py-3">Fecha y hora</th>
                     <th class="px-4 py-3">Usuario / rol</th>
@@ -242,11 +244,11 @@ import {
                     <th class="px-4 py-3 text-right">Ficha</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[#D4DFDA]">
+                <tbody class="divide-y divide-[#E2E8F0]">
                   @for (evento of accesosPaginados(); track evento.id) {
                     <tr
-                      class="align-top transition-colors hover:bg-[#F4F7F4] cursor-pointer"
-                      [class.bg-[#E5F1EE]]="accesoSeleccionado()?.id === evento.id"
+                      class="align-top transition-colors hover:bg-[#F8FAFC] cursor-pointer"
+                      [class.bg-[#F1F5F9]]="accesoSeleccionado()?.id === evento.id"
                       (click)="seleccionarAcceso(evento)"
                     >
                       <td data-label="Fecha y hora" class="whitespace-nowrap px-4 py-3 text-[#526579]">
@@ -281,7 +283,7 @@ import {
                         <button
                           type="button"
                           (click)="seleccionarAcceso(evento); $event.stopPropagation()"
-                          class="rounded-lg border border-[#D4DFDA] bg-white px-3 py-1.5 text-xs font-semibold text-[#173B67] hover:bg-[#F4F7F4]"
+                          class="rounded-lg border border-[#E2E8F0] bg-white px-3 py-1.5 text-xs font-semibold text-[#173B67] hover:bg-[#F8FAFC]"
                         >
                           Inspeccionar
                         </button>
@@ -317,25 +319,25 @@ import {
           @if (accesoSeleccionado(); as detalleAcceso) {
             <aside
               aria-label="Ficha detallada del evento de acceso"
-              class="rounded-xl border border-[#D4DFDA] bg-white p-5 shadow-sm lg:col-span-5 lg:sticky lg:top-24 lg:self-start"
+              class="rounded-xl border border-[#E2E8F0] bg-white p-5 shadow-sm lg:col-span-5 lg:sticky lg:top-24 lg:self-start"
             >
-              <div class="flex items-start justify-between gap-3 border-b border-[#D4DFDA] pb-3">
+              <div class="flex items-start justify-between gap-3 border-b border-[#E2E8F0] pb-3">
                 <div>
-                  <p class="text-[11px] font-bold uppercase tracking-wider text-[#8A672F]">Ficha de acceso #{{ detalleAcceso.id }}</p>
+                  <p class="text-[11px] font-bold uppercase tracking-wider text-[#0F294D]">Ficha de acceso #{{ detalleAcceso.id }}</p>
                   <h2 class="mt-0.5 text-lg font-bold text-[#20354E]">{{ detalleAcceso.metodo }} {{ detalleAcceso.ruta }}</h2>
                 </div>
                 <button
                   type="button"
                   (click)="accesoSeleccionado.set(null)"
                   aria-label="Cerrar ficha de acceso"
-                  class="rounded-lg border border-[#D4DFDA] px-2.5 py-1 text-xs font-semibold text-[#526579] hover:bg-[#F4F7F4]"
+                  class="rounded-lg border border-[#E2E8F0] px-2.5 py-1 text-xs font-semibold text-[#526579] hover:bg-[#F8FAFC]"
                 >
                   Cerrar
                 </button>
               </div>
 
               <dl class="mt-4 space-y-3 text-xs">
-                <div class="rounded-lg bg-[#F4F7F4] p-3">
+                <div class="rounded-lg bg-[#F8FAFC] p-3">
                   <dt class="font-bold uppercase tracking-wide text-[#526579]">Identidad real de ejecución</dt>
                   <dd class="mt-1 text-sm font-semibold text-[#20354E]">{{ nombreActor(detalleAcceso) }}</dd>
                   <dd class="mt-0.5 text-[#526579]">
@@ -343,24 +345,24 @@ import {
                   </dd>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                  <div class="rounded-lg border border-[#D4DFDA] p-3">
+                  <div class="rounded-lg border border-[#E2E8F0] p-3">
                     <dt class="font-semibold text-[#526579]">Fecha y hora (UTC/Local)</dt>
                     <dd class="mt-1 font-semibold text-[#20354E]">{{ detalleAcceso.fechaEvento | date:'dd/MM/yyyy HH:mm:ss' }}</dd>
                   </div>
-                  <div class="rounded-lg border border-[#D4DFDA] p-3">
+                  <div class="rounded-lg border border-[#E2E8F0] p-3">
                     <dt class="font-semibold text-[#526579]">Estado HTTP y latencia</dt>
                     <dd class="mt-1 font-semibold text-[#20354E]">HTTP {{ detalleAcceso.estadoHttp }} ({{ detalleAcceso.duracionMs }} ms)</dd>
                   </div>
                 </div>
-                <div class="rounded-lg border border-[#D4DFDA] p-3">
+                <div class="rounded-lg border border-[#E2E8F0] p-3">
                   <dt class="font-semibold text-[#526579]">Identificador de correlación (Request ID)</dt>
                   <dd class="mt-1 break-all font-mono text-[#20354E]">{{ detalleAcceso.solicitudId || 'Sin solicitudId' }}</dd>
                 </div>
-                <div class="rounded-lg border border-[#D4DFDA] p-3">
+                <div class="rounded-lg border border-[#E2E8F0] p-3">
                   <dt class="font-semibold text-[#526579]">Dirección IP de origen</dt>
                   <dd class="mt-1 font-mono text-[#20354E]">{{ detalleAcceso.direccionIp || 'No disponible' }}</dd>
                 </div>
-                <div class="rounded-lg border border-[#D4DFDA] p-3">
+                <div class="rounded-lg border border-[#E2E8F0] p-3">
                   <dt class="font-semibold text-[#526579]">User-Agent completo</dt>
                   <dd class="mt-1 break-words font-mono text-[#20354E]">{{ detalleAcceso.agenteUsuario || 'Agente no informado' }}</dd>
                 </div>
@@ -370,10 +372,10 @@ import {
         </div>
       } @else {
         <div id="panel-cambios" role="tabpanel" aria-labelledby="tab-cambios" class="grid grid-cols-1 gap-5 lg:grid-cols-12">
-          <div class="overflow-hidden rounded-xl border border-[#D4DFDA] bg-white shadow-sm" [class.lg:col-span-7]="!!cambioSeleccionado()" [class.lg:col-span-12]="!cambioSeleccionado()">
+          <div class="overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-sm" [class.lg:col-span-7]="!!cambioSeleccionado()" [class.lg:col-span-12]="!cambioSeleccionado()">
             <div class="overflow-x-auto">
               <table class="w-full min-w-[780px] border-collapse text-left text-sm" data-mobile-table-cards>
-                <thead class="bg-[#E5F1EE] text-[11px] uppercase tracking-wide text-[#173B67]">
+                <thead class="bg-[#F1F5F9] text-[11px] uppercase tracking-wide text-[#173B67]">
                   <tr>
                     <th class="px-4 py-3">Fecha y hora</th>
                     <th class="px-4 py-3">Actor / rol</th>
@@ -382,11 +384,11 @@ import {
                     <th class="px-4 py-3 text-right">Ficha</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[#D4DFDA]">
+                <tbody class="divide-y divide-[#E2E8F0]">
                   @for (cambio of cambiosPaginados(); track cambio.id) {
                     <tr
-                      class="align-top transition-colors hover:bg-[#F4F7F4] cursor-pointer"
-                      [class.bg-[#E5F1EE]]="cambioSeleccionado()?.id === cambio.id"
+                      class="align-top transition-colors hover:bg-[#F8FAFC] cursor-pointer"
+                      [class.bg-[#F1F5F9]]="cambioSeleccionado()?.id === cambio.id"
                       (click)="seleccionarCambio(cambio)"
                     >
                       <td data-label="Fecha y hora" class="whitespace-nowrap px-4 py-3 text-[#526579]">
@@ -407,7 +409,7 @@ import {
                         <button
                           type="button"
                           (click)="seleccionarCambio(cambio); $event.stopPropagation()"
-                          class="rounded-lg border border-[#D4DFDA] bg-white px-3 py-1.5 text-xs font-semibold text-[#173B67] hover:bg-[#F4F7F4]"
+                          class="rounded-lg border border-[#E2E8F0] bg-white px-3 py-1.5 text-xs font-semibold text-[#173B67] hover:bg-[#F8FAFC]"
                         >
                           Ver cambios
                         </button>
@@ -443,11 +445,11 @@ import {
           @if (cambioSeleccionado(); as detalleCambio) {
             <aside
               aria-label="Ficha detallada del cambio de datos"
-              class="rounded-xl border border-[#D4DFDA] bg-white p-5 shadow-sm lg:col-span-5 lg:sticky lg:top-24 lg:self-start"
+              class="rounded-xl border border-[#E2E8F0] bg-white p-5 shadow-sm lg:col-span-5 lg:sticky lg:top-24 lg:self-start"
             >
-              <div class="flex items-start justify-between gap-3 border-b border-[#D4DFDA] pb-3">
+              <div class="flex items-start justify-between gap-3 border-b border-[#E2E8F0] pb-3">
                 <div>
-                  <p class="text-[11px] font-bold uppercase tracking-wider text-[#8A672F]">Ficha de cambio #{{ detalleCambio.id }}</p>
+                  <p class="text-[11px] font-bold uppercase tracking-wider text-[#0F294D]">Ficha de cambio #{{ detalleCambio.id }}</p>
                   <h2 class="mt-0.5 text-lg font-bold text-[#20354E]">
                     {{ detalleCambio.accion }} · {{ detalleCambio.tablaAfectada }}
                   </h2>
@@ -456,14 +458,14 @@ import {
                   type="button"
                   (click)="cambioSeleccionado.set(null)"
                   aria-label="Cerrar ficha de cambio"
-                  class="rounded-lg border border-[#D4DFDA] px-2.5 py-1 text-xs font-semibold text-[#526579] hover:bg-[#F4F7F4]"
+                  class="rounded-lg border border-[#E2E8F0] px-2.5 py-1 text-xs font-semibold text-[#526579] hover:bg-[#F8FAFC]"
                 >
                   Cerrar
                 </button>
               </div>
 
               <dl class="mt-4 space-y-3 text-xs">
-                <div class="rounded-lg bg-[#F4F7F4] p-3">
+                <div class="rounded-lg bg-[#F8FAFC] p-3">
                   <dt class="font-bold uppercase tracking-wide text-[#526579]">Identidad real del ejecutor</dt>
                   <dd class="mt-1 text-sm font-semibold text-[#20354E]">{{ nombreActorCambio(detalleCambio) }}</dd>
                   <dd class="mt-0.5 text-[#526579]">
@@ -471,11 +473,11 @@ import {
                   </dd>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
-                  <div class="rounded-lg border border-[#D4DFDA] p-3">
+                  <div class="rounded-lg border border-[#E2E8F0] p-3">
                     <dt class="font-semibold text-[#526579]">Fecha de operación</dt>
                     <dd class="mt-1 font-semibold text-[#20354E]">{{ detalleCambio.fechaCreacion | date:'dd/MM/yyyy HH:mm:ss' }}</dd>
                   </div>
-                  <div class="rounded-lg border border-[#D4DFDA] p-3">
+                  <div class="rounded-lg border border-[#E2E8F0] p-3">
                     <dt class="font-semibold text-[#526579]">Clave primaria</dt>
                     <dd class="mt-1 font-mono font-semibold text-[#20354E]">{{ detalleCambio.registroClave }}</dd>
                   </div>
@@ -483,13 +485,13 @@ import {
                 <div>
                   <dt class="mb-1 font-semibold text-[#526579]">Payload anterior (Antes)</dt>
                   <dd>
-                    <pre class="max-h-52 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-[#D4DFDA] bg-[#F4F7F4] p-3 font-mono text-[11px] text-[#20354E]">{{ detalleCambio.datosAnteriores || 'Sin estado anterior' }}</pre>
+                    <pre class="max-h-52 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3 font-mono text-[11px] text-[#20354E]">{{ detalleCambio.datosAnteriores || 'Sin estado anterior' }}</pre>
                   </dd>
                 </div>
                 <div>
                   <dt class="mb-1 font-semibold text-[#526579]">Payload nuevo (Después)</dt>
                   <dd>
-                    <pre class="max-h-52 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-[#D4DFDA] bg-[#F4F7F4] p-3 font-mono text-[11px] text-[#20354E]">{{ detalleCambio.datosNuevos || 'Sin estado nuevo' }}</pre>
+                    <pre class="max-h-52 overflow-auto whitespace-pre-wrap break-all rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3 font-mono text-[11px] text-[#20354E]">{{ detalleCambio.datosNuevos || 'Sin estado nuevo' }}</pre>
                   </dd>
                 </div>
               </dl>

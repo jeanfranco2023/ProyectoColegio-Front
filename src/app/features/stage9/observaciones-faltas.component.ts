@@ -17,7 +17,7 @@ import { Stage9Observation, Stage9ObservationDraft, Stage9State, Stage9StudentOp
       <header class="mb-[22px] border-t-[3px] border-t-ui-gold pt-3 [&_h1]:m-0 [&_h1]:mt-1 [&_h1]:mb-[6px] [&_h1]:font-display [&_h1]:text-[28px] [&_h1]:leading-[1.25] [&_h1]:font-bold [&_h1]:text-ui-text [&_p]:m-0 max-[700px]:mb-[18px] max-[700px]:[&_h1]:text-[23px] max-[700px]::text-[13px]">
         <p class="text-[11px] leading-[1.4] tracking-[.075em] font-bold text-ui-muted">REGISTRO ESCOLAR</p>
         <h1 id="ui-s9-observations-title" class="tracking-[-.025em]">Observaciones de faltas</h1>
-        <p class="text-[13px] leading-[1.5] text-ui-muted">Consulta las observaciones registradas; solo los roles autorizados pueden registrar incidencias.</p>
+        <p class="text-[13px] leading-[1.5] text-ui-muted">Consulta y seguimiento de observaciones e incidencias escolares registradas.</p>
       </header>
 
       @if (formError) { <ui-app-alert tone="error" title="Revisa el formulario" [message]="formError" /> }
@@ -94,8 +94,6 @@ import { Stage9Observation, Stage9ObservationDraft, Stage9State, Stage9StudentOp
           <button class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[14px] leading-[1.2] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:!border-ui-divider disabled:bg-ui-surface-soft disabled:text-ui-muted aria-disabled:cursor-not-allowed aria-disabled:!border-ui-divider aria-disabled:bg-ui-surface-soft aria-disabled:text-ui-muted bg-ui-action text-ui-action-text hover:opacity-90" type="submit">Guardar observación</button>
         </div>
       </form>
-      } @else {
-        <p class="mb-[18px] rounded-xl border border-ui-info-border bg-ui-info-bg px-4 py-3 text-sm font-medium text-ui-info-text" role="status">El backend permite registrar incidencias únicamente al rol Tutor. Esta vista está en modo consulta.</p>
       }
 
       <!-- Filtros del listado con contador de casos -->

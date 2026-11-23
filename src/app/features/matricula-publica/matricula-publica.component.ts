@@ -39,7 +39,6 @@ type VistaMatricula = 'inicio' | 'propuesta' | 'niveles' | 'admision' | 'pregunt
   standalone: true,
   imports: [FormatoEntradaDirective, CommonModule, FormsModule, RouterLink, A11yModule, UiCalendarComponent, SimuladorCheckoutComponent],
   templateUrl: './matricula-publica.component.html',
-  styleUrl: './matricula-publica.component.css',
   host: { class: 'block' }
 })
 export class MatriculaPublicaComponent implements OnInit, OnDestroy {

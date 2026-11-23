@@ -26,6 +26,7 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
   selector: 'app-refuerzos',
   standalone: true,
   imports: [FormsModule, UiCalendarComponent, UiPaginacionComponent],
+  host: { class: 'block min-w-0 max-w-full' },
   template: `
     <section class="grid gap-5 text-ui-text" aria-labelledby="refuerzos-title">
       <header class="flex flex-wrap items-start justify-between gap-4 border-b border-ui-divider pb-4">
@@ -48,7 +49,8 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
           </button>
           <button
             type="button"
-            class="min-h-11 rounded-xl bg-[#173B67] px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110"
+            class="min-h-11 rounded-xl bg-[#173B67] px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-50"
+            [disabled]="periodos().length > 0 && !periodosAplicablesRefuerzo().length"
             (click)="toggleFormulario()"
           >
             {{ mostrarFormulario() ? 'Ocultar formulario' : '+ Programar sesión' }}
@@ -102,8 +104,10 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
           <p class="m-0 text-xs font-bold uppercase tracking-wider text-ui-muted">Evaluaciones en riesgo (B / C)</p>
           <p class="m-0 mt-1.5 font-display text-3xl font-bold text-rose-700">{{ kpis().riesgosTotal }}</p>
           <p class="m-0 mt-1 text-xs font-semibold" [class.text-amber-700]="kpis().riesgosCSinDerivar > 0 || kpis().riesgosSinDerivar > 0" [class.text-emerald-700]="kpis().riesgosCSinDerivar === 0 && kpis().riesgosSinDerivar === 0">
-            {{ kpis().riesgosCSinDerivar === 0 ? 'Logro C cubierto en automático' : kpis().riesgosCSinDerivar + ' logro C sin asignar' }}
-            @if (kpis().riesgosSinDerivar > 0) {
+            {{ esVistaPeriodoAplicableRefuerzo()
+              ? (kpis().riesgosCSinDerivar === 0 ? 'Logro C cubierto en automático' : kpis().riesgosCSinDerivar + ' logro C sin asignar')
+              : 'Bimestre concluido · Reforzamiento ya no aplica' }}
+            @if (esVistaPeriodoAplicableRefuerzo() && kpis().riesgosSinDerivar > 0) {
               · {{ kpis().riesgosSinDerivar }} B preventivos sin sesión
             }
           </p>
@@ -144,14 +148,17 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
             </div>
 
             <div class="grid gap-1.5 text-sm font-semibold">
-              <label for="refuerzo-form-periodo-select">Periodo académico *</label>
+              <label for="refuerzo-form-periodo-select">Bimestre pendiente (activo para refuerzo) *</label>
               <select
                 id="refuerzo-form-periodo-select"
                 name="formPeriodoId"
                 class="min-h-11 rounded-lg border border-ui-control-border bg-ui-surface px-3 py-2 text-ui-text focus-visible:outline-2 focus-visible:outline-ui-focus"
                 [(ngModel)]="formPeriodoId"
               >
-                @for (p of periodos(); track p.id) {
+                @if (!periodosAplicablesRefuerzo().length) {
+                  <option [ngValue]="0" disabled>Sin bimestres habilitados</option>
+                }
+                @for (p of periodosAplicablesRefuerzo(); track p.id) {
                   <option [ngValue]="p.id">{{ p.nombre }}</option>
                 }
               </select>
@@ -225,16 +232,20 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
       <section class="rounded-2xl border border-ui-divider bg-ui-surface p-4 shadow-sm" aria-label="Filtros de acompañamiento">
         <div class="grid gap-3 md:grid-cols-2 lg:grid-cols-6">
           <div class="grid gap-1 text-sm font-semibold">
-            <label for="refuerzo-periodo-select">Periodo</label>
+            <label for="refuerzo-periodo-select">Bimestre</label>
             <select
               id="refuerzo-periodo-select"
               class="min-h-11 rounded-lg border border-ui-control-border bg-ui-surface px-3 py-2 text-ui-text"
               [ngModel]="filtroPeriodoSig()"
               (ngModelChange)="onCambioPeriodo($event)"
             >
-              <option [ngValue]="0">Todos los periodos</option>
+              @if (!periodos().length) {
+                <option [ngValue]="0" disabled>Sin bimestres disponibles</option>
+              }
               @for (p of periodos(); track p.id) {
-                <option [ngValue]="p.id">{{ p.nombre }}</option>
+                <option [ngValue]="p.id">
+                  {{ p.nombre }}{{ esPeriodoConcluido(p) ? ' (Concluido)' : (p.id === periodoVigenteId() ? ' (Actual)' : '') }}
+                </option>
               }
             </select>
           </div>
@@ -337,6 +348,12 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
           </div>
         }
       </section>
+
+      @if (periodos().length > 0 && !esVistaPeriodoAplicableRefuerzo()) {
+        <div role="status" class="rounded-xl border border-slate-300 bg-slate-100 px-4 py-3 text-sm font-medium text-slate-800">
+          <strong>Bimestre concluido:</strong> El reforzamiento de bimestres previos ya no aplica; las nuevas sesiones y derivaciones solo aplican al bimestre pendiente actual.
+        </div>
+      }
 
       <!-- Pestañas principales -->
       <div class="flex flex-wrap items-center justify-between gap-3 border-b border-ui-divider pb-2" role="tablist" aria-label="Vistas de refuerzo académico">
@@ -455,14 +472,20 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
                   >
                     {{ seleccionada()?.id === s.id ? 'Ficha abierta' : 'Abrir ficha y lista' }}
                   </button>
-                  <button
-                    class="min-h-11 rounded-xl border border-ui-control-border bg-ui-surface px-4 py-2 text-sm font-semibold text-ui-text transition hover:bg-ui-surface-soft disabled:opacity-50"
-                    type="button"
-                    [disabled]="ocupado()"
-                    (click)="derivar(s)"
-                  >
-                    Sincronizar B/C faltantes
-                  </button>
+                  @if (esPeriodoIdAplicableRefuerzo(s.periodoAcademicoId)) {
+                    <button
+                      class="min-h-11 rounded-xl border border-ui-control-border bg-ui-surface px-4 py-2 text-sm font-semibold text-ui-text transition hover:bg-ui-surface-soft disabled:opacity-50"
+                      type="button"
+                      [disabled]="ocupado()"
+                      (click)="derivar(s)"
+                    >
+                      Sincronizar B/C faltantes
+                    </button>
+                  } @else {
+                    <span class="inline-flex min-h-11 items-center rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600">
+                      No aplica (bimestre previo)
+                    </span>
+                  }
                 </div>
               </div>
             </article>
@@ -487,7 +510,7 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
       @if (vistaActiva() === 'riesgos') {
         <section class="rounded-2xl border border-ui-divider bg-ui-surface p-4 shadow-sm" aria-label="Listado de evaluaciones B y C">
           <div class="overflow-auto">
-            <table class="w-full text-left text-sm [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:bg-ui-surface-soft/75">
+            <table class="w-full min-w-[720px] text-left text-sm [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:bg-ui-surface-soft/75">
               <thead class="border-b border-ui-divider bg-ui-surface-soft text-xs font-bold uppercase text-[#173B67]">
                 <tr>
                   <th class="p-3">Estudiante / DNI</th>
@@ -535,6 +558,10 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
                           {{ r.calificacionCualitativa === 'C' ? 'Asignado auto (Obligatorio)' : 'En sesión' }} · {{ r.estadoAsistencia || 'PENDIENTE' }}
                         </span>
                         <div class="mt-1 text-xs font-medium text-ui-text">Tema: {{ r.sesionTema }}</div>
+                      } @else if (!esPeriodoIdAplicableRefuerzo(r.periodoAcademicoId)) {
+                        <span class="inline-flex rounded-full border border-slate-300 bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-700">
+                          Bimestre concluido · Reforzamiento ya no aplica
+                        </span>
                       } @else if (r.calificacionCualitativa === 'C') {
                         <span class="inline-flex rounded-full bg-rose-100 px-2.5 py-1 text-xs font-bold text-rose-900">
                           Logro C · Asignación automática pendiente
@@ -550,6 +577,10 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
                         <button type="button" class="min-h-10 rounded-lg border border-[#173B67] px-3 py-1.5 text-xs font-bold text-[#173B67]" (click)="abrirSesionPorId(r.sesionRefuerzoId)">
                           Ver sesión y ficha
                         </button>
+                      } @else if (!esPeriodoIdAplicableRefuerzo(r.periodoAcademicoId)) {
+                        <span class="inline-flex min-h-10 items-center rounded-lg border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600">
+                          No aplica (bimestre previo)
+                        </span>
                       } @else {
                         <button type="button" class="min-h-10 rounded-lg bg-[#173B67] px-3 py-1.5 text-xs font-bold text-white" (click)="prepararSesionDesdeRiesgo(r)">
                           {{ r.calificacionCualitativa === 'C' ? 'Asignar sesión C' : 'Programar sesión B' }}
@@ -598,14 +629,16 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                class="min-h-10 rounded-xl border border-ui-control-border px-3 py-1.5 text-sm font-semibold"
-                [disabled]="ocupado()"
-                (click)="derivar(sesion)"
-              >
-                Derivar B/C faltantes
-              </button>
+              @if (esPeriodoIdAplicableRefuerzo(sesion.periodoAcademicoId)) {
+                <button
+                  type="button"
+                  class="min-h-10 rounded-xl border border-ui-control-border px-3 py-1.5 text-sm font-semibold"
+                  [disabled]="ocupado()"
+                  (click)="derivar(sesion)"
+                >
+                  Derivar B/C faltantes
+                </button>
+              }
               <button
                 type="button"
                 class="min-h-10 rounded-xl border border-ui-control-border px-3 py-1.5 text-sm font-semibold"
@@ -618,14 +651,16 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
 
           @if (inscritos().length === 0) {
             <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-              <span>Esta sesión aún no tiene estudiantes derivados.</span>
-              <button type="button" class="min-h-10 rounded-lg bg-[#173B67] px-4 py-2 text-sm font-semibold text-white" [disabled]="ocupado()" (click)="derivar(sesion)">
-                Derivar estudiantes C y B ahora
-              </button>
+              <span>{{ esPeriodoIdAplicableRefuerzo(sesion.periodoAcademicoId) ? 'Esta sesión aún no tiene estudiantes derivados.' : 'Este bimestre ya concluyó y el reforzamiento no admite nuevas derivaciones.' }}</span>
+              @if (esPeriodoIdAplicableRefuerzo(sesion.periodoAcademicoId)) {
+                <button type="button" class="min-h-10 rounded-lg bg-[#173B67] px-4 py-2 text-sm font-semibold text-white" [disabled]="ocupado()" (click)="derivar(sesion)">
+                  Derivar estudiantes C y B ahora
+                </button>
+              }
             </div>
           } @else {
             <div class="overflow-auto">
-              <table class="w-full text-left text-sm [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:bg-ui-surface-soft/75">
+              <table class="w-full min-w-[720px] text-left text-sm [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:bg-ui-surface-soft/75">
                 <thead class="border-b border-ui-divider bg-ui-surface-soft text-xs font-bold uppercase text-[#173B67]">
                   <tr>
                     <th class="p-3">Estudiante</th>
@@ -723,20 +758,6 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
         </section>
       }
     </section>
-  `,
-  styles: `
-    :host { display: block; min-width: 0; max-width: 100%; }
-    :host > section { grid-template-columns: minmax(0, 1fr); }
-    .grid > *, .flex > * { min-width: 0; }
-    select, input[type='search'], input[type='text'], input[type='time'], input:not([type='checkbox']) {
-      box-sizing: border-box;
-      width: 100%;
-      min-width: 0;
-      max-width: 100%;
-    }
-    .overflow-auto { min-width: 0; max-width: 100%; overflow-x: auto; }
-    table { min-width: 720px; }
-    h1, h2, p { overflow-wrap: anywhere; }
   `
 })
 export class RefuerzosComponent implements OnInit {
@@ -983,18 +1004,59 @@ export class RefuerzosComponent implements OnInit {
     this.academico?.listarPeriodos?.(anioId)?.subscribe({
       next: datos => {
         this.periodos.set(datos);
-        const actual =
-          datos.find(p => p.fechaInicio <= this.hoy && this.hoy <= p.fechaFin) ??
-          datos.find(p => !p.cerrado) ??
-          datos[datos.length - 1];
-        const inicial = actual?.id ?? 0;
+        const inicial = this.periodoVigenteId();
         this.periodoId = inicial;
-        this.formPeriodoId = inicial || (datos[0]?.id ?? 0);
+        this.formPeriodoId = this.periodosAplicablesRefuerzo()[0]?.id ?? inicial;
         this.filtroPeriodoSig.set(inicial);
         this.cargarTablero();
       },
       error: () => this.cargarTablero()
     });
+  }
+
+  readonly periodosAplicablesRefuerzo = computed(() =>
+    this.periodos().filter(p => !this.esPeriodoConcluido(p))
+  );
+
+  periodoVigenteId(): number {
+    const lista = [...this.periodos()].sort(
+      (a, b) => (a.numeroPeriodo ?? 0) - (b.numeroPeriodo ?? 0) || a.id - b.id
+    );
+    if (!lista.length) return 0;
+    const abiertoPorRango = lista.find(
+      p => !p.cerrado && Boolean(p.fechaInicio) && Boolean(p.fechaFin) && p.fechaInicio <= this.hoy && this.hoy <= p.fechaFin
+    );
+    if (abiertoPorRango) return abiertoPorRango.id;
+    const iniciados = lista.filter(p => !p.cerrado && Boolean(p.fechaInicio) && p.fechaInicio <= this.hoy);
+    if (iniciados.length > 0) return iniciados[iniciados.length - 1].id;
+    const primerAbierto = lista.find(p => !p.cerrado);
+    return primerAbierto?.id ?? lista[lista.length - 1].id;
+  }
+
+  esPeriodoConcluido(p: PeriodoResponseDto | null | undefined): boolean {
+    if (!p) return false;
+    if (p.cerrado) return true;
+    const vigenteId = this.periodoVigenteId();
+    if (!vigenteId || vigenteId === p.id) return false;
+    const vigente = this.periodos().find(item => item.id === vigenteId);
+    if (vigente && p.numeroPeriodo != null && vigente.numeroPeriodo != null) {
+      return p.numeroPeriodo < vigente.numeroPeriodo;
+    }
+    return Boolean(p.fechaFin) && p.fechaFin < this.hoy;
+  }
+
+  esPeriodoVigenteRefuerzo(p: PeriodoResponseDto | null | undefined): boolean {
+    return !this.esPeriodoConcluido(p);
+  }
+
+  esPeriodoIdAplicableRefuerzo(periodoId?: number | null): boolean {
+    if (!periodoId || !this.periodos().length) return true;
+    const p = this.periodos().find(item => item.id === Number(periodoId));
+    return !this.esPeriodoConcluido(p);
+  }
+
+  esVistaPeriodoAplicableRefuerzo(): boolean {
+    return this.esPeriodoIdAplicableRefuerzo(this.filtroPeriodoSig() || this.periodoVigenteId());
   }
 
   cambiarAsignacion(nuevoId?: number) {
@@ -1109,6 +1171,10 @@ export class RefuerzosComponent implements OnInit {
       : asig;
     const targetPeriodo = Number(this.formPeriodoId || this.periodoId);
     if (!ctx || !targetPeriodo || this.ocupado()) return;
+    if (!this.esPeriodoIdAplicableRefuerzo(targetPeriodo)) {
+      this.mostrarError('El bimestre seleccionado ya concluyó; el reforzamiento solo aplica al bimestre pendiente actual.');
+      return;
+    }
 
     if (
       !this.tema.trim() ||
@@ -1234,6 +1300,10 @@ export class RefuerzosComponent implements OnInit {
   }
 
   prepararSesionDesdeRiesgo(r: EstudianteRiesgoRefuerzoDto) {
+    if (!this.esPeriodoIdAplicableRefuerzo(r.periodoAcademicoId)) {
+      this.mostrarError('El bimestre seleccionado ya concluyó; el reforzamiento solo aplica al bimestre pendiente actual.');
+      return;
+    }
     const opt =
       this.catalogo().find(
         c =>
@@ -1259,8 +1329,8 @@ export class RefuerzosComponent implements OnInit {
   toggleFormulario() {
     const siguiente = !this.mostrarFormulario();
     this.mostrarFormulario.set(siguiente);
-    if (siguiente && !this.formPeriodoId) {
-      this.formPeriodoId = this.filtroPeriodoSig() || (this.periodos()[0]?.id ?? 0);
+    if (siguiente && (!this.formPeriodoId || !this.esPeriodoIdAplicableRefuerzo(this.formPeriodoId))) {
+      this.formPeriodoId = this.periodosAplicablesRefuerzo()[0]?.id ?? this.periodoVigenteId() ?? 0;
     }
   }
 

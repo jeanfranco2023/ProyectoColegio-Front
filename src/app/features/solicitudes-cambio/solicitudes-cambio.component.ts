@@ -1,4 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
+import { A11yModule } from '@angular/cdk/a11y';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { concatMap, finalize, from, last } from 'rxjs';
@@ -516,18 +517,18 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
 @Component({
   selector: 'app-solicitudes-cambio',
   standalone: true,
-  imports: [CommonModule, FormsModule, UiPaginacionComponent],
+  imports: [A11yModule, CommonModule, FormsModule, UiPaginacionComponent],
   template: `
-    <section class="space-y-6 text-[#20354E]">
-      <header class="flex flex-wrap items-end justify-between gap-4 border-t-4 border-[#8A672F] pt-5">
+    <section class="space-y-6 text-slate-900">
+      <header class="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-[#1E3A8A]/40 bg-gradient-to-r from-[#0A192F] via-[#0F294D] to-[#173B67] p-6 text-white shadow-md">
         <div>
-          <p class="text-[11px] font-bold uppercase tracking-[.16em] text-[#8A672F]">
+          <span class="inline-flex items-center rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[.14em] text-sky-100">
             {{ esAdministrador() ? 'Gobierno técnico y trazabilidad de cambios' : 'Gestión directiva institucional' }}
-          </p>
-          <h1 class="mt-1 text-3xl font-extrabold tracking-tight text-[#20354E]">
+          </span>
+          <h1 class="mt-2 mb-0 font-sans text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
             {{ esAdministrador() ? 'Solicitudes de cambio' : 'Mis solicitudes de cambio' }}
           </h1>
-          <p class="mt-1 text-sm text-[#526579]">
+          <p class="mt-1.5 mb-0 text-sm text-slate-200">
             @if (esAdministrador()) {
               Bandeja integral de evaluación, autorización, implementación técnica y notificación institucional de tickets CH-xxx.
             } @else {
@@ -536,23 +537,26 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
           </p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2.5">
-          <span class="rounded-full border border-[#D4DFDA] bg-white px-3.5 py-1.5 text-xs font-semibold text-[#173B67]" data-testid="solicitudes-contador">
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-bold text-white" data-testid="solicitudes-contador">
             {{ solicitudesFiltradas().length }} solicitudes
           </span>
           @if (puedeSolicitar()) {
             <button
               type="button"
               (click)="iniciarNuevaSolicitud()"
-              class="min-h-11 rounded-lg bg-[#173B67] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#20354E] cursor-pointer"
+              class="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-4 py-2.5 text-sm font-bold text-[#0F294D] shadow-sm transition hover:bg-slate-100 cursor-pointer"
             >
-              Nueva solicitud
+              <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14m-7-7h14" />
+              </svg>
+              <span>Nueva solicitud</span>
             </button>
           }
           <button
             type="button"
             (click)="cargarSolicitudes()" [disabled]="cargandoListado() || operandoFicha()"
-            class="min-h-11 rounded-lg border border-[#D4DFDA] bg-white px-4 py-2.5 text-sm font-semibold text-[#20354E] hover:bg-[#F4F7F4] cursor-pointer"
+            class="min-h-11 rounded-xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/20 cursor-pointer"
           >
             Actualizar
           </button>
@@ -564,7 +568,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
           {{ mensajeExito() }}
         </div>
       }
-      @if (errorMensaje()) {
+      @if (errorMensaje() && !mostrarFormularioNueva()) {
         <div role="alert" class="rounded-xl border border-[#C77A72] bg-[#FCE8E6] p-4 text-sm font-medium text-[#83231D]">
           {{ errorMensaje() }}
         </div>
@@ -599,7 +603,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
               <button
                 type="button"
                 (click)="confirmacionReciente.set(null)"
-                class="min-h-11 rounded-lg border border-[#D4DFDA] bg-white px-3 py-2 text-xs font-semibold text-[#526579] hover:bg-[#F4F7F4]"
+                class="min-h-11 rounded-lg border border-[#E2E8F0] bg-white px-3 py-2 text-xs font-semibold text-[#526579] hover:bg-[#F8FAFC]"
               >
                 Cerrar aviso
               </button>
@@ -608,265 +612,359 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
         </div>
       }
 
-      <!-- Flujo Nueva solicitud en 2 pasos (1. Datos, 2. Revisión final check-answers) -->
+      <!-- Modal flotante Nueva solicitud en 2 pasos (1. Datos, 2. Revisión final check-answers) -->
       @if (puedeSolicitar() && mostrarFormularioNueva()) {
         <div
-          role="region"
-          aria-label="Formulario de nueva solicitud de cambio"
-          class="rounded-2xl border border-[#D4DFDA] bg-white p-6 shadow-sm"
+          class="fixed inset-0 z-[2200] flex items-center justify-center bg-slate-950/60 p-3 backdrop-blur-xs sm:p-5"
+          (click)="cancelarNuevaSolicitud()"
+          (keydown.escape)="cancelarNuevaSolicitud()"
         >
-          <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#D4DFDA] pb-4">
-            <div>
-              <p class="text-xs font-bold uppercase tracking-wider text-[#8A672F]">
-                Paso {{ pasoNuevaSolicitud() }} de 2 · {{ pasoNuevaSolicitud() === 1 ? 'Datos de la solicitud' : 'Revisión final antes de confirmar' }}
-              </p>
-              <h2 class="mt-0.5 text-xl font-bold text-[#20354E]">
-                {{ pasoNuevaSolicitud() === 1 ? 'Registrar nueva solicitud de cambio' : 'Verifique los datos antes de confirmar el envío' }}
-              </h2>
-            </div>
-            <button
-              type="button"
-              (click)="cancelarNuevaSolicitud()"
-              class="rounded-lg border border-[#D4DFDA] bg-white px-3 py-1.5 text-xs font-semibold text-[#526579] hover:bg-[#F4F7F4]"
-            >
-              Cancelar
-            </button>
-          </div>
-
-          @if (pasoNuevaSolicitud() === 1) {
-            <div class="mt-5 space-y-4">
-              <!-- Completado rápido sin escribir -->
-              <div class="rounded-xl border border-[#74A388]/60 bg-[#E5F1EE]/55 p-4">
-                <div class="flex flex-wrap items-center justify-between gap-2">
-                  <div>
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-[#173B67]">
-                      Completado rápido (sin escribir)
-                    </p>
-                    <p class="text-xs text-[#526579]">
-                      Elija una plantilla del módulo o toque un botón rápido para autocompletar asunto, motivo, resultado y sustento.
-                    </p>
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-label="Formulario de nueva solicitud de cambio"
+            cdkTrapFocus
+            (click)="$event.stopPropagation()"
+            class="shuji-modal-3d-enter flex max-h-[min(92dvh,860px)] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+          >
+            <!-- Cabecera del modal con indicador visual de pasos -->
+            <header class="shrink-0 border-b border-slate-200 bg-gradient-to-r from-[#173B67] via-[#1d4b82] to-[#245996] px-6 py-5 text-white">
+              <div class="flex items-start justify-between gap-4">
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-amber-200">
+                      Paso {{ pasoNuevaSolicitud() }} de 2 · {{ pasoNuevaSolicitud() === 1 ? 'Datos y autocompletado' : 'Revisión y confirmación' }}
+                    </span>
                   </div>
+                  <h2 class="m-0 mt-1.5 font-display text-xl font-bold text-white sm:text-2xl">
+                    {{ pasoNuevaSolicitud() === 1 ? 'Registrar nueva solicitud de cambio' : 'Verifique los datos antes de confirmar el envío' }}
+                  </h2>
+                  <p class="m-0 mt-1 text-xs text-slate-200 sm:text-sm">
+                    {{ pasoNuevaSolicitud() === 1
+                      ? 'Usa una plantilla del módulo o redacta los detalles técnicos de tu requerimiento.'
+                      : 'Confirma el alcance y el correo institucional de notificación antes de emitir el ticket.' }}
+                  </p>
                 </div>
-                <div class="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
-                  <div>
-                    <label class="mb-1 block text-xs font-semibold text-[#20354E]" for="sc-modulo">1. Módulo del sistema *</label>
-                    <select
-                      id="sc-modulo"
-                      [ngModel]="formNueva.modulo"
-                      (ngModelChange)="alCambiarModuloNueva($event)"
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2.5 text-sm font-medium text-[#20354E]"
-                    >
-                      @for (mod of modulos; track mod) {
-                        <option [value]="mod">{{ mod }}</option>
-                      }
-                    </select>
+                <button
+                  type="button"
+                  (click)="cancelarNuevaSolicitud()"
+                  aria-label="Cerrar formulario de nueva solicitud"
+                  class="grid size-10 shrink-0 place-items-center rounded-xl border border-white/20 bg-white/10 text-base font-bold text-white transition hover:bg-white/20 cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <!-- Indicador visual de pasos -->
+              <div class="mt-4 flex flex-wrap items-center gap-2 text-xs">
+                <span
+                  class="inline-flex items-center gap-2 rounded-full px-3 py-1 font-bold transition"
+                  [class]="pasoNuevaSolicitud() === 1 ? 'bg-white text-[#173B67] shadow-xs' : 'bg-emerald-400/25 text-emerald-100'"
+                >
+                  <span class="grid size-5 place-items-center rounded-full text-[11px] font-extrabold"
+                    [class]="pasoNuevaSolicitud() === 1 ? 'bg-[#173B67] text-white' : 'bg-emerald-400 text-slate-900'">1</span>
+                  Datos y autocompletado
+                </span>
+                <span class="text-white/50" aria-hidden="true">→</span>
+                <span
+                  class="inline-flex items-center gap-2 rounded-full px-3 py-1 font-bold transition"
+                  [class]="pasoNuevaSolicitud() === 2 ? 'bg-white text-[#173B67] shadow-xs' : 'bg-white/10 text-slate-200'"
+                >
+                  <span class="grid size-5 place-items-center rounded-full text-[11px] font-extrabold"
+                    [class]="pasoNuevaSolicitud() === 2 ? 'bg-[#173B67] text-white' : 'bg-white/20 text-white'">2</span>
+                  Revisión y envío
+                </span>
+              </div>
+            </header>
+
+            <!-- Cuerpo desplazable del modal -->
+            <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-slate-50/75 p-5 space-y-5 sm:p-6">
+              @if (errorMensaje()) {
+                <div role="alert" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800 shadow-2xs">
+                  {{ errorMensaje() }}
+                </div>
+              }
+
+              @if (pasoNuevaSolicitud() === 1) {
+                <!-- Tarjeta 1: Completado rápido con plantillas -->
+                <div class="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50/95 via-teal-50/50 to-white p-5 shadow-xs space-y-4">
+                  <div class="flex flex-wrap items-start justify-between gap-3">
+                    <div class="flex items-start gap-3">
+                      <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-emerald-600 text-white shadow-xs" aria-hidden="true">
+                        <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                      </span>
+                      <div>
+                        <p class="m-0 text-xs font-extrabold uppercase tracking-wider text-emerald-900">
+                          Completado rápido (sin escribir)
+                        </p>
+                        <p class="m-0 mt-0.5 text-xs text-slate-600">
+                          Elige un módulo y una plantilla o toca un chip rápido para rellenar asunto, motivo, resultado y sustento.
+                        </p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <label class="mb-1 block text-xs font-semibold text-[#20354E]" for="sc-plantilla-rapida">2. Solicitud frecuente (autocompleta todo)</label>
-                    <select
-                      id="sc-plantilla-rapida"
-                      [ngModel]="plantillaSeleccionada()"
-                      (ngModelChange)="seleccionarPlantillaRapida($event)"
-                      data-testid="select-plantilla-rapida"
-                      class="w-full rounded-lg border border-[#173B67]/60 bg-white px-3 py-2.5 text-sm text-[#20354E]"
-                    >
-                      <option value="">-- Elegir plantilla para autocompletar --</option>
-                      @for (tpl of plantillasDelModulo(); track tpl.id) {
-                        <option [value]="tpl.id">{{ tpl.etiqueta }}</option>
-                      }
-                      <optgroup label="Otras plantillas frecuentes">
-                        @for (tpl of todasLasPlantillas; track tpl.id) {
-                          @if (tpl.modulo !== formNueva.modulo) {
-                            <option [value]="tpl.id">{{ tpl.modulo }} · {{ tpl.etiqueta }}</option>
-                          }
+
+                  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <label class="grid min-w-0 gap-1.5 text-xs font-bold uppercase tracking-wide text-slate-700" for="sc-modulo">
+                      1. Módulo del sistema *
+                      <select
+                        id="sc-modulo"
+                        [ngModel]="formNueva.modulo"
+                        (ngModelChange)="alCambiarModuloNueva($event)"
+                        class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-800 shadow-2xs transition focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                      >
+                        @for (mod of modulos; track mod) {
+                          <option [value]="mod">{{ mod }}</option>
                         }
-                      </optgroup>
-                    </select>
+                      </select>
+                    </label>
+                    <label class="grid min-w-0 gap-1.5 text-xs font-bold uppercase tracking-wide text-slate-700" for="sc-plantilla-rapida">
+                      2. Solicitud frecuente (autocompleta todo)
+                      <select
+                        id="sc-plantilla-rapida"
+                        [ngModel]="plantillaSeleccionada()"
+                        (ngModelChange)="seleccionarPlantillaRapida($event)"
+                        data-testid="select-plantilla-rapida"
+                        class="min-h-11 w-full rounded-xl border border-emerald-400/70 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-800 shadow-2xs transition focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                      >
+                        <option value="">-- Elegir plantilla para autocompletar --</option>
+                        @for (tpl of plantillasDelModulo(); track tpl.id) {
+                          <option [value]="tpl.id">{{ tpl.etiqueta }}</option>
+                        }
+                        <optgroup label="Otras plantillas frecuentes">
+                          @for (tpl of todasLasPlantillas; track tpl.id) {
+                            @if (tpl.modulo !== formNueva.modulo) {
+                              <option [value]="tpl.id">{{ tpl.modulo }} · {{ tpl.etiqueta }}</option>
+                            }
+                          }
+                        </optgroup>
+                      </select>
+                    </label>
                   </div>
-                </div>
-                <div class="mt-3 flex flex-wrap gap-2">
-                  @for (tpl of plantillasDelModulo(); track tpl.id) {
-                    <button
-                      type="button"
-                      (click)="seleccionarPlantillaRapida(tpl.id)"
-                      [class.bg-[#173B67]]="plantillaSeleccionada() === tpl.id"
-                      [class.text-white]="plantillaSeleccionada() === tpl.id"
-                      [class.border-[#173B67]]="plantillaSeleccionada() === tpl.id"
-                      [class.bg-white]="plantillaSeleccionada() !== tpl.id"
-                      [class.text-[#20354E]]="plantillaSeleccionada() !== tpl.id"
-                      class="rounded-full border border-[#788C9A] px-3 py-1.5 text-xs font-semibold transition-colors hover:border-[#173B67] hover:bg-[#E5F1EE]"
-                    >
-                      {{ tpl.etiqueta }}
-                    </button>
-                  }
-                </div>
-              </div>
 
-              <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <div class="md:col-span-2">
-                  <label class="mb-1 block text-xs font-semibold text-[#20354E]" for="sc-titulo">Título o asunto del cambio *</label>
-                  <input
-                    id="sc-titulo"
-                    type="text"
-                    [(ngModel)]="formNueva.titulo"
-                    placeholder="Seleccione una plantilla arriba o escriba un asunto breve..."
-                    class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2.5 text-sm text-[#20354E]"
-                  />
-                </div>
-                <div class="md:col-span-1">
-                  <div class="mb-1 flex flex-wrap items-center justify-between gap-2">
-                    <label class="block text-xs font-semibold text-[#20354E]" for="sc-motivo">Problema o motivo *</label>
-                    <select
-                      aria-label="Seleccionar motivo frecuente"
-                      (change)="aplicarMotivoPlantilla($event)"
-                      class="max-w-[230px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-2 py-1 text-[11px] font-semibold text-[#173B67]"
-                    >
-                      <option value="">Elegir motivo rápido...</option>
-                      @for (tpl of plantillasDelModulo(); track tpl.id) {
-                        <option [value]="tpl.motivoProblema">{{ tpl.etiqueta }}</option>
-                      }
-                    </select>
+                  <div class="flex flex-wrap gap-2 pt-1">
+                    @for (tpl of plantillasDelModulo(); track tpl.id) {
+                      <button
+                        type="button"
+                        (click)="seleccionarPlantillaRapida(tpl.id)"
+                        [class]="plantillaSeleccionada() === tpl.id
+                          ? 'inline-flex items-center gap-1.5 rounded-full border border-[#173B67] bg-[#173B67] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs cursor-pointer transition'
+                          : 'inline-flex items-center gap-1.5 rounded-full border border-emerald-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:border-[#173B67] hover:bg-emerald-50 cursor-pointer transition'"
+                      >
+                        @if (plantillaSeleccionada() === tpl.id) {
+                          <span aria-hidden="true">✓</span>
+                        }
+                        <span>{{ tpl.etiqueta }}</span>
+                      </button>
+                    }
                   </div>
-                  <textarea
-                    id="sc-motivo"
-                    rows="3"
-                    [(ngModel)]="formNueva.motivoProblema"
-                    placeholder="Describa la situación actual o seleccione un motivo rápido..."
-                    class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-sm text-[#20354E]"
-                  ></textarea>
                 </div>
-                <div class="md:col-span-1">
-                  <div class="mb-1 flex flex-wrap items-center justify-between gap-2">
-                    <label class="block text-xs font-semibold text-[#20354E]" for="sc-esperado">Resultado esperado *</label>
-                    <select
-                      aria-label="Seleccionar resultado frecuente"
-                      (change)="aplicarResultadoPlantilla($event)"
-                      class="max-w-[230px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-2 py-1 text-[11px] font-semibold text-[#173B67]"
-                    >
-                      <option value="">Elegir resultado rápido...</option>
-                      @for (tpl of plantillasDelModulo(); track tpl.id) {
-                        <option [value]="tpl.resultadoEsperado">{{ tpl.etiqueta }}</option>
-                      }
-                    </select>
+
+                <!-- Tarjeta 2: Campos detallados de la solicitud -->
+                <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-5">
+                  <div class="flex items-center gap-2 border-b border-slate-100 pb-3">
+                    <span class="h-5 w-1 rounded-full bg-[#0F294D]" aria-hidden="true"></span>
+                    <h3 class="m-0 font-display text-base font-bold text-[#173B67]">Detalle del requerimiento</h3>
                   </div>
-                  <textarea
-                    id="sc-esperado"
-                    rows="3"
-                    [(ngModel)]="formNueva.resultadoEsperado"
-                    placeholder="Indique el ajuste esperado o seleccione una opción rápida..."
-                    class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-sm text-[#20354E]"
-                  ></textarea>
-                </div>
-                <div class="md:col-span-1">
-                  <div class="mb-1 flex flex-wrap items-center justify-between gap-2">
-                    <label class="block text-xs font-semibold text-[#20354E]" for="sc-alcance">Alcance o impacto conocido (opcional)</label>
-                    <select
-                      aria-label="Seleccionar alcance rápido"
-                      (change)="aplicarCampoNuevaSelect('alcanceImpacto', $event)"
-                      class="max-w-[230px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-2 py-1 text-[11px] font-semibold text-[#173B67]"
-                    >
-                      <option value="">Elegir alcance...</option>
-                      @for (opc of opcionesAlcanceRapido; track opc) {
-                        <option [value]="opc">{{ opc }}</option>
-                      }
-                    </select>
+
+                  <div>
+                    <label class="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-700" for="sc-titulo">
+                      Título o asunto del cambio *
+                    </label>
+                    <input
+                      id="sc-titulo"
+                      type="text"
+                      [(ngModel)]="formNueva.titulo"
+                      placeholder="Seleccione una plantilla arriba o escriba un asunto breve..."
+                      class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-900 placeholder:font-normal placeholder:text-slate-400 transition focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                    />
                   </div>
-                  <textarea
-                    id="sc-alcance" maxlength="4000"
-                    rows="2"
-                    [(ngModel)]="formNueva.alcanceImpacto"
-                    placeholder="Seleccione un alcance arriba o detalle aulas/niveles..."
-                    class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-sm text-[#20354E]"
-                  ></textarea>
-                </div>
-                <div class="md:col-span-1">
-                  <div class="mb-1 flex flex-wrap items-center justify-between gap-2">
-                    <label class="block text-xs font-semibold text-[#20354E]" for="sc-evidencia">Evidencia o documento de sustento (opcional)</label>
-                    <select
-                      aria-label="Seleccionar documento de sustento"
-                      (change)="aplicarCampoNuevaSelect('evidenciaInicial', $event)"
-                      class="max-w-[230px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-2 py-1 text-[11px] font-semibold text-[#173B67]"
-                    >
-                      <option value="">Elegir sustento...</option>
-                      @for (opc of opcionesSustentoRapido; track opc) {
-                        <option [value]="opc">{{ opc }}</option>
-                      }
-                    </select>
+
+                  <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-4 space-y-2.5">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <label class="text-xs font-bold uppercase tracking-wide text-slate-700" for="sc-motivo">
+                          Problema o motivo *
+                        </label>
+                        <select
+                          aria-label="Seleccionar motivo frecuente"
+                          (change)="aplicarMotivoPlantilla($event)"
+                          class="max-w-[210px] rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-[#173B67] focus:border-[#173B67] focus:outline-none"
+                        >
+                          <option value="">Elegir motivo rápido...</option>
+                          @for (tpl of plantillasDelModulo(); track tpl.id) {
+                            <option [value]="tpl.motivoProblema">{{ tpl.etiqueta }}</option>
+                          }
+                        </select>
+                      </div>
+                      <textarea
+                        id="sc-motivo"
+                        rows="3"
+                        [(ngModel)]="formNueva.motivoProblema"
+                        placeholder="Describa la situación actual o seleccione un motivo rápido..."
+                        class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                      ></textarea>
+                    </div>
+
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-4 space-y-2.5">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <label class="text-xs font-bold uppercase tracking-wide text-slate-700" for="sc-esperado">
+                          Resultado esperado *
+                        </label>
+                        <select
+                          aria-label="Seleccionar resultado frecuente"
+                          (change)="aplicarResultadoPlantilla($event)"
+                          class="max-w-[210px] rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-[#173B67] focus:border-[#173B67] focus:outline-none"
+                        >
+                          <option value="">Elegir resultado rápido...</option>
+                          @for (tpl of plantillasDelModulo(); track tpl.id) {
+                            <option [value]="tpl.resultadoEsperado">{{ tpl.etiqueta }}</option>
+                          }
+                        </select>
+                      </div>
+                      <textarea
+                        id="sc-esperado"
+                        rows="3"
+                        [(ngModel)]="formNueva.resultadoEsperado"
+                        placeholder="Indique el ajuste esperado o seleccione una opción rápida..."
+                        class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                      ></textarea>
+                    </div>
+
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-4 space-y-2.5">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <label class="text-xs font-bold uppercase tracking-wide text-slate-700" for="sc-alcance">
+                          Alcance o impacto (opcional)
+                        </label>
+                        <select
+                          aria-label="Seleccionar alcance rápido"
+                          (change)="aplicarCampoNuevaSelect('alcanceImpacto', $event)"
+                          class="max-w-[210px] rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-[#173B67] focus:border-[#173B67] focus:outline-none"
+                        >
+                          <option value="">Elegir alcance...</option>
+                          @for (opc of opcionesAlcanceRapido; track opc) {
+                            <option [value]="opc">{{ opc }}</option>
+                          }
+                        </select>
+                      </div>
+                      <textarea
+                        id="sc-alcance"
+                        maxlength="4000"
+                        rows="2"
+                        [(ngModel)]="formNueva.alcanceImpacto"
+                        placeholder="Seleccione un alcance arriba o detalle aulas/niveles..."
+                        class="w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                      ></textarea>
+                    </div>
+
+                    <div class="rounded-xl border border-slate-200 bg-slate-50/80 p-4 space-y-2.5">
+                      <div class="flex flex-wrap items-center justify-between gap-2">
+                        <label class="text-xs font-bold uppercase tracking-wide text-slate-700" for="sc-evidencia">
+                          Evidencia o sustento (opcional)
+                        </label>
+                        <select
+                          aria-label="Seleccionar documento de sustento"
+                          (change)="aplicarCampoNuevaSelect('evidenciaInicial', $event)"
+                          class="max-w-[210px] rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-[#173B67] focus:border-[#173B67] focus:outline-none"
+                        >
+                          <option value="">Elegir sustento...</option>
+                          @for (opc of opcionesSustentoRapido; track opc) {
+                            <option [value]="opc">{{ opc }}</option>
+                          }
+                        </select>
+                      </div>
+                      <input
+                        id="sc-evidencia"
+                        maxlength="2000"
+                        type="text"
+                        [(ngModel)]="formNueva.evidenciaInicial"
+                        placeholder="Ej. Resolución Directoral N.º 018-2026 o seleccione arriba"
+                        class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 transition focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                      />
+                    </div>
                   </div>
-                  <input
-                    id="sc-evidencia" maxlength="2000"
-                    type="text"
-                    [(ngModel)]="formNueva.evidenciaInicial"
-                    placeholder="Ej. Resolución Directoral N.º 018-2026 o seleccione arriba"
-                    class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2.5 text-sm text-[#20354E]"
-                  />
                 </div>
-              </div>
+              } @else {
+                <!-- Paso 2: Revisión final (Check-answers) -->
+                <div class="space-y-4">
+                  <div class="rounded-2xl border border-sky-200 bg-gradient-to-r from-sky-50 to-white p-4 shadow-2xs">
+                    <p class="m-0 text-xs font-extrabold uppercase tracking-wider text-[#173B67]">
+                      Cuenta autenticada que emite la solicitud
+                    </p>
+                    <p class="m-0 mt-1 text-base font-bold text-slate-900">
+                      {{ identidadSolicitanteActual().nombre }} ({{ identidadSolicitanteActual().username }})
+                    </p>
+                    <p class="m-0 mt-0.5 text-xs text-slate-600" data-testid="check-answers-email">
+                      Correo institucional de notificación: <strong>{{ identidadSolicitanteActual().email }}</strong>
+                    </p>
+                  </div>
+
+                  <dl class="divide-y divide-slate-200 overflow-hidden rounded-2xl border border-slate-200 bg-white text-sm shadow-xs">
+                    <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-3">
+                      <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Título del cambio</dt>
+                      <dd class="m-0 font-bold text-slate-900 sm:col-span-2">{{ formNueva.titulo }}</dd>
+                    </div>
+                    <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-3">
+                      <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Módulo afectado</dt>
+                      <dd class="m-0 font-semibold text-[#173B67] sm:col-span-2">{{ formNueva.modulo }}</dd>
+                    </div>
+                    <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-3">
+                      <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Problema o motivo</dt>
+                      <dd class="m-0 whitespace-pre-line text-slate-800 sm:col-span-2">{{ formNueva.motivoProblema }}</dd>
+                    </div>
+                    <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-3">
+                      <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Resultado esperado</dt>
+                      <dd class="m-0 whitespace-pre-line text-slate-800 sm:col-span-2">{{ formNueva.resultadoEsperado }}</dd>
+                    </div>
+                    <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-3">
+                      <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Alcance o impacto conocido</dt>
+                      <dd class="m-0 whitespace-pre-line text-slate-700 sm:col-span-2">{{ formNueva.alcanceImpacto || 'No especificado' }}</dd>
+                    </div>
+                    <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-3">
+                      <dt class="text-xs font-bold uppercase tracking-wide text-slate-500">Evidencia opcional</dt>
+                      <dd class="m-0 text-slate-700 sm:col-span-2">{{ formNueva.evidenciaInicial || 'Sin adjunto adicional' }}</dd>
+                    </div>
+                  </dl>
+                </div>
+              }
             </div>
-            <div class="mt-5 flex flex-wrap justify-end gap-3">
-              <button
-                type="button"
-                (click)="avanzarARevision()"
-                class="min-h-11 rounded-lg border border-[#173B67] bg-white px-5 py-2.5 text-sm font-semibold text-[#173B67] hover:bg-[#E5F1EE]"
-              >
-                Revisar resumen
-              </button>
-              <button
-                type="button"
-                (click)="emitirSolicitudDirecta()"
-                [disabled]="enviandoSolicitud()"
-                data-testid="btn-emitir-directo"
-                class="min-h-11 rounded-lg bg-[#173B67] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#20354E] disabled:opacity-60"
-              >
-                {{ enviandoSolicitud() ? 'Emitiendo...' : 'Emitir solicitud ahora (1 clic)' }}
-              </button>
-            </div>
-          } @else {
-            <!-- Paso 2: Check-answers -->
-            <div class="mt-5 space-y-4">
-              <div class="rounded-xl border border-[#D4DFDA] bg-[#F4F7F4] p-4">
-                <p class="text-xs font-bold uppercase tracking-wider text-[#173B67]">Cuenta autenticada que emite la solicitud</p>
-                <p class="mt-1 text-sm font-semibold text-[#20354E]">
-                  {{ identidadSolicitanteActual().nombre }} ({{ identidadSolicitanteActual().username }})
-                </p>
-                <p class="text-xs text-[#526579]" data-testid="check-answers-email">
-                  Correo institucional de notificación: <strong>{{ identidadSolicitanteActual().email }}</strong>
-                </p>
-              </div>
 
-              <dl class="divide-y divide-[#D4DFDA] rounded-xl border border-[#D4DFDA] bg-white text-sm">
-                <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-3">
-                  <dt class="font-semibold text-[#526579]">Título del cambio</dt>
-                  <dd class="text-[#20354E] sm:col-span-2">{{ formNueva.titulo }}</dd>
+            <!-- Pie fijo del modal -->
+            <footer class="shrink-0 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 bg-white px-6 py-4">
+              @if (pasoNuevaSolicitud() === 1) {
+                <button
+                  type="button"
+                  (click)="cancelarNuevaSolicitud()"
+                  class="min-h-11 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <div class="flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    (click)="avanzarARevision()"
+                    class="min-h-11 rounded-xl border border-[#173B67] bg-white px-5 py-2 text-sm font-bold text-[#173B67] transition hover:bg-slate-50 cursor-pointer"
+                  >
+                    Revisar resumen
+                  </button>
+                  <button
+                    type="button"
+                    (click)="emitirSolicitudDirecta()"
+                    [disabled]="enviandoSolicitud()"
+                    data-testid="btn-emitir-directo"
+                    class="min-h-11 rounded-xl bg-[#173B67] px-5 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-[#20354E] disabled:opacity-60 cursor-pointer"
+                  >
+                    {{ enviandoSolicitud() ? 'Emitiendo...' : 'Emitir solicitud ahora (1 clic)' }}
+                  </button>
                 </div>
-                <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-3">
-                  <dt class="font-semibold text-[#526579]">Módulo afectado</dt>
-                  <dd class="text-[#20354E] sm:col-span-2">{{ formNueva.modulo }}</dd>
-                </div>
-                <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-3">
-                  <dt class="font-semibold text-[#526579]">Problema o motivo</dt>
-                  <dd class="whitespace-pre-line text-[#20354E] sm:col-span-2">{{ formNueva.motivoProblema }}</dd>
-                </div>
-                <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-3">
-                  <dt class="font-semibold text-[#526579]">Resultado esperado</dt>
-                  <dd class="whitespace-pre-line text-[#20354E] sm:col-span-2">{{ formNueva.resultadoEsperado }}</dd>
-                </div>
-                <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-3">
-                  <dt class="font-semibold text-[#526579]">Alcance o impacto conocido</dt>
-                  <dd class="whitespace-pre-line text-[#20354E] sm:col-span-2">{{ formNueva.alcanceImpacto || 'No especificado' }}</dd>
-                </div>
-                <div class="grid grid-cols-1 gap-2 p-4 sm:grid-cols-3">
-                  <dt class="font-semibold text-[#526579]">Evidencia opcional</dt>
-                  <dd class="text-[#20354E] sm:col-span-2">{{ formNueva.evidenciaInicial || 'Sin adjunto adicional' }}</dd>
-                </div>
-              </dl>
-
-              <div class="flex flex-wrap justify-between gap-3 pt-2">
+              } @else {
                 <button
                   type="button"
                   (click)="pasoNuevaSolicitud.set(1)"
                   [disabled]="enviandoSolicitud()"
-                  class="min-h-11 rounded-lg border border-[#D4DFDA] bg-white px-4 py-2.5 text-sm font-semibold text-[#20354E] hover:bg-[#F4F7F4]"
+                  class="min-h-11 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 cursor-pointer"
                 >
                   Volver y editar datos
                 </button>
@@ -875,13 +973,13 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                   (click)="confirmarEnvioSolicitud()"
                   [disabled]="enviandoSolicitud()"
                   data-testid="btn-confirmar-solicitud"
-                  class="min-h-11 rounded-lg bg-[#173B67] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#20354E] disabled:opacity-50"
+                  class="min-h-11 rounded-xl bg-[#173B67] px-6 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-[#20354E] disabled:opacity-50 cursor-pointer"
                 >
                   {{ enviandoSolicitud() ? 'Registrando solicitud…' : 'Confirmar y emitir solicitud' }}
                 </button>
-              </div>
-            </div>
-          }
+              }
+            </footer>
+          </section>
         </div>
       }
 
@@ -896,7 +994,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
             [class.border-[#173B67]]="filtroEstado() === ''"
             [class.bg-white]="filtroEstado() !== ''"
             [class.text-[#20354E]]="filtroEstado() !== ''"
-            class="rounded-full border border-[#D4DFDA] px-3.5 py-1.5 text-xs font-semibold shadow-xs transition-colors hover:border-[#173B67]"
+            class="rounded-full border border-[#E2E8F0] px-3.5 py-1.5 text-xs font-semibold shadow-xs transition-colors hover:border-[#173B67]"
           >
             Todas ({{ solicitudes().length }})
           </button>
@@ -910,7 +1008,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                 [class.border-[#173B67]]="filtroEstado() === item.estado"
                 [class.bg-white]="filtroEstado() !== item.estado"
                 [class.text-[#20354E]]="filtroEstado() !== item.estado"
-                class="rounded-full border border-[#D4DFDA] px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors hover:border-[#173B67]"
+                class="rounded-full border border-[#E2E8F0] px-3 py-1.5 text-xs font-semibold shadow-xs transition-colors hover:border-[#173B67]"
               >
                 {{ item.etiqueta }} ({{ item.cantidad }})
               </button>
@@ -920,7 +1018,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
       }
 
       <!-- Barra de filtros -->
-      <div class="rounded-xl border border-[#D4DFDA] bg-white p-4" aria-label="Filtros de solicitudes de cambio">
+      <div class="rounded-xl border border-[#E2E8F0] bg-white p-4" aria-label="Filtros de solicitudes de cambio">
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <label class="mb-1 block text-xs font-semibold text-[#526579]" for="filtro-sc-estado">Estado</label>
@@ -929,7 +1027,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
               [ngModel]="filtroEstado()"
               (ngModelChange)="filtroEstado.set($event)"
               aria-label="Filtrar por estado"
-              class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-xs text-[#20354E]"
+              class="w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-xs text-[#20354E]"
             >
               <option value="">Todos los estados</option>
               @for (est of estadosDisponibles; track est) {
@@ -944,7 +1042,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
               [ngModel]="filtroModulo()"
               (ngModelChange)="filtroModulo.set($event)"
               aria-label="Filtrar por módulo"
-              class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-xs text-[#20354E]"
+              class="w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-xs text-[#20354E]"
             >
               <option value="">Todos los módulos</option>
               @for (mod of modulos; track mod) {
@@ -961,7 +1059,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
               (ngModelChange)="filtroResponsable.set($event)"
               placeholder="Ej. CH-026 o admin.sistema"
               aria-label="Responsable o código"
-              class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-xs text-[#20354E]"
+              class="w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-xs text-[#20354E]"
             />
           </div>
           <div>
@@ -972,7 +1070,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
               [ngModel]="filtroFecha()"
               (ngModelChange)="filtroFecha.set($event)"
               aria-label="Filtrar por fecha"
-              class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-xs text-[#20354E]"
+              class="w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-xs text-[#20354E]"
             />
           </div>
         </div>
@@ -983,7 +1081,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
           <button
             type="button"
             (click)="limpiarFiltros()"
-            class="rounded-lg border border-[#D4DFDA] bg-white px-3 py-1.5 text-xs font-semibold text-[#526579] hover:bg-[#F4F7F4]"
+            class="rounded-lg border border-[#E2E8F0] bg-white px-3 py-1.5 text-xs font-semibold text-[#526579] hover:bg-[#F8FAFC]"
           >
             Limpiar filtros
           </button>
@@ -993,56 +1091,56 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
       <!-- Bandeja + Ficha detallada -->
       <div class="grid grid-cols-1 gap-6 xl:grid-cols-12">
         <div
-          class="overflow-hidden rounded-xl border border-[#D4DFDA] bg-white shadow-sm"
+          class="overflow-hidden rounded-xl border border-[#E2E8F0] bg-white shadow-sm"
           [class.xl:col-span-6]="!!solicitudSeleccionada()"
           [class.xl:col-span-12]="!solicitudSeleccionada()"
         >
           <div class="overflow-x-auto">
-            <table class="w-full min-w-[740px] border-collapse text-left text-sm" data-mobile-table-cards>
-              <thead class="bg-[#E5F1EE] text-[11px] uppercase tracking-wide text-[#173B67]">
+            <table class="w-full min-w-[820px] border-collapse text-left text-sm" data-mobile-table-cards>
+              <thead class="bg-[#F1F5F9] text-[11px] font-bold uppercase tracking-wider text-[#173B67]">
                 <tr>
-                  <th class="px-4 py-3">Código</th>
-                  <th class="px-4 py-3">Asunto / Módulo</th>
+                  <th class="px-4 py-3.5 whitespace-nowrap">Código</th>
+                  <th class="min-w-[220px] px-4 py-3.5 whitespace-nowrap">Asunto / Módulo</th>
                   @if (esAdministrador()) {
-                    <th class="px-4 py-3">Solicitante</th>
+                    <th class="px-4 py-3.5 whitespace-nowrap">Solicitante</th>
                   }
-                  <th class="px-4 py-3">Prioridad</th>
-                  <th class="px-4 py-3">Estado</th>
-                  <th class="px-4 py-3">Responsable</th>
-                  <th class="px-4 py-3 text-right">Acción</th>
+                  <th class="px-4 py-3.5 whitespace-nowrap">Prioridad</th>
+                  <th class="px-4 py-3.5 whitespace-nowrap">Estado</th>
+                  <th class="px-4 py-3.5 whitespace-nowrap">Responsable</th>
+                  <th class="px-4 py-3.5 text-right whitespace-nowrap">Acción</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-[#D4DFDA]">
+              <tbody class="divide-y divide-[#E2E8F0]">
                 @for (item of solicitudesPaginadas(); track item.id) {
                   <tr
-                    class="align-top transition-colors hover:bg-[#F4F7F4] cursor-pointer"
-                    [class.bg-[#E5F1EE]]="solicitudSeleccionada()?.id === item.id"
+                    class="align-middle transition-colors hover:bg-[#F8FAFC] cursor-pointer"
+                    [class.bg-[#F1F5F9]]="solicitudSeleccionada()?.id === item.id"
                     (click)="abrirFicha(item)"
                   >
-                    <td data-label="Código" class="whitespace-nowrap px-4 py-3 font-mono font-bold text-[#173B67]">
+                    <td data-label="Código" class="whitespace-nowrap px-4 py-3.5 font-mono font-bold text-[#173B67]">
                       {{ item.codigo }}
                       <div class="mt-0.5 font-sans text-[11px] font-normal text-[#526579]">
                         {{ item.fechaSolicitud | date:'dd/MM/yyyy' }}
                       </div>
                     </td>
-                    <td data-label="Asunto / Módulo" class="px-4 py-3">
-                      <div class="font-semibold text-[#20354E]">{{ item.titulo }}</div>
+                    <td data-label="Asunto / Módulo" class="min-w-[220px] px-4 py-3.5">
+                      <div class="font-semibold text-[#20354E] leading-snug">{{ item.titulo }}</div>
                       <div class="mt-0.5 text-xs text-[#526579]">{{ item.modulo }}</div>
                     </td>
                     @if (esAdministrador()) {
-                      <td data-label="Solicitante" class="px-4 py-3 text-xs">
+                      <td data-label="Solicitante" class="px-4 py-3.5 text-xs whitespace-nowrap">
                         <div class="font-semibold text-[#20354E]">{{ item.solicitanteNombre }}</div>
                         <div class="text-[#526579]">{{ item.solicitanteEmail }}</div>
                       </td>
                     }
-                    <td data-label="Prioridad" class="px-4 py-3">
-                      <span class="rounded bg-[#F4F7F4] px-2 py-1 text-xs font-bold text-[#20354E]">
+                    <td data-label="Prioridad" class="whitespace-nowrap px-4 py-3.5">
+                      <span class="inline-flex rounded bg-[#F8FAFC] px-2.5 py-1 text-xs font-bold text-[#20354E] whitespace-nowrap">
                         {{ item.prioridad }}
                       </span>
                     </td>
-                    <td data-label="Estado" class="px-4 py-3">
+                    <td data-label="Estado" class="whitespace-nowrap px-4 py-3.5">
                       <span
-                        class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold"
+                        class="inline-flex whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold"
                         [class.bg-[#FFF2D8]]="item.estado === 'REQUIERE_INFORMACION' || item.estado === 'EN_EVALUACION'"
                         [class.text-[#744F0A]]="item.estado === 'REQUIERE_INFORMACION' || item.estado === 'EN_EVALUACION'"
                         [class.bg-[#E4F2E8]]="item.estado === 'APROBADA' || item.estado === 'RESUELTA' || item.estado === 'CERRADA'"
@@ -1055,14 +1153,14 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                         {{ etiquetaEstado(item.estado) }}
                       </span>
                     </td>
-                    <td data-label="Responsable" class="px-4 py-3 text-xs text-[#526579]">
+                    <td data-label="Responsable" class="whitespace-nowrap px-4 py-3.5 text-xs text-[#526579]">
                       {{ item.responsableNombre || 'Por asignar' }}
                     </td>
-                    <td data-label="Acción" class="whitespace-nowrap px-4 py-3 text-right">
+                    <td data-label="Acción" class="whitespace-nowrap px-4 py-3.5 text-right">
                       <button
                         type="button"
                         (click)="abrirFicha(item); $event.stopPropagation()"
-                        class="rounded-lg border border-[#D4DFDA] bg-white px-3 py-1.5 text-xs font-semibold text-[#173B67] hover:bg-[#F4F7F4]"
+                        class="inline-flex min-h-9 items-center rounded-lg border border-[#E2E8F0] bg-white px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-[#173B67] hover:bg-[#F8FAFC] cursor-pointer"
                       >
                         Abrir ficha
                       </button>
@@ -1093,13 +1191,13 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
         @if (solicitudSeleccionada(); as ficha) {
           <aside
             aria-label="Ficha detallada de solicitud de cambio"
-            class="space-y-5 rounded-xl border border-[#D4DFDA] bg-white p-5 shadow-sm xl:col-span-6"
+            class="space-y-5 rounded-xl border border-[#E2E8F0] bg-white p-5 shadow-sm xl:col-span-6"
           >
-            <div class="flex flex-wrap items-start justify-between gap-3 border-b border-[#D4DFDA] pb-4">
+            <div class="flex flex-wrap items-start justify-between gap-3 border-b border-[#E2E8F0] pb-4">
               <div>
                 <div class="flex items-center gap-2">
-                  <span class="font-mono text-xs font-bold uppercase tracking-wider text-[#8A672F]">{{ ficha.codigo }}</span>
-                  <span class="rounded-full bg-[#E5F1EE] px-2.5 py-0.5 text-xs font-bold text-[#173B67]">
+                  <span class="font-mono text-xs font-bold uppercase tracking-wider text-[#0F294D]">{{ ficha.codigo }}</span>
+                  <span class="rounded-full bg-[#F1F5F9] px-2.5 py-0.5 text-xs font-bold text-[#173B67]">
                     {{ etiquetaEstado(ficha.estado) }}
                   </span>
                 </div>
@@ -1111,14 +1209,14 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
               <button
                 type="button"
                 (click)="cerrarFicha()"
-                class="rounded-lg border border-[#D4DFDA] px-3 py-1.5 text-xs font-semibold text-[#526579] hover:bg-[#F4F7F4]"
+                class="rounded-lg border border-[#E2E8F0] px-3 py-1.5 text-xs font-semibold text-[#526579] hover:bg-[#F8FAFC]"
               >
                 Cerrar ficha
               </button>
             </div>
 
             <!-- Pestañas internas de la ficha: Resumen, Conversación con Dirección, Historial de eventos, Evidencias técnicas internas -->
-            <div class="flex flex-wrap gap-1.5 border-b border-[#D4DFDA]" role="group" aria-label="Secciones de la ficha de cambio">
+            <div class="flex flex-wrap gap-1.5 border-b border-[#E2E8F0]" role="group" aria-label="Secciones de la ficha de cambio">
               <button
                 type="button"
                 [attr.aria-pressed]="seccionFicha() === 'resumen'"
@@ -1170,19 +1268,19 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
             @if (seccionFicha() === 'resumen') {
               <div class="space-y-4 text-xs">
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div class="rounded-lg border border-[#D4DFDA] p-3">
+                  <div class="rounded-lg border border-[#E2E8F0] p-3">
                     <p class="font-semibold text-[#526579]">Problema o motivo</p>
                     <p class="mt-1 text-[#20354E]">{{ ficha.motivoProblema }}</p>
                   </div>
-                  <div class="rounded-lg border border-[#D4DFDA] p-3">
+                  <div class="rounded-lg border border-[#E2E8F0] p-3">
                     <p class="font-semibold text-[#526579]">Resultado esperado</p>
                     <p class="mt-1 text-[#20354E]">{{ ficha.resultadoEsperado }}</p>
                   </div>
-                  <div class="rounded-lg border border-[#D4DFDA] p-3">
+                  <div class="rounded-lg border border-[#E2E8F0] p-3">
                     <p class="font-semibold text-[#526579]">Alcance o impacto conocido</p>
                     <p class="mt-1 text-[#20354E]">{{ ficha.alcanceImpacto || 'No especificado' }}</p>
                   </div>
-                  <div class="rounded-lg border border-[#D4DFDA] p-3">
+                  <div class="rounded-lg border border-[#E2E8F0] p-3">
                     <p class="font-semibold text-[#526579]">Sustento inicial / Autorización</p>
                     <p class="mt-1 text-[#20354E]">Evidencia: {{ ficha.evidenciaInicial || 'No adjuntada' }}</p>
                     <p class="mt-1 text-[#526579]">
@@ -1198,7 +1296,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                 </div>
 
                 @if (ficha.resumenCambio || ficha.motivoDecision) {
-                  <div class="rounded-lg border border-[#D4DFDA] bg-[#F4F7F4] p-3.5">
+                  <div class="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3.5">
                     <p class="font-bold text-[#173B67]">Decisión y resumen de atención</p>
                     @if (ficha.motivoDecision) {
                       <p class="mt-1 text-[#20354E]"><strong>Motivo / Criterio:</strong> {{ ficha.motivoDecision }}</p>
@@ -1256,14 +1354,14 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                         rows="2"
                         [(ngModel)]="respuestaMensaje"
                         placeholder="Seleccione una respuesta rápida arriba o ingrese la aclaración oficial..."
-                        class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-xs text-[#20354E]"
+                        class="w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-xs text-[#20354E]"
                       ></textarea>
                       <input
                         type="text"
                         [(ngModel)]="respuestaAdjunto"
                         placeholder="Referencia de anexo o documento (opcional)"
                         aria-label="Referencia de anexo" maxlength="500"
-                        class="w-full rounded-lg border border-[#788C9A] bg-white px-3 py-2 text-xs text-[#20354E]"
+                        class="w-full rounded-lg border border-[#CBD5E1] bg-white px-3 py-2 text-xs text-[#20354E]"
                       />
                       <div class="flex flex-wrap justify-end gap-2">
                         <button
@@ -1280,13 +1378,13 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                 }
 
                 <!-- Notificaciones por correo institucional -->
-                <div class="rounded-xl border border-[#D4DFDA] p-3.5">
+                <div class="rounded-xl border border-[#E2E8F0] p-3.5">
                   <p class="text-xs font-bold uppercase tracking-wider text-[#173B67]">
                     Notificaciones por correo institucional al solicitante ({{ ficha.notificaciones.length }})
                   </p>
                   <div class="mt-2.5 space-y-2">
                     @for (notif of ficha.notificaciones; track notif.id) {
-                      <div class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#D4DFDA] bg-[#F4F7F4] p-2.5">
+                      <div class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-2.5">
                         <div>
                           <p class="font-semibold text-[#20354E]">{{ notif.asunto }}</p>
                           <p class="text-[11px] text-[#526579]">
@@ -1329,14 +1427,14 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
             @if (seccionFicha() === 'conversacion') {
               <div class="space-y-3 text-xs">
                 @for (com of conversacion(); track com.id) {
-                  <div class="rounded-lg border border-[#D4DFDA] bg-[#F4F7F4] p-3">
+                  <div class="rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] p-3">
                     <div class="flex items-center justify-between">
                       <span class="font-bold text-[#173B67]">{{ com.actorNombre }} ({{ com.actorRol }})</span>
                       <span class="text-[#526579]">{{ com.fechaEvento | date:'dd/MM/yyyy HH:mm' }}</span>
                     </div>
                     <p class="mt-1.5 text-[#20354E]">{{ com.comentario }}</p>
                     @if (com.evidenciaUrl) {
-                      <p class="mt-1 font-mono text-[11px] text-[#8A672F]">Adjunto: {{ com.evidenciaUrl }}</p>
+                      <p class="mt-1 font-mono text-[11px] text-[#0F294D]">Adjunto: {{ com.evidenciaUrl }}</p>
                     }
                   </div>
                 } @empty {
@@ -1348,7 +1446,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
             @if (seccionFicha() === 'historial') {
               <ol class="space-y-2.5 text-xs">
                 @for (ev of ficha.eventos; track ev.id) {
-                  <li class="rounded-lg border border-[#D4DFDA] p-3">
+                  <li class="rounded-lg border border-[#E2E8F0] p-3">
                     <div class="flex flex-wrap items-center justify-between gap-2">
                       <span class="font-bold text-[#173B67]">
                         {{ ev.tipoEvento.replaceAll('_', ' ') }}
@@ -1370,24 +1468,24 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
             @if (esAdministrador() && seccionFicha() === 'evidencias') {
               <div class="space-y-3 text-xs">
                 <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <div class="rounded-lg border border-[#D4DFDA] p-3">
+                  <div class="rounded-lg border border-[#E2E8F0] p-3">
                     <p class="font-semibold text-[#526579]">Qué se cambió</p>
                     <p class="mt-1 text-[#20354E]">{{ ficha.resumenCambio || 'Pendiente de registro técnico' }}</p>
                   </div>
-                  <div class="rounded-lg border border-[#D4DFDA] p-3">
+                  <div class="rounded-lg border border-[#E2E8F0] p-3">
                     <p class="font-semibold text-[#526579]">Enlace a PR / Commit / Evidencia</p>
                     <p class="mt-1 font-mono text-[#173B67]">{{ ficha.enlaceEvidenciaTecnica || 'Sin enlace registrado' }}</p>
                   </div>
-                  <div class="rounded-lg border border-[#D4DFDA] p-3">
+                  <div class="rounded-lg border border-[#E2E8F0] p-3">
                     <p class="font-semibold text-[#526579]">Plan de reversión</p>
                     <p class="mt-1 text-[#20354E]">{{ ficha.planReversion || 'No especificado' }}</p>
                   </div>
-                  <div class="rounded-lg border border-[#D4DFDA] p-3">
+                  <div class="rounded-lg border border-[#E2E8F0] p-3">
                     <p class="font-semibold text-[#526579]">Prueba posterior y resultado</p>
                     <p class="mt-1 text-[#20354E]">{{ ficha.pruebaPosterior || 'Pendiente de validación post-cambio' }}</p>
                     @if (ficha.resultadoPrueba) { <p>Resultado: {{ ficha.resultadoPrueba }}</p> }
                   </div>
-                  <div class="rounded-lg border border-[#D4DFDA] p-3 sm:col-span-2">
+                  <div class="rounded-lg border border-[#E2E8F0] p-3 sm:col-span-2">
                     <p class="font-semibold text-[#526579]">Verificación de cierre</p>
                     <p class="mt-1 text-[#20354E]">{{ ficha.verificacionCierre || 'Pendiente de cierre formal' }}</p>
                   </div>
@@ -1397,9 +1495,9 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
 
             <!-- Panel exclusivo de evaluación, autorización e implementación para ADMINISTRADOR -->
             @if (esAdministrador() && estadosGestionDisponibles().length) {
-              <div class="border-t-2 border-[#8A672F] pt-4 space-y-4">
+              <div class="border-t-2 border-[#0F294D] pt-4 space-y-4">
                 <div>
-                  <p class="text-xs font-bold uppercase tracking-wider text-[#8A672F]">
+                  <p class="text-xs font-bold uppercase tracking-wider text-[#0F294D]">
                     Acciones rápidas de flujo (1 clic · sin llenar todo manualmente)
                   </p>
                   <div class="mt-2 flex flex-wrap gap-2">
@@ -1409,7 +1507,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                         (click)="transicionRapidaEncadenada(['EN_EVALUACION'])"
                         [disabled]="operandoFicha() || cargandoFicha()"
                         data-testid="btn-rapido-evaluar"
-                        class="rounded-lg border border-[#173B67] bg-white px-3 py-1.5 text-xs font-semibold text-[#173B67] hover:bg-[#E5F1EE] disabled:opacity-60"
+                        class="rounded-lg border border-[#173B67] bg-white px-3 py-1.5 text-xs font-semibold text-[#173B67] hover:bg-[#F1F5F9] disabled:opacity-60"
                       >
                         Pasar a En evaluación
                       </button>
@@ -1485,7 +1583,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                         type="button"
                         (click)="transicionRapidaEncadenada(['EN_EJECUCION'])"
                         [disabled]="operandoFicha() || cargandoFicha()"
-                        class="rounded-lg border border-[#173B67] bg-white px-3 py-1.5 text-xs font-semibold text-[#173B67] hover:bg-[#E5F1EE] disabled:opacity-60"
+                        class="rounded-lg border border-[#173B67] bg-white px-3 py-1.5 text-xs font-semibold text-[#173B67] hover:bg-[#F1F5F9] disabled:opacity-60"
                       >
                         Iniciar ejecución
                       </button>
@@ -1524,7 +1622,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                   </div>
                 </div>
 
-                <p class="text-xs font-bold uppercase tracking-wider text-[#8A672F]">
+                <p class="text-xs font-bold uppercase tracking-wider text-[#0F294D]">
                   Panel de evaluación, autorización e implementación (Administrador)
                 </p>
                 <div class="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3 text-xs">
@@ -1533,7 +1631,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                     <select
                       id="admin-estado"
                       [(ngModel)]="formAdmin.nuevoEstado"
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-2.5 py-2 text-xs text-[#20354E]"
+                      class="w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 py-2 text-xs text-[#20354E]"
                     >
                       @for (est of estadosGestionDisponibles(); track est) {
                         <option [value]="est">{{ etiquetaEstado(est) }}</option>
@@ -1545,7 +1643,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                     <select
                       id="admin-prioridad"
                       [(ngModel)]="formAdmin.prioridad"
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-2.5 py-2 text-xs text-[#20354E]"
+                      class="w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 py-2 text-xs text-[#20354E]"
                     >
                       <option value="BAJA">BAJA</option>
                       <option value="MEDIA">MEDIA</option>
@@ -1559,7 +1657,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       <select
                         aria-label="Plantilla de impacto técnico"
                         (change)="aplicarTextoEnFormAdmin('impactoEvaluado', $event)"
-                        class="max-w-[140px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
+                        class="max-w-[140px] rounded border border-[#E2E8F0] bg-[#F8FAFC] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
                       >
                         <option value="">Elegir...</option>
                         @for (opc of opcionesImpactoAdmin; track opc) {
@@ -1572,7 +1670,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       type="text"
                       maxlength="4000"
                       [(ngModel)]="formAdmin.impactoEvaluado"
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-2.5 py-2 text-xs text-[#20354E]"
+                      class="w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 py-2 text-xs text-[#20354E]"
                     />
                   </div>
                   <div>
@@ -1581,7 +1679,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       <select
                         aria-label="Seleccionar responsable técnico"
                         (change)="aplicarTextoEnFormAdmin('responsableNombre', $event)"
-                        class="max-w-[140px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
+                        class="max-w-[140px] rounded border border-[#E2E8F0] bg-[#F8FAFC] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
                       >
                         <option value="">Elegir...</option>
                         @for (opc of opcionesResponsableAdmin; track opc) {
@@ -1593,7 +1691,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       id="admin-responsable"
                       type="text"
                       [(ngModel)]="formAdmin.responsableNombre"
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-2.5 py-2 text-xs text-[#20354E]"
+                      class="w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 py-2 text-xs text-[#20354E]"
                     />
                   </div>
                   <div class="sm:col-span-2">
@@ -1604,7 +1702,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       <select
                         aria-label="Seleccionar aprobador"
                         (change)="aplicarTextoEnFormAdmin('aprobadorNombre', $event)"
-                        class="max-w-[180px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
+                        class="max-w-[180px] rounded border border-[#E2E8F0] bg-[#F8FAFC] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
                       >
                         <option value="">Elegir aprobador...</option>
                         @for (opc of opcionesAprobadorAdmin; track opc) {
@@ -1617,7 +1715,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       type="text"
                       [(ngModel)]="formAdmin.aprobadorNombre"
                       placeholder="Ej. Dirección General / Comité Técnico"
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-2.5 py-2 text-xs text-[#20354E]"
+                      class="w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 py-2 text-xs text-[#20354E]"
                     />
                   </div>
                   <div class="sm:col-span-3">
@@ -1628,7 +1726,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       <select
                         aria-label="Seleccionar motivo de decisión"
                         (change)="aplicarTextoEnFormAdmin('motivoDecision', $event)"
-                        class="max-w-[230px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-2 py-0.5 text-[10px] font-semibold text-[#173B67]"
+                        class="max-w-[230px] rounded border border-[#E2E8F0] bg-[#F8FAFC] px-2 py-0.5 text-[10px] font-semibold text-[#173B67]"
                       >
                         <option value="">Elegir sustento frecuente...</option>
                         @for (opc of opcionesMotivoDecisionAdmin; track opc) {
@@ -1641,7 +1739,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       type="text"
                       [(ngModel)]="formAdmin.motivoDecision"
                       placeholder="Sustento de la autorización, observación o rechazo..."
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-2.5 py-2 text-xs text-[#20354E]"
+                      class="w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 py-2 text-xs text-[#20354E]"
                     />
                   </div>
                   <div class="sm:col-span-2">
@@ -1650,7 +1748,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       <select
                         aria-label="Seleccionar resumen del cambio"
                         (change)="aplicarTextoEnFormAdmin('resumenCambio', $event)"
-                        class="max-w-[210px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-2 py-0.5 text-[10px] font-semibold text-[#173B67]"
+                        class="max-w-[210px] rounded border border-[#E2E8F0] bg-[#F8FAFC] px-2 py-0.5 text-[10px] font-semibold text-[#173B67]"
                       >
                         <option value="">Elegir resumen rápido...</option>
                         @for (opc of opcionesResumenCambioAdmin; track opc) {
@@ -1663,7 +1761,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       type="text"
                       [(ngModel)]="formAdmin.resumenCambio"
                       placeholder="Detalle de parámetros, tablas o componentes modificados"
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-2.5 py-2 text-xs text-[#20354E]"
+                      class="w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 py-2 text-xs text-[#20354E]"
                     />
                   </div>
                   <div>
@@ -1673,7 +1771,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       type="text"
                       [(ngModel)]="formAdmin.enlaceEvidenciaTecnica"
                       placeholder="Ej. PR #145 · commit a1b2c3"
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-2.5 py-2 text-xs text-[#20354E]"
+                      class="w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 py-2 text-xs text-[#20354E]"
                     />
                   </div>
                   <div>
@@ -1682,7 +1780,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       <select
                         aria-label="Seleccionar plan de reversión"
                         (change)="aplicarTextoEnFormAdmin('planReversion', $event)"
-                        class="max-w-[130px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
+                        class="max-w-[130px] rounded border border-[#E2E8F0] bg-[#F8FAFC] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
                       >
                         <option value="">Elegir...</option>
                         @for (opc of opcionesPlanReversionAdmin; track opc) {
@@ -1695,7 +1793,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       type="text"
                       [(ngModel)]="formAdmin.planReversion"
                       placeholder="Pasos para revertir en caso de contingencia"
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-2.5 py-2 text-xs text-[#20354E]"
+                      class="w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 py-2 text-xs text-[#20354E]"
                     />
                   </div>
                   <div>
@@ -1704,7 +1802,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       <select
                         aria-label="Seleccionar prueba posterior"
                         (change)="aplicarTextoEnFormAdmin('pruebaPosterior', $event)"
-                        class="max-w-[130px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
+                        class="max-w-[130px] rounded border border-[#E2E8F0] bg-[#F8FAFC] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
                       >
                         <option value="">Elegir...</option>
                         @for (opc of opcionesPruebaAdmin; track opc) {
@@ -1717,7 +1815,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       type="text"
                       [(ngModel)]="formAdmin.pruebaPosterior"
                       placeholder="Ej. OK · Verificado en módulo operativo"
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-2.5 py-2 text-xs text-[#20354E]"
+                      class="w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 py-2 text-xs text-[#20354E]"
                     />
                   </div>
                   <div>
@@ -1726,7 +1824,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       <select
                         aria-label="Seleccionar resultado de prueba"
                         (change)="aplicarTextoEnFormAdmin('resultadoPrueba', $event)"
-                        class="max-w-[120px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
+                        class="max-w-[120px] rounded border border-[#E2E8F0] bg-[#F8FAFC] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
                       >
                         <option value="">Elegir...</option>
                         @for (opc of opcionesResultadoPruebaAdmin; track opc) {
@@ -1736,7 +1834,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                     </div>
                     <input id="admin-resultado-prueba" type="text" maxlength="120"
                       [(ngModel)]="formAdmin.resultadoPrueba"
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-2.5 py-2 text-xs text-[#20354E]" />
+                      class="w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 py-2 text-xs text-[#20354E]" />
                   </div>
                   <div>
                     <div class="mb-1 flex items-center justify-between gap-1">
@@ -1744,7 +1842,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       <select
                         aria-label="Seleccionar verificación de cierre"
                         (change)="aplicarTextoEnFormAdmin('verificacionCierre', $event)"
-                        class="max-w-[125px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
+                        class="max-w-[125px] rounded border border-[#E2E8F0] bg-[#F8FAFC] px-1.5 py-0.5 text-[10px] font-semibold text-[#173B67]"
                       >
                         <option value="">Elegir...</option>
                         @for (opc of opcionesCierreAdmin; track opc) {
@@ -1757,7 +1855,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       type="text"
                       [(ngModel)]="formAdmin.verificacionCierre"
                       placeholder="Conformidad de cierre"
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-2.5 py-2 text-xs text-[#20354E]"
+                      class="w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 py-2 text-xs text-[#20354E]"
                     />
                   </div>
                   <div class="sm:col-span-3">
@@ -1766,7 +1864,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       <select
                         aria-label="Seleccionar mensaje frecuente para Dirección"
                         (change)="aplicarTextoEnFormAdmin('comentario', $event)"
-                        class="max-w-[250px] rounded border border-[#D4DFDA] bg-[#F4F7F4] px-2 py-0.5 text-[10px] font-semibold text-[#173B67]"
+                        class="max-w-[250px] rounded border border-[#E2E8F0] bg-[#F8FAFC] px-2 py-0.5 text-[10px] font-semibold text-[#173B67]"
                       >
                         <option value="">Elegir mensaje rápido...</option>
                         @for (opc of opcionesComentarioAdmin; track opc) {
@@ -1779,7 +1877,7 @@ const TRANSICIONES_ADMIN: Record<EstadoSolicitudCambio, readonly EstadoSolicitud
                       type="text"
                       [(ngModel)]="formAdmin.comentario"
                       placeholder="Escriba la información solicitada o el mensaje que verá Dirección"
-                      class="w-full rounded-lg border border-[#788C9A] bg-white px-2.5 py-2 text-xs text-[#20354E]"
+                      class="w-full rounded-lg border border-[#CBD5E1] bg-white px-2.5 py-2 text-xs text-[#20354E]"
                     />
                   </div>
                 </div>

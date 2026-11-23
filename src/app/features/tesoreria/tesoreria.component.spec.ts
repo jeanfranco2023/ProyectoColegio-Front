@@ -66,4 +66,37 @@ describe('Cuota única de matrícula en Tesorería', () => {
     expect(tesoreria.generarObligacionMatricula).not.toHaveBeenCalled();
     expect(component.error()).toContain('anterior a hoy');
   });
+
+  it('abre y cierra el modal de cobros extraordinarios restableciendo la pestaña inicial', () => {
+    const {component} = crearComponente();
+    expect(component.modalExtraordinariosAbierto()).toBe(false);
+
+    component.tabExtraordinarios.set('catalogo');
+    component.abrirModalExtraordinarios();
+    expect(component.modalExtraordinariosAbierto()).toBe(true);
+    expect(component.tabExtraordinarios()).toBe('asignar');
+
+    component.cerrarModalExtraordinarios();
+    expect(component.modalExtraordinariosAbierto()).toBe(false);
+  });
+
+  it('carga obligaciones institucionales globales cuando matriculaId es 0', () => {
+    const obligacionPagada = {
+      ...obligacion,
+      id: 903,
+      totalPagado: 350,
+      saldoPendiente: 0,
+      estado: 'PAGADO_TOTAL'
+    };
+    const {component, tesoreria} = crearComponente();
+    tesoreria.listarObligaciones.mockReturnValue(of([obligacionPagada, obligacion]));
+    component.matriculaId = 0;
+
+    component.cargarObligaciones();
+
+    expect(tesoreria.listarObligaciones).toHaveBeenCalledWith(0);
+    expect(component.obligaciones().length).toBe(2);
+    expect(component.recaudacionTotal()).toBe(350);
+    expect(component.pendienteTotal()).toBe(350);
+  });
 });

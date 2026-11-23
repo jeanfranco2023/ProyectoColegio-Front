@@ -1,8 +1,19 @@
 import { Component, inject, ViewEncapsulation } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  NavigationCancel,
+  NavigationEnd,
+  NavigationError,
+  NavigationStart,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet
+} from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { AuthStore } from '../../core/state/auth.store';
+import { LoadingIndicatorService } from '../../core/state/loading-indicator.service';
 import { ADMIN_ROUTE_ACCESS } from '../../core/authorization/admin-route-access';
 
 export type AdminMenuRole = 'DIRECCION' | 'SECRETARIA' | 'DOCENTE' | 'AUXILIAR' | 'TUTOR' | 'APODERADO' | 'ADMINISTRADOR';
@@ -66,24 +77,24 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
   imports: [RouterOutlet, RouterLink, RouterLinkActive, MatButtonModule, MatMenuModule],
   template: `
     <a href="#main-content" class="skip-link">Saltar al contenido principal</a>
-    <div class="school-admin-shell min-h-screen bg-ui-background font-sans text-ui-text lg:flex">
-      <aside class="school-admin-sidebar hidden w-[288px] shrink-0 flex-col border-r border-ui-border bg-ui-surface text-ui-text lg:sticky lg:top-0 lg:self-start lg:flex lg:min-h-dvh">
-        <a [routerLink]="store.homeRoute()" class="shrink-0 flex items-center gap-3 px-4 py-2.5 no-underline focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2" aria-label="Inicio institucional">
-          <img class="h-8 w-8 shrink-0 rounded-full bg-white object-contain ring-1 ring-white/20" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de I.E.P. Shuji Kitamura">
+    <div class="school-admin-shell h-dvh max-h-dvh overflow-hidden bg-ui-background font-sans text-ui-text flex flex-col lg:flex-row">
+      <aside class="school-admin-sidebar hidden w-[312px] shrink-0 flex-col border-r border-white/10 bg-[#0A192F] text-white lg:sticky lg:top-0 lg:self-start lg:flex lg:h-dvh lg:max-h-dvh lg:overflow-hidden">
+        <a [routerLink]="store.homeRoute()" class="shrink-0 flex items-center gap-3.5 px-5 py-5 no-underline focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2" aria-label="Inicio institucional">
+          <img class="h-11 w-11 shrink-0 rounded-full bg-white object-contain p-1 ring-2 ring-white/25 shadow-xs" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de I.E.P. Shuji Kitamura">
           <span class="min-w-0">
-            <span class="block truncate text-[15.5px] font-bold tracking-tight text-ui-text">Shuji Kitamura</span>
-            <span class="sidebar-kicker mt-0.5 block font-semibold tracking-[0.1em] text-ui-muted">GESTIÓN ESCOLAR</span>
+            <span class="block truncate text-[18px] font-extrabold tracking-tight text-white">Shuji Kitamura</span>
+            <span class="sidebar-kicker mt-0.5 block text-[11px] font-bold tracking-[0.16em] text-sky-200/80 uppercase">GESTIÓN ESCOLAR</span>
           </span>
         </a>
 
-        <nav class="flex flex-1 flex-col gap-0 px-2.5 py-1.5" aria-label="Navegación principal">
+        <nav class="min-h-0 flex-1 overflow-y-auto overscroll-contain flex flex-col gap-1.5 px-3.5 py-4" aria-label="Navegación principal">
           @for (item of visibleMenuItems; track item.route; let i = $index) {
             @if (i === 0 || visibleMenuItems[i - 1].section !== item.section) {
               <p
-                class="shrink-0 mb-0.5 px-3 text-[11px] font-bold leading-none tracking-[0.09em] text-ui-muted uppercase"
-                [class.mt-0.5]="i === 0"
-                [class.mt-1.5]="i > 0"
-                [class.pt-1.5]="i > 0"
+                class="shrink-0 mb-1.5 px-3.5 text-[11.5px] font-bold leading-none tracking-[0.13em] text-slate-400 uppercase"
+                [class.mt-1]="i === 0"
+                [class.mt-4]="i > 0"
+                [class.pt-3.5]="i > 0"
                 [class.border-t]="i > 0"
                 [class.border-white/10]="i > 0"
               >{{ item.section }}</p>
@@ -91,63 +102,124 @@ export function visibleAdminMenuItems(roles: readonly string[]): readonly AdminM
             <a
               [routerLink]="item.route"
               routerLinkActive="router-link-active"
-              class="shrink-0 flex min-h-[29px] items-center gap-2.5 rounded-lg border-l-[3px] border-transparent px-3 py-[2.5px] text-[15px] leading-[1.2] font-medium text-ui-muted no-underline transition-colors duration-150 focus-visible:outline-[2px] focus-visible:outline-ui-focus focus-visible:outline-offset-1"
+              class="shrink-0 flex min-h-[42px] items-center gap-3.5 rounded-xl border-l-[3px] border-transparent px-3.5 py-2.5 text-[15.5px] leading-[1.3] font-medium text-slate-200 no-underline transition-all duration-150 focus-visible:outline-[2px] focus-visible:outline-ui-focus focus-visible:outline-offset-1"
               [attr.aria-label]="item.label"
             >
-              <svg class="h-[17px] w-[17px] shrink-0 opacity-85" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" [attr.d]="item.icon" /></svg>
+              <svg class="h-5 w-5 shrink-0 opacity-85" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" [attr.d]="item.icon" /></svg>
               <span class="truncate">{{ item.label }}</span>
             </a>
           }
         </nav>
-
-        <div class="mx-2.5 my-2 shrink-0 rounded-xl border border-ui-border bg-ui-surface-soft px-2 py-0.5">
-          <button mat-button type="button" (click)="store.logout()" class="w-full !min-h-8 !justify-start !rounded-lg !py-1 !font-[inherit] !text-[15px] !text-ui-text [&_.mdc-button__label]:!text-ui-text">
-            <span class="inline-flex items-center gap-2.5 whitespace-nowrap font-[inherit]"><svg class="h-4 w-4 shrink-0 opacity-85" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg><span>Cerrar sesión</span></span>
-          </button>
-        </div>
       </aside>
 
-      <main id="main-content" tabindex="-1" class="min-w-0 flex-1">
-        <header class="school-admin-topbar sticky top-0 z-40 flex h-[72px] items-center justify-between border-b border-ui-border bg-ui-surface px-4 text-ui-text backdrop-blur-[12px] sm:px-7 xl:px-10 max-[639px]:grid max-[639px]:h-16 max-[639px]:grid-cols-[minmax(0,1fr)_112px] max-[639px]:gap-2 max-[639px]:px-3">
-          <div class="flex min-w-0 items-center gap-3 max-[639px]:w-full max-[639px]:max-w-full">
-            <button mat-icon-button type="button" [matMenuTriggerFor]="mobileNav" class="!flex !h-11 !w-11 !min-h-11 !min-w-11 !text-ui-text focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2 lg:!hidden" aria-label="Abrir navegación" aria-haspopup="menu">
+      <main id="main-content" tabindex="-1" class="relative flex h-dvh max-h-dvh min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#F1F5F9]">
+        @if (loadingIndicator.activo()) {
+          <div class="pointer-events-none fixed top-0 right-0 left-0 lg:left-[312px] z-[2500] h-1 overflow-hidden bg-slate-200/60" aria-hidden="true">
+            <div class="shuji-route-bar h-full w-2/5 rounded-full bg-gradient-to-r from-[#0F294D] via-[#1D4ED8] to-[#0284C7]"></div>
+          </div>
+        }
+        <header class="school-admin-topbar shrink-0 sticky top-0 z-40 flex h-[72px] items-center justify-between border-b border-slate-200 bg-white/95 px-4 text-slate-900 backdrop-blur-[12px] sm:px-7 xl:px-10 max-[639px]:grid max-[639px]:h-16 max-[639px]:grid-cols-[minmax(0,1fr)_auto] max-[639px]:gap-2 max-[639px]:px-3">
+          <div class="flex min-w-0 flex-1 items-center gap-2.5 overflow-hidden sm:gap-3">
+            <button mat-icon-button type="button" [matMenuTriggerFor]="mobileNav" class="!flex !h-11 !w-11 !min-h-11 !min-w-11 shrink-0 !text-[#0F294D] focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2 lg:!hidden" aria-label="Abrir navegación" aria-haspopup="menu">
               <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 12h16M4 18h16" /></svg>
             </button>
             <mat-menu #mobileNav="matMenu" class="admin-mobile-nav-panel mt-3 max-h-[calc(100dvh-24px)] overflow-y-auto" xPosition="after" yPosition="below">
               @for (item of visibleMenuItems; track item.route) {
-                <a mat-menu-item class="admin-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 border-l-[3px] border-transparent px-3 text-[15.5px] leading-[1.3] text-ui-muted no-underline" [routerLink]="item.route" routerLinkActive="router-link-active border-ui-gold bg-ui-surface-soft !text-ui-action font-semibold" [attr.aria-label]="item.label">
+                <a mat-menu-item class="admin-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 border-l-[3px] border-transparent px-3 text-[15.5px] leading-[1.3] text-slate-600 no-underline" [routerLink]="item.route" routerLinkActive="router-link-active border-[#1D4ED8] bg-slate-100 !text-[#0F294D] font-semibold" [attr.aria-label]="item.label">
                   <svg class="h-[18px] w-[18px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" [attr.d]="item.icon" /></svg>
                   <span>{{ item.label }}</span>
                 </a>
               }
-              <div class="my-[6px] h-px bg-ui-border" role="separator"></div>
-              <button mat-menu-item class="admin-mobile-nav-item flex min-h-11 min-w-[220px] items-center gap-3 px-3 text-[15.5px] leading-[1.3] text-ui-muted no-underline" type="button" (click)="store.logout()">
-                <svg class="h-[19px] w-[19px] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg>
-                <span>Cerrar sesión</span>
-              </button>
             </mat-menu>
-            <div class="school-admin-brand min-w-0 max-w-full">
-              <p class="whitespace-nowrap text-[11px] font-bold tracking-[0.16em] text-ui-muted uppercase max-[359px]:truncate max-[359px]:text-[11px] max-[359px]:leading-3 max-[359px]:tracking-[0.04em]">Portal institucional</p>
-              <p class="whitespace-nowrap text-sm font-semibold text-ui-text max-[359px]:truncate max-[359px]:text-xs max-[359px]:leading-4">Shuji Kitamura <span class="font-normal text-ui-muted max-[639px]:hidden">/ Gestión escolar</span></p>
+            <div class="school-admin-brand min-w-0 flex-1 overflow-hidden">
+              <p class="m-0 truncate text-[10.5px] font-bold tracking-[0.14em] text-[#0F294D]/70 uppercase max-[420px]:hidden">Portal institucional</p>
+              <p class="m-0 truncate text-sm font-bold text-slate-900">Shuji Kitamura <span class="font-medium text-slate-500 max-[639px]:hidden">/ Gestión escolar</span></p>
             </div>
           </div>
 
-          <a routerLink="/admin/perfil" [title]="displayName" class="flex min-h-11 items-center gap-2.5 rounded-full border border-ui-border bg-ui-surface px-3 py-2 text-xs font-medium text-ui-muted no-underline hover:border-ui-control-border hover:bg-ui-surface-soft focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2 max-[639px]:w-[112px] max-[639px]:max-w-[112px] max-[639px]:shrink-0 max-[639px]:gap-1.5 max-[639px]:py-2 max-[639px]:pr-[7px] max-[639px]:pl-1">
-            <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ui-action text-[13px] font-bold text-ui-action-text max-[639px]:h-7 max-[639px]:w-7">{{ firstInitial }}</span>
-            <span class="flex min-w-0 flex-col"><span class="block max-w-[220px] truncate font-semibold text-ui-text max-[639px]:max-w-[58px] max-[639px]:text-[11px]">{{ displayName }}</span><span class="block max-w-[220px] truncate text-[11px] text-ui-muted max-[639px]:max-w-[58px]">{{ roleLabel }}</span></span>
-          </a>
+          <div class="flex shrink-0 items-center gap-2">
+            <a routerLink="/admin/perfil" [title]="displayName" class="flex min-h-11 items-center gap-2.5 rounded-full border border-slate-200 bg-slate-100/90 px-3 py-1.5 text-xs font-medium text-slate-600 no-underline transition hover:border-slate-300 hover:bg-slate-200/70 focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2 max-[439px]:p-1.5">
+              <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0F294D] text-[13px] font-bold text-white shadow-2xs max-[639px]:h-7 max-[639px]:w-7">{{ firstInitial }}</span>
+              <span class="flex min-w-0 flex-col max-[439px]:hidden"><span class="block max-w-[220px] truncate font-bold text-slate-900">{{ displayName }}</span><span class="block max-w-[220px] truncate text-[11px] font-medium text-slate-500">{{ roleLabel }}</span></span>
+            </a>
+            <button
+              type="button"
+              (click)="store.logout()"
+              aria-label="Cerrar sesión"
+              title="Cerrar sesión"
+              class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-[#0F294D] shadow-2xs transition hover:border-red-200 hover:bg-red-50 hover:text-red-700 focus-visible:outline-[3px] focus-visible:outline-ui-focus focus-visible:outline-offset-2 cursor-pointer"
+            >
+              <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.9" d="M10 17l5-5-5-5m5 5H3m9-9h6a2 2 0 012 2v14a2 2 0 01-2 2h-6" /></svg>
+              <span class="hidden sm:inline whitespace-nowrap">Cerrar sesión</span>
+            </button>
+          </div>
         </header>
 
-        <div class="school-admin-workspace mx-auto w-full max-w-[1560px] bg-ui-workspace p-4 text-ui-text sm:p-6 xl:p-9">
-          <div class="min-h-[calc(100vh-140px)] w-full min-w-0 max-[639px]:min-h-[calc(100dvh-136px)] [&>router-outlet+*]:block [&>router-outlet+*]:min-w-0"><router-outlet /></div>
+        <div class="school-admin-main-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div class="school-admin-workspace relative mx-auto w-full max-w-[1560px] bg-ui-workspace p-4 text-ui-text sm:p-6 xl:p-9">
+            @if (loadingIndicator.mostrarPanelCarga()) {
+              <div
+                role="status"
+                aria-live="polite"
+                class="pointer-events-none fixed top-[72px] right-0 bottom-0 left-0 lg:left-[312px] z-[1800] flex items-center justify-center overflow-hidden bg-slate-900/20 p-4 backdrop-blur-[3px] max-[639px]:top-16 animate-[fade-in_160ms_ease-out]"
+              >
+                <div class="shuji-modal-3d-enter w-full max-w-[380px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_24px_60px_-12px_rgb(10_25_47_/_26%)]">
+                  <div class="h-1.5 w-full bg-gradient-to-r from-[#0A192F] via-[#173B67] to-[#1D4ED8]" aria-hidden="true"></div>
+                  <div class="flex items-center gap-4 px-6 py-5">
+                    <span class="relative inline-flex h-11 w-11 shrink-0 items-center justify-center">
+                      <span class="absolute inset-0 rounded-full border-[3px] border-slate-200 border-t-[#0F294D] border-r-[#2563EB] animate-spin"></span>
+                      <span class="h-2.5 w-2.5 rounded-full bg-[#0F294D]"></span>
+                    </span>
+                    <div class="min-w-0 flex-1">
+                      <p class="m-0 text-[10.5px] font-bold uppercase tracking-[0.14em] text-[#0F294D]">Cambiando de panel</p>
+                      <strong class="block truncate text-sm font-extrabold text-slate-900">Cargando {{ loadingIndicator.moduloDestino() }}…</strong>
+                      <span class="block text-xs text-slate-500">Sincronizando datos institucionales</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            } @else if (loadingIndicator.mostrarPildoraCarga()) {
+              <div
+                role="status"
+                aria-live="polite"
+                class="pointer-events-none fixed right-5 bottom-5 z-[1800] flex items-center gap-2.5 rounded-full border border-[#1E3A8A]/40 bg-[#0F294D] px-4 py-2 text-xs font-semibold text-white shadow-lg backdrop-blur-xs animate-[fade-in_150ms_ease-out]"
+              >
+                <span class="h-3.5 w-3.5 rounded-full border-2 border-white/30 border-t-white animate-spin" aria-hidden="true"></span>
+                <span>Actualizando datos…</span>
+              </div>
+            }
+            <div class="min-h-[calc(100vh-140px)] w-full min-w-0 max-[639px]:min-h-[calc(100dvh-136px)] [&>router-outlet+*]:block [&>router-outlet+*]:min-w-0"><router-outlet /></div>
+          </div>
+          <footer class="px-5 pb-5 text-center text-[11px] tracking-wide text-ui-muted">© 2026 I.E.P. Shuji Kitamura · Excelencia, disciplina y saber</footer>
         </div>
-        <footer class="px-5 pb-5 text-center text-[11px] tracking-wide text-ui-muted">© 2026 I.E.P. Shuji Kitamura · Excelencia, disciplina y saber</footer>
       </main>
     </div>
   `
 })
 export class AdminLayoutComponent {
   readonly store = inject(AuthStore);
+  readonly loadingIndicator = inject(LoadingIndicatorService);
+  private readonly router = inject(Router);
+
+  constructor() {
+    this.router.events.pipe(takeUntilDestroyed()).subscribe(evento => {
+      if (evento instanceof NavigationStart) {
+        this.loadingIndicator.iniciarNavegacion(this.nombreModuloRuta(evento.url));
+      } else if (
+        evento instanceof NavigationEnd ||
+        evento instanceof NavigationCancel ||
+        evento instanceof NavigationError
+      ) {
+        this.loadingIndicator.finalizarNavegacion();
+      }
+    });
+  }
+
+  private nombreModuloRuta(url: string): string {
+    const limpia = (url || '').split('?')[0].split('#')[0];
+    const coincidencia = ADMIN_MENU_ITEMS.find(item => limpia.startsWith(item.route));
+    return coincidencia?.label ?? 'Módulo escolar';
+  }
 
   get visibleMenuItems(): readonly AdminMenuItem[] {
     return visibleAdminMenuItems(this.store.roles());

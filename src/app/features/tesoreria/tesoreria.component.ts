@@ -35,29 +35,51 @@ export interface ObligacionCobro {
   imports: [FormatoEntradaDirective, A11yModule, CommonModule, FormsModule, StatusBadgeComponent, UiDatePePipe, UiCalendarComponent, UiPaginacionComponent, SimuladorCheckoutComponent],
 template: `
     <div class="space-y-6 grid min-w-0 gap-[22px] text-ui-text font-sans max-[600px]:gap-4">
-      <!-- Header -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[#e2e8f0] bg-gradient-to-r from-[#f8fbff] via-white to-[#f0f9ff] p-5 shadow-xs">
+      <!-- Header Ejecutivo Azul Noche -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-[#1E3A8A]/40 bg-gradient-to-r from-[#0A192F] via-[#0F294D] to-[#173B67] p-6 text-white shadow-md">
         <div>
-          <span class="inline-flex items-center gap-1.5 rounded-full bg-[#009EE3]/12 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#0369a1]">
+          <span class="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-sky-100">
             {{ gestionaExtraordinarios() ? 'Gestión Financiera Institucional' : 'Pagos Seguros · Mercado Pago' }}
           </span>
-          <h2 class="mt-1.5 text-2xl sm:text-3xl font-extrabold tracking-tight text-[#14213d]">Tesorería &amp; Pagos</h2>
-          <p class="text-sm text-[#64748b] mt-1 mb-0">
+          <h2 class="mt-2 mb-0 font-sans text-2xl sm:text-3xl font-extrabold tracking-tight text-white">Tesorería &amp; Pagos</h2>
+          <p class="text-sm text-slate-200 mt-1.5 mb-0">
             @if (esSecretaria()) { Operación de caja, pagos por adelantado y pasarela digital Mercado Pago. }
             @else if (esAdministrativo()) { Consulta de obligaciones, conceptos automáticos y estados de cuenta. }
             @else if (esAuxiliar()) { Gestión de cobros extraordinarios. }
             @else { Consulta tus cuotas pendientes, descarga boletas y paga en línea o por adelantado con Mercado Pago. }
           </p>
         </div>
-        @if (esSecretaria() || esAdministrativo()) {
-        <div class="flex flex-wrap items-center gap-3">
-          <button
-            id="btn-generar-cuota-matricula"
-            (click)="abrirModalCuotaMatricula()"
-            class="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-semibold text-xs sm:text-sm transition cursor-pointer box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm leading-[1.25] shadow-xs"
-          >
-            Generar cuota de matrícula
-          </button>
+        @if (esSecretaria() || esAdministrativo() || gestionaExtraordinarios()) {
+        <div class="flex w-full min-w-0 flex-wrap items-center gap-3 sm:w-auto">
+          @if (gestionaExtraordinarios()) {
+            <button
+              type="button"
+              id="btn-abrir-cobros-extraordinarios"
+              data-testid="btn-abrir-cobros-extraordinarios"
+              (click)="abrirModalExtraordinarios()"
+              class="box-border inline-flex w-full min-h-[44px] min-w-0 cursor-pointer items-center justify-center gap-2 rounded-xl bg-white px-4 py-2.5 font-sans text-xs font-bold leading-[1.25] text-[#0F294D] shadow-sm transition hover:bg-slate-100 sm:w-auto sm:text-sm"
+            >
+              <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+              </svg>
+              <span>Cobros extraordinarios</span>
+              @if (extrasActivos().length > 0) {
+                <span class="inline-flex min-w-[22px] items-center justify-center rounded-full bg-[#0F294D] px-2 py-0.5 text-[11px] font-bold text-white">
+                  {{ extrasActivos().length }}
+                </span>
+              }
+            </button>
+          }
+          @if (esSecretaria() || esAdministrativo()) {
+            <button
+              type="button"
+              id="btn-generar-cuota-matricula"
+              (click)="abrirModalCuotaMatricula()"
+              class="box-border inline-flex w-full min-h-[44px] min-w-0 cursor-pointer items-center justify-center gap-2 rounded-xl border border-emerald-400/40 bg-emerald-600 px-4 py-2.5 font-sans text-xs font-bold leading-[1.25] text-white shadow-sm transition hover:bg-emerald-500 sm:w-auto sm:text-sm"
+            >
+              Generar cuota de matrícula
+            </button>
+          }
         </div>
         }
       </div>
@@ -96,93 +118,269 @@ template: `
         </button>
       </nav>
 
-      @if (gestionaExtraordinarios()) {
-        <section class="grid gap-4 rounded-xl border border-ui-divider bg-ui-surface p-5" aria-labelledby="titulo-extraordinarios">
-          <header>
-            <h3 id="titulo-extraordinarios" class="m-0 text-lg font-bold">Cobros extraordinarios</h3>
-            <p class="m-0 text-sm text-ui-muted">Asigna un cargo del catálogo a estudiantes matriculados.</p>
-          </header>
-          <form class="grid gap-3 sm:grid-cols-2" (ngSubmit)="generarExtraordinarios()">
-            <label class="grid gap-1 text-sm">Concepto
-              <select class="min-h-11 rounded-lg border p-2" name="conceptoExtra" [(ngModel)]="conceptoExtraId" required>
-                <option [ngValue]="null">Selecciona un concepto</option>
-                @for (concepto of extrasActivos(); track concepto.id) {
-                  <option [ngValue]="concepto.id">{{ concepto.nombre }} · S/ {{ concepto.montoSugerido | number:'1.2-2' }}</option>
-                }
-              </select>
-            </label>
-            <label class="grid gap-1 text-sm">Vencimiento
-              <input class="min-h-11 rounded-lg border p-2" type="date" name="vencimientoExtra"
-                [(ngModel)]="vencimientoExtra" [min]="fechaMinimaVencimiento" required />
-            </label>
-            <fieldset class="grid gap-2 rounded-lg border border-ui-divider p-3 sm:col-span-2">
-              <legend class="px-1 text-sm font-semibold">Estudiantes ({{ seleccionExtra.size }} seleccionados)</legend>
-              <label class="grid gap-1 text-sm">Buscar estudiante
-                <input class="min-h-11 rounded-lg border p-2" name="buscarExtra" [(ngModel)]="buscarExtra" />
-              </label>
-              <div class="max-h-48 overflow-auto">
-                @for (matricula of opcionesExtra(); track matricula.id) {
-                  <label class="flex min-h-9 items-center gap-2 text-sm">
-                    <input type="checkbox" [checked]="seleccionExtra.has(matricula.id)"
-                      (change)="seleccionarExtra(matricula.id, $any($event.target).checked)" />
-                    <span>{{ matricula.estudiante }} · {{ matricula.anio }}</span>
-                  </label>
-                } @empty { <p class="text-sm text-ui-muted">No hay estudiantes que coincidan.</p> }
+      <!-- Modal de Cobros Extraordinarios (Dirección / Secretaría / Auxiliar) -->
+      @if (gestionaExtraordinarios() && modalExtraordinariosAbierto()) {
+        <div
+          class="fixed inset-0 z-[2200] flex items-center justify-center bg-slate-950/60 p-3 backdrop-blur-xs sm:p-5"
+          (click)="cerrarModalExtraordinarios()"
+          (keydown.escape)="cerrarModalExtraordinarios()"
+        >
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-extraordinarios"
+            cdkTrapFocus
+            (click)="$event.stopPropagation()"
+            class="shuji-modal-3d-enter flex max-h-[min(90dvh,820px)] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+          >
+            <header class="shrink-0 flex items-start justify-between gap-4 border-b border-slate-200 bg-gradient-to-r from-[#173B67] via-[#1d4b82] to-[#245996] px-6 py-5 text-white">
+              <div class="min-w-0">
+                <span class="inline-flex items-center rounded-full bg-white/15 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-sky-100">
+                  Gestión de cobros adicionales
+                </span>
+                <h3 id="titulo-extraordinarios" class="m-0 mt-1.5 font-display text-xl font-bold text-white sm:text-2xl">
+                  Cobros extraordinarios
+                </h3>
+                <p class="m-0 mt-1 text-xs text-slate-200 sm:text-sm">
+                  Asigna un cargo del catálogo a estudiantes matriculados o administra los conceptos institucionales.
+                </p>
               </div>
-            </fieldset>
-            <button class="min-h-11 justify-self-start rounded-lg bg-ui-action px-4 font-semibold text-ui-action-text disabled:opacity-50"
-              [disabled]="guardandoExtra() || !conceptoExtraId || !vencimientoExtra || !seleccionExtra.size">Generar cobro</button>
-          </form>
-          @if (esAdministrativo()) {
-            <details class="rounded-xl border border-ui-divider bg-ui-surface-soft/50 p-3.5">
-              <summary class="cursor-pointer font-semibold text-[#173B67]">Administrar conceptos y vencimientos</summary>
-              <p class="mt-2 mb-0 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs text-sky-900">
-                Al crear un nuevo concepto habilitado, el sistema generará automáticamente los cargos pendientes para todos los estudiantes matriculados del año lectivo abierto.
-              </p>
-              <form class="mt-3 grid gap-3 sm:grid-cols-2" (ngSubmit)="guardarConceptoExtra()">
-                <label class="grid gap-1 text-sm">Concepto a editar
-                  <select class="min-h-11 rounded-lg border p-2 bg-white" name="idConceptoEdicion"
-                    [ngModel]="conceptoEditId" (ngModelChange)="editarConceptoExtra($event)">
-                    <option [ngValue]="null">Nuevo concepto (genera cargos automáticos)</option>
-                    @for (concepto of conceptosExtra(); track concepto.id) {
-                      <option [ngValue]="concepto.id">{{ concepto.nombre }}</option>
-                    }
-                  </select>
-                </label>
-                <label class="grid gap-1 text-sm">Nombre
-                  <input class="min-h-11 rounded-lg border p-2 bg-white" name="nombreExtra" [(ngModel)]="conceptoEdit.nombre" maxlength="50" required />
-                </label>
-                <label class="grid gap-1 text-sm">Tipo
-                  <select class="min-h-11 rounded-lg border p-2 bg-white" name="tipoExtra" [(ngModel)]="conceptoEdit.tipo" [disabled]="conceptoEditId !== null">
-                    <option value="OTRO">Actividad u otro</option>
-                    <option value="CERTIFICADO">Certificado</option>
-                  </select>
-                </label>
-                <label class="grid gap-1 text-sm">Importe en soles
-                  <input class="min-h-11 rounded-lg border p-2 bg-white" type="number" name="montoExtra"
-                    [(ngModel)]="conceptoEdit.monto" min="0.01" max="99999999.99" step="0.01" required />
-                </label>
-                <label class="grid gap-1 text-sm">Vencimiento sugerido para cargos automáticos (opcional)
-                  <input class="min-h-11 rounded-lg border p-2 bg-white" type="date" name="vencimientoConceptoExtra"
-                    [(ngModel)]="conceptoEdit.vencimiento" [min]="fechaMinimaVencimiento" />
-                </label>
-                <label class="flex items-center gap-2 text-sm self-end pb-2"><input type="checkbox" name="activoExtra" [(ngModel)]="conceptoEdit.activo" /> Habilitado (genera cargos a padres)</label>
-                <button class="min-h-11 justify-self-start rounded-lg bg-[#173B67] px-4 font-semibold text-white hover:bg-[#20354E] disabled:opacity-50"
-                  [disabled]="guardandoExtra() || !conceptoEdit.nombre.trim() || !conceptoEdit.monto">
-                  {{ conceptoEditId === null ? 'Guardar concepto y generar cargos' : 'Actualizar concepto' }}
+              <button
+                type="button"
+                (click)="cerrarModalExtraordinarios()"
+                aria-label="Cerrar modal de cobros extraordinarios"
+                class="grid size-10 shrink-0 place-items-center rounded-xl border border-white/20 bg-white/10 text-base font-bold text-white transition hover:bg-white/20 cursor-pointer"
+              >
+                ✕
+              </button>
+            </header>
+
+            @if (esAdministrativo()) {
+              <div class="shrink-0 flex flex-wrap gap-2 border-b border-slate-200 bg-slate-50 px-6 py-3" role="tablist" aria-label="Opciones de cobros extraordinarios">
+                <button
+                  type="button"
+                  role="tab"
+                  [attr.aria-selected]="tabExtraordinarios() === 'asignar'"
+                  (click)="tabExtraordinarios.set('asignar')"
+                  [class]="tabExtraordinarios() === 'asignar'
+                    ? 'min-h-10 rounded-xl bg-[#173B67] px-4 py-2 text-xs font-bold text-white shadow-xs cursor-pointer'
+                    : 'min-h-10 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer'"
+                >
+                  Asignar cobro a estudiantes
                 </button>
-              </form>
-              <form class="mt-4 flex flex-wrap items-end gap-3 border-t border-ui-divider pt-3" (ngSubmit)="guardarVencimientoPension()">
-                <label class="grid gap-1 text-sm">Día de vencimiento para nuevas pensiones
-                  <input class="min-h-11 rounded-lg border p-2" type="number" name="diaPension"
-                    [(ngModel)]="diaPension" min="1" max="28" step="1" required />
-                </label>
-                <button class="min-h-11 rounded-lg border border-ui-divider px-4 font-semibold disabled:opacity-50"
-                  [disabled]="guardandoExtra() || diaPension < 1 || diaPension > 28">Guardar día</button>
-              </form>
-            </details>
-          }
-        </section>
+                <button
+                  type="button"
+                  role="tab"
+                  [attr.aria-selected]="tabExtraordinarios() === 'catalogo'"
+                  (click)="tabExtraordinarios.set('catalogo')"
+                  [class]="tabExtraordinarios() === 'catalogo'
+                    ? 'min-h-10 rounded-xl bg-[#173B67] px-4 py-2 text-xs font-bold text-white shadow-xs cursor-pointer'
+                    : 'min-h-10 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer'"
+                >
+                  Administrar conceptos y vencimientos
+                </button>
+              </div>
+            }
+
+            <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-slate-50/70 p-6 space-y-5">
+              @if (error()) {
+                <p class="m-0 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-800" role="alert">
+                  {{ error() }}
+                </p>
+              }
+              @if (mensaje()) {
+                <p class="m-0 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-900" role="status">
+                  {{ mensaje() }}
+                </p>
+              }
+
+              @if (!esAdministrativo() || tabExtraordinarios() === 'asignar') {
+                <form class="grid gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-xs sm:grid-cols-2" (ngSubmit)="generarExtraordinarios()">
+                  <label class="grid min-w-0 gap-1.5 text-xs font-bold uppercase tracking-wide text-slate-600">
+                    Concepto *
+                    <select
+                      class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                      name="conceptoExtra"
+                      [(ngModel)]="conceptoExtraId"
+                      required
+                    >
+                      <option [ngValue]="null">Selecciona un concepto</option>
+                      @for (concepto of extrasActivos(); track concepto.id) {
+                        <option [ngValue]="concepto.id">{{ concepto.nombre }} · S/ {{ concepto.montoSugerido | number:'1.2-2' }}</option>
+                      }
+                    </select>
+                  </label>
+                  <label class="grid min-w-0 gap-1.5 text-xs font-bold uppercase tracking-wide text-slate-600">
+                    Fecha de vencimiento *
+                    <input
+                      class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                      type="date"
+                      name="vencimientoExtra"
+                      [(ngModel)]="vencimientoExtra"
+                      [min]="fechaMinimaVencimiento"
+                      required
+                    />
+                  </label>
+
+                  <fieldset class="grid gap-3 rounded-xl border border-slate-200 bg-slate-50/70 p-4 sm:col-span-2">
+                    <legend class="px-2 text-xs font-bold uppercase tracking-wider text-[#173B67]">
+                      Estudiantes ({{ seleccionExtra.size }} seleccionados)
+                    </legend>
+                    <label class="grid min-w-0 gap-1 text-xs font-semibold text-slate-600">
+                      Buscar estudiante matriculado
+                      <input
+                        class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                        name="buscarExtra"
+                        [(ngModel)]="buscarExtra"
+                        placeholder="Escribe el nombre o apellido..."
+                      />
+                    </label>
+                    <div class="max-h-52 space-y-1.5 overflow-y-auto overscroll-contain rounded-xl border border-slate-200 bg-white p-2">
+                      @for (matricula of opcionesExtra(); track matricula.id) {
+                        <label
+                          class="flex min-h-10 cursor-pointer items-center gap-3 rounded-lg px-3 py-1.5 text-sm font-medium text-slate-800 transition hover:bg-slate-50"
+                          [class.bg-sky-50]="seleccionExtra.has(matricula.id)"
+                        >
+                          <input
+                            type="checkbox"
+                            class="size-4 rounded border-slate-300 accent-[#173B67]"
+                            [checked]="seleccionExtra.has(matricula.id)"
+                            (change)="seleccionarExtra(matricula.id, $any($event.target).checked)"
+                          />
+                          <span class="min-w-0 flex-1 truncate">{{ matricula.estudiante }} · {{ matricula.anio }}</span>
+                        </label>
+                      } @empty {
+                        <p class="m-0 py-4 text-center text-sm text-slate-500">No hay estudiantes que coincidan.</p>
+                      }
+                    </div>
+                  </fieldset>
+
+                  <div class="flex flex-wrap items-center justify-end gap-3 pt-1 sm:col-span-2">
+                    <button
+                      type="button"
+                      (click)="cerrarModalExtraordinarios()"
+                      class="min-h-11 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      class="min-h-11 rounded-xl bg-[#173B67] px-5 py-2 text-sm font-bold text-white shadow-sm transition hover:bg-[#20354E] disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
+                      [disabled]="guardandoExtra() || !conceptoExtraId || !vencimientoExtra || !seleccionExtra.size"
+                    >
+                      {{ guardandoExtra() ? 'Generando…' : 'Generar cobro' }}
+                    </button>
+                  </div>
+                </form>
+              } @else {
+                <div class="space-y-5">
+                  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs space-y-4">
+                    <p class="m-0 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-xs leading-relaxed text-sky-900">
+                      Al crear un nuevo concepto habilitado, el sistema generará automáticamente los cargos pendientes para todos los estudiantes matriculados del año lectivo abierto.
+                    </p>
+                    <form class="grid gap-4 sm:grid-cols-2" (ngSubmit)="guardarConceptoExtra()">
+                      <label class="grid min-w-0 gap-1.5 text-xs font-bold uppercase tracking-wide text-slate-600 sm:col-span-2">
+                        Concepto a editar
+                        <select
+                          class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                          name="idConceptoEdicion"
+                          [ngModel]="conceptoEditId"
+                          (ngModelChange)="editarConceptoExtra($event)"
+                        >
+                          <option [ngValue]="null">Nuevo concepto (genera cargos automáticos)</option>
+                          @for (concepto of conceptosExtra(); track concepto.id) {
+                            <option [ngValue]="concepto.id">{{ concepto.nombre }}</option>
+                          }
+                        </select>
+                      </label>
+                      <label class="grid min-w-0 gap-1.5 text-xs font-bold uppercase tracking-wide text-slate-600">
+                        Nombre *
+                        <input
+                          class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                          name="nombreExtra"
+                          [(ngModel)]="conceptoEdit.nombre"
+                          maxlength="50"
+                          required
+                        />
+                      </label>
+                      <label class="grid min-w-0 gap-1.5 text-xs font-bold uppercase tracking-wide text-slate-600">
+                        Tipo
+                        <select
+                          class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-800 disabled:bg-slate-100 focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                          name="tipoExtra"
+                          [(ngModel)]="conceptoEdit.tipo"
+                          [disabled]="conceptoEditId !== null"
+                        >
+                          <option value="OTRO">Actividad u otro</option>
+                          <option value="CERTIFICADO">Certificado</option>
+                        </select>
+                      </label>
+                      <label class="grid min-w-0 gap-1.5 text-xs font-bold uppercase tracking-wide text-slate-600">
+                        Importe en soles *
+                        <input
+                          class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                          type="number"
+                          name="montoExtra"
+                          [(ngModel)]="conceptoEdit.monto"
+                          min="0.01"
+                          max="99999999.99"
+                          step="0.01"
+                          required
+                        />
+                      </label>
+                      <label class="grid min-w-0 gap-1.5 text-xs font-bold uppercase tracking-wide text-slate-600">
+                        Vencimiento sugerido (opcional)
+                        <input
+                          class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                          type="date"
+                          name="vencimientoConceptoExtra"
+                          [(ngModel)]="conceptoEdit.vencimiento"
+                          [min]="fechaMinimaVencimiento"
+                        />
+                      </label>
+                      <label class="flex items-center gap-2.5 rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-800 sm:col-span-2 cursor-pointer">
+                        <input type="checkbox" class="size-4 accent-[#173B67]" name="activoExtra" [(ngModel)]="conceptoEdit.activo" />
+                        <span>Habilitado (genera cargos a padres)</span>
+                      </label>
+                      <div class="flex justify-end sm:col-span-2">
+                        <button
+                          type="submit"
+                          class="min-h-11 rounded-xl bg-[#173B67] px-5 py-2 text-sm font-bold text-white shadow-sm hover:bg-[#20354E] disabled:opacity-50 cursor-pointer"
+                          [disabled]="guardandoExtra() || !conceptoEdit.nombre.trim() || !conceptoEdit.monto"
+                        >
+                          {{ conceptoEditId === null ? 'Guardar concepto y generar cargos' : 'Actualizar concepto' }}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <form class="flex flex-wrap items-end justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-xs" (ngSubmit)="guardarVencimientoPension()">
+                    <label class="grid min-w-[220px] flex-1 gap-1.5 text-xs font-bold uppercase tracking-wide text-slate-600">
+                      Día de vencimiento para nuevas pensiones (1–28)
+                      <input
+                        class="min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 focus:border-[#173B67] focus:outline-none focus:ring-2 focus:ring-[#173B67]/15"
+                        type="number"
+                        name="diaPension"
+                        [(ngModel)]="diaPension"
+                        min="1"
+                        max="28"
+                        step="1"
+                        required
+                      />
+                    </label>
+                    <button
+                      type="submit"
+                      class="min-h-11 rounded-xl border border-[#173B67] bg-white px-5 py-2 text-sm font-bold text-[#173B67] hover:bg-slate-50 disabled:opacity-50 cursor-pointer"
+                      [disabled]="guardandoExtra() || diaPension < 1 || diaPension > 28"
+                    >
+                      Guardar día
+                    </button>
+                  </form>
+                </div>
+              }
+            </div>
+          </section>
+        </div>
       }
 
       @if (!gestionaExtraordinarios()) {
@@ -207,8 +405,8 @@ template: `
         </div>
       }
 
-      @if (error() && !checkoutModalAbierto()) { <p class="flex items-start gap-3 rounded-xl border px-4 py-3 font-sans text-sm leading-6 border-[#fca5a5] bg-[#fee2e2] text-[#7f1d1d]" role="alert">{{ error() }}</p> }
-      @if (mensaje()) { <p class="flex items-start gap-3 rounded-xl border px-4 py-3 font-sans text-sm leading-6 border-[#86efac] bg-[#dcfce7] text-[#14532d]" role="status">{{ mensaje() }}</p> }
+      @if (error() && !checkoutModalAbierto() && !modalExtraordinariosAbierto()) { <p class="flex items-start gap-3 rounded-xl border px-4 py-3 font-sans text-sm leading-6 border-[#fca5a5] bg-[#fee2e2] text-[#7f1d1d]" role="alert">{{ error() }}</p> }
+      @if (mensaje() && !modalExtraordinariosAbierto()) { <p class="flex items-start gap-3 rounded-xl border px-4 py-3 font-sans text-sm leading-6 border-[#86efac] bg-[#dcfce7] text-[#14532d]" role="status">{{ mensaje() }}</p> }
 
       <!-- Modal de Pago en Línea con Mercado Pago -->
       @if (checkoutObligacionId() !== null || checkoutObligacionesLote().length > 0) {
@@ -373,43 +571,45 @@ template: `
               </div>
             }
           </div>
-          <div class="flex flex-col flex-wrap items-stretch gap-3 sm:flex-row sm:items-center">
+          <div class="flex w-full min-w-0 flex-col flex-wrap items-stretch gap-3 sm:w-auto sm:flex-row sm:items-center">
             @if (esAuxiliar()) {
-              <label class="grid gap-1 text-sm">Consultar cobros de un estudiante
-                <select class="min-h-11 rounded-lg border p-2" [(ngModel)]="matriculaId" (ngModelChange)="cargarObligaciones()">
-                  <option [ngValue]="0">Selecciona un estudiante</option>
+              <label class="grid w-full min-w-0 gap-1 text-sm sm:w-auto sm:max-w-[260px]">Consultar cobros de un estudiante
+                <select class="min-h-11 w-full min-w-0 max-w-full rounded-lg border p-2" [(ngModel)]="matriculaId" (ngModelChange)="cambiarMatriculaFiltro()">
+                  <option [ngValue]="0">Todos los estudiantes</option>
                   @for (matricula of matriculasExtra(); track matricula.id) {
                     <option [ngValue]="matricula.id">{{ matricula.estudiante }} · {{ matricula.anio }}</option>
                   }
                 </select>
               </label>
             } @else if (esAdministrativo()) {
-              <div class="flex flex-wrap items-center gap-2">
+              <div class="flex w-full min-w-0 flex-wrap items-center gap-2 sm:w-auto">
                 @if (matriculasExtra().length > 0) {
                   <select
                     aria-label="Seleccionar estudiante matriculado"
-                    class="min-h-11 rounded-xl border border-ui-control-border bg-ui-surface px-3 py-2 text-xs text-ui-text"
+                    class="min-h-11 w-full min-w-0 max-w-full rounded-xl border border-ui-control-border bg-ui-surface px-3 py-2 text-xs text-ui-text sm:w-auto sm:max-w-[260px]"
                     [(ngModel)]="matriculaId"
-                    (ngModelChange)="cargarObligaciones()"
+                    (ngModelChange)="cambiarMatriculaFiltro()"
                   >
-                    <option [ngValue]="0">Buscar por alumno...</option>
+                    <option [ngValue]="0">Todos los estudiantes</option>
                     @for (matricula of matriculasExtra(); track matricula.id) {
                       <option [ngValue]="matricula.id">{{ matricula.estudiante }} (#{{ matricula.id }})</option>
                     }
                   </select>
                 }
-                <label class="text-xs text-ui-action" for="tes-matricula-id">Matrícula ID:</label>
-                <input id="tes-matricula-id" appFormatoEntrada="entero"
-                  type="number"
-                  [(ngModel)]="matriculaId" aria-label="Matrícula ID:"
-                  (change)="cargarObligaciones()"
-                class="w-full sm:w-24 rounded-lg border border-ui-control-border bg-ui-surface px-2 py-1 text-base text-ui-text focus:outline-none min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-focus focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus)] max-[639px]:text-base box-border !min-h-11 !py-1 !text-base !leading-6"
-                />
+                <div class="flex w-full min-w-0 items-center gap-2 sm:w-auto">
+                  <label class="shrink-0 text-xs font-semibold text-ui-action" for="tes-matricula-id">Matrícula ID:</label>
+                  <input id="tes-matricula-id" appFormatoEntrada="entero"
+                    type="number"
+                    [(ngModel)]="matriculaId" aria-label="Matrícula ID:"
+                    (change)="cambiarMatriculaFiltro()"
+                  class="min-w-0 flex-1 sm:w-24 sm:flex-none rounded-xl border border-ui-control-border bg-ui-surface px-3 py-[10px] text-base text-ui-text transition-colors focus:border-ui-focus focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus)] box-border !min-h-11 !py-1 !leading-6"
+                  />
+                </div>
               </div>
             }
             <select
-              [(ngModel)]="filtroEstado" aria-label="Estado del pago"
-              class="w-full rounded-xl border border-ui-control-border bg-ui-surface px-3 py-1.5 text-xs text-ui-text focus:outline-none sm:w-auto min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-ui-focus focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus)] max-[639px]:text-base !min-h-11 !py-[6px] !text-base"
+              [(ngModel)]="filtroEstado" (ngModelChange)="cambiarFiltroEstado()" aria-label="Estado del pago"
+              class="w-full min-w-0 max-w-full rounded-xl border border-ui-control-border bg-ui-surface px-3 py-[6px] text-base text-ui-text transition-colors focus:border-ui-focus focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus)] sm:w-auto !min-h-11"
             >
               <option value="TODOS">Todos los Estados</option>
               <option value="PAGADO_TOTAL">Pagado</option>
@@ -419,39 +619,38 @@ template: `
             </select>
             <button
               (click)="cargarObligaciones()"
-              class="cursor-pointer rounded-xl border border-ui-divider bg-ui-surface-soft px-3 py-1.5 text-xs font-semibold text-ui-text hover:bg-ui-surface-soft box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]"
+              class="w-full sm:w-auto cursor-pointer rounded-xl border border-ui-divider bg-ui-surface-soft px-3 py-1.5 font-semibold text-ui-text hover:bg-ui-surface-soft box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm leading-[1.25] text-center align-middle"
             >
               ↻ Actualizar
             </button>
           </div>
         </div>
 
-        <p class="hidden min-[601px]:max-[1399px]:block m-0 bg-ui-surface-soft px-3 py-[9px] text-ui-action text-[11px] font-semibold">Desliza horizontalmente para ver todas las columnas</p>
-        <div class="max-w-full overflow-x-auto rounded-2xl border border-ui-divider bg-ui-surface min-w-0 overflow-x-auto">
-          <table class="w-full border-collapse text-left font-sans text-base leading-6 text-ui-text [&_th]:px-4 [&_th]:py-3 [&_th]:align-middle [&_th]:border-b [&_th]:border-ui-divider [&_td]:px-4 [&_td]:py-3 [&_td]:align-middle [&_td]:border-b [&_td]:border-ui-divider [&_th]:bg-ui-surface-soft [&_th]:text-[13px] [&_th]:font-semibold [&_tr:last-child_td]:border-b-0 w-full min-w-[1100px] text-left text-xs min-[1400px]:min-w-0 min-[1400px]:table-fixed [&_thead]:!bg-ui-surface-soft [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-ui-surface-soft" data-mobile-table-cards="" data-treasury-mobile="">
-            <thead class="border-b border-ui-divider bg-ui-surface-soft text-ui-action uppercase tracking-[.04em] font-extrabold">
+        <div class="w-full min-w-0 overflow-x-auto bg-ui-surface">
+          <table class="w-full border-collapse text-left font-sans text-sm text-ui-text [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:bg-ui-surface-soft/70" data-mobile-table-cards="" data-treasury-mobile="">
+            <thead class="border-b border-ui-divider bg-ui-surface-soft text-xs font-extrabold uppercase tracking-wider text-ui-action">
               <tr>
-                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[7%]">
+                <th class="px-4 py-3.5 whitespace-nowrap">
                   @if (puedeEjecutarPagos() && obligacionesPendientes().length > 0) {
                     <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                      <input type="checkbox" [checked]="todasPendientesSeleccionadas()" (change)="alternarTodasPendientes($any($event.target).checked)" aria-label="Seleccionar todas las cuotas pendientes" />
+                      <input type="checkbox" class="size-4 accent-[#173B67]" [checked]="todasPendientesSeleccionadas()" (change)="alternarTodasPendientes($any($event.target).checked)" aria-label="Seleccionar todas las cuotas pendientes" />
                       <span>Sel.</span>
                     </label>
                   } @else {
                     <span>N.º</span>
                   }
                 </th>
-                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[14%]">Estudiante</th>
-                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-w-[190px] min-[1400px]:!py-2 min-[1400px]:w-[16%] min-[1400px]:min-w-0">Concepto</th>
-                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[9%]">Monto</th>
-                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[10%]">Saldo</th>
-                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[9%]">Vencimiento</th>
-                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-[1400px]:!py-2 min-[1400px]:w-[11%]">Estado</th>
-                <th class="!px-[5px] !py-3 !text-[11px] font-extrabold whitespace-nowrap min-w-[130px] min-[1400px]:!py-2 min-[1400px]:w-[9%] min-[1400px]:min-w-0 min-[1400px]:whitespace-normal">Boleta</th>
-                <th class="sticky right-0 z-[5] !px-[5px] !py-3 !text-[11px] font-extrabold text-right whitespace-nowrap min-w-[170px] bg-ui-surface-soft shadow-[-8px_0_12px_rgb(16_36_71_/_10%)] min-[1400px]:static min-[1400px]:z-auto min-[1400px]:!py-2 min-[1400px]:w-[15%] min-[1400px]:min-w-0 min-[1400px]:shadow-none">Acción</th>
+                <th class="min-w-[190px] px-4 py-3.5 whitespace-nowrap">Estudiante</th>
+                <th class="min-w-[210px] px-4 py-3.5 whitespace-nowrap">Concepto</th>
+                <th class="px-4 py-3.5 text-right whitespace-nowrap">Monto</th>
+                <th class="px-4 py-3.5 text-right whitespace-nowrap">Saldo</th>
+                <th class="px-4 py-3.5 whitespace-nowrap">Vencimiento</th>
+                <th class="px-4 py-3.5 whitespace-nowrap">Estado</th>
+                <th class="px-4 py-3.5 whitespace-nowrap">Boleta</th>
+                <th class="px-4 py-3.5 text-right whitespace-nowrap">Acción</th>
               </tr>
             </thead>
-            <tbody class="text-ui-action">
+            <tbody class="divide-y divide-ui-divider text-ui-action">
               @if (cargando()) {
                 <tr>
                   <td colspan="9" class="py-10 text-center text-ui-muted">
@@ -462,40 +661,40 @@ template: `
                 @for (grupo of gruposObligaciones(); track grupo.id) {
                   @if (!gestionaExtraordinarios()) {
                     <tr>
-                      <th colspan="9" scope="row" class="bg-gradient-to-r from-[#f1f5f9] to-white p-3 text-left text-sm font-bold text-[#173B67]">
+                      <th colspan="9" scope="row" class="bg-gradient-to-r from-[#f1f5f9] to-white px-4 py-3 text-left text-sm font-bold text-[#173B67]">
                         {{ grupo.nombre }}
                       </th>
                     </tr>
                   }
                   @for (item of grupo.filas; track item.id) {
-                  <tr class="transition hover:[&>td]:bg-ui-surface-soft" [class.bg-[#f0f9ff]/60]="estaSeleccionadaAdelanto(item.id)">
-                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2 font-mono text-ui-muted" data-label="Selección">
+                  <tr class="align-middle transition-colors" [class.bg-[#f0f9ff]/60]="estaSeleccionadaAdelanto(item.id)">
+                    <td class="px-4 py-3.5 font-mono text-xs whitespace-nowrap text-ui-muted" data-label="Selección">
                       @if (puedeEjecutarPagos() && esPagable(item)) {
                         <label class="inline-flex items-center gap-1.5 cursor-pointer">
-                          <input type="checkbox" [checked]="estaSeleccionadaAdelanto(item.id)" (change)="alternarSeleccionAdelanto(item.id, $any($event.target).checked)" [attr.aria-label]="'Seleccionar ' + item.concepto" />
+                          <input type="checkbox" class="size-4 accent-[#173B67]" [checked]="estaSeleccionadaAdelanto(item.id)" (change)="alternarSeleccionAdelanto(item.id, $any($event.target).checked)" [attr.aria-label]="'Seleccionar ' + item.concepto" />
                           <span>#{{ item.id }}</span>
                         </label>
                       } @else {
                         <span>#{{ item.id }}</span>
                       }
                     </td>
-                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2 font-bold text-ui-text" data-label="Estudiante">
-                      {{ item.estudiante }}
-                      <span class="block text-[11px] font-normal text-ui-muted">Matrícula #{{ item.matriculaId }}</span>
+                    <td class="min-w-[190px] px-4 py-3.5 font-bold text-ui-text" data-label="Estudiante">
+                      <span class="block leading-snug">{{ item.estudiante }}</span>
+                      <span class="mt-0.5 block text-[11px] font-medium text-ui-muted">Matrícula #{{ item.matriculaId }}</span>
                     </td>
-                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2" data-label="Concepto">
-                      <span class="inline-block max-w-[260px] align-middle rounded bg-ui-surface-soft px-2 py-0.5 text-ui-text font-medium whitespace-normal leading-[1.35] max-[600px]:!whitespace-nowrap min-[1400px]:max-w-full">
+                    <td class="min-w-[210px] px-4 py-3.5" data-label="Concepto">
+                      <span class="inline-block rounded-lg border border-ui-divider/70 bg-ui-surface-soft px-2.5 py-1 text-xs font-semibold leading-snug text-ui-text break-words">
                         {{ item.concepto }}
                       </span>
                     </td>
-                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2 font-mono font-bold text-ui-text" data-label="Monto">
+                    <td class="px-4 py-3.5 text-right font-mono font-bold tabular-nums whitespace-nowrap text-ui-text" data-label="Monto">
                       S/ {{ item.monto | number:'1.2-2' }}
                     </td>
-                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2 font-mono font-semibold text-ui-warning-text" data-label="Saldo">
+                    <td class="px-4 py-3.5 text-right font-mono font-bold tabular-nums whitespace-nowrap text-ui-warning-text" data-label="Saldo">
                       S/ {{ item.saldoPendiente | number:'1.2-2' }}
                     </td>
-                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2 font-mono whitespace-nowrap text-ui-action" data-label="Vencimiento">{{ item.fechaVencimiento | uiDatePe }}</td>
-                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2" data-label="Estado">
+                    <td class="px-4 py-3.5 font-mono text-xs whitespace-nowrap text-ui-action" data-label="Vencimiento">{{ item.fechaVencimiento | uiDatePe }}</td>
+                    <td class="px-4 py-3.5 whitespace-nowrap" data-label="Estado">
                       @switch (item.estado) {
                         @case ('PAGADO_TOTAL') {
                           <ui-status-badge tone="success" label="PAGADO" />
@@ -515,26 +714,28 @@ template: `
                         @default { <span class="text-ui-action">{{ item.estado }}</span> }
                       }
                     </td>
-                    <td class="px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 min-[1400px]:!py-2" data-label="Boleta">
+                    <td class="px-4 py-3.5 whitespace-nowrap" data-label="Boleta">
                       @if (item.estado === 'PAGADO_TOTAL' && (!esAuxiliar() || esExtraordinario(item))) {
-                        <button type="button" class="min-h-9 rounded-lg border border-ui-divider bg-white px-2.5 py-1 text-xs font-semibold text-[#173B67] hover:bg-ui-surface-soft cursor-pointer"
+                        <button type="button" class="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-ui-divider bg-white px-3 py-1.5 text-xs font-semibold whitespace-nowrap text-[#173B67] shadow-2xs transition hover:bg-ui-surface-soft cursor-pointer max-[600px]:w-full max-[600px]:justify-center"
                           (click)="descargarConstancia(item)">Descargar PDF</button>
                       } @else { <span class="text-ui-muted text-xs">—</span> }
                     </td>
-                    <td class="sticky right-0 z-[3] px-[5px] py-3 min-[601px]:!px-[5px] min-[601px]:!py-3 text-right min-w-[170px] min-[601px]:min-w-[176px] bg-ui-surface shadow-[-8px_0_12px_rgb(16_36_71_/_10%)] min-[1400px]:static min-[1400px]:z-auto min-[1400px]:!py-2 min-[1400px]:w-[15%] min-[1400px]:min-w-0 min-[1400px]:shadow-none" data-label="Acción">
+                    <td class="px-4 py-3.5 text-right whitespace-nowrap" data-label="Acción">
                       @if (esPagable(item)) {
-                        <div class="flex flex-wrap justify-end gap-[7px] max-[600px]:w-full max-[600px]:flex-col max-[600px]:items-stretch">
+                        <div class="flex flex-wrap items-center justify-end gap-2 max-[600px]:w-full max-[600px]:flex-col max-[600px]:items-stretch">
                           @if (puedeEjecutarPagos()) { <button
+                            type="button"
                             (click)="pagarConMercadoPago(item)"
                             [disabled]="pagandoId() !== null || cobrandoId() !== null || preparandoAdelanto()"
                             [attr.aria-label]="pagandoId() === item.id ? 'Preparando pago con Mercado Pago' : 'Pagar con Mercado Pago'"
-                            class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-[rgb(37_99_235_/_35%)] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-[#e2e8f0] disabled:bg-[#f1f5f9] disabled:text-[#64748b] aria-disabled:cursor-not-allowed aria-disabled:border-[#e2e8f0] aria-disabled:bg-[#f1f5f9] aria-disabled:text-[#64748b] bg-[#009EE3] text-white hover:bg-[#007eb5] !min-h-10 !px-[10px] !py-2 !text-xs !font-bold whitespace-nowrap max-[600px]:!min-h-11 max-[600px]:!w-full box-border inline-flex min-w-0 min-h-10 items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:min-h-11"
+                            class="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-[#009EE3] px-3 py-2 text-xs font-bold whitespace-nowrap text-white shadow-2xs transition hover:bg-[#007eb5] disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-500 cursor-pointer max-[600px]:min-h-11 max-[600px]:w-full"
                           ><span>{{ pagandoId() === item.id ? 'Preparando...' : 'Pagar con MP' }}</span><span class="sr-only"> Mercado Pago</span></button> }
                           @if (puedeCobrar(item)) {
                             <button
+                              type="button"
                               (click)="cobrar(item)"
                               [disabled]="cobrandoId() !== null || pagandoId() !== null"
-                              class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-ui-divider disabled:bg-ui-surface-soft disabled:text-ui-muted aria-disabled:cursor-not-allowed aria-disabled:border-ui-divider aria-disabled:bg-ui-surface-soft aria-disabled:text-ui-muted border-ui-divider bg-ui-surface text-ui-action hover:bg-ui-surface-soft !min-h-10 !px-[10px] !py-2 !text-xs !font-normal whitespace-nowrap max-[600px]:!min-h-11 max-[600px]:!w-full box-border inline-flex min-w-0 min-h-10 items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:min-h-11"
+                              class="inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-ui-control-border bg-white px-3 py-2 text-xs font-semibold whitespace-nowrap text-ui-action transition hover:bg-ui-surface-soft disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer max-[600px]:min-h-11 max-[600px]:w-full"
                             >Cobrar en Caja</button>
                           }
                         </div>
@@ -549,7 +750,7 @@ template: `
                 } @empty {
                   <tr>
                     <td colspan="9" class="py-12 text-center text-ui-muted">
-                      <div class="grid justify-items-center rounded-2xl border border-ui-divider bg-ui-surface p-6 text-center grid min-h-[180px] content-center justify-items-center gap-[10px] p-6 text-center text-ui-action"><p class="m-0 text-ui-text text-sm font-[750]">No se encontraron obligaciones de cobro.</p><p class="m-0 max-w-[48ch] text-ui-muted text-xs leading-[1.5]">{{ gestionaExtraordinarios() ? 'Selecciona un estudiante o genera un concepto para visualizar los cargos.' : 'No tienes cuotas pendientes o registradas en este filtro.' }}</p></div>
+                      <div class="grid min-h-[180px] content-center justify-items-center gap-[10px] rounded-2xl border border-ui-divider bg-ui-surface p-6 text-center text-ui-action"><p class="m-0 text-ui-text text-sm font-[750]">No se encontraron obligaciones de cobro.</p><p class="m-0 max-w-[48ch] text-ui-muted text-xs leading-[1.5]">{{ gestionaExtraordinarios() ? 'Selecciona un estudiante o genera un cobro para visualizar los cargos.' : 'No tienes cuotas pendientes o registradas en este filtro.' }}</p></div>
                     </td>
                   </tr>
                 }
@@ -578,6 +779,8 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
   readonly esAdministrativo = computed(() => this.authStore.hasAnyRole(['DIRECCION', 'SECRETARIA', 'ADMINISTRADOR']));
   readonly esAuxiliar = computed(() => this.authStore.hasRole('AUXILIAR') && !this.esAdministrativo());
   readonly gestionaExtraordinarios = computed(() => this.esAdministrativo() || this.esAuxiliar());
+  readonly modalExtraordinariosAbierto = signal(false);
+  readonly tabExtraordinarios = signal<'asignar' | 'catalogo'>('asignar');
   readonly conceptosExtra = signal<ConceptoCobroResponseDto[]>([]);
   readonly extrasActivos = computed(() => this.conceptosExtra().filter(c => c.activo !== false));
   readonly matriculasExtra = signal<MatriculaParaCobro[]>([]);
@@ -663,11 +866,21 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
 
   cambiarVistaTesoreria(vista: 'por-cobrar' | 'caja-dia' | 'comprobantes'): void {
     this.vistaActiva.set(vista);
+    this.paginaActual.set(1);
     if (vista === 'comprobantes') {
       this.filtroEstado = 'PAGADO_TOTAL';
     } else {
       this.filtroEstado = 'TODOS';
     }
+  }
+
+  cambiarMatriculaFiltro(): void {
+    this.paginaActual.set(1);
+    this.cargarObligaciones();
+  }
+
+  cambiarFiltroEstado(): void {
+    this.paginaActual.set(1);
   }
 
   obligacionesFiltradas(): ObligacionCobro[] {
@@ -781,7 +994,7 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
         );
         this.editarConceptoExtra(null);
         this.cargarConceptosExtra();
-        if (this.matriculaId > 0) this.cargarObligaciones();
+        this.cargarObligaciones();
       },
       error: () => { this.guardandoExtra.set(false); this.error.set('No se pudo guardar el concepto.'); }
     });
@@ -798,6 +1011,18 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
     });
   }
 
+  abrirModalExtraordinarios(): void {
+    if (!this.gestionaExtraordinarios()) return;
+    this.error.set(null);
+    this.mensaje.set(null);
+    this.tabExtraordinarios.set('asignar');
+    this.modalExtraordinariosAbierto.set(true);
+  }
+
+  cerrarModalExtraordinarios(): void {
+    this.modalExtraordinariosAbierto.set(false);
+  }
+
   generarExtraordinarios() {
     if (!this.gestionaExtraordinarios() || this.guardandoExtra() || !this.conceptoExtraId
       || !this.seleccionExtra.size || !this.vencimientoExtra) return;
@@ -807,6 +1032,7 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
       next: filas => {
         this.guardandoExtra.set(false);
         this.seleccionExtra.clear();
+        this.modalExtraordinariosAbierto.set(false);
         this.mensaje.set('Cobro disponible para ' + filas.length + ' estudiante(s).');
         if (filas.length) this.matriculaId = filas[0].matriculaId;
         this.cargarObligaciones();
@@ -854,7 +1080,6 @@ export class TesoreriaComponent implements OnInit, OnDestroy {
   }
 
   cargarObligaciones(): void {
-    if (this.gestionaExtraordinarios() && !this.matriculaId) { this.obligaciones.set([]); return; }
     this.cargando.set(true);
     const solicitud = this.esAdministrativo()
       ? this.tesoreriaService.listarObligaciones(this.matriculaId)

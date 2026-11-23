@@ -6,41 +6,41 @@
 
 :root {
   color-scheme: light;
-  --ui-canvas: #FAF9F5;
-  --ui-workspace: #F4F7F4;
+  --ui-canvas: #F8FAFC;
+  --ui-workspace: #F1F5F9;
   --ui-surface: #FFFFFF;
-  --ui-surface-soft: #E7F3F0;
-  --ui-footer-bg: #173B67;
-  --ui-footer-text: #FFFFFF;
-  --ui-footer-muted: #E7F3F0;
-  --ui-logo-blue: #173B67;
-  --ui-gold: #8A672F;
-  --ui-text: #20354E;
-  --ui-muted: #526579;
-  --ui-action: #173B67;
+  --ui-surface-soft: #F1F5F9;
+  --ui-footer-bg: #0A192F;
+  --ui-footer-text: #F8FAFC;
+  --ui-footer-muted: #CBD5E1;
+  --ui-logo-blue: #0F294D;
+  --ui-gold: #1E3A8A;
+  --ui-text: #0F172A;
+  --ui-muted: #475569;
+  --ui-action: #0F294D;
   --ui-action-text: #FFFFFF;
-  --ui-accent: #A9352D;
+  --ui-accent: #B91C1C;
   --ui-accent-text: #FFFFFF;
-  --ui-control-border: #788C9A;
-  --ui-divider: #D2DED9;
-  --ui-focus: #2F6797;
-  --ui-focus-shadow: rgb(23 59 103 / 16%);
-  --ui-card-shadow: 0 6px 20px rgb(21 54 88 / 8%);
-  --ui-dialog-shadow: 0 20px 56px rgb(21 54 88 / 14%);
-  --ui-skeleton-base: #DDE8E4;
-  --ui-skeleton-highlight: #FAF9F5;
-  --ui-success-bg: #E4F2E8;
-  --ui-success-text: #1D5E3C;
-  --ui-success-border: #74A388;
-  --ui-warning-bg: #FFF2D8;
-  --ui-warning-text: #744F0A;
-  --ui-warning-border: #B88932;
-  --ui-error-bg: #FCE8E6;
-  --ui-error-text: #83231D;
-  --ui-error-border: #C77A72;
-  --ui-info-bg: #E8F2F8;
-  --ui-info-text: #1C4D70;
-  --ui-info-border: #779EB7;
+  --ui-control-border: #CBD5E1;
+  --ui-divider: #E2E8F0;
+  --ui-focus: #1D4ED8;
+  --ui-focus-shadow: rgb(29 78 216 / 15%);
+  --ui-card-shadow: 0 1px 3px rgb(15 23 42 / 6%), 0 8px 24px -4px rgb(15 41 77 / 8%);
+  --ui-dialog-shadow: 0 24px 64px -12px rgb(10 25 47 / 28%);
+  --ui-skeleton-base: #E2E8F0;
+  --ui-skeleton-highlight: #F8FAFC;
+  --ui-success-bg: #ECFDF5;
+  --ui-success-text: #065F46;
+  --ui-success-border: #6EE7B7;
+  --ui-warning-bg: #FFFBEB;
+  --ui-warning-text: #92400E;
+  --ui-warning-border: #FCD34D;
+  --ui-error-bg: #FEF2F2;
+  --ui-error-text: #991B1B;
+  --ui-error-border: #FCA5A5;
+  --ui-info-bg: #F0F9FF;
+  --ui-info-text: #075985;
+  --ui-info-border: #7DD3FC;
 }
 
 :root.theme-dark {
@@ -119,15 +119,15 @@
   --color-ui-info-border: var(--ui-info-border);
   --font-sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-display: 'Newsreader', Georgia, serif;
-  --text-xs: 1rem;
+  --text-xs: clamp(0.78rem, 0.72rem + 0.22vw, 0.95rem);
   --text-xs--line-height: 1.45;
-  --text-sm: 1.125rem;
+  --text-sm: clamp(0.875rem, 0.81rem + 0.24vw, 1.0625rem);
   --text-sm--line-height: 1.5;
-  --text-base: 1.25rem;
+  --text-base: clamp(0.975rem, 0.9rem + 0.28vw, 1.1875rem);
   --text-base--line-height: 1.55;
-  --text-lg: 1.375rem;
+  --text-lg: clamp(1.1rem, 1.02rem + 0.32vw, 1.325rem);
   --text-lg--line-height: 1.5;
-  --text-xl: 1.5rem;
+  --text-xl: clamp(1.225rem, 1.12rem + 0.4vw, 1.5rem);
   --text-xl--line-height: 1.4;
   --radius-control: 8px;
   --radius-card: 16px;
@@ -145,8 +145,34 @@
 }
 
 html {
-  font-size: 17px;
+  font-size: clamp(15.5px, 0.92rem + 0.25vw, 17.5px);
   -webkit-text-size-adjust: 100%;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+*,
+*::before,
+*::after,
+html,
+body {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+*::-webkit-scrollbar,
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+.school-admin-sidebar nav,
+.school-admin-main-scroll,
+dialog[open],
+[role="dialog"][aria-modal="true"],
+.mat-mdc-dialog-content {
+  overscroll-behavior: contain !important;
 }
 
 body {
@@ -173,13 +199,59 @@ h6 {
 }
 
 @keyframes screen-enter {
-  from { opacity: 0; transform: translate3d(0, 8px, 0) scale(.996); }
+  from { opacity: 0; transform: translate3d(0, 10px, 0) scale(.995); }
   to { opacity: 1; transform: none; }
 }
-router-outlet + * { animation: screen-enter 360ms cubic-bezier(.2, .7, .2, 1); }
+router-outlet + * { animation: screen-enter 320ms cubic-bezier(.2, .75, .25, 1); }
 @keyframes route-progress {
   from { transform: translateX(-110%); }
   to { transform: translateX(285%); }
+}
+@keyframes modal-3d-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes view-swap-3d {
+  from {
+    opacity: 0;
+    transform: translate3d(8px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.shuji-modal-3d-enter {
+  animation: modal-3d-enter 220ms cubic-bezier(.2, .8, .25, 1);
+  transform-origin: center top;
+}
+.shuji-view-swap-3d {
+  animation: view-swap-3d 200ms cubic-bezier(.2, .8, .25, 1);
+}
+.shuji-card-3d {
+  transition: box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+.shuji-card-3d:hover {
+  box-shadow: 0 10px 24px -10px rgb(15 41 77 / 12%), 0 2px 6px -2px rgb(15 41 77 / 6%);
+}
+.shuji-route-bar {
+  animation: route-progress 1.15s cubic-bezier(.4, 0, .2, 1) infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  router-outlet + *,
+  .shuji-modal-3d-enter,
+  .shuji-view-swap-3d {
+    animation: fade-in 150ms ease-out !important;
+  }
+  .shuji-card-3d:hover {
+    transform: none !important;
+  }
 }
 @keyframes skeleton-shimmer {
   from { background-position: 100% 0; }
@@ -200,6 +272,33 @@ dialog[open] {
   inset: 0 !important;
   margin: auto !important;
   transform: none !important;
+  overscroll-behavior: contain;
+}
+
+/* Global modal scroll lock & scroll-chaining prevention across native <dialog>,
+   custom [role="dialog"][aria-modal="true"] overlays, and Angular Material MatDialog. */
+html.cdk-global-scrollblock,
+html.cdk-global-scrollblock body,
+html:has(dialog[open]),
+html:has(dialog[open]) body,
+html:has([role="dialog"][aria-modal="true"]:not(.mat-mdc-dialog-container)),
+html:has([role="dialog"][aria-modal="true"]:not(.mat-mdc-dialog-container)) body {
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+}
+
+.modal-backdrop,
+div:has(> [role="dialog"][aria-modal="true"]),
+[role="dialog"][aria-modal="true"],
+.cdk-overlay-container,
+.cdk-overlay-backdrop,
+.cdk-overlay-pane,
+.mat-mdc-dialog-container,
+.mat-mdc-dialog-surface,
+dialog[open] :is(.modal-body, form, [class*="overflow-y-auto"], [class*="overflow-auto"]),
+[role="dialog"][aria-modal="true"] :is(.modal-body, [class*="overflow-y-auto"], [class*="overflow-auto"]),
+.mat-mdc-dialog-surface :is(.mat-mdc-dialog-content, [class*="overflow-y-auto"], [class*="overflow-auto"]) {
+  overscroll-behavior: contain;
 }
 
 /* Angular Material dialog and menu overrides. */
@@ -330,11 +429,11 @@ dialog[open] {
 }
 .admin-mobile-nav-panel .mat-mdc-menu-item.admin-mobile-nav-item .mat-mdc-menu-item-text > span { font: inherit; }
 
-/* Keep the approved tablet/desktop table minimum; the mobile card rule below resets it. */
-table[data-mobile-table-cards], table[data-mobile-table-scroll] { min-width: 620px !important; }
+/* Permitir que las tablas se adapten al ancho disponible sin forzar scroll horizontal. */
+table[data-mobile-table-cards], table[data-mobile-table-scroll], table { min-width: 0 !important; width: 100%; }
 /* Mobile table cards retain table semantics and data-labels for E2E. */
 [data-mobile-table-hint],
-[data-grade-scroll-hint] { display: none; }
+[data-grade-scroll-hint] { display: none !important; }
 @media (max-width: 600px) {
   table[data-mobile-table-cards] { display: block; width: 100%; min-width: 0 !important; border-collapse: separate; border-spacing: 0; background: transparent; }
   table[data-mobile-table-cards] thead { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
@@ -347,33 +446,26 @@ table[data-mobile-table-cards], table[data-mobile-table-scroll] { min-width: 620
   table[data-mobile-table-cards] tbody td[data-label="Vencimiento"] { color: var(--ui-muted) !important; }
   table[data-mobile-table-cards] tbody td[data-label="Código Aula"] { color: var(--ui-action) !important; }
   table[data-mobile-table-cards] tbody td::before { content: attr(data-label); color: var(--ui-muted); font: 600 11px/1.3 'IBM Plex Sans', sans-serif; letter-spacing: .015em; }
-  table[data-mobile-table-cards] tbody td[colspan] { grid-column: 1 / -1; align-items: center; text-align: center; }
+  table[data-mobile-table-cards] tbody td[colspan],
+  table[data-mobile-table-cards] tbody td[data-label="Estudiante"],
+  table[data-mobile-table-cards] tbody td[data-label="Boleta"],
+  table[data-mobile-table-cards] tbody td[data-label="Acción"],
+  table[data-mobile-table-cards] tbody td[data-label="Acciones"],
+  table[data-mobile-table-cards] tbody td:has(button) { grid-column: 1 / -1; }
+  table[data-mobile-table-cards] tbody td[colspan] { align-items: center; text-align: center; }
   table[data-treasury-mobile] tbody td[data-label="Concepto"] { grid-column: 1 / -1; }
   table[data-mobile-table-cards] tbody td:last-child { grid-column: 1 / -1; border-bottom: 0; }
   table[data-mobile-table-cards] tbody td button,
-  table[data-mobile-table-cards] tbody td a { min-height: 44px; max-width: 100%; }
+  table[data-mobile-table-cards] tbody td a { width: 100%; min-height: 44px; max-width: 100%; justify-content: center; white-space: normal !important; text-align: center; }
 }
-:is([data-enrollments-table-scroll], [data-attendance-table-scroll], [data-app-content] [class~="overflow-x-auto"]:has(> table[data-mobile-table-cards])) {
+div:has(> table),
+[data-enrollments-table-scroll],
+[data-attendance-table-scroll],
+[data-app-content] [class~="overflow-x-auto"]:has(> table[data-mobile-table-cards]) {
   min-width: 0;
   overflow-x: auto;
-  scrollbar-width: auto;
-  scrollbar-color: var(--ui-control-border) var(--ui-surface-soft);
-}
-:is([data-enrollments-table-scroll], [data-attendance-table-scroll], [data-app-content] [class~="overflow-x-auto"]:has(> table[data-mobile-table-cards]))::-webkit-scrollbar { height: 12px; }
-:is([data-enrollments-table-scroll], [data-attendance-table-scroll], [data-app-content] [class~="overflow-x-auto"]:has(> table[data-mobile-table-cards]))::-webkit-scrollbar-thumb { border: 3px solid var(--ui-surface-soft); border-radius: 999px; background: var(--ui-control-border); }
-@media (max-width: 640px) {
-  [data-enrollments-table-scroll]::before,
-  [data-attendance-table-scroll]::before { display: block; padding: 9px 12px; background: var(--ui-surface-soft); color: var(--ui-text); font: 650 11px/1.4 'IBM Plex Sans', sans-serif; content: 'Desliza horizontalmente para ver todas las columnas'; }
-}
-@media (max-width: 600px) {
-  [data-enrollments-table-scroll]::before,
-  [data-attendance-table-scroll]::before { display: none; content: none; }
-}
-@media (max-width: 1200px) {
-  [data-grade-scroll-hint] { display: block; margin: 0 0 8px; color: var(--ui-muted); font: 500 12px/1.45 'IBM Plex Sans', sans-serif; }
-  table[data-mobile-table-scroll] th:first-child,
-  table[data-mobile-table-scroll] td:first-child { position: sticky; left: 0; z-index: 2; background: var(--ui-surface); box-shadow: 5px 0 10px rgb(16 36 71 / 9%); }
-  table[data-mobile-table-scroll] th:first-child { z-index: 3; background: var(--ui-surface-soft); }
+  overflow-y: visible !important;
+  overscroll-behavior-y: auto !important;
 }
 
 
@@ -545,36 +637,37 @@ table[data-mobile-table-cards], table[data-mobile-table-scroll] { min-width: 620
 
 .admission-page.public-landing > .final-cta,
 .admission-page.public-landing > .public-footer { display: none !important; }
-/* Hybrid archive + atlas + registry: scoped light treatment; public landing remains unchanged. */
+/* Paleta institucional formal: Azul Noche / Marino y Gris Claro (Gestalt figura-fondo y jerarquía ejecutiva). */
 :root:not(.theme-dark) .school-admin-shell,
 :root:not(.theme-dark) .ui-login-page,
 :root:not(.theme-dark) .modal-backdrop .ui-admission-wizard {
-  --ui-canvas: #FAF9F5;
-  --ui-workspace: #F0F4F2;
-  --ui-surface: #FFFEFA;
-  --ui-surface-soft: #E5F1EE;
-  --ui-text: #19334D;
-  --ui-muted: #526579;
-  --ui-action: #173B67;
+  --ui-canvas: #F8FAFC;
+  --ui-workspace: #F1F5F9;
+  --ui-surface: #FFFFFF;
+  --ui-surface-soft: #F1F5F9;
+  --ui-text: #0F172A;
+  --ui-muted: #475569;
+  --ui-action: #0F294D;
   --ui-action-text: #FFFFFF;
-  --ui-gold: #85632F;
-  --ui-divider: #D4DFDA;
-  --ui-control-border: #748995;
-  --ui-focus: #2F6797;
-  --ui-card-shadow: 0 5px 16px rgb(23 59 103 / 7%);
+  --ui-gold: #1E3A8A;
+  --ui-divider: #E2E8F0;
+  --ui-control-border: #CBD5E1;
+  --ui-focus: #1D4ED8;
+  --ui-card-shadow: 0 1px 3px rgb(15 23 42 / 6%), 0 8px 24px -4px rgb(15 41 77 / 8%);
 }
 
 :root:not(.theme-dark) .school-admin-shell .school-admin-sidebar {
-  background-color: #173B67 !important;
-  color: #F7FAFC;
-  border-right-color: rgb(255 255 255 / 14%) !important;
+  background: linear-gradient(180deg, #0A192F 0%, #0F2547 55%, #14325E 100%) !important;
+  color: #F8FAFC;
+  border-right: 1px solid rgb(255 255 255 / 10%) !important;
+  box-shadow: 4px 0 24px -8px rgb(10 25 47 / 28%);
 }
-:root:not(.theme-dark) .school-admin-sidebar > a { border-bottom: 1px solid rgb(255 255 255 / 14%); }
+:root:not(.theme-dark) .school-admin-sidebar > a { border-bottom: 1px solid rgb(255 255 255 / 12%); }
 :root:not(.theme-dark) .school-admin-sidebar > a > span > span:first-child { color: #FFFFFF !important; }
-:root:not(.theme-dark) .school-admin-sidebar > a > span > span:last-child { color: #D5E2EB !important; }
-:root:not(.theme-dark) .school-admin-sidebar nav > p { color: #C8D8E2 !important; }
+:root:not(.theme-dark) .school-admin-sidebar > a > span > span:last-child { color: #CBD5E1 !important; }
+:root:not(.theme-dark) .school-admin-sidebar nav > p { color: #94A3B8 !important; }
 :root:not(.theme-dark) .school-admin-sidebar nav > a {
-  color: #E7EFF4 !important;
+  color: #E2E8F0 !important;
   border-left-color: transparent;
 }
 :root:not(.theme-dark) .school-admin-sidebar nav > a:hover:not(.router-link-active) {
@@ -584,46 +677,44 @@ table[data-mobile-table-cards], table[data-mobile-table-scroll] { min-width: 620
 :root:not(.theme-dark) .school-admin-sidebar nav > a.router-link-active {
   color: #FFFFFF !important;
   background-color: rgb(255 255 255 / 14%) !important;
-  border-left-color: var(--ui-gold) !important;
+  border-left-color: #38BDF8 !important;
+  font-weight: 600;
 }
 :root:not(.theme-dark) .school-admin-sidebar > div:last-child {
-  border-color: rgb(255 255 255 / 20%) !important;
-  background-color: rgb(255 255 255 / 9%) !important;
+  border-color: rgb(255 255 255 / 16%) !important;
+  background-color: rgb(255 255 255 / 8%) !important;
 }
 :root:not(.theme-dark) .school-admin-sidebar > div:last-child .text-ui-text { color: #FFFFFF !important; }
-:root:not(.theme-dark) .school-admin-sidebar > div:last-child .text-ui-muted { color: #D5E2EB !important; }
+:root:not(.theme-dark) .school-admin-sidebar > div:last-child .text-ui-muted { color: #CBD5E1 !important; }
 :root:not(.theme-dark) .school-admin-sidebar > div:last-child span.bg-ui-action {
   background-color: rgb(255 255 255 / 16%) !important;
   color: #FFFFFF !important;
 }
 :root:not(.theme-dark) .school-admin-sidebar > div:last-child .mat-mdc-button,
 :root:not(.theme-dark) .school-admin-sidebar > div:last-child .mat-mdc-button .mdc-button__label { color: #FFFFFF !important; }
-:root:not(.theme-dark) .school-admin-sidebar > div:last-child .mat-mdc-button:hover { background-color: rgb(255 255 255 / 10%) !important; }
+:root:not(.theme-dark) .school-admin-sidebar > div:last-child .mat-mdc-button:hover { background-color: rgb(255 255 255 / 12%) !important; }
 :root:not(.theme-dark) .school-admin-topbar {
-  background-color: var(--ui-canvas) !important;
-  border-bottom: 2px solid var(--ui-gold) !important;
+  background-color: rgb(255 255 255 / 95%) !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  box-shadow: 0 1px 2px rgb(15 23 42 / 4%);
 }
 :root:not(.theme-dark) .school-admin-workspace { background-color: var(--ui-workspace) !important; }
-:root:not(.theme-dark) .school-admin-workspace h1 {
-  color: var(--ui-text);
-  font-family: var(--font-display);
-  font-weight: 600;
+:root:not(.theme-dark) .school-admin-workspace h1,
+:root:not(.theme-dark) .school-admin-workspace h2,
+:root:not(.theme-dark) .school-admin-workspace h3 {
+  font-family: var(--font-sans);
+  font-weight: 700;
   letter-spacing: -.025em;
   text-wrap: balance;
 }
-:root:not(.theme-dark) .school-admin-workspace h2 {
-  color: var(--ui-text);
-  font-family: var(--font-display);
-  text-wrap: balance;
-}
-:root:not(.theme-dark) .school-admin-workspace table thead tr { background-color: var(--ui-surface-soft); }
+:root:not(.theme-dark) .school-admin-workspace table thead tr { background-color: #F1F5F9; }
 :root:not(.theme-dark) .school-admin-workspace table thead th {
-  color: var(--ui-action);
-  border-color: var(--ui-divider);
+  color: #0F294D;
+  border-color: #E2E8F0;
 }
-:root:not(.theme-dark) .school-admin-workspace table :is(th, td) { border-color: var(--ui-divider); }
+:root:not(.theme-dark) .school-admin-workspace table :is(th, td) { border-color: #E2E8F0; }
 @media (min-width: 601px) {
-  :root:not(.theme-dark) .school-admin-workspace table tbody tr:hover { background-color: var(--ui-surface-soft); }
+  :root:not(.theme-dark) .school-admin-workspace table tbody tr:hover { background-color: #F8FAFC; }
 }
 :root:not(.theme-dark) .school-admin-workspace :is(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not(.mat-mdc-input-element), select, textarea:not(.mat-mdc-input-element)) {
   border-color: var(--ui-control-border);
@@ -632,12 +723,6 @@ table[data-mobile-table-cards], table[data-mobile-table-scroll] { min-width: 620
 }
 :root:not(.theme-dark) .school-admin-workspace :is(input, select, textarea):focus-visible {
   border-color: var(--ui-focus);
-}
-:root:not(.theme-dark) .school-admin-workspace .school-dashboard-welcome {
-  border-top-width: 3px;
-  border-top-color: var(--ui-gold);
-  background-color: var(--ui-canvas) !important;
-  box-shadow: var(--ui-card-shadow);
 }
 @media (max-width: 639px) {
   :root:not(.theme-dark) .school-admin-workspace h1 { font-size: clamp(24px, 7vw, 30px); }
@@ -1202,15 +1287,10 @@ table[data-mobile-table-cards], table[data-mobile-table-scroll] { min-width: 620
 }
 :root.theme-dark body .school-admin-topbar {
   background-color: var(--ui-canvas) !important;
-  border-bottom: 2px solid var(--ui-gold) !important;
+  border-bottom: 1px solid var(--ui-divider) !important;
 }
 :root.theme-dark body .school-admin-workspace {
   background-color: var(--ui-workspace) !important;
-}
-:root.theme-dark body .school-admin-workspace .school-dashboard-welcome {
-  border-top: 3px solid var(--ui-gold) !important;
-  background-color: var(--ui-surface-soft) !important;
-  box-shadow: var(--ui-card-shadow);
 }
 
 /* Final mobile width safeguards for the approved public landing. */
@@ -1757,7 +1837,7 @@ button:not(:disabled):active, a.button:active, [role="button"]:active {
 [class*="text-[9px]"],
 [class*="text-[10px]"],
 [class*="text-[11px]"] {
-  font-size: 0.9rem !important;
+  font-size: clamp(0.75rem, 0.7rem + 0.18vw, 0.88rem) !important;
   line-height: 1.45 !important;
 }
 
@@ -1770,27 +1850,27 @@ button:not(:disabled):active, a.button:active, [role="button"]:active {
 
 .school-admin-sidebar p,
 .school-admin-sidebar .sidebar-kicker {
-  font-size: 0.7rem !important;
-  line-height: 1.15 !important;
+  font-size: 0.75rem !important;
+  line-height: 1.25 !important;
 }
 
 [class*="text-[12px]"],
 [class*="text-[13px]"] {
-  font-size: 1rem !important;
-  line-height: 1.5 !important;
+  font-size: clamp(0.8125rem, 0.76rem + 0.2vw, 0.96rem) !important;
+  line-height: 1.48 !important;
 }
 
 [class*="text-[14px]"] {
-  font-size: 1.0625rem !important;
+  font-size: clamp(0.875rem, 0.82rem + 0.22vw, 1.04rem) !important;
   line-height: 1.5 !important;
 }
 
 table th {
-  font-size: 0.9375rem !important;
+  font-size: clamp(0.8125rem, 0.76rem + 0.18vw, 0.9375rem) !important;
 }
 
 table td {
-  font-size: 1.05rem;
+  font-size: clamp(0.925rem, 0.86rem + 0.22vw, 1.05rem);
 }
 
 /* Protección global para evitar que botones con hover:bg-ui-action pierdan el color de su texto */
@@ -1939,4 +2019,250 @@ a[class*="hover:bg-ui-action"]:active * {
   :root body .modal-backdrop .enrollment-modal .button { font-size: 16px !important; min-height: 46px !important; }
   :root body .modal-backdrop .enrollment-modal .form-hint,
   :root body .modal-backdrop .enrollment-modal #aviso-edad { font-size: 15.5px !important; }
+}
+
+@layer base {
+  /* Prevent grid children, label containers, and native form controls (<select>, <input>, <textarea>)
+     from overflowing their column tracks or overlapping adjacent controls across all views. */
+  :where(.grid, [class*="grid-cols-"], .flex) > *,
+  :where(label.grid, label.flex) {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  :where(.grid:not([class*="grid-cols-"]):not([class*="grid-flow-col"]):not(.inline-grid)) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  button,
+  select,
+  textarea,
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]) {
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  @media (max-width: 639px) {
+    button {
+      min-width: 0;
+      max-width: 100%;
+    }
+    button[class*="whitespace-nowrap"] {
+      white-space: normal;
+      text-align: center;
+    }
+  }
+
+  select {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :where(.grid, [class*="grid-cols-"], label) > :where(
+    select,
+    textarea,
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"])
+  ) {
+    width: 100%;
+  }
+}
+
+@layer components {
+  .ui-login-options .mdc-checkbox--selected .mdc-checkbox__background,
+  .ui-login-options .mdc-checkbox--indeterminate .mdc-checkbox__background,
+  .ui-login-options .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background,
+  .ui-login-options .mdc-checkbox__native-control:indeterminate ~ .mdc-checkbox__background {
+    background-color: var(--ui-action) !important;
+    border-color: var(--ui-action) !important;
+  }
+
+  .ui-login-options .mdc-checkbox--selected .mdc-checkbox__checkmark,
+  .ui-login-options .mdc-checkbox__native-control:checked ~ .mdc-checkbox__background .mdc-checkbox__checkmark {
+    color: var(--ui-action-text) !important;
+  }
+
+  .admission-page {
+    --admission-ink: var(--ui-text);
+    --admission-navy: var(--ui-action);
+    --admission-muted: var(--ui-muted);
+    --admission-gold: var(--ui-gold);
+    --admission-paper: var(--ui-canvas);
+    color: var(--ui-text) !important;
+    background: var(--ui-canvas) !important;
+  }
+  .admission-page .public-nav { background: var(--ui-canvas) !important; border-color: var(--ui-divider) !important; }
+  .admission-page .public-brand, .admission-page .public-brand strong { color: var(--ui-text) !important; }
+  .admission-page .public-brand small, .admission-page .admission-topline { color: var(--ui-muted) !important; }
+  .admission-page .nav-apply { background: var(--ui-action) !important; color: var(--ui-action-text) !important; box-shadow: none !important; }
+  .admission-page .nav-apply:hover:not(:disabled) { background: var(--ui-action) !important; color: var(--ui-action-text) !important; }
+  .admission-page .admission-nav-links a { color: var(--ui-muted) !important; }
+  .admission-page .admission-nav-links a:hover, .admission-page .admission-nav-links a.is-active { color: var(--ui-action) !important; }
+  .admission-page .admission-hero {
+    min-height: 0 !important; grid-template-columns: minmax(0, 1.02fr) minmax(300px, .98fr) !important;
+    gap: clamp(26px, 4vw, 64px) !important; align-items: center !important; padding: clamp(28px, 5vw, 68px) !important;
+    border: 1px solid var(--ui-divider) !important; border-radius: 9px 56px 9px 9px !important;
+    background: var(--ui-surface-soft) !important; box-shadow: 0 12px 28px rgb(36 55 61 / 7%) !important;
+  }
+  .admission-page .admission-hero::before, .admission-page .admission-hero::after { content: none !important; display: none !important; }
+  .admission-page .hero-copy { max-width: 590px !important; z-index: 1; }
+  .admission-page .hero-kicker { color: var(--ui-action) !important; letter-spacing: .11em !important; }
+  .admission-page .hero-kicker i { background: var(--ui-action) !important; box-shadow: none !important; }
+  .admission-page .hero-copy .admission-title {
+    max-width: 680px; margin: 20px 0 18px !important; color: var(--ui-text) !important;
+    font-family: var(--font-display) !important; font-size: clamp(44px, 5.3vw, 74px) !important;
+    font-weight: 500 !important; line-height: .99 !important; letter-spacing: -.045em !important; text-wrap: balance;
+  }
+  .admission-page .hero-copy .admission-title em { color: var(--ui-text) !important; font-style: normal; font-weight: 500; }
+  .admission-page .hero-copy .admission-lead { max-width: 520px !important; color: var(--ui-muted) !important; font-size: 17.5px !important; line-height: 1.75 !important; }
+  .admission-page .hero-actions { gap: 20px !important; margin-top: 24px !important; }
+  .admission-page .button-gold {
+    min-height: 48px !important; border-radius: 4px !important; padding: 0 21px !important;
+    background: var(--ui-action) !important; color: var(--ui-action-text) !important; box-shadow: none !important;
+  }
+  .admission-page .button-gold:hover:not(:disabled) { background: var(--ui-action) !important; color: #fff !important; }
+  .admission-page .hero-secondary { color: var(--ui-text) !important; }
+  .admission-page .hero-secondary b { border-color: var(--ui-control-border) !important; color: var(--ui-text) !important; }
+  .admission-page .hero-trust { gap: 9px 18px !important; margin-top: 24px !important; color: var(--ui-muted) !important; }
+  .admission-page .hero-trust i { color: var(--ui-action) !important; }
+  .admission-page .public-motto { margin-top: 22px; color: var(--ui-text) !important; font-family: var(--font-sans) !important; font-size: 15px !important; font-weight: 600 !important; }
+  .admission-page .hero-art { min-height: 0 !important; display: grid !important; grid-template-rows: auto auto !important; justify-items: center; align-content: center; gap: 16px !important; }
+  .admission-page .hero-art-ring, .admission-page .hero-art-spark, .admission-page .hero-art-year { display: none !important; }
+  .admission-page .hero-emblem-card {
+    position: relative !important; width: min(100%, 438px) !important; min-height: 370px !important;
+    display: flex !important; align-items: center !important; justify-content: center !important; gap: 14px !important;
+    padding: 32px 28px !important; border: 1px solid var(--ui-divider) !important;
+    border-radius: 3px 28px 3px 3px !important; background: var(--ui-surface) !important;
+    box-shadow: 10px 12px 0 var(--ui-canvas), 11px 13px 0 var(--ui-divider) !important; transform: none !important;
+  }
+  .admission-page .emblem-caption { color: var(--ui-muted) !important; font-family: var(--font-sans) !important; font-size: 16px !important; letter-spacing: .15em !important; }
+  .admission-page .emblem-image-wrap { width: 112px !important; height: 112px !important; border: 1px solid var(--ui-divider) !important; border-radius: 50% !important; background: #fff !important; box-shadow: none !important; }
+  .admission-page .emblem-image-wrap img { width: 100% !important; height: 100% !important; object-fit: contain !important; }
+  .admission-page .archive-seal { position: absolute; top: 22px; right: 22px; display: grid; place-items: center; min-width: 76px; min-height: 32px; border: 1.5px solid var(--ui-accent); border-radius: 50%; color: var(--ui-accent); font: 700 12px/1 var(--font-sans); letter-spacing: .12em; transform: rotate(7deg); }
+  .admission-page .hero-emblem-card strong { color: var(--ui-text) !important; font-family: var(--font-display) !important; font-size: 27px !important; font-weight: 500 !important; line-height: 1.15 !important; text-align: center; }
+  .admission-page .emblem-divider { width: 40px !important; height: 1px !important; background: var(--ui-gold) !important; }
+  .admission-page .hero-emblem-card small { color: var(--ui-muted) !important; font-family: var(--font-sans) !important; font-size: 16px !important; letter-spacing: .08em !important; }
+  .admission-page .hero-art-note { position: relative !important; inset: auto !important; width: min(90%, 340px) !important; min-height: 58px; padding: 10px 12px !important; gap: 12px !important; border: 1px solid var(--ui-divider) !important; border-left: 3px solid var(--ui-action) !important; border-radius: 3px !important; background: var(--ui-canvas) !important; box-shadow: none !important; }
+  .admission-page .archive-note-mark { display: grid; place-items: center; width: 30px; height: 30px; flex: 0 0 30px; color: var(--ui-action); border: 1px solid var(--ui-divider); }
+  .admission-page .hero-art-note b { color: var(--ui-text) !important; }
+  .admission-page .hero-art-note small { color: var(--ui-muted) !important; }
+  .admission-page .hero-art-note a { color: var(--ui-action) !important; }
+  .admission-page .scroll-cue { color: var(--ui-muted) !important; }
+  .admission-page .scroll-cue span { background: var(--ui-action) !important; }
+  .admission-page .intro-strip { border-color: var(--ui-divider) !important; }
+  .admission-page .intro-strip-label { color: var(--ui-muted) !important; }
+  .admission-page .intro-strip div b, .admission-page .intro-strip a { color: var(--ui-text) !important; }
+  .admission-page .intro-strip i { color: var(--ui-action) !important; }
+  .admission-page .button-primary { background: var(--ui-action) !important; color: var(--ui-action-text) !important; }
+  .admission-page .button-quiet { border-color: var(--ui-divider) !important; background: var(--ui-surface-soft) !important; color: var(--ui-text) !important; }
+  .admission-page :where(a, button, summary, input, select, textarea):focus-visible { outline-color: var(--ui-focus) !important; }
+  @media (max-width: 760px) {
+    .admission-page { padding-inline: 14px !important; }
+    .admission-page .admission-hero { grid-template-columns: minmax(0, 1fr) !important; gap: 24px !important; margin-top: 14px !important; padding: 26px 20px 24px !important; border-radius: 5px 32px 5px 5px !important; }
+    .admission-page .hero-copy .admission-title { margin: 16px 0 13px !important; font-size: clamp(42px, 12vw, 58px) !important; }
+    .admission-page .hero-copy .admission-lead { font-size: 16.5px !important; }
+    .admission-page .hero-actions { align-items: stretch; flex-direction: column; gap: 12px !important; }
+    .admission-page .hero-actions .button { width: 100%; }
+    .admission-page .hero-secondary { justify-content: center; min-height: 44px; }
+    .admission-page .hero-trust { display: grid !important; grid-template-columns: 1fr 1fr; }
+    .admission-page .public-motto { margin-top: 22px; }
+    .admission-page .hero-emblem-card { min-height: 310px !important; padding: 45px 18px 24px !important; }
+    .admission-page .hero-emblem-card strong { font-size: 23px !important; }
+    .admission-page .emblem-image-wrap { width: 92px !important; height: 92px !important; }
+    .admission-page .hero-art-note { width: 100% !important; }
+  }
+  :root.theme-dark .admission-page .emblem-image-wrap { background: #fff !important; }
+  :root.theme-dark .admission-page .hero-emblem-card { box-shadow: 7px 9px 0 var(--ui-canvas), 8px 10px 0 var(--ui-divider) !important; }
+  @media (prefers-reduced-motion: reduce) { .admission-page *, .admission-page *::before, .admission-page *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+  .modal-backdrop .ui-admission-wizard { width: min(1180px, calc(100vw - 32px)) !important; max-height: min(94dvh, 980px) !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; border-color: var(--ui-divider) !important; border-radius: 12px 28px 12px 12px !important; }
+  .modal-backdrop .ui-wizard-header { background: var(--ui-surface-soft) !important; border-bottom: 1px solid var(--ui-divider) !important; }
+  .modal-backdrop .ui-wizard-header .eyebrow { color: var(--ui-action) !important; }
+  .modal-backdrop .ui-wizard-header h2 { color: var(--ui-text) !important; font-family: var(--font-display) !important; }
+  .modal-backdrop .ui-wizard-header p { color: var(--ui-muted) !important; }
+  .modal-backdrop .ui-form-progress { padding: 12px 20px; border-bottom: 1px solid var(--ui-divider); background: var(--ui-canvas); }
+  .modal-backdrop .ui-form-progress ol { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .modal-backdrop .ui-form-progress li { display: flex; min-width: 0; align-items: center; gap: 8px; color: var(--ui-text); font: 600 18px/1.25 var(--font-sans); }
+  .modal-backdrop .ui-form-progress li > span { display: grid; width: 34px; height: 34px; flex: 0 0 34px; place-items: center; border: 1px solid var(--ui-control-border); border-radius: 50%; background: var(--ui-surface); color: var(--ui-text); font-size: 17.5px; font-weight: 700; }
+  .modal-backdrop .ui-wizard-body { padding: 20px !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; }
+  .modal-backdrop .form-step { border-color: var(--ui-divider) !important; border-radius: 4px !important; background: var(--ui-surface) !important; }
+  .modal-backdrop .form-step + .form-step { margin-top: 10px !important; }
+  .modal-backdrop .form-step > summary, .modal-backdrop .form-step > summary b { color: var(--ui-text) !important; font-size: 20px !important; }
+  .modal-backdrop .form-step > summary small { color: var(--ui-muted) !important; font-size: 17.5px !important; }
+  .modal-backdrop .form-step-number { border-color: var(--ui-control-border) !important; background: var(--ui-surface-soft) !important; color: var(--ui-text) !important; }
+  .modal-backdrop .form-step[open] > summary .form-step-number { background: var(--ui-action) !important; border-color: var(--ui-action) !important; color: var(--ui-action-text) !important; }
+  .modal-backdrop .form-step-content label { color: var(--ui-text) !important; font-size: 18px !important; font-weight: 600 !important; }
+  .modal-backdrop .form-step-content input, .modal-backdrop .form-step-content select, .modal-backdrop .form-step-content textarea { border-color: var(--ui-control-border) !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; font-size: 17.5px !important; min-height: 50px !important; }
+  .modal-backdrop .form-step:focus-within > summary { outline-color: var(--ui-focus) !important; }
+  .modal-backdrop .form-hint { color: var(--ui-muted) !important; font-size: 17px !important; line-height: 1.55 !important; }
+  .modal-backdrop .consent-row { color: var(--ui-muted) !important; font-size: 17px !important; line-height: 1.6 !important; background: var(--ui-surface-soft) !important; border-color: var(--ui-divider) !important; }
+  .modal-backdrop .button-primary { background: var(--ui-action) !important; color: var(--ui-action-text) !important; box-shadow: none !important; }
+  .modal-backdrop .button-quiet { border-color: var(--ui-divider) !important; background: var(--ui-surface-soft) !important; color: var(--ui-text) !important; }
+  .modal-backdrop :where(button, summary, input, select, textarea):focus-visible { outline: 3px solid var(--ui-focus) !important; outline-offset: 2px; }
+  .admission-page .final-cta { border-color: var(--ui-divider) !important; background: var(--ui-surface-soft) !important; color: var(--ui-text) !important; }
+  .admission-page .final-cta > div > span { color: var(--ui-action) !important; }
+  .admission-page .final-cta h2 { color: var(--ui-text) !important; }
+  .admission-page .final-cta p { color: var(--ui-muted) !important; }
+  .admission-page .public-footer { border-color: var(--ui-divider) !important; color: var(--ui-muted) !important; }
+  .admission-page .footer-brand b, .admission-page .footer-brand small { color: var(--ui-text) !important; }
+  .admission-page .public-footer > a:last-child { color: var(--ui-action) !important; }
+  .admission-page .intro-strip .level-divider { width: 4px; height: 4px; border-radius: 50%; background: var(--ui-control-border); }
+  .admission-page .process-icon svg { width: 19px; height: 19px; }
+  .modal-backdrop .ui-admission-wizard .modal-footer { border-top: 1px solid var(--ui-divider) !important; background: var(--ui-surface) !important; color: var(--ui-text) !important; }
+  @media (max-width: 600px) { .modal-backdrop .ui-form-progress { padding: 10px 12px; } .modal-backdrop .ui-form-progress ol { gap: 5px; } .modal-backdrop .ui-form-progress li { gap: 5px; font-size: 15.5px; } .modal-backdrop .ui-form-progress li > span { width: 28px; height: 28px; flex-basis: 28px; font-size: 15.5px; } .modal-backdrop .ui-wizard-body { padding: 12px !important; } }
+  :root.theme-dark .modal-backdrop .ui-admission-wizard { background: var(--ui-surface) !important; }
+
+  .admission-page:not(.public-landing) .route-page-heading > p,
+  .admission-page:not(.public-landing) .section-heading p,
+  .admission-page:not(.public-landing) .value-card p,
+  .admission-page:not(.public-landing) .levels-heading > p,
+  .admission-page:not(.public-landing) .level-card-copy p,
+  .admission-page:not(.public-landing) .process-intro > p,
+  .admission-page:not(.public-landing) .process-item p,
+  .admission-page:not(.public-landing) .documents-copy > p,
+  .admission-page:not(.public-landing) .faq-heading > p,
+  .admission-page:not(.public-landing) .faq-list details p,
+  .admission-page:not(.public-landing) .final-cta p {
+    font-size: 16px !important;
+    line-height: 1.7 !important;
+  }
+  .admission-page:not(.public-landing) .faq-list summary {
+    min-height: 60px !important;
+    font-size: 16px !important;
+    line-height: 1.45 !important;
+  }
+  .admission-page:not(.public-landing) .documents-checklist b { font-size: 15px !important; }
+  .admission-page:not(.public-landing) .documents-checklist small,
+  .admission-page:not(.public-landing) .documents-format small,
+  .admission-page:not(.public-landing) .process-item small,
+  .admission-page:not(.public-landing) .process-time {
+    font-size: 16.5px !important;
+    line-height: 1.55 !important;
+  }
+  .admission-page:not(.public-landing) .level-card-copy > span,
+  .admission-page:not(.public-landing) .level-stamp { font-size: 16px !important; }
+  .admission-page:not(.public-landing) .button { font-size: 15px !important; }
+  @media (max-width: 780px) {
+    .admission-page:not(.public-landing) .route-page-heading > p,
+    .admission-page:not(.public-landing) .section-heading p,
+    .admission-page:not(.public-landing) .value-card p,
+    .admission-page:not(.public-landing) .levels-heading > p,
+    .admission-page:not(.public-landing) .level-card-copy p,
+    .admission-page:not(.public-landing) .process-intro > p,
+    .admission-page:not(.public-landing) .process-item p,
+    .admission-page:not(.public-landing) .documents-copy > p,
+    .admission-page:not(.public-landing) .faq-heading > p,
+    .admission-page:not(.public-landing) .faq-list details p,
+    .admission-page:not(.public-landing) .final-cta p {
+      font-size: 15px !important;
+      line-height: 1.65 !important;
+    }
+    .admission-page:not(.public-landing) .faq-list summary { min-height: 58px !important; font-size: 15px !important; }
+    .admission-page:not(.public-landing) .documents-checklist b { font-size: 15px !important; }
+    .admission-page:not(.public-landing) .documents-checklist small,
+    .admission-page:not(.public-landing) .documents-format small,
+    .admission-page:not(.public-landing) .process-item small,
+    .admission-page:not(.public-landing) .process-time { font-size: 16.5px !important; }
+  }
 }

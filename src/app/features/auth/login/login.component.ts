@@ -22,56 +22,52 @@ import { AuthStore } from '../../../core/state/auth.store';
     MatInputModule,
     MatProgressSpinnerModule
   ],
-  styleUrl: './login.component.css',
+  host: { class: 'block min-h-screen bg-ui-background text-ui-text' },
   template: `
-    <main class="ui-login-page grid min-h-screen bg-ui-background font-sans text-ui-text lg:grid-cols-[1.05fr_0.95fr]">
-      <section class="ui-login-cover relative hidden min-h-screen overflow-hidden bg-ui-surface-soft px-10 py-12 text-ui-text lg:flex lg:flex-col lg:justify-between xl:px-16 xl:py-14">
-
-
-
-
-        <a routerLink="/auth/login" class="ui-login-brand relative z-10 flex w-fit items-center gap-3" aria-label="I.E.P. Shuji Kitamura">
-          <img class="block size-12 shrink-0 rounded-full border-2 border-ui-gold bg-white object-contain p-[3px]" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de Shuji Kitamura">
+    <main class="ui-login-page grid min-h-screen bg-ui-canvas font-sans text-ui-text min-[851px]:grid-cols-[minmax(0,1.06fr)_minmax(400px,0.94fr)] motion-reduce:[&_*]:![animation-duration:.01ms] motion-reduce:[&_*]:![transition-duration:.01ms] motion-reduce:[&_*::before]:![animation-duration:.01ms] motion-reduce:[&_*::before]:![transition-duration:.01ms]">
+      <section class="ui-login-cover relative hidden min-h-screen min-w-0 overflow-hidden border-r border-ui-border bg-ui-surface-soft p-[clamp(28px,5vw,72px)] text-ui-text before:absolute before:top-0 before:left-[clamp(28px,5vw,72px)] before:h-[5px] before:w-[74px] before:bg-ui-gold before:content-[''] min-[851px]:flex min-[851px]:flex-col min-[851px]:justify-between">
+        <a routerLink="/auth/login" class="relative z-10 inline-flex w-fit items-center gap-3 text-ui-text no-underline focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2" aria-label="I.E.P. Shuji Kitamura">
+          <img class="block size-12 shrink-0 rounded-full border border-ui-border bg-white object-contain p-[3px]" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de Shuji Kitamura">
           <span>
-            <span class="block text-sm font-bold tracking-wide">I.E.P. Shuji Kitamura</span>
-            <span class="ui-login-brand-label mt-0.5 block text-[11px] font-medium tracking-[0.18em] text-ui-muted">PORTAL INSTITUCIONAL</span>
+            <span class="block text-sm font-semibold text-ui-text">I.E.P. Shuji Kitamura</span>
+            <span class="mt-1 block text-[11px] font-semibold tracking-[0.1em] text-ui-muted">PORTAL INSTITUCIONAL</span>
           </span>
         </a>
 
-        <div class="ui-login-cover-copy relative z-10 my-14 max-w-xl">
-          <p class="ui-login-kicker mb-5 inline-flex items-center gap-2 rounded-full border border-ui-border bg-ui-surface-soft px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-ui-action">
-            <span class="ui-login-kicker-dot h-1.5 w-1.5 rounded-full bg-ui-action"></span> Gestión educativa, con propósito
+        <div class="relative z-10 my-16 w-full max-w-[620px]">
+          <p class="m-0 inline-flex items-center gap-2 rounded-full border border-ui-border bg-ui-surface-soft px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ui-action">
+            <span class="h-1.5 w-1.5 rounded-full bg-ui-action"></span> Gestión educativa, con propósito
           </p>
-          <h1 class="ui-login-cover-title max-w-lg text-4xl font-semibold leading-[1.12] tracking-[-0.04em] text-ui-text xl:text-5xl">
+          <h1 class="mt-5 mb-[15px] max-w-[570px] font-display text-[clamp(36px,4vw,58px)] font-medium leading-[1.04] tracking-[-0.035em] [text-wrap:balance] text-ui-text">
             Un espacio para aprender, crecer y avanzar.
           </h1>
-          <p class="ui-login-cover-description mt-5 max-w-md text-sm leading-7 text-ui-muted">
+          <p class="m-0 max-w-[450px] text-sm leading-[1.75] text-ui-muted">
             Accede a las herramientas académicas y administrativas de nuestra comunidad educativa desde un único lugar.
           </p>
-          <div class="ui-login-motto-row mt-10 flex items-center gap-4">
+          <div class="mt-6 flex items-center gap-[13px]">
             <span class="h-px w-12 bg-ui-gold"></span>
-            <p class="text-xs font-medium tracking-wide text-ui-muted">Excelencia · Disciplina · Saber</p>
+            <p class="m-0 text-xs font-semibold tracking-[0.06em] text-ui-text">Excelencia · Disciplina · Saber</p>
           </div>
         </div>
 
-        <p class="relative z-10 text-[11px] tracking-wide text-ui-muted">© 2026 I.E.P. Shuji Kitamura · Todos los derechos reservados</p>
+        <p class="relative z-10 m-0 text-[11px] tracking-wide text-ui-muted">© 2026 I.E.P. Shuji Kitamura · Todos los derechos reservados</p>
       </section>
 
-      <section class="ui-login-content flex min-h-screen min-w-0 items-center justify-center px-5 py-10 sm:px-8 lg:px-12">
-        <div class="ui-login-content-inner w-full min-w-0 max-w-[440px]">
-          <a routerLink="/auth/login" class="ui-login-brand ui-login-brand-mobile mb-8 flex items-center gap-3 lg:hidden">
-            <img class="block size-11 shrink-0 rounded-full border-2 border-ui-gold bg-white object-contain p-[3px]" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de Shuji Kitamura">
+      <section class="flex min-h-screen min-w-0 flex-col items-center justify-center bg-ui-canvas px-[clamp(24px,5vw,76px)] py-10 max-[850px]:items-stretch max-[850px]:justify-start max-[850px]:px-[18px] max-[850px]:pt-[22px] max-[850px]:pb-7 max-[420px]:px-[14px]">
+        <div class="w-full min-w-0 max-w-[430px] max-[850px]:mx-auto">
+          <a routerLink="/auth/login" class="mb-6 inline-flex items-center gap-3 text-ui-text no-underline min-[851px]:hidden" aria-label="I.E.P. Shuji Kitamura">
+            <img class="block size-11 shrink-0 rounded-full border border-ui-border bg-white object-contain p-[3px]" src="/images/shuji-kitamura-emblema.jpg" alt="Escudo de Shuji Kitamura">
             <span>
-              <span class="block text-sm font-bold text-ui-text">I.E.P. Shuji Kitamura</span>
+              <span class="block text-sm font-semibold text-ui-text">I.E.P. Shuji Kitamura</span>
               <span class="mt-0.5 block text-[11px] font-semibold tracking-[0.15em] text-ui-muted">PORTAL INSTITUCIONAL</span>
             </span>
           </a>
 
-          <div class="ui-login-card w-full min-w-0 rounded-[28px] border border-ui-border bg-ui-surface p-5 shadow-card sm:p-9">
-            <div class="mb-8">
-              <p class="ui-login-eyebrow text-[11px] font-bold uppercase tracking-[0.18em] text-ui-muted">Acceso seguro</p>
-              <h2 class="mt-2 text-3xl font-semibold tracking-[-0.04em] text-ui-text">Bienvenido de nuevo</h2>
-              <p class="mt-2 text-sm leading-6 text-ui-muted">Ingresa tus credenciales para continuar al portal escolar.</p>
+          <div class="w-full min-w-0 rounded-[5px_20px_5px_5px] border border-ui-border bg-ui-surface p-[clamp(22px,3vw,38px)] shadow-[0_8px_22px_rgb(36_55_61_/_6%)] max-[850px]:mx-auto max-[850px]:w-[min(100%,480px)] max-[420px]:px-4 max-[420px]:py-5">
+            <div class="mb-[26px]">
+              <p class="m-0 text-[11px] font-semibold uppercase tracking-[0.12em] text-ui-action">Acceso seguro</p>
+              <h2 class="mt-[10px] mb-2 font-display text-[32px] font-medium tracking-[-0.025em] text-ui-text">Bienvenido de nuevo</h2>
+              <p class="m-0 text-sm leading-[1.65] text-ui-muted">Ingresa tus credenciales para continuar al portal escolar.</p>
             </div>
 
             @if (store.error()) {
@@ -81,13 +77,13 @@ import { AuthStore } from '../../../core/state/auth.store';
               </div>
             }
 
-            <form (ngSubmit)="submit()" class="ui-login-form space-y-2">
-              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="ui-login-field mb-[5px] block w-full">
+            <form (ngSubmit)="submit()" class="grid gap-2">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="mb-[5px] block w-full font-sans [--mdc-outlined-text-field-outline-color:var(--ui-control-border)] [--mdc-outlined-text-field-hover-outline-color:var(--ui-action)] [--mdc-outlined-text-field-focus-outline-color:var(--ui-action)] [--mdc-outlined-text-field-focus-label-text-color:var(--ui-action)] [--mdc-outlined-text-field-label-text-color:var(--ui-muted)] [--mdc-outlined-text-field-input-text-color:var(--ui-text)]">
                 <mat-label>Usuario o correo institucional</mat-label>
                 <input matInput id="username" type="text" name="username" [(ngModel)]="username" placeholder="usuario@shuji.edu.pe" required autocomplete="username" />
               </mat-form-field>
 
-              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="mb-[5px] block w-full">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="mb-[5px] block w-full font-sans [--mdc-outlined-text-field-outline-color:var(--ui-control-border)] [--mdc-outlined-text-field-hover-outline-color:var(--ui-action)] [--mdc-outlined-text-field-focus-outline-color:var(--ui-action)] [--mdc-outlined-text-field-focus-label-text-color:var(--ui-action)] [--mdc-outlined-text-field-label-text-color:var(--ui-muted)] [--mdc-outlined-text-field-input-text-color:var(--ui-text)]">
                 <mat-label>Contraseña</mat-label>
                 <input matInput id="password" [type]="showPassword() ? 'text' : 'password'" name="password" [(ngModel)]="password" required autocomplete="current-password" />
                 <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()" [attr.aria-label]="showPassword() ? 'Ocultar contraseña' : 'Mostrar contraseña'">
@@ -99,30 +95,32 @@ import { AuthStore } from '../../../core/state/auth.store';
                 </button>
               </mat-form-field>
 
-              <div class="ui-login-options flex flex-wrap items-center justify-between gap-x-3.5 gap-y-2 py-[3px] pb-3.5">
-                <mat-checkbox [(ngModel)]="rememberMe" name="rememberMe" color="primary" class="text-xs text-ui-text">Recordar este equipo</mat-checkbox>
-                <button type="button" (click)="openPasswordHelp(passwordHelp)" class="ui-login-help min-h-11 cursor-pointer border-0 bg-transparent font-[inherit] text-xs font-semibold text-ui-action hover:text-ui-action hover:underline">¿Olvidaste tu clave?</button>
+              <div class="ui-login-options flex min-h-11 flex-wrap items-center justify-between gap-x-3.5 gap-y-2 py-0.5 pb-2 font-sans text-xs text-ui-text max-[420px]:items-start">
+                <mat-checkbox [(ngModel)]="rememberMe" name="rememberMe" color="primary" class="text-xs text-ui-text [--mdc-checkbox-selected-icon-color:var(--ui-action)] [--mdc-checkbox-selected-hover-icon-color:var(--ui-action)] [--mdc-checkbox-selected-focus-icon-color:var(--ui-action)] [--mdc-checkbox-selected-pressed-icon-color:var(--ui-action)] [--mdc-checkbox-selected-checkmark-color:var(--ui-action-text)] [--mdc-checkbox-unselected-icon-color:var(--ui-control-border)]">Recordar este equipo</mat-checkbox>
+                <button type="button" (click)="openPasswordHelp(passwordHelp)" class="min-h-11 cursor-pointer border-0 bg-transparent py-2 pl-2 font-sans text-xs font-semibold text-ui-action underline underline-offset-[3px] focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2">¿Olvidaste tu clave?</button>
               </div>
 
-              <button mat-flat-button color="primary" type="submit" [disabled]="store.isLoading() || !username || !password" [attr.aria-busy]="store.isLoading()" class="ui-login-submit !h-12 !w-full !rounded-xl !text-sm !font-semibold !shadow-md">
-                @if (store.isLoading()) {
-                  <mat-spinner diameter="18" class="mr-2" aria-label="Validando acceso"></mat-spinner>
-                  <span>Validando acceso…</span>
-                } @else {
-                  <span>Ingresar al portal</span>
-                }
+              <button mat-flat-button color="primary" type="submit" [disabled]="store.isLoading() || !username || !password" [attr.aria-busy]="store.isLoading()" class="!min-h-12 !w-full !rounded-[3px] !bg-ui-action !font-sans !text-sm !font-semibold !text-ui-action-text !shadow-none focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2">
+                <span class="inline-flex items-center justify-center gap-2">
+                  @if (store.isLoading()) {
+                    <mat-spinner diameter="18" aria-label="Validando acceso"></mat-spinner>
+                    <span>Validando acceso…</span>
+                  } @else {
+                    <span>Ingresar al portal</span>
+                  }
+                </span>
               </button>
             </form>
 
-            <div class="ui-login-privacy mt-7 flex items-start gap-3 rounded-2xl bg-ui-surface-soft p-4">
-              <span class="ui-login-privacy-icon grid h-8 w-8 shrink-0 place-items-center rounded-xl bg-ui-action text-ui-action-text">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7l8-4z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4"/></svg>
+            <div class="mt-6 flex items-start gap-3 border border-ui-border bg-ui-surface-soft p-3.5">
+              <span class="grid size-8 shrink-0 place-items-center border border-ui-action bg-ui-action text-ui-action-text">
+                <svg class="size-[17px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 3l8 4v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7l8-4z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4"/></svg>
               </span>
-              <p class="text-[11px] leading-5 text-ui-muted"><strong class="block text-xs font-semibold text-ui-text">Tu información está protegida</strong>El acceso está reservado a usuarios autorizados de la comunidad educativa.</p>
+              <p class="m-0 text-[11px] leading-[1.6] text-ui-muted"><strong class="mb-0.5 block text-xs font-semibold text-ui-text">Tu información está protegida</strong>El acceso está reservado a usuarios autorizados de la comunidad educativa.</p>
             </div>
           </div>
 
-          <p class="ui-login-footer mt-6 text-center text-[11px] tracking-wide text-ui-muted">© 2026 I.E.P. Shuji Kitamura · Excelencia, disciplina y saber</p>
+          <p class="mt-[18px] mb-0 text-center text-[11px] tracking-wide text-ui-muted">© 2026 I.E.P. Shuji Kitamura · Excelencia, disciplina y saber</p>
         </div>
       </section>
 

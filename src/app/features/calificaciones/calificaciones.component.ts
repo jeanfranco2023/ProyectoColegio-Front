@@ -10,6 +10,8 @@ import { AcademicoService } from '../../core/services/academico.service';
 import { MatriculaService } from '../../core/services/matricula.service';
 import { FichaMatriculaResponseDto } from '../../core/models/matricula.model';
 import { obtenerFotoEstudiante } from '../../core/utils/avatar.util';
+import { agruparCalificacionesPorCurso, CursoCalificacionGrupo } from '../../core/utils/catalogo-cneb.util';
+import { fechaActualEnPeru } from '../../core/utils/fecha-nacimiento';
 import { AuthStore } from '../../core/state/auth.store';
 import { AsignacionDocenteResponseDto, CompetenciaResponseDto, PeriodoResponseDto } from '../../core/models/academico.model';
 import { CuadroHonorResponseDto, CalificacionResponseDto, CalificacionCualitativa } from '../../core/models/evaluacion.model';
@@ -167,11 +169,6 @@ template: `
           <p class="m-0 text-ui-muted text-xs">Total en matriz: <strong class="text-ui-text text-[13px]">{{ alumnos().length }}</strong></p>
         </div>
 
-        @if (puedeEditar()) {
-          <p class="" data-grade-scroll-hint="">Desliza horizontalmente para consultar Conclusión, Refuerzo y Detalle.</p>
-        } @else {
-          <p class="" data-grade-scroll-hint="">Desliza horizontalmente para consultar Conclusión, Refuerzo y Detalle.</p>
-        }
         <div class="flex flex-wrap items-end gap-3 border-b border-ui-divider bg-ui-surface-soft p-4">
           <label for="buscar-calificacion-input" class="grid min-w-[240px] flex-1 gap-1 text-xs font-semibold text-[#475569]">Buscar estudiante
             <input id="buscar-calificacion-input" [ngModel]="busquedaAlumno()" (ngModelChange)="busquedaAlumno.set($event); pagina.set(0)" name="buscarCalificacion" type="search" placeholder="Nombre o apellido" class="min-h-11 rounded-xl border border-ui-control-border bg-ui-surface px-3 text-sm font-normal text-ui-text focus:outline-none focus:border-ui-focus" />
@@ -182,7 +179,7 @@ template: `
           <span class="pb-3 text-xs text-[#59677a]">{{ alumnosFiltrados().length }} estudiantes</span>
         </div>
         <div class="max-w-full overflow-x-auto rounded-2xl border border-ui-divider bg-ui-surface min-w-0">
-          <table class="w-full border-collapse text-left font-sans text-base leading-6 text-ui-text [&_th]:px-4 [&_th]:py-3 [&_th]:align-middle [&_th]:border-b [&_th]:border-ui-divider [&_td]:px-4 [&_td]:py-3 [&_td]:align-middle [&_td]:border-b [&_td]:border-ui-divider [&_th]:bg-ui-surface-soft [&_th]:text-ui-action [&_th]:text-[13px] [&_th]:leading-[1.5] [&_th]:font-bold [&_tr:last-child_td]:border-b-0 min-w-[790px] [&_thead]:!bg-ui-surface-soft [&_tbody_tr]:bg-ui-surface [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-ui-surface-soft/75" data-mobile-table-scroll="">
+          <table class="w-full border-collapse text-left font-sans text-base leading-6 text-ui-text [&_th]:px-4 [&_th]:py-3 [&_th]:align-middle [&_th]:border-b [&_th]:border-ui-divider [&_td]:px-4 [&_td]:py-3 [&_td]:align-middle [&_td]:border-b [&_td]:border-ui-divider [&_th]:bg-ui-surface-soft [&_th]:text-ui-action [&_th]:text-[13px] [&_th]:leading-[1.5] [&_th]:font-bold [&_tr:last-child_td]:border-b-0 [&_thead]:!bg-ui-surface-soft [&_tbody_tr]:bg-ui-surface [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:!bg-ui-surface-soft/75" data-mobile-table-scroll="">
             <thead>
               <tr>
                 <th scope="col" class="w-16 text-center whitespace-nowrap">N°</th>
@@ -224,7 +221,11 @@ template: `
                     <td class="max-w-[320px] overflow-hidden text-ellipsis whitespace-nowrap text-ui-muted" [title]="alumno.conclusionDescriptiva || 'Sin conclusión'" data-label="Conclusión">{{ alumno.conclusionDescriptiva || 'Sin conclusión' }}</td>
                     <td data-label="Refuerzo">
                       @if (alumno.requiereRefuerzo === true) {
-                        <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-ui-error-border bg-ui-surface-soft px-[9px] py-[3px] text-xs font-[650] leading-[1.3] text-ui-text whitespace-nowrap">CNEB C</span>
+                        @if (esPeriodoAplicableRefuerzo(periodoId)) {
+                          <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-ui-error-border bg-ui-surface-soft px-[9px] py-[3px] text-xs font-[650] leading-[1.3] text-ui-text whitespace-nowrap">CNEB C</span>
+                        } @else {
+                          <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-ui-divider bg-ui-surface-soft px-[9px] py-[3px] text-xs font-[650] leading-[1.3] text-ui-muted whitespace-nowrap">No aplica (concluido)</span>
+                        }
                       } @else if (alumno.requiereRefuerzo === false) {
                         <span class="inline-flex min-h-[26px] items-center justify-center rounded-lg border border-ui-divider bg-ui-surface-soft px-[9px] py-[3px] text-xs font-[650] leading-[1.3] text-ui-muted whitespace-nowrap">Normal</span>
                       } @else {
@@ -420,7 +421,11 @@ template: `
                 <span class="font-sans text-[13px] leading-[1.4] font-medium text-ui-text">Conclusión descriptiva</span>
                 <textarea id="calif-conclusion-textarea" [(ngModel)]="conclusionEditada" name="conclusion" maxlength="4000" rows="5" placeholder="Describe los avances y aspectos por reforzar" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border !min-h-[130px] !text-sm !leading-5 max-[600px]:!text-base max-[600px]:!leading-6 resize-y min-w-0 !min-h-[44px] max-w-full border px-3 py-[10px] !border-ui-control-border rounded-xl !bg-ui-surface !text-ui-text transition-colors focus:border-[var(--ui-focus)] focus:outline-none focus:shadow-[0_0_0_3px_var(--ui-focus-shadow)] max-[639px]:text-base min-h-[100px] py-[10px] resize-y"></textarea>
               </label>
-              @if (notaEditada === 'C') { <p class="m-0 -mt-[6px] rounded-[10px] border border-ui-divider bg-ui-warning-bg px-3 py-[10px] text-ui-warning-text text-xs leading-[1.5]">Esta calificación marcará al estudiante para refuerzo.</p> }
+              @if (notaEditada === 'C') {
+              <p class="m-0 -mt-[6px] rounded-[10px] border border-ui-divider bg-ui-warning-bg px-3 py-[10px] text-ui-warning-text text-xs leading-[1.5]">
+                {{ esPeriodoAplicableRefuerzo(periodoId) ? 'Esta calificación marcará al estudiante para refuerzo en este bimestre.' : 'Este bimestre ya concluyó: se registra la nota C en el historial sin abrir reforzamiento.' }}
+              </p>
+            }
             </div>
             <footer class="sticky bottom-0 flex flex-[0_0_auto] justify-end gap-[10px] border-t border-ui-divider bg-ui-surface px-6 py-[14px] max-[600px]:flex-col-reverse max-[600px]:px-4 max-[600px]:py-3">
               <button type="button" class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans !text-sm !leading-[1.25] !font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-ui-divider disabled:bg-ui-surface-soft disabled:text-ui-muted aria-disabled:cursor-not-allowed aria-disabled:border-ui-divider aria-disabled:bg-ui-surface-soft aria-disabled:text-ui-muted border-ui-divider bg-ui-surface text-ui-text hover:bg-ui-surface-soft max-[600px]:w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !border-ui-divider" (click)="cerrarEdicion()">Cancelar</button>
@@ -432,7 +437,7 @@ template: `
       }
     
       <!-- Modal de Métricas y Desempeño Individual del Estudiante -->
-      <dialog #metricasDialog class="fixed inset-0 m-auto w-[min(1040px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden rounded-[24px] border border-[#d9e1ec] bg-white p-0 text-[#172b4d] font-sans shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px]" aria-labelledby="metricas-dialog-title">
+      <dialog #metricasDialog class="fixed inset-0 m-auto w-[min(780px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden rounded-[24px] border border-[#d9e1ec] bg-white p-0 text-[#172b4d] font-sans shadow-[0_28px_90px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_46%)] backdrop:backdrop-blur-[3px]" aria-labelledby="metricas-dialog-title">
         <div class="flex min-h-0 max-h-[calc(100dvh-24px)] flex-col">
           <!-- Cabecera Institucional -->
           <header class="flex flex-[0_0_auto] flex-wrap items-center justify-between gap-4 border-b border-[#e5eaf2] bg-[#f8faff] px-6 py-5 max-[639px]:p-4">
@@ -470,26 +475,16 @@ template: `
                 </div>
               </div>
             </div>
-            <div class="flex items-center gap-2.5 ml-auto">
+            <div class="flex flex-wrap items-center gap-2 ml-auto">
               @if (periodoId > 0) {
-                <div class="inline-flex items-center rounded-xl border border-[#d9e1ec] bg-white p-1 shadow-2xs" role="group" aria-label="Alcance de consulta de métricas">
-                  <button
-                    type="button"
-                    (click)="cambiarAlcanceMetrica('PERIODO_ACTUAL')"
-                    [class]="alcancePeriodoMetrica() === 'PERIODO_ACTUAL' ? 'bg-[#173B67] text-white shadow-2xs' : 'text-[#59677a] hover:text-[#172b4d]'"
-                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer whitespace-nowrap"
-                  >
-                    {{ periodoNombreActual() }}
-                  </button>
-                  <button
-                    type="button"
-                    (click)="cambiarAlcanceMetrica('ANIO_COMPLETO')"
-                    [class]="alcancePeriodoMetrica() === 'ANIO_COMPLETO' ? 'bg-[#173B67] text-white shadow-2xs' : 'text-[#59677a] hover:text-[#172b4d]'"
-                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer whitespace-nowrap"
-                  >
-                    Todo el año
-                  </button>
-                </div>
+                <span class="px-3 py-1.5 rounded-xl bg-[#173B67] text-white text-xs font-bold whitespace-nowrap shadow-2xs">
+                  {{ periodoNombreActual() }}
+                </span>
+                @if (!esPeriodoAplicableRefuerzo(periodoId)) {
+                  <span class="px-2.5 py-1 rounded-xl border border-slate-300 bg-slate-100 text-slate-700 text-[11px] font-bold whitespace-nowrap">
+                    Bimestre concluido · Sin reforzamiento
+                  </span>
+                }
               }
               <button type="button" class="grid h-10 w-10 min-h-10 min-w-10 place-items-center rounded-xl border border-[#d9e1ec] bg-white text-[#64748b] hover:text-[#0f172a] hover:bg-slate-50 transition cursor-pointer shrink-0" (click)="cerrarMetricas()" aria-label="Cerrar">✕</button>
             </div>
@@ -508,7 +503,11 @@ template: `
                     <div class="flex flex-wrap items-center justify-between gap-2">
                       <div class="flex flex-wrap items-center gap-2">
                         <h4 class="font-extrabold text-sm text-[#991b1b] uppercase tracking-wide m-0">Alumno en Riesgo Académico</h4>
-                        <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-rose-600 text-white">Requiere Refuerzo Pedagógico</span>
+                        @if (esPeriodoAplicableRefuerzo(periodoId)) {
+                          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-rose-600 text-white">Requiere Refuerzo Pedagógico</span>
+                        } @else {
+                          <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-200 text-slate-700">Bimestre concluido · Reforzamiento ya no aplica</span>
+                        }
                       </div>
                       <span class="px-2.5 py-0.5 rounded-lg bg-white border border-rose-200 text-[11px] font-bold text-rose-800">
                         {{ cursosEnRiesgoDetalle().length }} área(s) con Nota C
@@ -548,7 +547,9 @@ template: `
                       }
                     </div>
                     <p class="text-[11px] text-rose-800 mt-3 m-0 font-medium">
-                      Acción institucional: Acompañamiento y sesiones de refuerzo generadas automáticamente según normativa CNEB.
+                      {{ esPeriodoAplicableRefuerzo(periodoId)
+                        ? 'Acción institucional: Acompañamiento y sesiones de refuerzo generadas automáticamente según normativa CNEB para el bimestre pendiente.'
+                        : 'Registro histórico del bimestre: este bimestre ya concluyó, por lo que su reforzamiento no aplica ni se acumula para el siguiente bimestre.' }}
                     </p>
                   </div>
                 </div>
@@ -619,101 +620,29 @@ template: `
               </div>
             </div>
 
-            <!-- 3. Tabla Desglosada de Cursos y Calificaciones -->
-            <div class="rounded-2xl border border-ui-divider overflow-hidden bg-ui-surface shadow-2xs">
-              <div class="p-3.5 bg-ui-surface-soft border-b border-ui-divider flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <h4 class="text-xs font-extrabold text-[#334155] uppercase tracking-wide m-0">Grilla de Cursos, Competencias y Calificaciones CNEB</h4>
-                  <p class="text-[11px] text-slate-500 m-0 mt-0.5">Vista {{ alcancePeriodoMetrica() === 'PERIODO_ACTUAL' && periodoId > 0 ? 'filtrada por ' + periodoNombreActual() : 'consolidada de todo el año lectivo' }}</p>
-                </div>
-                <span class="px-2.5 py-1 rounded-lg bg-white border border-ui-divider text-[11px] font-bold text-[#172b4d]">{{ notasEstudianteMetrica().length }} registro(s)</span>
+            <!-- 3. Acceso compacto al desglose completo por curso y bimestre -->
+            <div class="rounded-2xl border border-ui-divider bg-ui-surface-soft/75 p-4 flex flex-wrap items-center justify-between gap-3 shadow-2xs">
+              <div>
+                <h4 class="text-xs font-extrabold text-[#173B67] uppercase tracking-wide m-0">Detalle de calificaciones por curso</h4>
+                @if (libretaCargando()) {
+                  <p class="text-xs text-slate-500 m-0 mt-1 flex items-center gap-1.5">
+                    <span class="inline-block w-3.5 h-3.5 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></span>
+                    <span>Cargando libreta del estudiante…</span>
+                  </p>
+                } @else {
+                  <p class="text-xs text-slate-600 m-0 mt-1">
+                    <strong>{{ cursosResumenMetricaActual().length }} curso(s)</strong> · <strong>{{ notasEstudianteMetrica().length }} competencia(s)</strong> evaluada(s) en {{ periodoNombreActual() }}.
+                  </p>
+                }
               </div>
-              @if (libretaCargando()) {
-                <div class="p-8 text-center text-xs text-slate-500">
-                  <span class="inline-block w-5 h-5 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-2"></span>
-                  <p class="m-0">Cargando calificaciones y conclusiones descriptivas del estudiante…</p>
-                </div>
-              } @else {
-                <div class="overflow-x-auto">
-                  <table class="w-full min-w-[780px] text-left text-xs border-collapse">
-                    <thead class="bg-ui-surface-soft text-ui-action font-bold border-b border-ui-divider">
-                      <tr>
-                        <th class="py-2.5 px-3 w-[190px]">Área Curricular / Curso</th>
-                        <th class="py-2.5 px-3 w-[210px]">Competencia Evaluada</th>
-                        <th class="py-2.5 px-3 text-center w-[124px]">Calificación</th>
-                        <th class="py-2.5 px-3">Conclusión Descriptiva</th>
-                        <th class="py-2.5 px-3 text-center w-[104px]">Refuerzo</th>
-                      </tr>
-                    </thead>
-                    <tbody class="divide-y divide-ui-divider bg-ui-surface [&_tr]:transition-colors [&_tr:hover]:bg-ui-surface-soft/75">
-                      @for (item of notasMetricaPaginadas(); track (item.id || (item.competenciaId + '-' + item.periodoAcademicoId))) {
-                        <tr class="hover:bg-slate-50/80 transition-colors align-top">
-                          <td class="py-2.5 px-3 font-bold text-[#1e293b]">
-                            <div>{{ obtenerNombreArea(item.areaCurricularId) }}</div>
-                            @if (alcancePeriodoMetrica() === 'ANIO_COMPLETO') {
-                              <span class="inline-block mt-1 px-1.5 py-0.5 rounded bg-slate-100 text-[10px] font-semibold text-slate-600">{{ obtenerNombrePeriodo(item.periodoAcademicoId) }}</span>
-                            }
-                          </td>
-                          <td class="py-2.5 px-3 text-[#334155] leading-snug">
-                            {{ obtenerNombreCompetencia(item.competenciaId) }}
-                          </td>
-                          <td class="py-2.5 px-3 text-center whitespace-nowrap">
-                            @switch (item.calificacionCualitativa) {
-                              @case ('AD') {
-                                <span class="inline-flex min-h-[24px] px-2.5 py-0.5 rounded-lg text-xs font-black bg-[#173B67] text-[#fef3c7] border border-[#c49a58]">
-                                  AD · Destacado
-                                </span>
-                              }
-                              @case ('A') {
-                                <span class="inline-flex min-h-[24px] px-2.5 py-0.5 rounded-lg text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300">
-                                  A · Esperado
-                                </span>
-                              }
-                              @case ('B') {
-                                <span class="inline-flex min-h-[24px] px-2.5 py-0.5 rounded-lg text-xs font-black bg-amber-100 text-amber-800 border border-amber-300">
-                                  B · En proceso
-                                </span>
-                              }
-                              @case ('C') {
-                                <span class="inline-flex min-h-[24px] px-2.5 py-0.5 rounded-lg text-xs font-black bg-rose-100 text-rose-800 border border-rose-300">
-                                  C · En inicio
-                                </span>
-                              }
-                              @default {
-                                <span class="text-slate-400 font-semibold">-</span>
-                              }
-                            }
-                          </td>
-                          <td class="py-2.5 px-3 text-slate-600 whitespace-normal leading-relaxed">
-                            {{ item.conclusionDescriptiva || 'Sin conclusión registrada' }}
-                          </td>
-                          <td class="py-2.5 px-3 text-center whitespace-nowrap">
-                            @if (item.calificacionCualitativa === 'C' || item.requiereRefuerzo) {
-                              <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-700 border border-rose-200">Requerido</span>
-                            } @else {
-                              <span class="text-slate-400 text-[11px]">Normal</span>
-                            }
-                          </td>
-                        </tr>
-                      } @empty {
-                        <tr>
-                          <td colspan="5" class="py-6 text-center text-slate-400">
-                            No hay notas registradas para este estudiante en el alcance seleccionado.
-                          </td>
-                        </tr>
-                      }
-                    </tbody>
-                  </table>
-                </div>
-                <ui-paginacion
-                  [totalRegistros]="notasEstudianteMetrica().length"
-                  [paginaActual]="paginaMetrica()"
-                  [tamanoPagina]="10"
-                  etiqueta="registros"
-                  ariaLabel="Paginación de competencias del estudiante"
-                  (cambioPagina)="paginaMetrica.set($event)"
-                />
-              }
+              <button
+                type="button"
+                (click)="abrirDetalleNotasModal()"
+                [disabled]="libretaCargando()"
+                class="min-h-10 rounded-xl bg-[#173B67] hover:bg-[#1e4b82] text-white px-4 py-2 text-xs font-bold shadow-xs transition cursor-pointer disabled:opacity-50 whitespace-nowrap"
+              >
+                Ver detalles de notas →
+              </button>
             </div>
           </div>
 
@@ -725,6 +654,166 @@ template: `
             </button>
             <button type="button" (click)="cerrarMetricas()" class="rounded-xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white px-5 py-2 text-xs font-bold transition shadow-xs cursor-pointer">
               Cerrar
+            </button>
+          </footer>
+        </div>
+      </dialog>
+
+      <!-- Segundo modal apilado: Detalle de Notas por Cursos y Bimestres -->
+      <dialog
+        #detalleNotasDialog
+        (close)="alCerrarDetalleNotasDialogo()"
+        class="fixed inset-0 m-auto w-[min(920px,calc(100vw-24px))] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-24px)] overflow-hidden rounded-[22px] border border-[#cbd5e1] bg-white p-0 text-[#172b4d] font-sans shadow-[0_32px_100px_rgb(9_21_38_/_46%)] backdrop:bg-[rgb(9_21_38_/_58%)] backdrop:backdrop-blur-[3px]"
+        aria-labelledby="detalle-notas-dialog-title"
+      >
+        <div class="shuji-modal-3d-enter flex min-h-0 max-h-[calc(100dvh-24px)] flex-col">
+          <header class="shrink-0 flex items-start justify-between gap-4 border-b border-slate-200 border-t-4 border-t-amber-500 bg-white px-5 py-4">
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="inline-flex items-center rounded-full bg-[#173B67] px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-white">
+                  Boleta por cursos y bimestre
+                </span>
+                <span class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[11px] font-bold text-slate-700">
+                  {{ obtenerNombrePeriodo(bimestreDetalleMetricaId() || periodoId) }}
+                </span>
+                @if (!esPeriodoAplicableRefuerzo(bimestreDetalleMetricaId() || periodoId)) {
+                  <span class="inline-flex items-center rounded-full border border-slate-300 bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold text-slate-700">
+                    Bimestre concluido · Sin reforzamiento
+                  </span>
+                }
+              </div>
+              <h3 id="detalle-notas-dialog-title" class="m-0 mt-1.5 text-lg font-extrabold text-[#14213d] leading-snug truncate">
+                Detalle de calificaciones · {{ alumnoMetricas()?.estudiante }}
+              </h3>
+              <p class="m-0 mt-0.5 text-xs text-slate-500">DNI {{ dniAlumnoMetricas() }} · {{ gradoSeccionMetricas() }}</p>
+            </div>
+            <button
+              type="button"
+              (click)="cerrarDetalleNotasModal()"
+              aria-label="Cerrar detalle de notas"
+              class="h-10 w-10 shrink-0 rounded-xl border border-slate-200 bg-slate-50 text-base font-bold text-slate-700 hover:bg-slate-200 cursor-pointer"
+            >
+              ✕
+            </button>
+          </header>
+
+          <div class="shrink-0 border-b border-slate-200 bg-[#f8fafc] px-5 py-3 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Bimestres del estudiante">
+              @for (per of periodosDetalleMetrica(); track per.id) {
+                <button
+                  type="button"
+                  role="tab"
+                  [attr.aria-selected]="(bimestreDetalleMetricaId() || periodoId) === per.id"
+                  (click)="seleccionarBimestreDetalleMetrica(per.id)"
+                  [class]="(bimestreDetalleMetricaId() || periodoId) === per.id
+                    ? 'bg-[#173B67] text-white border-[#173B67] shadow-2xs'
+                    : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'"
+                  class="min-h-9 rounded-xl border px-3 py-1.5 text-xs font-bold transition cursor-pointer"
+                >
+                  {{ per.nombre }}
+                  @if (per.id === periodoVigenteId()) {
+                    <span class="ml-1 rounded bg-white/20 px-1.5 py-0.5 text-[10px]">Actual</span>
+                  }
+                </button>
+              }
+            </div>
+            <span class="text-xs font-semibold text-slate-600 tabular-nums">
+              {{ cursosDetalleNotasMetrica().length }} curso(s) · {{ notasBimestreDetalleMetrica().length }} competencia(s)
+            </span>
+          </div>
+
+          <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain p-5 bg-[#f8fafc] space-y-4">
+            @let resDetMet = resumenBimestreDetalleMetrica();
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+              <div class="rounded-xl border border-emerald-200 bg-emerald-50 py-2">
+                <span class="block text-[10px] font-bold text-emerald-800">AD · Destacado</span>
+                <strong class="text-lg font-extrabold text-emerald-950 tabular-nums">{{ resDetMet.AD }}</strong>
+              </div>
+              <div class="rounded-xl border border-sky-200 bg-sky-50 py-2">
+                <span class="block text-[10px] font-bold text-sky-800">A · Esperado</span>
+                <strong class="text-lg font-extrabold text-sky-950 tabular-nums">{{ resDetMet.A }}</strong>
+              </div>
+              <div class="rounded-xl border border-amber-200 bg-amber-50 py-2">
+                <span class="block text-[10px] font-bold text-amber-800">B · En proceso</span>
+                <strong class="text-lg font-extrabold text-amber-950 tabular-nums">{{ resDetMet.B }}</strong>
+              </div>
+              <div class="rounded-xl border border-rose-200 bg-rose-50 py-2">
+                <span class="block text-[10px] font-bold text-rose-800">C · En inicio</span>
+                <strong class="text-lg font-extrabold text-rose-950 tabular-nums">{{ resDetMet.C }}</strong>
+              </div>
+            </div>
+
+            @if (cursosDetalleNotasMetrica().length) {
+              <div class="grid grid-cols-1 gap-3">
+                @for (curso of cursosDetalleNotasMetrica(); track curso.areaKey) {
+                  <article class="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-2xs">
+                    <header class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 bg-slate-50/90 px-4 py-2.5">
+                      <div class="flex items-center gap-2 min-w-0">
+                        <span class="h-2.5 w-2.5 rounded-full bg-[#173B67] shrink-0"></span>
+                        <h4 class="m-0 text-sm font-extrabold text-[#14213d] truncate">{{ curso.areaNombre }}</h4>
+                      </div>
+                      <div class="flex items-center gap-2">
+                        <span class="text-[11px] font-semibold text-slate-500">{{ curso.competencias.length }} comp.</span>
+                        <span
+                          class="rounded-full px-2.5 py-0.5 text-[11px] font-extrabold border"
+                          [ngClass]="{
+                            'bg-emerald-50 border-emerald-200 text-emerald-800': curso.nivelLogroCurso === 'AD',
+                            'bg-sky-50 border-sky-200 text-sky-800': curso.nivelLogroCurso === 'A',
+                            'bg-amber-50 border-amber-200 text-amber-900': curso.nivelLogroCurso === 'B',
+                            'bg-rose-50 border-rose-200 text-rose-800': curso.nivelLogroCurso === 'C'
+                          }"
+                        >
+                          {{ curso.nivelLogroCurso }}
+                        </span>
+                      </div>
+                    </header>
+                    <div class="divide-y divide-slate-100">
+                      @for (comp of curso.competencias; track comp.id + '-' + comp.competenciaId) {
+                        <div class="px-4 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                          <div class="min-w-0 flex-1">
+                            <p class="m-0 font-bold text-[#14213d]">{{ comp.competenciaNombre }}</p>
+                            <p class="m-0 mt-0.5 text-slate-600 leading-relaxed">{{ comp.conclusionDescriptiva }}</p>
+                          </div>
+                          <div class="flex items-center gap-2 shrink-0">
+                            <span
+                              class="inline-flex min-w-9 justify-center rounded-lg border px-2.5 py-1 text-xs font-black"
+                              [ngClass]="{
+                                'bg-emerald-50 border-emerald-200 text-emerald-800': comp.calificacion === 'AD',
+                                'bg-sky-50 border-sky-200 text-sky-800': comp.calificacion === 'A',
+                                'bg-amber-50 border-amber-200 text-amber-900': comp.calificacion === 'B',
+                                'bg-rose-50 border-rose-200 text-rose-800': comp.calificacion === 'C'
+                              }"
+                            >
+                              {{ comp.calificacion }}
+                            </span>
+                            @if (comp.requiereRefuerzo && esPeriodoAplicableRefuerzo(bimestreDetalleMetricaId() || periodoId)) {
+                              <span class="rounded-full border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-800">
+                                Refuerzo
+                              </span>
+                            }
+                          </div>
+                        </div>
+                      }
+                    </div>
+                  </article>
+                }
+              </div>
+            } @else {
+              <div class="rounded-2xl border border-slate-200 bg-white p-8 text-center">
+                <p class="m-0 text-sm font-semibold text-slate-700">Sin calificaciones registradas en {{ obtenerNombrePeriodo(bimestreDetalleMetricaId() || periodoId) }}.</p>
+                <p class="m-0 mt-1 text-xs text-slate-500">Selecciona otro bimestre en la barra superior para revisar los cursos evaluados.</p>
+              </div>
+            }
+          </div>
+
+          <footer class="shrink-0 flex items-center justify-between gap-2 border-t border-slate-200 bg-white px-5 py-3">
+            <span class="text-xs text-slate-500">La ficha general del estudiante permanece abierta detrás de esta ventana</span>
+            <button
+              type="button"
+              (click)="cerrarDetalleNotasModal()"
+              class="min-h-10 rounded-xl bg-[#173B67] px-4 py-2 text-xs font-bold text-white hover:bg-[#1e4b82] cursor-pointer"
+            >
+              Volver a la ficha
             </button>
           </footer>
         </div>
@@ -753,9 +842,12 @@ export class CalificacionesComponent implements OnInit {
   @ViewChild('edicionDialog') private edicionDialog!: ElementRef<HTMLDialogElement>;
 
   @ViewChild('metricasDialog') private metricasDialog!: ElementRef<HTMLDialogElement>;
+  @ViewChild('detalleNotasDialog') private detalleNotasDialog!: ElementRef<HTMLDialogElement>;
   readonly alumnoMetricas = signal<EvaluacionAlumno | null>(null);
   readonly libretaCargando = signal(false);
   readonly libretaCalificaciones = signal<CalificacionResponseDto[]>([]);
+  readonly mostrarDetalleNotasModal = signal(false);
+  readonly bimestreDetalleMetricaId = signal<number>(0);
 
   readonly dniAlumnoMetricas = computed(() => {
     const ficha = this.fichaEstudianteMetricas();
@@ -819,6 +911,59 @@ export class CalificacionesComponent implements OnInit {
   readonly rankingPaginado = computed(() => paginarRegistros(this.rankingAlumnos(), this.paginaRanking(), 10));
   readonly notasMetricaPaginadas = computed(() => paginarRegistros(this.notasEstudianteMetrica(), this.paginaMetrica(), 10));
   readonly totalCompetenciasMetrica = computed(() => this.notasEstudianteMetrica().length);
+  readonly cursosResumenMetricaActual = computed<CursoCalificacionGrupo[]>(() =>
+    agruparCalificacionesPorCurso(
+      this.notasEstudianteMetrica(),
+      this.areas(),
+      [...this.competencias(), ...this.competenciasCatalogo()]
+    )
+  );
+  readonly periodosDetalleMetrica = computed<Array<{ id: number; nombre: string }>>(() => {
+    const lista = [...this.periodos()].sort(
+      (a, b) => (a.numeroPeriodo ?? 0) - (b.numeroPeriodo ?? 0) || a.id - b.id
+    );
+    if (lista.length > 0) {
+      return lista.map(p => ({ id: p.id, nombre: p.nombre }));
+    }
+    const romanos: Record<number, string> = { 1: 'I Bimestre', 2: 'II Bimestre', 3: 'III Bimestre', 4: 'IV Bimestre' };
+    const ids = Array.from(
+      new Set(
+        this.libretaCalificaciones()
+          .map(n => n.periodoAcademicoId)
+          .filter((id): id is number => Boolean(id))
+      )
+    ).sort((a, b) => a - b);
+    return ids.map(id => ({ id, nombre: romanos[id] ?? `Bimestre #${id}` }));
+  });
+  readonly notasBimestreDetalleMetrica = computed(() => {
+    const objetivo = Number(this.bimestreDetalleMetricaId() || this.periodoId || this.periodoVigenteId());
+    const libreta = this.libretaCalificaciones();
+    if (libreta.length > 0) {
+      return objetivo > 0 ? libreta.filter(n => n.periodoAcademicoId === objetivo) : libreta;
+    }
+    return this.notasEstudianteMetrica();
+  });
+  readonly cursosDetalleNotasMetrica = computed<CursoCalificacionGrupo[]>(() =>
+    agruparCalificacionesPorCurso(
+      this.notasBimestreDetalleMetrica(),
+      this.areas(),
+      [...this.competencias(), ...this.competenciasCatalogo()]
+    )
+  );
+  readonly resumenBimestreDetalleMetrica = computed(() => {
+    const notas = this.notasBimestreDetalleMetrica();
+    let AD = 0;
+    let A = 0;
+    let B = 0;
+    let C = 0;
+    for (const n of notas) {
+      if (n.calificacionCualitativa === 'AD') AD++;
+      else if (n.calificacionCualitativa === 'A') A++;
+      else if (n.calificacionCualitativa === 'B') B++;
+      else if (n.calificacionCualitativa === 'C') C++;
+    }
+    return { AD, A, B, C, total: notas.length };
+  });
   readonly cantAdMetrica = computed(() => this.notasEstudianteMetrica().filter(n => n.calificacionCualitativa === 'AD').length);
   readonly cantAMetrica = computed(() => this.notasEstudianteMetrica().filter(n => n.calificacionCualitativa === 'A').length);
   readonly cantBMetrica = computed(() => this.notasEstudianteMetrica().filter(n => n.calificacionCualitativa === 'B').length);
@@ -911,6 +1056,41 @@ export class CalificacionesComponent implements OnInit {
     this.paginaMetrica.set(1);
   }
 
+  periodoVigenteId(): number {
+    const lista = [...this.periodos()].sort(
+      (a, b) => (a.numeroPeriodo ?? 0) - (b.numeroPeriodo ?? 0) || a.id - b.id
+    );
+    if (!lista.length) return 0;
+    const hoy = fechaActualEnPeru();
+    const abiertoPorRango = lista.find(
+      p => !p.cerrado && Boolean(p.fechaInicio) && Boolean(p.fechaFin) && p.fechaInicio <= hoy && hoy <= p.fechaFin
+    );
+    if (abiertoPorRango) return abiertoPorRango.id;
+    const iniciados = lista.filter(p => !p.cerrado && Boolean(p.fechaInicio) && p.fechaInicio <= hoy);
+    if (iniciados.length > 0) return iniciados[iniciados.length - 1].id;
+    const primerAbierto = lista.find(p => !p.cerrado);
+    return primerAbierto?.id ?? lista[lista.length - 1].id;
+  }
+
+  esPeriodoConcluido(p: PeriodoResponseDto | null | undefined): boolean {
+    if (!p) return false;
+    if (p.cerrado) return true;
+    const vigenteId = this.periodoVigenteId();
+    if (!vigenteId || vigenteId === p.id) return false;
+    const vigente = this.periodos().find(item => item.id === vigenteId);
+    if (vigente && p.numeroPeriodo != null && vigente.numeroPeriodo != null) {
+      return p.numeroPeriodo < vigente.numeroPeriodo;
+    }
+    const hoy = fechaActualEnPeru();
+    return Boolean(p.fechaFin) && p.fechaFin < hoy;
+  }
+
+  esPeriodoAplicableRefuerzo(periodoId?: number | null): boolean {
+    if (!periodoId || !this.periodos().length) return true;
+    const periodo = this.periodos().find(p => p.id === Number(periodoId));
+    return !this.esPeriodoConcluido(periodo);
+  }
+
   obtenerIniciales(nombre?: string): string {
     if (!nombre) return 'AL';
     const partes = nombre.trim().split(/\s+/);
@@ -921,6 +1101,8 @@ export class CalificacionesComponent implements OnInit {
   verMetricasAlumno(alumno: EvaluacionAlumno): void {
     this.paginaMetrica.set(1);
     this.alcancePeriodoMetrica.set('PERIODO_ACTUAL');
+    this.mostrarDetalleNotasModal.set(false);
+    this.bimestreDetalleMetricaId.set(0);
     this.alumnoMetricas.set(alumno);
     this.fichaEstudianteMetricas.set(null);
     this.libretaCalificaciones.set([]);
@@ -973,10 +1155,37 @@ export class CalificacionesComponent implements OnInit {
   }
 
   cerrarMetricas(): void {
+    this.cerrarDetalleNotasModal();
     this.metricasDialog?.nativeElement?.close();
     this.alumnoMetricas.set(null);
     this.libretaCalificaciones.set([]);
     this.alcancePeriodoMetrica.set('PERIODO_ACTUAL');
+  }
+
+  abrirDetalleNotasModal(): void {
+    const lista = this.periodosDetalleMetrica();
+    const inicial =
+      Number(this.periodoId || this.periodoVigenteId()) ||
+      lista[lista.length - 1]?.id ||
+      0;
+    this.bimestreDetalleMetricaId.set(inicial);
+    this.mostrarDetalleNotasModal.set(true);
+    this.detalleNotasDialog?.nativeElement?.showModal();
+  }
+
+  cerrarDetalleNotasModal(): void {
+    if (this.detalleNotasDialog?.nativeElement?.open) {
+      this.detalleNotasDialog.nativeElement.close();
+    }
+    this.mostrarDetalleNotasModal.set(false);
+  }
+
+  alCerrarDetalleNotasDialogo(): void {
+    this.mostrarDetalleNotasModal.set(false);
+  }
+
+  seleccionarBimestreDetalleMetrica(periodoId: number): void {
+    this.bimestreDetalleMetricaId.set(Number(periodoId));
   }
 
   descargarLibretaPdfAlumno(matriculaId?: number): void {

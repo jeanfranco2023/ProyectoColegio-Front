@@ -45,8 +45,11 @@ export class TesoreriaService {
       { conceptoId, matriculaIds, vencimiento });
   }
 
-  listarExtraordinarios(matriculaId: number) {
-    return this.http.get<ObligacionResponseDto[]>(this.baseUrl + '/extraordinarios/obligaciones', { params: { matriculaId } });
+  listarExtraordinarios(matriculaId?: number | null) {
+    if (matriculaId != null && matriculaId > 0) {
+      return this.http.get<ObligacionResponseDto[]>(this.baseUrl + '/extraordinarios/obligaciones', { params: { matriculaId } });
+    }
+    return this.http.get<ObligacionResponseDto[]>(this.baseUrl + '/extraordinarios/obligaciones');
   }
 
   descargarConstancia(id: number) {
@@ -65,9 +68,12 @@ export class TesoreriaService {
     return this.http.post<ObligacionResponseDto>(`${this.baseUrl}/obligaciones/matricula`, payload);
   }
 
-  listarObligaciones(matriculaId: number): Observable<ObligacionResponseDto[]> {
-    const params = new HttpParams().set('matriculaId', matriculaId.toString());
-    return this.http.get<ObligacionResponseDto[]>(`${this.baseUrl}/obligaciones`, { params });
+  listarObligaciones(matriculaId?: number | null): Observable<ObligacionResponseDto[]> {
+    if (matriculaId != null && matriculaId > 0) {
+      const params = new HttpParams().set('matriculaId', matriculaId.toString());
+      return this.http.get<ObligacionResponseDto[]>(`${this.baseUrl}/obligaciones`, { params });
+    }
+    return this.http.get<ObligacionResponseDto[]>(`${this.baseUrl}/obligaciones`);
   }
 
   listarMisObligaciones(): Observable<ObligacionResponseDto[]> {

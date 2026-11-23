@@ -34,112 +34,109 @@ interface CalendarDay {
   selector: 'app-ui-calendar',
   standalone: true,
   imports: [CommonModule],
+  host: { class: 'block w-full min-w-0 font-sans' },
   providers: [
     { provide: NG_VALUE_ACCESSOR, useExisting: forwardRef(() => UiCalendarComponent), multi: true },
     { provide: NG_VALIDATORS, useExisting: forwardRef(() => UiCalendarComponent), multi: true }
   ],
   template: `
     <div class="date-field">
-      <div class="date-field__control">
-        <input type="text" class="date-field__input" inputmode="numeric" autocomplete="off"
+      <div class="date-field__control flex min-w-0 items-stretch rounded-lg border border-[#cdd7e5] bg-white focus-within:border-[#2864c5] focus-within:shadow-[0_0_0_2px_rgb(40_100_197_/_15%)]">
+        <input type="text" class="date-field__input box-border flex-1 min-w-0 min-h-[42px] !m-0 border-0 bg-transparent px-[10px] py-2 font-[inherit] text-base text-[#172b4d] outline-none aria-[invalid=true]:text-[#a9322a]" inputmode="numeric" autocomplete="off"
           [id]="id || null" [disabled]="isDisabled" [value]="manualText" placeholder="dd/mm/aaaa"
           [attr.aria-label]="ariaLabel" [attr.aria-describedby]="ariaDescribedby"
           [attr.aria-invalid]="manualError ? 'true' : ariaInvalid" [attr.aria-required]="required ? 'true' : null"
           (input)="editManual($event)" (blur)="commitManual()" (keydown.enter)="$event.preventDefault(); commitManual()" />
-        <button type="button" class="date-field__button" [disabled]="isDisabled" aria-label="Abrir calendario"
+        <button type="button" class="date-field__button grid flex-[0_0_42px] place-items-center rounded-r-[7px] border-0 border-l border-[#e7edf4] bg-transparent p-0 text-[#173b67] cursor-pointer transition-colors hover:bg-[#f4f7fb] focus-visible:outline-2 focus-visible:outline-[#2864c5] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-[0.58] motion-reduce:transition-none" [disabled]="isDisabled" aria-label="Abrir calendario"
           aria-haspopup="dialog" (click)="openCalendar()">
-          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <svg class="size-[19px]" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
             <rect x="3.5" y="5" width="17" height="16" rx="2.5"></rect>
             <path d="M7.5 3v4M16.5 3v4M4 9.5h16M8 13h.01M12 13h.01M16 13h.01M8 17h.01M12 17h.01"></path>
           </svg>
         </button>
       </div>
-      @if (manualError) { <p class="date-field__error" role="alert">{{ manualError }}</p> }
+      @if (manualError) { <p class="mt-1 mb-0 text-[15px] leading-[1.4] text-[#a9322a]" role="alert">{{ manualError }}</p> }
 
       <dialog
         #calendarDialog
-        class="calendar-dialog"
+        class="calendar-dialog box-border w-[min(520px,calc(100vw-20px))] max-w-[calc(100vw-20px)] max-h-[calc(100dvh-20px)] overflow-auto m-auto p-0 border border-[#dbe4ef] rounded-2xl bg-transparent text-[#172b4d] shadow-[0_26px_80px_rgb(15_31_57_/_28%)] backdrop:bg-[rgb(12_24_43_/_48%)] backdrop:backdrop-blur-[3px] max-[520px]:w-[calc(100vw-16px)] max-[520px]:max-w-[calc(100vw-16px)] max-[520px]:max-h-[calc(100dvh-16px)] max-[520px]:rounded-[18px]"
         aria-labelledby="ui-calendar-title"
         (click)="closeOnBackdrop($event)"
         (close)="markTouched()">
-        <section class="calendar-card" [class.calendar-card--attendance]="attendanceCalendar">
-          <header class="calendar-card__header">
-            <div class="calendar-card__heading">
-              <p>{{ attendanceCalendar ? 'Fecha de asistencia' : 'Fecha seleccionada' }}</p>
-              <h2 id="ui-calendar-title">{{ selectedDateLabel }}</h2>
+        <section
+          class="rounded-[inherit] p-[18px] max-[520px]:px-[14px] max-[520px]:pt-[18px] max-[520px]:pb-[14px]"
+          [class]="attendanceCalendar ? 'bg-[#fbfcfe]' : 'bg-white'">
+          <header class="flex items-start justify-between gap-[18px]">
+            <div>
+              <p class="m-0 mb-[5px] text-sm font-bold text-[#64748b]">{{ attendanceCalendar ? 'Fecha de asistencia' : 'Fecha seleccionada' }}</p>
+              <h2 id="ui-calendar-title" class="m-0 text-[clamp(16px,4vw,20px)] font-semibold leading-[1.25] capitalize text-[#172b4d]">{{ selectedDateLabel }}</h2>
             </div>
-            <button type="button" class="calendar-icon-button" aria-label="Cerrar calendario" (click)="closeCalendar()">×</button>
+            <button type="button" class="grid size-11 flex-none place-items-center rounded-lg border border-[#e0e7f0] bg-white text-[26px] leading-none text-[#334155] cursor-pointer hover:bg-[#edf3fb] focus-visible:outline-2 focus-visible:outline-[#2864c5] focus-visible:outline-offset-2" aria-label="Cerrar calendario" (click)="closeCalendar()">×</button>
           </header>
 
           @if (viewMode === 'days') {
-          <div class="calendar-date-nav" aria-label="Cambiar fecha">
-            <button type="button" class="calendar-step-button" [disabled]="!canMoveDate(-1)" (click)="moveDate(-1)">
-              <span aria-hidden="true">‹</span> Día anterior
+          <div class="mt-3 flex justify-between gap-2" aria-label="Cambiar fecha">
+            <button type="button" class="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-[11px] border border-[#dce5f0] bg-[#f7f9fc] px-[14px] py-2 text-sm font-bold text-[#30425f] cursor-pointer hover:enabled:border-[#b8c8dd] hover:enabled:bg-[#eef4fb] focus-visible:outline-2 focus-visible:outline-[#2864c5] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-[0.42]" [disabled]="!canMoveDate(-1)" (click)="moveDate(-1)">
+              <span aria-hidden="true" class="text-[21px] leading-[0.8]">‹</span> Día anterior
             </button>
-            <button type="button" class="calendar-step-button" [disabled]="!canMoveDate(1)" (click)="moveDate(1)">
-              Día siguiente <span aria-hidden="true">›</span>
+            <button type="button" class="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-[11px] border border-[#dce5f0] bg-[#f7f9fc] px-[14px] py-2 text-sm font-bold text-[#30425f] cursor-pointer hover:enabled:border-[#b8c8dd] hover:enabled:bg-[#eef4fb] focus-visible:outline-2 focus-visible:outline-[#2864c5] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-[0.42]" [disabled]="!canMoveDate(1)" (click)="moveDate(1)">
+              Día siguiente <span aria-hidden="true" class="text-[21px] leading-[0.8]">›</span>
             </button>
           </div>
           }
 
-          <div class="calendar-month-nav">
-            <button type="button" class="calendar-icon-button" aria-label="Mes anterior" (click)="moveMonth(-1)" [disabled]="viewMode === 'year-month'">‹</button>
+          <div class="mt-3 flex items-center justify-between gap-[10px]">
+            <button type="button" class="grid size-11 flex-none place-items-center rounded-lg border border-[#e0e7f0] bg-white text-[26px] leading-none text-[#334155] cursor-pointer hover:bg-[#edf3fb] focus-visible:outline-2 focus-visible:outline-[#2864c5] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-45" aria-label="Mes anterior" (click)="moveMonth(-1)" [disabled]="viewMode === 'year-month'">‹</button>
             <button
               type="button"
-              class="calendar-title-toggle"
+              class="inline-flex items-center gap-2 rounded-xl border border-[#d9e1ec] bg-[#f8fafc] px-4 py-[7px] text-[#172b4d] cursor-pointer transition-[background-color,border-color,transform] duration-150 hover:-translate-y-px hover:border-[#2563eb] hover:bg-[#eef4fc] focus-visible:outline-2 focus-visible:outline-[#2864c5] focus-visible:outline-offset-2"
               (click)="toggleViewMode()"
               [attr.aria-expanded]="viewMode === 'year-month'"
               title="Clic para seleccionar año y mes rápidamente"
             >
-              <h3>{{ monthLabel }}</h3>
-              <span class="calendar-toggle-indicator" aria-hidden="true">{{ viewMode === 'year-month' ? '▲' : '▼' }}</span>
+              <h3 class="m-0 text-[19px] font-extrabold capitalize text-[#172b4d]">{{ monthLabel }}</h3>
+              <span class="text-[13px] font-extrabold text-[#1e40af]" aria-hidden="true">{{ viewMode === 'year-month' ? '▲' : '▼' }}</span>
             </button>
-            <button type="button" class="calendar-icon-button" aria-label="Mes siguiente" (click)="moveMonth(1)" [disabled]="viewMode === 'year-month'">›</button>
+            <button type="button" class="grid size-11 flex-none place-items-center rounded-lg border border-[#e0e7f0] bg-white text-[26px] leading-none text-[#334155] cursor-pointer hover:bg-[#edf3fb] focus-visible:outline-2 focus-visible:outline-[#2864c5] focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-45" aria-label="Mes siguiente" (click)="moveMonth(1)" [disabled]="viewMode === 'year-month'">›</button>
           </div>
 
           @if (viewMode === 'year-month') {
-            <div class="calendar-picker-panel">
-              <div><span>Año</span>
-                <select aria-label="Año" (change)="selectYear(+$any($event.target).value)">
+            <div class="mt-3 grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-[10px]">
+              <div class="grid min-w-0 gap-[5px] text-[13px] text-[#475569]"><span>Año</span>
+                <select class="min-w-0 min-h-[42px] w-full rounded-lg border border-[#cdd7e5] bg-white px-2 py-1.5 font-[inherit] text-[#172b4d] focus-visible:outline-2 focus-visible:outline-[#2864c5] focus-visible:outline-offset-2" aria-label="Año" (change)="selectYear(+$any($event.target).value)">
                   @for (year of availableYears; track year) {
                     <option [value]="year" [selected]="year === selectedYear">{{ year }}</option>
                   }
                 </select>
               </div>
-              <div><span>Mes</span>
-                <select aria-label="Mes" (change)="selectMonth(+$any($event.target).value)">
+              <div class="grid min-w-0 gap-[5px] text-[13px] text-[#475569]"><span>Mes</span>
+                <select class="min-w-0 min-h-[42px] w-full rounded-lg border border-[#cdd7e5] bg-white px-2 py-1.5 font-[inherit] text-[#172b4d] focus-visible:outline-2 focus-visible:outline-[#2864c5] focus-visible:outline-offset-2" aria-label="Mes" (change)="selectMonth(+$any($event.target).value)">
                   @for (mes of mesesNombres; track mes; let i = $index) {
                     <option [value]="i" [selected]="i === selectedMonth" [disabled]="isMonthOutsideBounds(selectedYear, i)">{{ mes }}</option>
                   }
                 </select>
               </div>
-              <button type="button" class="calendar-return-btn" (click)="viewMode = 'days'">Ver días</button>
+              <button type="button" class="col-span-full min-h-[38px] justify-self-end rounded-lg border-0 bg-[#eef3fa] px-3 font-[inherit] text-[13px] font-semibold text-[#173b67] cursor-pointer hover:bg-[#e1eaf6] focus-visible:outline-2 focus-visible:outline-[#2864c5] focus-visible:outline-offset-2" (click)="viewMode = 'days'">Ver días</button>
             </div>
           } @else {
             @if (attendanceCalendar) {
-              <div class="calendar-legend" aria-label="Leyenda de asistencia">
-                <span><i class="calendar-legend__dot calendar-legend__dot--recorded"></i>Con registros</span>
-                <span><i class="calendar-legend__dot calendar-legend__dot--empty"></i>Sin registros</span>
+              <div class="mt-[14px] mb-[5px] flex flex-wrap gap-[14px] text-xs font-semibold text-[#52627a]" aria-label="Leyenda de asistencia">
+                <span class="inline-flex items-center gap-[7px]"><i class="size-[10px] rounded-full bg-[#16834d]"></i>Con registros</span>
+                <span class="inline-flex items-center gap-[7px]"><i class="size-[10px] rounded-full bg-[#c43d3d]"></i>Sin registros</span>
               </div>
-              @if (attendanceDataLoading) { <p class="calendar-note" role="status">Consultando las marcas del mes…</p> }
-              @else if (attendanceLoadError) { <p class="calendar-note" role="alert">No se pudieron consultar las marcas de este mes.</p> }
+              @if (attendanceDataLoading) { <p class="mt-3 mb-0 text-sm font-semibold text-[#475569]" role="status">Consultando las marcas del mes…</p> }
+              @else if (attendanceLoadError) { <p class="mt-3 mb-0 text-sm font-semibold text-[#475569]" role="alert">No se pudieron consultar las marcas de este mes.</p> }
             }
 
-            <div class="calendar-grid" role="grid" aria-label="Días del mes">
+            <div class="mt-[14px] grid grid-cols-[repeat(7,minmax(0,1fr))] gap-2 max-[520px]:gap-1" role="grid" aria-label="Días del mes">
               @for (weekDay of weekDays; track weekDay) {
-                <span class="calendar-grid__weekday" role="columnheader">{{ weekDay }}</span>
+                <span class="grid min-h-9 place-items-center text-sm font-extrabold text-[#475569] max-[520px]:text-[11px]" role="columnheader">{{ weekDay }}</span>
               }
               @for (day of calendarDays; track day.iso) {
                 <button
                   type="button"
                   role="gridcell"
-                  class="calendar-grid__day"
-                  [class.calendar-grid__day--outside]="day.outsideMonth"
-                  [class.calendar-grid__day--weekend]="day.weekend && disableWeekends"
-                  [class.calendar-grid__day--recorded]="attendanceCalendar && attendanceDataLoaded && day.hasAttendance"
-                  [class.calendar-grid__day--empty]="attendanceCalendar && attendanceDataLoaded && !day.hasAttendance && !day.weekend"
-                  [class.calendar-grid__day--today]="day.today"
-                  [class.calendar-grid__day--selected]="day.selected"
+                  [class]="dayButtonClasses(day)"
                   [disabled]="isDateDisabled(day.date)"
                   [attr.aria-label]="dayAriaLabel(day)"
                   [attr.aria-pressed]="day.selected"
@@ -151,100 +148,22 @@ interface CalendarDay {
             </div>
 
             @if (disableWeekends) {
-              <p class="calendar-note">Sábados y domingos están deshabilitados.</p>
+              <p class="mt-3 mb-0 text-sm font-semibold text-[#475569]">Sábados y domingos están deshabilitados.</p>
             }
           }
 
-          <footer class="calendar-card__footer">
+          <footer class="mt-5 flex items-center justify-between gap-3 border-t border-[#e7edf4] pt-4">
             @if (!required && value) {
-              <button type="button" class="calendar-clear-button" (click)="clearDate()">Limpiar fecha</button>
+              <button type="button" class="min-h-[46px] rounded-xl border border-[#dce5f0] bg-white px-[18px] py-[10px] font-[inherit] text-[15px] font-extrabold text-[#475569] cursor-pointer hover:bg-[#f1f5f9] focus-visible:outline-2 focus-visible:outline-[#2864c5] focus-visible:outline-offset-2" (click)="clearDate()">Limpiar fecha</button>
             } @else {
               <span></span>
             }
-            <button type="button" class="calendar-done-button" (click)="closeCalendar()">Listo</button>
+            <button type="button" class="min-h-[46px] rounded-xl border border-[#173B67] bg-[#173B67] px-[18px] py-[10px] font-[inherit] text-[15px] font-extrabold text-white cursor-pointer hover:bg-[#112d50] focus-visible:outline-2 focus-visible:outline-[#2864c5] focus-visible:outline-offset-2" (click)="closeCalendar()">Listo</button>
           </footer>
         </section>
       </dialog>
     </div>
-  `,
-  styles: [`
-    :host { display: block; width: 100%; min-width: 0; font-family: inherit; }
-    .date-field__control { display: flex; min-width: 0; align-items: stretch; border: 1px solid #cdd7e5; border-radius: 8px; background: #fff; }
-    .date-field__control:focus-within { border-color: #2864c5; box-shadow: 0 0 0 2px rgb(40 100 197 / 15%); }
-    .date-field__input { box-sizing: border-box; flex: 1; min-width: 0; min-height: 42px; margin: 0 !important; padding: 8px 10px; border: 0; background: transparent; color: #172b4d; font: inherit; font-size: 16px; outline: none; }
-    .date-field__input[aria-invalid="true"] { color: #a9322a; }
-    .date-field__button { display: grid; place-items: center; flex: 0 0 42px; padding: 0; border: 0; border-left: 1px solid #e7edf4; border-radius: 0 7px 7px 0; background: transparent; color: #173b67; cursor: pointer; }
-    .date-field__button:hover { background: #f4f7fb; }
-    .date-field__button:focus-visible, .calendar-dialog :is(button, select):focus-visible { outline: 2px solid #2864c5; outline-offset: 2px; }
-    .date-field__button:disabled { cursor: not-allowed; opacity: .58; }
-    .date-field__button svg { width: 19px; height: 19px; }
-    .date-field__error { margin: 4px 0 0; color: #a9322a; font-size: 15px; line-height: 1.4; }
-    .calendar-dialog {
-      box-sizing: border-box; width: min(520px, calc(100vw - 20px)); max-width: calc(100vw - 20px);
-      max-height: calc(100dvh - 20px); overflow: auto; margin: auto; padding: 0; border: 1px solid #dbe4ef;
-      border-radius: 16px; background: transparent; color: #172b4d; box-shadow: 0 26px 80px rgb(15 31 57 / 28%);
-    }
-    .calendar-dialog::backdrop { background: rgb(12 24 43 / 48%); backdrop-filter: blur(3px); }
-    .calendar-card { padding: 18px; border-radius: inherit; background: #fff; }
-    .calendar-card__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; }
-    .calendar-card__heading p { margin: 0 0 5px; color: #64748b; font-size: 14px; font-weight: 700; }
-    .calendar-card__heading h2 { margin: 0; color: #172b4d; font-size: clamp(16px, 4vw, 20px); font-weight: 650; line-height: 1.25; text-transform: capitalize; }
-    .calendar-icon-button { width: 44px; height: 44px; display: grid; place-items: center; flex: 0 0 auto; border: 1px solid #e0e7f0; border-radius: 8px; background: white; color: #334155; font-size: 26px; line-height: 1; cursor: pointer; }
-    .calendar-icon-button:hover { background: #edf3fb; }
-    .calendar-date-nav { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; }
-    .calendar-step-button { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 14px; border: 1px solid #dce5f0; border-radius: 11px; background: #f7f9fc; color: #30425f; font-size: 14px; font-weight: 700; cursor: pointer; }
-    .calendar-step-button:hover:not(:disabled) { border-color: #b8c8dd; background: #eef4fb; }
-    .calendar-step-button span { font-size: 21px; line-height: .8; }
-    .calendar-step-button:disabled { cursor: not-allowed; opacity: .42; }
-    .calendar-month-nav { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 12px; }
-    .calendar-month-nav h3 { margin: 0; color: #172b4d; font-size: 19px; font-weight: 800; text-transform: capitalize; }
-    .calendar-title-toggle {
-      display: inline-flex; align-items: center; gap: 8px; padding: 7px 16px;
-      border: 1px solid #d9e1ec; border-radius: 12px; background: #f8fafc;
-      color: #172b4d; cursor: pointer; transition: background-color 140ms ease, border-color 140ms ease, transform 120ms ease;
-    }
-    .calendar-title-toggle:hover { background: #eef4fc; border-color: #2563eb; transform: translateY(-1px); }
-    .calendar-title-toggle h3 { margin: 0; color: #172b4d; font-size: 19px; font-weight: 800; text-transform: capitalize; }
-    .calendar-toggle-indicator { font-size: 13px; color: #1e40af; font-weight: 800; }
-
-    .calendar-picker-panel { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin-top: 12px; }
-    .calendar-picker-panel > div { display: grid; gap: 5px; min-width: 0; font-size: 13px; color: #475569; }
-    .calendar-picker-panel select { min-width: 0; min-height: 42px; width: 100%; padding: 6px 8px; border: 1px solid #cdd7e5; border-radius: 8px; color: #172b4d; background: white; font: inherit; }
-    .calendar-return-btn { grid-column: 1 / -1; justify-self: end; min-height: 38px; padding: 0 12px; border: 0; border-radius: 8px; background: #eef3fa; color: #173b67; font: inherit; font-size: 13px; cursor: pointer; }
-    .calendar-legend { display: flex; flex-wrap: wrap; gap: 14px; margin: 14px 0 5px; color: #52627a; font-size: 12px; font-weight: 600; }
-    .calendar-legend span { display: inline-flex; align-items: center; gap: 7px; }
-    .calendar-legend__dot { width: 10px; height: 10px; border-radius: 50%; }
-    .calendar-legend__dot--recorded { background: #16834d; }
-    .calendar-legend__dot--empty { background: #c43d3d; }
-    .calendar-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
-    .calendar-grid__weekday { min-height: 36px; display: grid; place-items: center; color: #475569; font-size: 14px; font-weight: 800; }
-    .calendar-grid__day { position: relative; min-width: 0; min-height: 42px; display: grid; place-items: center; border: 1px solid transparent; border-radius: 8px; background: #f8fafc; color: #1e293b; font: inherit; font-size: 16px; font-weight: 700; cursor: pointer; transition: transform 120ms ease, box-shadow 120ms ease; }
-    .calendar-grid__day:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 4px 11px rgb(23 43 77 / 12%); }
-    .calendar-grid__day--outside { color: #94a3b8; background: #fafbfd; }
-    .calendar-grid__day--recorded { border-color: #b7e1c8; background: #e8f6ee; color: #12643d; font-weight: 800; }
-    .calendar-grid__day--empty { border-color: #f0c2bd; background: #fff0ee; color: #a9322a; }
-    .calendar-grid__day--weekend:disabled { border-color: #edf0f4; background: #eef1f5; color: #a6afbc; opacity: .72; }
-    .calendar-grid__day--selected { border-color: #173B67; box-shadow: inset 0 0 0 2.5px #173B67; font-weight: 800; }
-    .calendar-grid__day--today::after { content: ''; position: absolute; right: 8px; top: 8px; width: 6px; height: 6px; border-radius: 50%; background: #173B67; }
-    .calendar-grid__day:disabled:not(.calendar-grid__day--weekend) { cursor: not-allowed; opacity: .45; }
-    .calendar-note { margin: 12px 0 0; color: #475569; font-size: 14px; font-weight: 600; }
-    .calendar-card__footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #e7edf4; }
-    .calendar-clear-button, .calendar-done-button { min-height: 46px; padding: 10px 18px; border-radius: 12px; font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
-    .calendar-clear-button { border: 1px solid #dce5f0; background: #fff; color: #475569; }
-    .calendar-clear-button:hover { background: #f1f5f9; }
-    .calendar-done-button { border: 1px solid #173B67; background: #173B67; color: #fff; }
-    .calendar-done-button:hover { background: #112d50; }
-    @media (max-width: 520px) {
-      .calendar-dialog { width: calc(100vw - 16px); max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px); border-radius: 18px; }
-      .calendar-card { padding: 18px 14px 14px; }
-      .calendar-grid { gap: 4px; }
-      .calendar-grid__day { min-height: 42px; border-radius: 11px; font-size: 13px; }
-      .calendar-grid__weekday { font-size: 11px; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .date-field__button, .calendar-grid__day { transition: none; }
-    }
-  `]
+  `
 })
 export class UiCalendarComponent implements ControlValueAccessor, Validator, OnChanges {
   @ViewChild('calendarDialog') private calendarDialog?: ElementRef<HTMLDialogElement>;
@@ -576,5 +495,38 @@ export class UiCalendarComponent implements ControlValueAccessor, Validator, OnC
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  }
+
+  dayButtonClasses(day: CalendarDay): string {
+    const classes = [
+      'relative grid min-w-0 min-h-[42px] place-items-center rounded-lg border font-[inherit] text-base font-bold cursor-pointer',
+      'transition-[transform,box-shadow] duration-150 motion-reduce:transition-none',
+      'enabled:hover:-translate-y-px enabled:hover:shadow-[0_4px_11px_rgb(23_43_77_/_12%)]',
+      'focus-visible:outline-2 focus-visible:outline-[#2864c5] focus-visible:outline-offset-2',
+      'disabled:cursor-not-allowed max-[520px]:rounded-[11px] max-[520px]:text-[13px]'
+    ];
+
+    if (this.attendanceCalendar && this.attendanceDataLoaded && day.hasAttendance) {
+      classes.push('border-[#b7e1c8] bg-[#e8f6ee] text-[#12643d] font-extrabold');
+    } else if (this.attendanceCalendar && this.attendanceDataLoaded && !day.hasAttendance && !day.weekend) {
+      classes.push('border-[#f0c2bd] bg-[#fff0ee] text-[#a9322a]');
+    } else if (day.weekend && this.disableWeekends) {
+      classes.push('border-transparent bg-[#f8fafc] text-[#1e293b] disabled:border-[#edf0f4] disabled:bg-[#eef1f5] disabled:text-[#a6afbc] disabled:opacity-[0.72]');
+    } else if (day.outsideMonth) {
+      classes.push('border-transparent bg-[#fafbfd] text-[#94a3b8]');
+    } else {
+      classes.push('border-transparent bg-[#f8fafc] text-[#1e293b]');
+    }
+
+    if (!(day.weekend && this.disableWeekends)) {
+      classes.push('disabled:opacity-45');
+    }
+    if (day.selected) {
+      classes.push('!border-[#173B67] shadow-[inset_0_0_0_2.5px_#173B67] font-extrabold');
+    }
+    if (day.today) {
+      classes.push("after:content-[''] after:absolute after:right-2 after:top-2 after:size-1.5 after:rounded-full after:bg-[#173B67]");
+    }
+    return classes.join(' ');
   }
 }

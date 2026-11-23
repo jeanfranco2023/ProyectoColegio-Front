@@ -239,5 +239,21 @@ describe('tablero integral de refuerzo académico', () => {
     expect(componente.asignacionId).toBe(55);
     expect(componente.aula).toBe('SEC-5-A');
     expect(componente.tema).toContain('Matemática');
+
+    expect(componente.periodosAplicablesRefuerzo().map(p => p.id)).toEqual([4]);
+    expect(componente.esPeriodoIdAplicableRefuerzo(1)).toBe(false);
+    expect(componente.esPeriodoIdAplicableRefuerzo(4)).toBe(true);
+
+    componente.onCambioPeriodo(1);
+    expect(componente.esVistaPeriodoAplicableRefuerzo()).toBe(false);
+
+    componente.mostrarFormulario.set(false);
+    componente.prepararSesionDesdeRiesgo({
+      ...tableroEjemplo.riesgos[0],
+      periodoAcademicoId: 1,
+      periodoNombre: 'I Bimestre'
+    });
+    expect(componente.mostrarFormulario()).toBe(false);
+    expect(componente.esError()).toBe(true);
   });
 });

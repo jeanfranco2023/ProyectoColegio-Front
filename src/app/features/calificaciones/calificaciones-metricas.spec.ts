@@ -166,4 +166,46 @@ describe('Métricas y Desempeño Individual del Estudiante', () => {
     expect(component.cursosEnRiesgoDetalle().length).toBe(1);
     expect(component.cursosEnRiesgoDetalle()[0].competencias[0].periodos).toEqual(['I Bimestre', 'II Bimestre']);
   });
+
+  it('abre el segundo modal de detalles de notas agrupando por curso y permitiendo cambiar de bimestre sin cerrar la ficha', () => {
+    const { component } = setup();
+    component.areas.set([{ id: 1, nombre: 'Matemática' }, { id: 2, nombre: 'Comunicación' }]);
+    component.competenciasCatalogo.set([
+      { id: 101, areaId: 1, numeroOrden: 1, nombre: 'Resuelve problemas de cantidad', descripcion: '' },
+      { id: 201, areaId: 2, numeroOrden: 1, nombre: 'Lee diversos tipos de textos', descripcion: '' }
+    ]);
+    component.periodos.set([
+      { id: 1, anioLectivoId: 1, numeroPeriodo: 1, nombre: 'I Bimestre', fechaInicio: '2026-03-01', fechaFin: '2026-05-08', cerrado: false },
+      { id: 4, anioLectivoId: 1, numeroPeriodo: 4, nombre: 'IV Bimestre', fechaInicio: '2026-10-19', fechaFin: '2099-12-31', cerrado: false }
+    ]);
+    component.periodoId = 4;
+    component.alumnoMetricas.set({
+      matriculaId: 10,
+      numeroOrden: 1,
+      estudiante: 'Lucía Paredes',
+      c1: 'AD',
+      c2: '-',
+      c3: '-',
+      conclusionDescriptiva: '',
+      requiereRefuerzo: false,
+      competenciaId: 101
+    });
+    component.libretaCalificaciones.set([
+      { id: 1, matriculaId: 10, anioLectivoId: 1, seccionId: 1, periodoAcademicoId: 1, areaCurricularId: 2, competenciaId: 201, calificacionCualitativa: 'B', conclusionDescriptiva: 'Comprensión en proceso' },
+      { id: 2, matriculaId: 10, anioLectivoId: 1, seccionId: 1, periodoAcademicoId: 4, areaCurricularId: 1, competenciaId: 101, calificacionCualitativa: 'AD', conclusionDescriptiva: 'Logro destacado' }
+    ]);
+
+    component.abrirDetalleNotasModal();
+    expect(component.mostrarDetalleNotasModal()).toBe(true);
+    expect(component.alumnoMetricas()?.matriculaId).toBe(10);
+    expect(component.bimestreDetalleMetricaId()).toBe(4);
+    expect(component.cursosDetalleNotasMetrica().map(c => c.areaNombre)).toEqual(['Matemática']);
+
+    component.seleccionarBimestreDetalleMetrica(1);
+    expect(component.cursosDetalleNotasMetrica().map(c => c.areaNombre)).toEqual(['Comunicación']);
+
+    component.cerrarDetalleNotasModal();
+    expect(component.mostrarDetalleNotasModal()).toBe(false);
+    expect(component.alumnoMetricas()?.matriculaId).toBe(10);
+  });
 });

@@ -13,7 +13,6 @@ import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-paginacion.component';
-import { RouterLink } from '@angular/router';
 import { MatriculaService } from '../../core/services/matricula.service';
 import { UiCalendarComponent } from '../../shared/ui/ui-calendar.component';
 import {
@@ -62,7 +61,7 @@ export interface EstudianteMatriculadoItem {
 @Component({
   selector: 'app-matriculas',
   standalone: true,
-  imports: [FormatoEntradaDirective, CommonModule, FormsModule, MatDialogModule, MatButtonModule, UiPaginacionComponent, RouterLink, UiDatePePipe, UiCalendarComponent, SimuladorCheckoutComponent],
+  imports: [FormatoEntradaDirective, CommonModule, FormsModule, MatDialogModule, MatButtonModule, UiPaginacionComponent, UiDatePePipe, UiCalendarComponent, SimuladorCheckoutComponent],
   template: `
     <div class="space-y-6 min-w-0 text-ui-text max-[640px]:text-[13px] [&_*:focus-visible]:outline-[3px] [&_*:focus-visible]:outline-[var(--ui-action)] [&_*:focus-visible]:outline-offset-[3px]">
       <!-- Top Banner / Alert -->
@@ -129,45 +128,25 @@ export interface EstudianteMatriculadoItem {
             id="btn-abrir-matricula-presencial"
             [disabled]="!anios().length"
             (click)="abrirModalMatriculaPresencial()"
-            class="inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 rounded-xl bg-ui-action hover:opacity-95 text-ui-action-text font-semibold text-sm leading-tight whitespace-nowrap cursor-pointer disabled:cursor-wait disabled:opacity-60 transition shadow-sm max-[640px]:w-full"
+            class="inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#173B67] hover:bg-[#1e4b82] text-white font-semibold text-sm leading-tight whitespace-nowrap cursor-pointer disabled:cursor-wait disabled:opacity-60 transition shadow-sm max-[640px]:w-full"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-amber-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <span>Nueva Matrícula Presencial</span>
-          </button>
-          <button
-            id="btn-abrir-registro-alumno"
-            type="button"
-            (click)="abrirModalNuevoAlumno()"
-            class="inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 border border-ui-divider rounded-xl bg-ui-surface hover:bg-ui-surface-soft text-ui-action font-semibold text-sm leading-tight whitespace-nowrap cursor-pointer transition max-[640px]:w-full"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" focusable="false">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
-            <span>Registrar Alumno</span>
+            <span>Registrar matrícula</span>
           </button>
           <button
             id="btn-abrir-nueva-matricula"
             (click)="abrirModalNuevaMatricula()"
-            class="inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 border border-ui-divider rounded-xl bg-ui-surface hover:bg-ui-surface-soft text-ui-action font-semibold text-sm leading-tight whitespace-nowrap cursor-pointer transition max-[640px]:w-full"
+            title="Ratifica en un nuevo año o asigna sección a un estudiante ya existente o a una admisión online aprobada"
+            class="inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 border border-[#173B67]/30 rounded-xl bg-white hover:bg-[#f0f5fb] text-[#173B67] font-semibold text-sm leading-tight whitespace-nowrap cursor-pointer transition shadow-2xs max-[640px]:w-full"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" focusable="false">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <span>Asignar Matrícula</span>
+            <span>Ratificar / asignar sección</span>
           </button>
           }
-          <a
-            routerLink="/admin/solicitudes-matricula"
-            class="inline-flex min-h-11 items-center justify-center gap-2 px-4 py-2 border border-ui-divider rounded-xl bg-ui-surface hover:bg-ui-surface-soft text-ui-action font-semibold text-sm leading-tight no-underline whitespace-nowrap cursor-pointer transition max-[640px]:w-full"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true" focusable="false">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 4.75h7l4 4V19a1.25 1.25 0 0 1-1.25 1.25h-9.5A1.25 1.25 0 0 1 6 19V6a1.25 1.25 0 0 1 1-1.25Z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M14 5v4h4M9 13h6M9 16h6" />
-            </svg>
-            <span>Solicitudes de admisión</span>
-          </a>
         </div>
       </div>
 
@@ -177,14 +156,14 @@ export interface EstudianteMatriculadoItem {
           id="tab-estudiantes"
           (click)="pestanaActiva.set('estudiantes')"
           [class]="pestanaActiva() === 'estudiantes'
-            ? 'px-5 py-3 border-b-2 border-ui-action text-ui-action font-bold text-sm flex items-center gap-2 transition cursor-pointer'
-            : 'px-5 py-3 border-b-2 border-transparent text-ui-muted hover:text-ui-text font-semibold text-sm flex items-center gap-2 transition cursor-pointer'"
+            ? 'px-5 py-3 border-b-2 border-[#173B67] text-[#173B67] font-bold text-sm flex items-center gap-2 transition cursor-pointer'
+            : 'px-5 py-3 border-b-2 border-transparent text-slate-600 hover:text-[#173B67] font-semibold text-sm flex items-center gap-2 transition cursor-pointer'"
          class="max-[640px]:w-full inline-flex min-h-11 items-center justify-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
           <span>Padrón de estudiantes</span>
-          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold border border-ui-divider bg-ui-surface-soft text-ui-action">
+          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold border border-[#173B67]/20 bg-[#f0f5fb] text-[#173B67]">
             {{ estudiantesEnPadron().length }}
           </span>
         </button>
@@ -193,25 +172,17 @@ export interface EstudianteMatriculadoItem {
           id="tab-matriculas"
           (click)="cambiarPestana('matriculas')"
           [class]="pestanaActiva() === 'matriculas'
-            ? 'px-5 py-3 border-b-2 border-ui-action text-ui-action font-bold text-sm flex items-center gap-2 transition cursor-pointer'
-            : 'px-5 py-3 border-b-2 border-transparent text-ui-muted hover:text-ui-text font-semibold text-sm flex items-center gap-2 transition cursor-pointer'"
+            ? 'px-5 py-3 border-b-2 border-[#173B67] text-[#173B67] font-bold text-sm flex items-center gap-2 transition cursor-pointer'
+            : 'px-5 py-3 border-b-2 border-transparent text-slate-600 hover:text-[#173B67] font-semibold text-sm flex items-center gap-2 transition cursor-pointer'"
          class="max-[640px]:w-full inline-flex min-h-11 items-center justify-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
           </svg>
           <span>Matrículas por sección</span>
-          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold border border-ui-divider bg-ui-surface-soft text-ui-action">
+          <span class="px-2 py-0.5 rounded-full text-xs font-mono font-bold border border-[#173B67]/20 bg-[#f0f5fb] text-[#173B67]">
             {{ estudiantes().length }}
           </span>
         </button>
-
-        <a
-          id="tab-solicitudes-admision"
-          routerLink="/admin/solicitudes-matricula"
-          class="px-5 py-3 border-b-2 border-transparent text-ui-muted hover:text-ui-text font-semibold text-sm flex items-center gap-2 transition cursor-pointer no-underline max-[640px]:w-full inline-flex min-h-11 items-center justify-center"
-        >
-          <span>Solicitudes de admisión</span>
-        </a>
       </div>
 
       <!-- ============================================================== -->
@@ -384,7 +355,7 @@ export interface EstudianteMatriculadoItem {
                           <svg aria-hidden="true" focusable="false" viewBox="0 0 48 48" fill="none" stroke="var(--ui-action)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="block h-[42px] w-[42px] mx-auto"><path d="M6 11.5c6-2 12-1 18 2.5v25c-6-3.5-12-4.5-18-2.5z"/><path d="M42 11.5c-6-2-12-1-18 2.5v25c6-3.5 12-4.5 18-2.5z"/><path d="M24 14v25" stroke="var(--ui-gold)"/><path d="M11 17c3-.5 6 .1 9 1.5M11 23c3-.5 6 .1 9 1.5M28 18.5c3-1.4 6-2 9-1.5M28 24.5c3-1.4 6-2 9-1.5" stroke="var(--ui-gold)"/></svg>
                           <p class="font-medium text-ui-muted">No se encontraron estudiantes registrados.</p>
                           @if (authStore.hasRole('SECRETARIA') || authStore.hasRole('ADMINISTRADOR')) {
-                            <p class="text-sm text-ui-muted">Haz clic en "Registrar Alumno" para dar de alta al primer estudiante en la base de datos.</p>
+                            <p class="text-sm text-ui-muted">Haz clic en "Registrar matrícula" para dar de alta y matricular al primer estudiante.</p>
                           } @else {
                             <p class="text-sm text-ui-muted">No hay estudiantes disponibles para consultar con este acceso.</p>
                           }
@@ -886,7 +857,10 @@ export interface EstudianteMatriculadoItem {
       <ng-template #solicitudDialog>
           <div class="flex max-h-[calc(100dvh-24px)] min-h-0 flex-col font-sans w-full max-w-lg p-1">
             <div class="flex flex-[0_0_auto] items-center justify-between gap-4 border-b border-ui-border px-6 py-5 [&_h3]:m-0 [&_h3]:text-ui-text [&_h3]:text-lg [&_h3]:leading-[27px] [&_h3]:font-[750] [&_p]:mb-0 [&_p]:mt-1 [&_p]:text-ui-muted [&_p]:text-xs [&_p]:leading-[1.5] max-[639px]:p-4 flex items-center justify-between border-b border-ui-border pb-4">
-              <h3 class="text-lg !leading-7 font-bold text-ui-text tracking-[-.025em]">Asignar Solicitud de Matrícula</h3>
+              <div>
+                <h3 class="text-lg !leading-7 font-bold text-[#173B67] tracking-[-.025em]">Ratificar matrícula / Asignar sección</h3>
+                <p class="m-0 mt-0.5 text-xs text-slate-600">Para alumnos ya registrados en el padrón histórico o admisiones online pagadas con sección pendiente.</p>
+              </div>
               <button (click)="cerrarSolicitudDialog()" class="inline-flex h-11 min-h-11 w-11 min-w-11 shrink-0 items-center justify-center rounded p-2 text-base font-normal text-ui-muted hover:text-ui-muted" aria-label="Cerrar diálogo">✕</button>
             </div>
 
@@ -985,8 +959,8 @@ export interface EstudianteMatriculadoItem {
                 <button type="button" (click)="cerrarSolicitudDialog()" class="px-4 py-2 rounded-xl bg-ui-surface-soft text-ui-muted text-xs !text-sm font-semibold box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
                   Cancelar
                 </button>
-                <button type="submit" [disabled]="guardando()" class="px-5 py-2 rounded-xl bg-ui-action hover:bg-ui-action/90 text-ui-action-text text-xs !text-sm font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
-                  {{ guardando() ? 'Guardando...' : (solicitudPendienteSeleccionada() ? 'Confirmar sección' : 'Asignar Matrícula') }}
+                <button type="submit" [disabled]="guardando()" class="px-5 py-2 rounded-xl bg-[#173B67] hover:bg-[#1e4b82] text-white text-xs !text-sm font-semibold disabled:opacity-50 box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px]">
+                  {{ guardando() ? 'Guardando...' : (solicitudPendienteSeleccionada() ? 'Confirmar sección' : 'Confirmar ratificación / sección') }}
                 </button>
               </div>
             </form>
@@ -1167,30 +1141,30 @@ export interface EstudianteMatriculadoItem {
                   </div>
                 </div>
                 <div class="grid grid-cols-2 gap-x-6 gap-y-4 rounded-xl border border-[#e1e8f1] p-4 max-[639px]:grid-cols-1">
-                  <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Apellidos y nombres</p><p class="ficha-value">{{ actual.estudiante.apellidoPaterno }} {{ actual.estudiante.apellidoMaterno }}, {{ actual.estudiante.nombres }}</p></div>
-                  <div><p class="ficha-label">Documento de identidad</p><p class="ficha-value">{{ actual.estudiante.tipoDocumento || 'DNI' }} {{ actual.estudiante.numeroDocumento }}</p></div>
-                  <div><p class="ficha-label">Fecha de nacimiento</p><p class="ficha-value">{{ actual.estudiante.fechaNacimiento | uiDatePe }}</p></div>
-                  <div><p class="ficha-label">Género</p><p class="ficha-value">{{ actual.estudiante.genero === 'F' ? 'Femenino' : actual.estudiante.genero === 'M' ? 'Masculino' : 'No registrado' }}</p></div>
-                  <div><p class="ficha-label">Código de estudiante</p><p class="ficha-value font-mono">{{ codigoEstudianteVisible(actual.estudiante) }}</p></div>
-                  <div><p class="ficha-label">Estado de identidad</p><p class="ficha-value">{{ estadoIdentidad(actual.estudiante) }}</p></div>
-                  <div><p class="ficha-label">Grupo sanguíneo</p><p class="ficha-value">{{ actual.estudiante.grupoSanguineo || 'No registrado' }}</p></div>
+                  <div class="col-span-2 max-[639px]:col-span-1"><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Apellidos y nombres</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ actual.estudiante.apellidoPaterno }} {{ actual.estudiante.apellidoMaterno }}, {{ actual.estudiante.nombres }}</p></div>
+                  <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Documento de identidad</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ actual.estudiante.tipoDocumento || 'DNI' }} {{ actual.estudiante.numeroDocumento }}</p></div>
+                  <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Fecha de nacimiento</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ actual.estudiante.fechaNacimiento | uiDatePe }}</p></div>
+                  <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Género</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ actual.estudiante.genero === 'F' ? 'Femenino' : actual.estudiante.genero === 'M' ? 'Masculino' : 'No registrado' }}</p></div>
+                  <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Código de estudiante</p><p class="m-0 text-base font-bold leading-snug text-slate-900 font-mono">{{ codigoEstudianteVisible(actual.estudiante) }}</p></div>
+                  <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Estado de identidad</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ estadoIdentidad(actual.estudiante) }}</p></div>
+                  <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Grupo sanguíneo</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ actual.estudiante.grupoSanguineo || 'No registrado' }}</p></div>
                 </div>
               </section>
 
               <section class="mb-5">
                 <h4 class="mb-3 mt-0 border-l-[3px] border-[#c6a15b] pl-3 text-sm font-extrabold text-[#14213d]">Datos de matrícula</h4>
                 <div class="grid grid-cols-2 gap-x-6 gap-y-4 rounded-xl border border-[#e1e8f1] p-4 max-[639px]:grid-cols-1">
-                  <div><p class="ficha-label">Año lectivo</p><p class="ficha-value">{{ anioDeFicha(actual) }}</p></div>
-                  <div><p class="ficha-label">Grado y sección</p><p class="ficha-value">{{ seccionDeFicha(actual) }}</p></div>
-                  <div><p class="ficha-label">Aula</p><p class="ficha-value">{{ aulaDeFicha(actual) }}</p></div>
-                  <div><p class="ficha-label">Fecha de registro</p><p class="ficha-value">{{ actual.matricula.fechaMatricula | uiDatePe }}</p></div>
-                  <div><p class="ficha-label">Estado en BD</p><p class="ficha-value"><span class="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">{{ actual.matricula.estadoMatricula }}</span></p></div>
-                  <div><p class="ficha-label">Pago de matrícula</p><p class="ficha-value">{{ estadoPagoFicha(actual) }}</p></div>
-                  <div><p class="ficha-label">Modalidad de ingreso</p><p class="ficha-value">{{ actual.matricula.modalidadIngreso === 'TRASLADO' ? 'Ingreso por Traslado' : 'Ingreso Regular' }}</p></div>
+                  <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Año lectivo</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ anioDeFicha(actual) }}</p></div>
+                  <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Grado y sección</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ seccionDeFicha(actual) }}</p></div>
+                  <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Aula</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ aulaDeFicha(actual) }}</p></div>
+                  <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Fecha de registro</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ actual.matricula.fechaMatricula | uiDatePe }}</p></div>
+                  <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Estado en BD</p><p class="m-0 text-base font-bold leading-snug text-slate-900"><span class="px-2 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">{{ actual.matricula.estadoMatricula }}</span></p></div>
+                  <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Pago de matrícula</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ estadoPagoFicha(actual) }}</p></div>
+                  <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Modalidad de ingreso</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ actual.matricula.modalidadIngreso === 'TRASLADO' ? 'Ingreso por Traslado' : 'Ingreso Regular' }}</p></div>
                   @if (actual.matricula.modalidadIngreso === 'TRASLADO') {
-                    <div><p class="ficha-label">Colegio de procedencia</p><p class="ficha-value">{{ actual.matricula.colegioProcedencia || 'No registrado' }}</p></div>
+                    <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Colegio de procedencia</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ actual.matricula.colegioProcedencia || 'No registrado' }}</p></div>
                   }
-                  <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Observaciones</p><p class="ficha-value whitespace-pre-wrap">{{ observacionesFicha(actual) }}</p></div>
+                  <div class="col-span-2 max-[639px]:col-span-1"><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Observaciones</p><p class="m-0 text-base font-bold leading-snug text-slate-900 whitespace-pre-wrap">{{ observacionesFicha(actual) }}</p></div>
                 </div>
               </section>
 
@@ -1200,11 +1174,11 @@ export interface EstudianteMatriculadoItem {
                   <div class="space-y-3">
                     @for (vinculo of actual.apoderados; track vinculo.apoderado.id) {
                       <div class="grid grid-cols-2 gap-x-6 gap-y-3 rounded-xl border border-[#e1e8f1] p-4 max-[639px]:grid-cols-1">
-                        <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Apellidos y nombres</p><p class="ficha-value">{{ vinculo.apoderado.apellidoPaterno }} {{ vinculo.apoderado.apellidoMaterno }}, {{ vinculo.apoderado.nombres }}</p></div>
+                        <div class="col-span-2 max-[639px]:col-span-1"><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Apellidos y nombres</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ vinculo.apoderado.apellidoPaterno }} {{ vinculo.apoderado.apellidoMaterno }}, {{ vinculo.apoderado.nombres }}</p></div>
                         <div>
-                          <p class="ficha-label">Documento</p>
+                          <p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Documento</p>
                           <div class="flex items-center gap-2">
-                            <p class="ficha-value">{{ vinculo.apoderado.tipoDocumento || 'DNI' }} {{ vinculo.apoderado.numeroDocumento }}</p>
+                            <p class="m-0 text-base font-bold leading-snug text-slate-900">{{ vinculo.apoderado.tipoDocumento || 'DNI' }} {{ vinculo.apoderado.numeroDocumento }}</p>
                             @if (auth.hasRole('SECRETARIA') || auth.hasRole('DIRECCION') || auth.hasRole('ADMINISTRADOR')) {
                               <button type="button" (click)="abrirModalCorregirDniApoderado(vinculo.apoderado)" class="text-sm font-bold text-[#184fae] hover:underline cursor-pointer">
                                 Corregir DNI
@@ -1212,12 +1186,12 @@ export interface EstudianteMatriculadoItem {
                             }
                           </div>
                         </div>
-                        <div><p class="ficha-label">Parentesco</p><p class="ficha-value">{{ parentescoLabel(vinculo.parentesco) }}</p></div>
-                        <div><p class="ficha-label">Celular</p><p class="ficha-value">{{ vinculo.apoderado.celular || 'No registrado' }}</p></div>
-                        <div><p class="ficha-label">Correo</p><p class="ficha-value break-all">{{ vinculo.apoderado.email || 'No registrado' }}</p></div>
-                        <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Dirección</p><p class="ficha-value">{{ vinculo.apoderado.direccion || 'No registrada' }}</p></div>
+                        <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Parentesco</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ parentescoLabel(vinculo.parentesco) }}</p></div>
+                        <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Celular</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ vinculo.apoderado.celular || 'No registrado' }}</p></div>
+                        <div><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Correo</p><p class="m-0 text-base font-bold leading-snug text-slate-900 break-all">{{ vinculo.apoderado.email || 'No registrado' }}</p></div>
+                        <div class="col-span-2 max-[639px]:col-span-1"><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Dirección</p><p class="m-0 text-base font-bold leading-snug text-slate-900">{{ vinculo.apoderado.direccion || 'No registrada' }}</p></div>
                         @if (vinculo.esResponsableEconomico) {
-                          <div class="col-span-2 max-[639px]:col-span-1"><p class="ficha-label">Responsabilidad económica</p><p class="ficha-value">Responsable de pago</p></div>
+                          <div class="col-span-2 max-[639px]:col-span-1"><p class="mb-1 text-xs font-extrabold uppercase tracking-wider text-slate-600">Responsabilidad económica</p><p class="m-0 text-base font-bold leading-snug text-slate-900">Responsable de pago</p></div>
                         }
                       </div>
                     }
@@ -1450,8 +1424,8 @@ export interface EstudianteMatriculadoItem {
       <ng-template #matriculaPresencialDialog>
         <div class="flex max-h-[calc(100dvh-28px)] min-h-0 w-full flex-col overflow-hidden rounded-xl bg-white font-sans">
           <header class="flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-4 py-3 sm:px-5">
-            <h3 class="m-0 text-lg font-semibold text-slate-900" id="matricula-presencial-titulo">Matrícula presencial</h3>
-            <button type="button" (click)="cerrarModalMatriculaPresencial()" aria-label="Cerrar matrícula presencial"
+            <h3 class="m-0 text-lg font-semibold text-[#173B67]" id="matricula-presencial-titulo">Registrar matrícula</h3>
+            <button type="button" (click)="cerrarModalMatriculaPresencial()" aria-label="Cerrar registro de matrícula"
               class="grid size-10 shrink-0 place-items-center rounded-lg text-slate-600 hover:bg-slate-100 focus-visible:outline-2 focus-visible:outline-[#173B67]">
               <svg aria-hidden="true" class="size-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" d="m6 6 12 12M18 6 6 18"/></svg>
             </button>
@@ -1563,7 +1537,7 @@ export interface EstudianteMatriculadoItem {
                       class="rounded-xl p-3 transition"
                       [class]="presencialFotoBase64()
                         ? 'border-2 border-emerald-500 bg-emerald-50/60'
-                        : 'border-2 border-dashed border-[#173B67]/45 bg-[#E5F1EE]/45 hover:border-[#173B67] hover:bg-[#E5F1EE]/75'"
+                        : 'border-2 border-dashed border-[#173B67]/45 bg-slate-100/80 hover:border-[#0F294D] hover:bg-slate-200/70'"
                     >
                       <div class="flex items-center gap-3.5">
                         <div class="relative shrink-0">
@@ -1578,7 +1552,7 @@ export interface EstudianteMatriculadoItem {
                             @if (presencialFotoBase64()) {
                               <span class="text-[11px] font-bold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">✓ Imagen cargada</span>
                             } @else {
-                              <span class="text-[11px] font-semibold text-[#173B67] bg-white/90 border border-[#D4DFDA] px-2 py-0.5 rounded-full">Subir imagen aquí</span>
+                              <span class="text-[11px] font-semibold text-[#173B67] bg-white/90 border border-[#CBD5E1] px-2 py-0.5 rounded-full">Subir imagen aquí</span>
                             }
                           </div>
                           <p class="m-0 text-xs text-slate-600 leading-snug">
@@ -1871,7 +1845,7 @@ export interface EstudianteMatriculadoItem {
                           </div>
                         </div>
                       } @else {
-                        <label class="block w-full text-center px-4 py-5 rounded-xl border-2 border-dashed border-[#173B67]/45 hover:border-[#173B67] bg-[#E5F1EE]/40 hover:bg-[#E5F1EE]/75 text-slate-700 cursor-pointer transition">
+                        <label class="block w-full text-center px-4 py-5 rounded-xl border-2 border-dashed border-[#173B67]/45 hover:border-[#173B67] bg-slate-100/70 hover:bg-slate-200/70 text-slate-700 cursor-pointer transition">
                           <input type="file" accept="image/*,application/pdf" class="hidden" (change)="seleccionarArchivoPresencial('partida', $event)" />
                           <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 mx-auto mb-1.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -1937,7 +1911,7 @@ export interface EstudianteMatriculadoItem {
                           </div>
                         </div>
                       } @else {
-                        <label class="block w-full text-center px-4 py-5 rounded-xl border-2 border-dashed border-[#173B67]/45 hover:border-[#173B67] bg-[#E5F1EE]/40 hover:bg-[#E5F1EE]/75 text-slate-700 cursor-pointer transition">
+                        <label class="block w-full text-center px-4 py-5 rounded-xl border-2 border-dashed border-[#173B67]/45 hover:border-[#173B67] bg-slate-100/70 hover:bg-slate-200/70 text-slate-700 cursor-pointer transition">
                           <input type="file" accept="image/*,application/pdf" class="hidden" (change)="seleccionarArchivoPresencial('dni', $event)" />
                           <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 mx-auto mb-1.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -2003,7 +1977,7 @@ export interface EstudianteMatriculadoItem {
                           </div>
                         </div>
                       } @else {
-                        <label class="block w-full text-center px-4 py-5 rounded-xl border-2 border-dashed border-[#173B67]/45 hover:border-[#173B67] bg-[#E5F1EE]/40 hover:bg-[#E5F1EE]/75 text-slate-700 cursor-pointer transition">
+                        <label class="block w-full text-center px-4 py-5 rounded-xl border-2 border-dashed border-[#173B67]/45 hover:border-[#173B67] bg-slate-100/70 hover:bg-slate-200/70 text-slate-700 cursor-pointer transition">
                           <input type="file" accept="image/*,application/pdf" class="hidden" (change)="seleccionarArchivoPresencial('recibo', $event)" />
                           <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 mx-auto mb-1.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -2319,11 +2293,7 @@ export interface EstudianteMatriculadoItem {
       </ng-template>
 
     </div>
-  `,
-  styles: [`
-    .ficha-label { margin: 0 0 .25rem; color: #475569; font-size: .875rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
-    .ficha-value { margin: 0; color: #0f172a; font-size: 1.0625rem; font-weight: 700; line-height: 1.5; }
-  `]
+  `
 })
 export class MatriculasComponent implements OnInit {
   readonly auth = inject(AuthStore);
