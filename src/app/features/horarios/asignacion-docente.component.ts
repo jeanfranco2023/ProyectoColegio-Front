@@ -156,26 +156,124 @@ import { UiPaginacionComponent, paginarRegistros } from '../../shared/ui/ui-pagi
         </section>
 
         <section class="grid gap-3" aria-label="Cursos asignados a la sección">
-          <div class="flex flex-wrap items-center justify-between gap-2"><h3 class="m-0 text-base font-bold text-slate-900">Asignaciones de la sección</h3><span class="text-sm text-slate-500">{{ asignacionesEnSeccion().length }} cursos</span></div>
-          @if (!asignacionesEnSeccion().length && !cargando()) { <p class="m-0 rounded-xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">Todavía no hay docentes asignados a esta sección.</p> }
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="m-0 text-base font-bold text-slate-900">Asignaciones de la sección · Año {{ anioNumeroActual() }}</h3>
+            <span class="text-sm text-slate-500">{{ asignacionesEnSeccion().length }} cursos</span>
+          </div>
+          @if (!asignacionesEnSeccion().length && !cargando()) {
+            <p class="m-0 rounded-xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">
+              Todavía no hay docentes asignados a esta sección para el año <strong>{{ anioNumeroActual() }}</strong>. Las asignaciones de cursos son independientes por cada año lectivo.
+            </p>
+          }
           <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             @for (asignacion of asignacionesEnSeccion(); track asignacion.asignacionId) {
-              <button type="button" class="rounded-xl border p-4 text-left transition hover:border-blue-300 hover:bg-blue-50/40" [class.border-blue-500]="asignacionSeleccionada() === asignacion.asignacionId" [class.bg-blue-50]="asignacionSeleccionada() === asignacion.asignacionId" [class.border-slate-200]="asignacionSeleccionada() !== asignacion.asignacionId" (click)="seleccionarAsignacion(asignacion.asignacionId)">
-                <span class="block font-bold text-slate-900">{{ asignacion.areaNombre }}</span>
-                <span class="mt-1 block text-sm text-slate-600">{{ asignacion.docenteNombre }}</span>
-                <span class="mt-2 block text-xs text-slate-500">Sección {{ asignacion.letra }} · Aula {{ asignacion.aulaCodigo }}</span>
-              </button>
+              <div class="rounded-xl border p-4 transition flex flex-col justify-between gap-3"
+                [class.border-blue-500]="asignacionSeleccionada() === asignacion.asignacionId"
+                [class.bg-blue-50]="asignacionSeleccionada() === asignacion.asignacionId"
+                [class.border-slate-200]="asignacionSeleccionada() !== asignacion.asignacionId"
+                [class.bg-white]="asignacionSeleccionada() !== asignacion.asignacionId">
+                <button type="button" class="w-full text-left cursor-pointer" (click)="seleccionarAsignacion(asignacion.asignacionId)">
+                  <div class="flex items-center justify-between gap-2">
+                    <span class="block font-bold text-slate-900">{{ asignacion.areaNombre }}</span>
+                    <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-700">{{ asignacion.anio }}</span>
+                  </div>
+                  <span class="mt-1 block text-sm text-slate-700">{{ asignacion.docenteNombre }}</span>
+                  <span class="mt-1.5 block text-xs text-slate-500">Sección {{ asignacion.letra }} · Aula {{ asignacion.aulaCodigo }}</span>
+                </button>
+                <div class="flex items-center justify-between gap-2 border-t border-slate-100 pt-2">
+                  <button type="button" class="!min-h-8 text-xs font-semibold text-slate-600 hover:text-slate-900 cursor-pointer" (click)="seleccionarAsignacion(asignacion.asignacionId)">Ver horario</button>
+                  <button type="button" class="!min-h-8 rounded-lg border border-blue-200 bg-white px-2.5 py-1 text-xs font-semibold text-blue-700 hover:bg-blue-50 cursor-pointer" (click)="abrirReasignacion(asignacion, $event)">Cambiar docente</button>
+                </div>
+              </div>
             }
           </div>
+
+          @if (asignacionEditando(); as editAsig) {
+            <div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-[2px] p-4"
+              (click)="cancelarReasignacion()" (keydown.escape)="cancelarReasignacion()">
+              <div role="dialog" aria-modal="true" aria-labelledby="modal-reasignar-titulo"
+                class="w-full max-w-lg max-h-[85vh] flex flex-col rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden"
+                (click)="$event.stopPropagation()">
+                <div class="px-5 py-4 border-b border-slate-200 bg-slate-50 flex items-start justify-between gap-3 shrink-0">
+                  <div class="min-w-0">
+                    <h4 id="modal-reasignar-titulo" class="m-0 text-base font-bold text-slate-900">Cambiar docente de {{ editAsig.areaNombre }}</h4>
+                    <p class="m-0 mt-1 text-xs text-slate-600">
+                      Año {{ editAsig.anio }} · {{ editAsig.nivel }} · {{ editAsig.grado }} {{ editAsig.letra }} · Actual: <strong>{{ editAsig.docenteNombre }}</strong>
+                    </p>
+                  </div>
+                  <button type="button" class="!min-h-8 h-8 w-8 rounded-full hover:bg-slate-200/70 text-slate-500 flex items-center justify-center cursor-pointer shrink-0" aria-label="Cerrar modal" (click)="cancelarReasignacion()">✕</button>
+                </div>
+
+                <div class="p-5 overflow-y-auto flex-1 space-y-3">
+                  @if (errorReasignacion()) {
+                    <p role="alert" class="m-0 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800">{{ errorReasignacion() }}</p>
+                  }
+
+                  <div class="grid gap-1">
+                    <label for="reasig-buscar-docente" class="text-xs font-semibold text-slate-700">Buscar nuevo docente habilitado en {{ editAsig.areaNombre }}</label>
+                    <input id="reasig-buscar-docente" type="search" class="min-h-10 rounded-xl border border-slate-300 bg-white px-3 text-sm focus:outline-none focus:border-blue-600"
+                      placeholder="Nombre, apellido o usuario" [ngModel]="busquedaReasignacion()" (ngModelChange)="busquedaReasignacion.set($event)" />
+                  </div>
+
+                  @if (cargandoReasignacion()) {
+                    <p class="m-0 py-6 text-center text-xs text-slate-600">Cargando docentes habilitados…</p>
+                  } @else {
+                    <fieldset class="m-0 grid max-h-60 gap-1 overflow-y-auto rounded-xl border border-slate-200 bg-slate-50/50 p-1.5">
+                      <legend class="sr-only">Selecciona el nuevo docente</legend>
+                      @for (docente of docentesReasignacionFiltrados(); track docente.id) {
+                        <label class="flex min-h-12 cursor-pointer items-center gap-3 rounded-lg bg-white px-3 py-2 border border-transparent hover:border-slate-200"
+                          [class.!bg-blue-50]="nuevoDocenteId() === docente.id"
+                          [class.!border-blue-200]="nuevoDocenteId() === docente.id">
+                          <input type="radio" name="docente-reasignacion" class="size-4 shrink-0 accent-blue-700"
+                            [checked]="nuevoDocenteId() === docente.id" (change)="nuevoDocenteId.set(docente.id)" />
+                          <span class="relative grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-slate-100 text-xs font-semibold text-slate-700" aria-hidden="true">
+                            {{ (docente.nombreCompleto || docente.username).slice(0, 1).toUpperCase() }}
+                            <img class="absolute inset-0 size-full object-cover" [src]="fotoDocente(docente)" alt="" loading="lazy"
+                              width="32" height="32" (error)="$any($event.target).hidden = true" />
+                          </span>
+                          <span class="min-w-0 flex-1">
+                            <span class="block truncate text-xs font-semibold text-slate-900">
+                              {{ docente.nombreCompleto || docente.username }}
+                              @if (docente.id === editAsig.docenteUsuarioId) { <span class="text-blue-700">(Actual)</span> }
+                            </span>
+                            <span class="block truncate text-[11px] text-slate-500">{{ docente.username }}</span>
+                          </span>
+                        </label>
+                      } @empty {
+                        <p class="m-0 p-4 text-center text-xs text-slate-500">No hay otros docentes habilitados para esta área.</p>
+                      }
+                    </fieldset>
+                  }
+                </div>
+
+                <div class="px-5 py-3.5 border-t border-slate-200 bg-slate-50 flex flex-wrap justify-end gap-2 shrink-0">
+                  <button type="button" class="min-h-10 rounded-xl border border-slate-300 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer" [disabled]="guardandoReasignacion()" (click)="cancelarReasignacion()">Cancelar</button>
+                  <button type="button" class="min-h-10 rounded-xl bg-blue-700 px-4 text-xs font-semibold text-white hover:bg-blue-800 disabled:opacity-50 cursor-pointer"
+                    [disabled]="guardandoReasignacion() || !nuevoDocenteId() || nuevoDocenteId() === editAsig.docenteUsuarioId"
+                    (click)="confirmarReasignacion()">
+                    {{ guardandoReasignacion() ? 'Guardando…' : 'Guardar cambio de docente' }}
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
         </section>
       } @else {
-        <div class="grid max-w-2xl gap-1">
-          <label for="asig-catalogo-docente" class="text-sm font-semibold text-slate-700">Curso, sección y aula</label>
-          <select id="asig-catalogo-docente" class="min-h-11 rounded-xl border border-slate-200 bg-white px-3" [ngModel]="asignacionSeleccionada()" (ngModelChange)="seleccionarAsignacion($event)" [disabled]="!catalogo().length">
-            @for (asignacion of catalogo(); track asignacion.asignacionId) { <option [ngValue]="asignacion.asignacionId">{{ asignacion.anio }} · {{ asignacion.nivel }} · {{ asignacion.grado }} {{ asignacion.letra }} · {{ asignacion.areaNombre }} · Aula {{ asignacion.aulaCodigo }}</option> }
-          </select>
+        <div class="grid gap-3 sm:grid-cols-[200px_1fr] max-w-3xl">
+          <div class="grid gap-1">
+            <label for="asig-anio-docente" class="text-sm font-semibold text-slate-700">Año lectivo</label>
+            <select id="asig-anio-docente" class="min-h-11 rounded-xl border border-slate-200 bg-white px-3" [ngModel]="anioDocenteFiltro()" (ngModelChange)="cambiarAnioDocente($event)" [disabled]="!aniosCatalogoDocente().length">
+              @for (anio of aniosCatalogoDocente(); track anio) { <option [ngValue]="anio">Año {{ anio }}</option> }
+            </select>
+          </div>
+          <div class="grid gap-1">
+            <label for="asig-catalogo-docente" class="text-sm font-semibold text-slate-700">Curso, sección y aula</label>
+            <select id="asig-catalogo-docente" class="min-h-11 rounded-xl border border-slate-200 bg-white px-3" [ngModel]="asignacionSeleccionada()" (ngModelChange)="seleccionarAsignacion($event)" [disabled]="!catalogoDocenteFiltrado().length">
+              @for (asignacion of catalogoDocenteFiltrado(); track asignacion.asignacionId) { <option [ngValue]="asignacion.asignacionId">{{ asignacion.anio }} · {{ asignacion.nivel }} · {{ asignacion.grado }} {{ asignacion.letra }} · {{ asignacion.areaNombre }} · Aula {{ asignacion.aulaCodigo }}</option> }
+            </select>
+          </div>
         </div>
-        @if (!catalogo().length && !cargando()) { <p class="m-0 rounded-xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">Aún no tienes cursos asignados. Dirección puede asignarte desde esta sección.</p> }
+        @if (!catalogoDocenteFiltrado().length && !cargando()) { <p class="m-0 rounded-xl border border-dashed border-slate-300 bg-white p-5 text-sm text-slate-600">Aún no tienes cursos asignados en este año lectivo. Dirección puede asignarte desde esta sección.</p> }
       }
 
       @if (asignacionActual(); as seleccion) {
@@ -236,7 +334,7 @@ export class AsignacionDocenteComponent implements OnInit {
   private readonly horariosService = inject(HorarioService);
   private readonly auth = inject(AuthStore);
   private readonly destroyRef = inject(DestroyRef);
-  readonly esDireccion = computed(() => this.auth.hasRole('DIRECCION'));
+  readonly esDireccion = computed(() => this.auth.hasAnyRole(['DIRECCION', 'ADMINISTRADOR']));
   readonly anios = signal<AnioLectivoResponseDto[]>([]);
   readonly niveles = signal<NivelResponseDto[]>([]);
   readonly grados = signal<GradoResponseDto[]>([]);
@@ -260,11 +358,34 @@ export class AsignacionDocenteComponent implements OnInit {
   readonly cargandoDocentes = signal(false);
   readonly errorDocentes = signal(false);
   readonly fotoDocente = obtenerFotoUsuario;
+  readonly anioDocenteFiltro = signal(0);
+  readonly asignacionEditando = signal<AsignacionHorarioOpcionDto | null>(null);
+  readonly docentesReasignacion = signal<DocenteOpcionDto[]>([]);
+  readonly busquedaReasignacion = signal('');
+  readonly nuevoDocenteId = signal(0);
+  readonly cargandoReasignacion = signal(false);
+  readonly guardandoReasignacion = signal(false);
+  readonly errorReasignacion = signal('');
   areaId = 0;
   bloqueSeleccionado = 0;
   diaSeleccionado: DiaHorario = 'LUNES';
   private revisionFiltros = 0;
   private consultaDocentes?: Subscription;
+
+  readonly aniosCatalogoDocente = computed(() =>
+    Array.from(new Set(this.catalogo().map(c => c.anio))).sort((a, b) => b - a)
+  );
+  readonly catalogoDocenteFiltrado = computed(() => {
+    const anio = this.anioDocenteFiltro();
+    return anio ? this.catalogo().filter(c => c.anio === anio) : this.catalogo();
+  });
+  readonly docentesReasignacionFiltrados = computed(() => {
+    const palabras = this.normalizarBusqueda(this.busquedaReasignacion()).split(/\s+/).filter(Boolean);
+    return this.docentesReasignacion().filter(docente => {
+      const nombre = this.normalizarBusqueda(`${docente.nombreCompleto ?? ''} ${docente.username}`);
+      return palabras.every(palabra => nombre.includes(palabra));
+    });
+  });
 
   readonly docenteSeleccionado = computed(() => this.docentes().find(docente => docente.id === this.docenteId()));
   readonly docentesFiltrados = computed(() => {
@@ -294,6 +415,10 @@ export class AsignacionDocenteComponent implements OnInit {
     { codigo: 'VIERNES', numero: 5, nombre: 'Viernes' }
   ];
 
+  anioNumeroActual(): number {
+    return this.anios().find(a => a.id === this.anioId())?.anio ?? new Date().getFullYear();
+  }
+
   nivelNombreActual(): string {
     return this.niveles().find(n => n.id === this.nivelId())?.nombre ?? 'Nivel';
   }
@@ -317,7 +442,12 @@ export class AsignacionDocenteComponent implements OnInit {
         next: ({ catalogo, bloques }) => {
           this.catalogo.set(catalogo);
           this.bloques.set(bloques);
-          this.asignacionSeleccionada.set(catalogo[0]?.asignacionId ?? 0);
+          const aniosUnicos = Array.from(new Set(catalogo.map(c => c.anio))).sort((a, b) => b - a);
+          const actual = new Date().getFullYear();
+          const anioInicial = aniosUnicos.includes(actual) ? actual : (aniosUnicos[0] ?? 0);
+          this.anioDocenteFiltro.set(anioInicial);
+          const primera = (anioInicial ? catalogo.filter(c => c.anio === anioInicial) : catalogo)[0]?.asignacionId ?? 0;
+          this.asignacionSeleccionada.set(primera);
           this.cargando.set(false);
           this.cargarHorario();
         },
@@ -368,7 +498,76 @@ export class AsignacionDocenteComponent implements OnInit {
     return texto.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLocaleLowerCase('es');
   }
 
-  cambiarAnio(id: number): void { this.anioId.set(Number(id) || 0); this.cargarFiltros(); }
+  cambiarAnioDocente(anio: number): void {
+    const n = Number(anio) || 0;
+    this.anioDocenteFiltro.set(n);
+    const primera = this.catalogoDocenteFiltrado()[0]?.asignacionId ?? 0;
+    this.asignacionSeleccionada.set(primera);
+    this.cargarHorario();
+  }
+
+  cambiarAnio(id: number): void {
+    this.anioId.set(Number(id) || 0);
+    this.cambiarCurso(0);
+    this.cancelarReasignacion();
+    this.cargarFiltros();
+  }
+
+  abrirReasignacion(asignacion: AsignacionHorarioOpcionDto, event?: Event): void {
+    event?.stopPropagation();
+    this.asignacionSeleccionada.set(asignacion.asignacionId);
+    this.asignacionEditando.set(asignacion);
+    this.busquedaReasignacion.set('');
+    this.nuevoDocenteId.set(asignacion.docenteUsuarioId);
+    this.errorReasignacion.set('');
+    this.docentesReasignacion.set([]);
+    this.cargandoReasignacion.set(true);
+    this.academico.listarDocentes(asignacion.areaId).pipe(
+      timeout(12000),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: lista => {
+        this.docentesReasignacion.set(lista);
+        this.cargandoReasignacion.set(false);
+      },
+      error: () => {
+        this.errorReasignacion.set('No se pudo cargar la lista de docentes habilitados.');
+        this.cargandoReasignacion.set(false);
+      }
+    });
+  }
+
+  cancelarReasignacion(): void {
+    this.asignacionEditando.set(null);
+    this.docentesReasignacion.set([]);
+    this.busquedaReasignacion.set('');
+    this.nuevoDocenteId.set(0);
+    this.errorReasignacion.set('');
+    this.cargandoReasignacion.set(false);
+    this.guardandoReasignacion.set(false);
+  }
+
+  confirmarReasignacion(): void {
+    const asig = this.asignacionEditando();
+    const docenteDestino = this.nuevoDocenteId();
+    if (!this.esDireccion() || !asig || !docenteDestino || docenteDestino === asig.docenteUsuarioId || this.guardandoReasignacion()) {
+      return;
+    }
+    this.guardandoReasignacion.set(true);
+    this.errorReasignacion.set('');
+    this.academico.reasignarDocente(asig.asignacionId, docenteDestino).subscribe({
+      next: () => {
+        this.guardandoReasignacion.set(false);
+        this.cancelarReasignacion();
+        this.mensaje.set(`Docente actualizado para ${asig.areaNombre} (Año ${asig.anio}).`);
+        this.recargarCatalogo(asig.asignacionId);
+      },
+      error: error => {
+        this.guardandoReasignacion.set(false);
+        this.errorReasignacion.set(error?.error?.message ?? 'No se pudo reasignar el docente.');
+      }
+    });
+  }
   cambiarNivel(id: number): void {
     this.nivelId.set(Number(id) || 0);
     this.areas.set([]);

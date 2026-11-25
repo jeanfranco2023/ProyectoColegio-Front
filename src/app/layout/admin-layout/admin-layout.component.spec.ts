@@ -49,6 +49,7 @@ const expectedMenuByRole = {
     ['Asistencia', '/admin/asistencia'],
     ['Convivencia', '/admin/convivencia'],
     ['Tesorería y pagos', '/admin/tesoreria'],
+    ['Usuarios y permisos', '/admin/usuarios'],
     ['Mi perfil', '/admin/perfil']
   ],
   DOCENTE: [
@@ -115,7 +116,7 @@ describe('admin menu by role', () => {
     expect(secretaria).toContain('/admin/asistencia');
     expect(secretaria).toContain('/admin/tesoreria');
     expect(secretaria).not.toContain('/admin/academico');
-    expect(secretaria).not.toContain('/admin/usuarios');
+    expect(secretaria).toContain('/admin/usuarios');
     expect(secretaria).not.toContain('/admin/calificaciones');
     expect(secretaria).toContain('/admin/convivencia');
   });

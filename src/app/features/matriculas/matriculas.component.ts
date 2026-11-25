@@ -38,7 +38,7 @@ import { MatriculaPublicaService } from '../../core/services/matricula-publica.s
 import { ModalidadIngreso, SolicitudMatriculaPublicaAdminDto } from '../../core/models/matricula-publica.model';
 import { UiDatePePipe } from '../../shared/ui/ui-date-pe.pipe';
 import { AuthStore } from '../../core/state/auth.store';
-import { fechaActualEnPeru } from '../../core/utils/fecha-nacimiento';
+import { edadAlCorteMatricula, fechaActualEnPeru, fechaNacimientoValida } from '../../core/utils/fecha-nacimiento';
 import { compararGradosPorSecuenciaInstitucional } from '../../core/utils/ordenamiento-grados';
 import { SimuladorCheckoutComponent, PagoSimuladoEvent } from '../../shared/ui/simulador-checkout.component';
 
@@ -729,7 +729,7 @@ export interface EstudianteMatriculadoItem {
               <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label class="block text-sm font-semibold text-ui-muted mb-1">Fecha de Nacimiento *</label>
-                  <app-ui-calendar id="nuevo-alumno-fecha-nac" aria-label="Fecha de Nacimiento *" [(ngModel)]="nuevoAlumno.fechaNacimiento" name="fechaNacimiento" [required]="true"></app-ui-calendar>
+                  <app-ui-calendar id="nuevo-alumno-fecha-nac" aria-label="Fecha de Nacimiento *" [(ngModel)]="nuevoAlumno.fechaNacimiento" name="fechaNacimiento" [min]="fechaNacimientoMinima" [max]="fechaNacimientoMaxima" [required]="true"></app-ui-calendar>
                 </div>
 
                 <div>
@@ -1649,7 +1649,7 @@ export interface EstudianteMatriculadoItem {
                       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                           <label class="block text-sm font-medium text-slate-700 mb-1">Fecha de Nacimiento *</label>
-                          <app-ui-calendar [(ngModel)]="presencialNacimientoEstudiante" aria-label="Fecha de nacimiento"></app-ui-calendar>
+                          <app-ui-calendar [(ngModel)]="presencialNacimientoEstudiante" [min]="fechaNacimientoMinima" [max]="fechaNacimientoMaxima" aria-label="Fecha de nacimiento"></app-ui-calendar>
                         </div>
                         <div>
                           <label class="block text-sm font-medium text-slate-700 mb-1">Género *</label>
@@ -2391,6 +2391,51 @@ export class MatriculasComponent implements OnInit {
   readonly estudiantesConSeccionAsignada = signal<ReadonlySet<number>>(new Set<number>());
   readonly solicitudesPublicasPendientes = signal<SolicitudMatriculaPublicaAdminDto[]>([]);
   readonly anioActualCalendario = new Date().getFullYear();
+  readonly fechaNacimientoMaxima = fechaActualEnPeru();
+  readonly fechaNacimientoMinima = `${Number(fechaActualEnPeru().slice(0, 4)) - 20}-01-01`;
+
+  private rangoEdadEbr(gradoNombre?: string | null, nivelId?: number | null): { minima: number; maxima: number } | null {
+    const g = (gradoNombre ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (!g && !nivelId) return null;
+    const match = g.match(/\d+/);
+    const num = match ? Number(match[0]) : 0;
+    if (g.includes('inicial') || nivelId === 1) {
+      const edadMin = g.includes('3') ? 3 : g.includes('4') ? 4 : g.includes('5') ? 5 : num >= 1 && num <= 3 ? num + 2 : 0;
+      return edadMin > 0 ? { minima: edadMin, maxima: edadMin + 2 } : null;
+    }
+    if ((g.includes('primaria') || nivelId === 2) && num >= 1 && num <= 6) {
+      return { minima: num + 5, maxima: num + 7 };
+    }
+    if ((g.includes('secundaria') || nivelId === 3) && num >= 1 && num <= 5) {
+      return { minima: num + 11, maxima: num + 13 };
+    }
+    return null;
+  }
+
+  private validarEdadGradoEscolar(
+    fechaNacimiento: string,
+    anioLectivo?: number | null,
+    gradoNombre?: string | null,
+    nivelId?: number | null,
+    tolerarExcepcion = false
+  ): string | null {
+    if (!fechaNacimientoValida(fechaNacimiento)) {
+      return 'La fecha de nacimiento debe ser válida y anterior al día de hoy.';
+    }
+    const anio = anioLectivo || this.anioActualCalendario;
+    const edad = edadAlCorteMatricula(fechaNacimiento, anio);
+    if (edad === null || edad < 2 || edad > 20) {
+      return `La edad al 31 de marzo de ${anio} (${edad ?? 'inválida'} años) no corresponde a educación básica regular (2 a 20 años).`;
+    }
+    const rango = this.rangoEdadEbr(gradoNombre, nivelId);
+    if (!rango) return null;
+    const minPerm = tolerarExcepcion ? Math.max(2, rango.minima - 1) : rango.minima;
+    const maxPerm = tolerarExcepcion ? Math.min(20, rango.maxima + 1) : rango.maxima;
+    if (edad < minPerm || edad > maxPerm) {
+      return `La edad del estudiante (${edad} años al 31 de marzo de ${anio}) no corresponde a ${gradoNombre || 'este grado'} (rango EBR: ${rango.minima} a ${rango.maxima} años).`;
+    }
+    return null;
+  }
 
   asignarNivelId: number | null = null;
   asignarGradoId: number | null = null;
@@ -3182,6 +3227,11 @@ export class MatriculasComponent implements OnInit {
       this.error.set('Por favor complete todos los campos obligatorios del estudiante.');
       return;
     }
+    const errorEdadAlumno = this.validarEdadGradoEscolar(this.nuevoAlumno.fechaNacimiento, this.anioActualCalendario);
+    if (errorEdadAlumno) {
+      this.error.set(errorEdadAlumno);
+      return;
+    }
 
     this.guardandoAlumno.set(true);
     this.error.set(null);
@@ -3383,6 +3433,23 @@ export class MatriculasComponent implements OnInit {
     if (this.estaMatriculadoEnAnio(this.nuevoEstudianteId)) {
       this.error.set('Este estudiante ya tiene matrícula en el año seleccionado. Revisa la matrícula existente.');
       return;
+    }
+    const estudianteSel =
+      this.estudiantesPorId.get(this.nuevoEstudianteId) ??
+      this.listaEstudiantes().find(e => e.id === this.nuevoEstudianteId);
+    const anioSelNumero = this.anios().find(a => a.id === this.anioLectivoId)?.anio ?? this.anioActualCalendario;
+    if (estudianteSel?.fechaNacimiento && seccionSel) {
+      const errorEdadMat = this.validarEdadGradoEscolar(
+        estudianteSel.fechaNacimiento,
+        anioSelNumero,
+        this.gradosMap.get(seccionSel.gradoId),
+        seccionSel.nivelId,
+        true
+      );
+      if (errorEdadMat) {
+        this.error.set(errorEdadMat);
+        return;
+      }
     }
     this.guardando.set(true);
     this.error.set(null);
@@ -3992,6 +4059,19 @@ export class MatriculasComponent implements OnInit {
     }
     if (!this.presencialNacimientoEstudiante) {
       this.errorPresencial.set('Debe registrar la fecha de nacimiento del estudiante.');
+      return;
+    }
+    const anioPresencialObj = this.anios().find(a => a.id === this.presencialAnioId);
+    const gradoPresencialObj = this.catalogoGradosPresencial().find(g => g.id === this.presencialGradoId);
+    const errorEdadPresencial = this.validarEdadGradoEscolar(
+      this.presencialNacimientoEstudiante,
+      anioPresencialObj?.anio ?? this.anioActualCalendario,
+      gradoPresencialObj?.nombre ?? (seccionSel ? this.gradosMap.get(seccionSel.gradoId) : undefined),
+      gradoPresencialObj?.nivelId ?? seccionSel?.nivelId,
+      true
+    );
+    if (errorEdadPresencial) {
+      this.errorPresencial.set(errorEdadPresencial);
       return;
     }
 

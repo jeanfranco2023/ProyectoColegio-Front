@@ -257,8 +257,8 @@
               <label>Apellido paterno <span class="required-mark" aria-hidden="true">*</span><input appFormatoEntrada="nombre" [(ngModel)]="apellidoPaternoEstudiante" name="apellidoPaternoEstudiante" autocomplete="family-name" maxlength="30" required></label>
               <label>Apellido materno <span class="required-mark" aria-hidden="true">*</span><input appFormatoEntrada="nombre" [(ngModel)]="apellidoMaternoEstudiante" name="apellidoMaternoEstudiante" maxlength="30" required></label>
               <p class="span-2 form-hint">La consulta solo completa nombres y apellidos. Fecha de nacimiento y género deben coincidir con la partida.</p>
-              <label>Fecha de nacimiento <span class="required-mark" aria-hidden="true">*</span><app-ui-calendar [(ngModel)]="nacimientoEstudiante" name="nacimientoEstudiante" [max]="fechaNacimientoMaxima" [aria-invalid]="advertenciaEdad && !requiereAutorizacionEdad ? 'true' : null" aria-describedby="aviso-edad" [required]="true" aria-label="Fecha de nacimiento"></app-ui-calendar></label>
-              <p id="aviso-edad" role="status">{{ advertenciaEdad }}</p>
+              <label>Fecha de nacimiento <span class="required-mark" aria-hidden="true">*</span><app-ui-calendar [(ngModel)]="nacimientoEstudiante" name="nacimientoEstudiante" [min]="fechaNacimientoMinima" [max]="fechaNacimientoMaxima" [aria-invalid]="(errorEdad || (advertenciaEdad && !requiereAutorizacionEdad)) ? 'true' : null" aria-describedby="aviso-edad" [required]="true" aria-label="Fecha de nacimiento"></app-ui-calendar></label>
+              <p id="aviso-edad" [class.form-error]="!!errorEdad" [attr.role]="errorEdad ? 'alert' : 'status'">{{ errorEdad || advertenciaEdad }}</p>
               <label>Género<select [(ngModel)]="generoEstudiante" name="genero"><option value="M">Masculino</option><option value="F">Femenino</option></select></label>
               </div>
             </details>

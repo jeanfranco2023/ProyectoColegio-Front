@@ -80,6 +80,11 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     return fechaActualEnPeru();
   }
 
+  get fechaNacimientoMinima(): string {
+    const anio = Number(fechaActualEnPeru().slice(0, 4));
+    return `${anio - 20}-01-01`;
+  }
+
   nombresEstudiante = '';
   apellidoPaternoEstudiante = '';
   apellidoMaternoEstudiante = '';
@@ -193,8 +198,14 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     }
     const anio = this.catalogo().anios.find(a => a.id === this.anioId())?.anio;
     if (!anio) return 'No se pudo comprobar el año lectivo. Vuelve a cargar la página antes de continuar.';
-    return edadAlCorteMatricula(this.nacimientoEstudiante, anio) === null
-      ? 'Ingresa una fecha de nacimiento válida.' : '';
+    const edad = edadAlCorteMatricula(this.nacimientoEstudiante, anio);
+    if (edad === null) return 'Ingresa una fecha de nacimiento válida.';
+    const minPermitida = Math.max(2, section.edadMinimaAlCorte - 1);
+    const maxPermitida = Math.min(20, section.edadMaximaAlCorte + 1);
+    if (edad < minPermitida || edad > maxPermitida) {
+      return `La edad al 31 de marzo de ${anio} (${edad} años) no corresponde a ${section.grado || 'este grado'} (rango permitido: ${section.edadMinimaAlCorte}–${section.edadMaximaAlCorte} años).`;
+    }
+    return '';
   }
   ngOnInit(): void {
     this.vistaSubscription = this.route.paramMap.subscribe(params => {
@@ -702,6 +713,7 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
     if (!fechaNacimientoValida(this.nacimientoEstudiante)) {
       return this.error.set('La fecha de nacimiento debe ser válida y anterior al día de hoy.'), false;
     }
+    if (this.errorEdad) return this.error.set(this.errorEdad), false;
     if (this.advertenciaEdad && !this.requiereAutorizacionEdad) return this.error.set(this.advertenciaEdad), false;
     if ([this.nombresEstudiante, this.apellidoPaternoEstudiante, this.apellidoMaternoEstudiante,
       this.nombresApoderado, this.apellidoPaternoApoderado, this.apellidoMaternoApoderado]
@@ -943,7 +955,10 @@ export class MatriculaPublicaComponent implements OnInit, OnDestroy {
       return;
     }
     const solicitud = this.solicitud();
-    if (!solicitud || solicitud.estado !== 'MATRICULADA') return;
+    if (
+      !solicitud ||
+      (solicitud.estado !== 'MATRICULADA' && solicitud.estado !== 'PAGO_CONFIRMADO_PENDIENTE_ASIGNACION')
+    ) return;
 
     this.error.set('');
     this.procesando.set(true);

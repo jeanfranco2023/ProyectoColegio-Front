@@ -179,7 +179,7 @@ export class HorariosComponent implements OnInit {
   ];
   readonly diaAgendaActual = computed(() => this.dias.find(d => d.numero === this.diaAgendaMovil()) ?? this.dias[0]);
 
-  gestion(): boolean { return this.store.hasRole('DIRECCION'); }
+  gestion(): boolean { return this.store.hasRole('DIRECCION') || this.store.hasRole('ADMINISTRADOR'); }
   ngOnInit(): void {
     if (this.gestion() && this.vista() === 'malla') this.cargarMallaDireccion();
   }

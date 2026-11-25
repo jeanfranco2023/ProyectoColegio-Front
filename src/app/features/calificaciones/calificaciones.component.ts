@@ -129,30 +129,44 @@ template: `
         </button>
       </div>
 
-      <section class="grid min-w-0 grid-cols-[minmax(160px,.9fr)_minmax(240px,1.25fr)_minmax(310px,1.55fr)_minmax(150px,.8fr)] items-end gap-4 rounded-2xl border border-ui-divider bg-ui-surface !p-[18px] shadow-[0_5px_16px_rgb(23_43_77_/_5%)] max-[1399px]:grid-cols-2 max-[600px]:grid-cols-1 max-[600px]:gap-[13px] max-[600px]:!p-[15px]" aria-label="Filtros de calificaciones">
+      <section class="grid min-w-0 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-[minmax(110px,.65fr)_minmax(150px,.9fr)_minmax(180px,1.1fr)_minmax(220px,1.35fr)_minmax(220px,1.35fr)_auto] items-end gap-4 rounded-2xl border border-ui-divider bg-ui-surface !p-[18px] shadow-[0_5px_16px_rgb(23_43_77_/_5%)] max-[600px]:gap-[13px] max-[600px]:!p-[15px]" aria-label="Filtros de calificaciones">
+        <div class="grid gap-1 font-sans text-base leading-6 text-ui-text min-w-0 m-0">
+          <label class="font-sans text-[13px] leading-[1.4] font-medium text-ui-text" for="anio-calificaciones">Año</label>
+          <select id="anio-calificaciones" [ngModel]="anioFiltroId()" (ngModelChange)="seleccionarAnio($event)" [disabled]="!aniosDisponibles().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border max-[600px]:!text-sm min-[601px]:!text-[13px] !rounded-xl !border-ui-control-border !text-ui-text">
+            @if (!aniosDisponibles().length) { <option [ngValue]="0">Sin años</option> } @for (anio of aniosDisponibles(); track anio.id) { <option [ngValue]="anio.id">{{ anio.label }}</option> }
+          </select>
+        </div>
+
         <div class="grid gap-1 font-sans text-base leading-6 text-ui-text min-w-0 m-0">
           <label class="font-sans text-[13px] leading-[1.4] font-medium text-ui-text" for="periodo-calificaciones">Periodo Académico</label>
-          <select id="periodo-calificaciones" [(ngModel)]="periodoId" (change)="cargarCalificaciones()" [disabled]="!periodos().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border max-[600px]:!text-sm min-[601px]:!text-[13px] !rounded-xl !border-ui-control-border !text-ui-text">
+          <select id="periodo-calificaciones" [(ngModel)]="periodoId" (change)="cargarCalificaciones()" [disabled]="!periodos().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border max-[600px]:!text-sm min-[601px]:!text-[13px] !rounded-xl !border-ui-control-border !text-ui-text">
             @if (!periodos().length) { <option [ngValue]="0">Sin periodos disponibles</option> } @for (periodo of periodos(); track periodo.id) { <option [ngValue]="periodo.id">{{ periodo.nombre }}</option> }
           </select>
         </div>
 
         <div class="grid gap-1 font-sans text-base leading-6 text-ui-text min-w-0 m-0">
-          <label class="font-sans text-[13px] leading-[1.4] font-medium text-ui-text" for="asignacion-calificaciones">Asignación docente y sección</label>
-          <select id="asignacion-calificaciones" [(ngModel)]="asignacionId" (change)="cambiarAsignacion()" [disabled]="!asignaciones().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border max-[600px]:!text-sm min-[601px]:!text-[13px] !rounded-xl !border-ui-control-border !text-ui-text">
-            @if (!asignaciones().length) { <option [ngValue]="0">Sin asignaciones disponibles</option> } @for (a of asignaciones(); track a.id) { <option [ngValue]="a.id">{{ etiquetaAsignacion(a) }}</option> }
+          <label class="font-sans text-[13px] leading-[1.4] font-medium text-ui-text" for="grado-calificaciones">Grado</label>
+          <select id="grado-calificaciones" [ngModel]="gradoFiltroKey()" (ngModelChange)="seleccionarGrado($event)" [disabled]="!gradosDisponibles().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border max-[600px]:!text-sm min-[601px]:!text-[13px] !rounded-xl !border-ui-control-border !text-ui-text">
+            @if (!gradosDisponibles().length) { <option value="">Sin grados disponibles</option> } @for (g of gradosDisponibles(); track g.key) { <option [value]="g.key">{{ g.label }}</option> }
+          </select>
+        </div>
+
+        <div class="grid gap-1 font-sans text-base leading-6 text-ui-text min-w-0 m-0">
+          <label class="font-sans text-[13px] leading-[1.4] font-medium text-ui-text" for="asignacion-calificaciones">Sección</label>
+          <select id="asignacion-calificaciones" [(ngModel)]="asignacionId" (change)="cambiarAsignacion()" [disabled]="!seccionesDisponibles().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border max-[600px]:!text-sm min-[601px]:!text-[13px] !rounded-xl !border-ui-control-border !text-ui-text">
+            @if (!seccionesDisponibles().length) { <option [ngValue]="0">Sin secciones disponibles</option> } @for (item of seccionesDisponibles(); track item.id) { <option [ngValue]="item.id">{{ item.seccionLabel }}</option> }
           </select>
         </div>
 
         <div class="grid gap-1 font-sans text-base leading-6 text-ui-text min-w-0 m-0">
           <label class="font-sans text-[13px] leading-[1.4] font-medium text-ui-text" for="competencia-calificaciones">Competencia</label>
-          <select id="competencia-calificaciones" [(ngModel)]="competenciaId" (change)="cargarCalificaciones()" [disabled]="!competencias().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border max-[600px]:!text-sm min-[601px]:!text-[13px] !rounded-xl !border-ui-control-border !text-ui-text">
+          <select id="competencia-calificaciones" [(ngModel)]="competenciaId" (change)="cargarCalificaciones()" [disabled]="!competencias().length" class="box-border min-h-11 w-full rounded-lg border border-ui-divider bg-ui-surface px-3 py-2 font-sans text-base leading-6 text-ui-text placeholder:text-ui-muted focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 aria-[invalid=true]:border-ui-error-border max-[600px]:!text-sm min-[601px]:!text-[13px] !rounded-xl !border-ui-control-border !text-ui-text">
             @if (!competencias().length) { <option [ngValue]="0">Sin competencias disponibles</option> } @for (c of competencias(); track c.id) { <option [ngValue]="c.id">{{ c.nombre }}</option> }
           </select>
         </div>
 
         <div class="min-w-0">
-          <button type="button" (click)="cargarCalificaciones()" [disabled]="!asignacionId || !periodoId || !competenciaId" class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-ui-divider disabled:bg-ui-surface-soft disabled:text-ui-muted aria-disabled:cursor-not-allowed aria-disabled:border-ui-divider aria-disabled:bg-ui-surface-soft aria-disabled:text-ui-muted !border-ui-divider bg-ui-surface text-ui-text hover:bg-ui-surface-soft w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25]">Consultar Registros</button>
+          <button type="button" (click)="cargarCalificaciones()" [disabled]="!asignacionId || !periodoId || !competenciaId" class="inline-flex items-center justify-center gap-2 rounded-lg border border-transparent px-4 py-2 text-center font-sans text-[15px] leading-[1.25] font-semibold no-underline transition-[background-color,border-color,color,box-shadow] duration-[140ms] [cursor:pointer] focus-visible:outline-3 focus-visible:outline-ui-focus focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:border-ui-divider disabled:bg-ui-surface-soft disabled:text-ui-muted aria-disabled:cursor-not-allowed aria-disabled:border-ui-divider aria-disabled:bg-ui-surface-soft aria-disabled:text-ui-muted !border-ui-divider bg-ui-surface text-ui-text hover:bg-ui-surface-soft w-full box-border inline-flex min-w-0 !min-h-[44px] items-center justify-center gap-2 font-sans text-sm font-semibold leading-[1.25] text-center align-middle max-[639px]:!min-h-[44px] !text-sm !leading-[1.25] whitespace-nowrap">Consultar Registros</button>
         </div>
       </section>
 
@@ -1232,6 +1246,8 @@ export class CalificacionesComponent implements OnInit {
   private readonly ruta = inject(ActivatedRoute, { optional: true });
   private solicitudMatriz = 0;
   readonly catalogoAsignaciones = signal<AsignacionHorarioOpcionDto[]>([]);
+  readonly anioFiltroId = signal<number>(0);
+  readonly gradoFiltroKey = signal<string>('');
 
   periodoId = 0;
   asignacionId = 0;
@@ -1242,6 +1258,69 @@ export class CalificacionesComponent implements OnInit {
   readonly error = signal<string | null>(null);
   guardadoExitoso = signal(false);
   cargando = signal(false);
+
+  readonly asignacionesEnriquecidas = computed(() => {
+    const porId = new Map(this.catalogoAsignaciones().map(item => [item.asignacionId, item]));
+    return this.asignaciones().map(a => {
+      const opcion = porId.get(a.id);
+      return {
+        id: a.id,
+        anioLectivoId: a.anioLectivoId,
+        anioLabel: opcion?.anio ? String(opcion.anio) : `Año #${a.anioLectivoId}`,
+        anioOrden: opcion?.anio ?? a.anioLectivoId,
+        nivelId: opcion?.nivelId ?? a.nivelId,
+        gradoId: opcion?.gradoId ?? 0,
+        gradoKey: opcion ? `${opcion.nivelId}:${opcion.gradoId}` : `nivel:${a.nivelId}`,
+        gradoLabel: opcion ? `${opcion.grado} · ${opcion.nivel}` : `Nivel #${a.nivelId}`,
+        letra: opcion?.letra ?? '',
+        areaNombre: opcion?.areaNombre ?? '',
+        seccionLabel: opcion
+          ? `Sección ${opcion.letra} · ${opcion.areaNombre}${opcion.aulaCodigo ? ' · Aula ' + opcion.aulaCodigo : ''}`
+          : `Sección ${a.seccionId} · Área ${a.areaCurricularId}`
+      };
+    });
+  });
+
+  readonly aniosDisponibles = computed(() => {
+    const mapa = new Map<number, { id: number; label: string; orden: number }>();
+    for (const item of this.asignacionesEnriquecidas()) {
+      if (!mapa.has(item.anioLectivoId)) {
+        mapa.set(item.anioLectivoId, {
+          id: item.anioLectivoId,
+          label: item.anioLabel,
+          orden: item.anioOrden
+        });
+      }
+    }
+    return Array.from(mapa.values()).sort((a, b) => b.orden - a.orden || b.id - a.id);
+  });
+
+  readonly gradosDisponibles = computed(() => {
+    const anio = this.anioFiltroId();
+    const mapa = new Map<string, { key: string; label: string; nivelId: number; gradoId: number }>();
+    for (const item of this.asignacionesEnriquecidas()) {
+      if (anio && item.anioLectivoId !== anio) continue;
+      if (!mapa.has(item.gradoKey)) {
+        mapa.set(item.gradoKey, {
+          key: item.gradoKey,
+          label: item.gradoLabel,
+          nivelId: item.nivelId,
+          gradoId: item.gradoId
+        });
+      }
+    }
+    return Array.from(mapa.values()).sort(
+      (a, b) => a.nivelId - b.nivelId || a.gradoId - b.gradoId || a.label.localeCompare(b.label, 'es')
+    );
+  });
+
+  readonly seccionesDisponibles = computed(() => {
+    const anio = this.anioFiltroId();
+    const grado = this.gradoFiltroKey();
+    return this.asignacionesEnriquecidas()
+      .filter(item => (!anio || item.anioLectivoId === anio) && (!grado || item.gradoKey === grado))
+      .sort((a, b) => a.letra.localeCompare(b.letra, 'es') || a.areaNombre.localeCompare(b.areaNombre, 'es'));
+  });
 
   readonly alumnos = signal<EvaluacionAlumno[]>([]);
   readonly busquedaAlumno = signal('');
@@ -1328,7 +1407,12 @@ export class CalificacionesComponent implements OnInit {
       return;
     }
     this.horarioService.catalogo().subscribe({
-      next: catalogo => this.catalogoAsignaciones.set(catalogo),
+      next: catalogo => {
+        this.catalogoAsignaciones.set(catalogo);
+        if (this.asignacionId) {
+          this.sincronizarFiltrosDesdeAsignacion(this.asignacionId);
+        }
+      },
       error: () => this.catalogoAsignaciones.set([])
     });
     this.academicoService.listarAsignaciones().subscribe({
@@ -1375,6 +1459,29 @@ export class CalificacionesComponent implements OnInit {
     });
   }
 
+  private sincronizarFiltrosDesdeAsignacion(asignacionId: number): void {
+    const item = this.asignacionesEnriquecidas().find(a => a.id === Number(asignacionId));
+    if (!item) return;
+    this.anioFiltroId.set(item.anioLectivoId);
+    this.gradoFiltroKey.set(item.gradoKey);
+  }
+
+  seleccionarAnio(anioId: number): void {
+    this.anioFiltroId.set(Number(anioId));
+    const grados = this.gradosDisponibles();
+    this.gradoFiltroKey.set(grados[0]?.key ?? '');
+    const secciones = this.seccionesDisponibles();
+    this.asignacionId = secciones[0]?.id ?? 0;
+    this.cambiarAsignacion();
+  }
+
+  seleccionarGrado(gradoKey: string): void {
+    this.gradoFiltroKey.set(gradoKey);
+    const secciones = this.seccionesDisponibles();
+    this.asignacionId = secciones[0]?.id ?? 0;
+    this.cambiarAsignacion();
+  }
+
   cambiarAsignacion(): void {
     this.solicitudRanking++;
     const solicitud = ++this.solicitudMatriz;
@@ -1393,6 +1500,7 @@ export class CalificacionesComponent implements OnInit {
       this.rankingCargando.set(false);
       return;
     }
+    this.sincronizarFiltrosDesdeAsignacion(asignacion.id);
     this.cuadroHonor.set(null);
     this.rankingError.set(null);
     this.error.set(null);

@@ -15,7 +15,7 @@ export const ADMIN_ROUTE_ACCESS = {
   'observaciones-conductuales': ['DIRECCION', 'TUTOR', 'AUXILIAR', 'ADMINISTRADOR'],
   tesoreria: ['DIRECCION', 'SECRETARIA', 'APODERADO', 'AUXILIAR', 'ADMINISTRADOR'],
   comunicados: ['DIRECCION', 'SECRETARIA', 'APODERADO', 'ADMINISTRADOR'],
-  usuarios: ['DIRECCION', 'ADMINISTRADOR'],
+  usuarios: ['DIRECCION', 'SECRETARIA', 'ADMINISTRADOR'],
   auditoria: ['ADMINISTRADOR'],
   'solicitudes-cambio': ['DIRECCION', 'ADMINISTRADOR'],
   'portal-apoderado': ['APODERADO'],

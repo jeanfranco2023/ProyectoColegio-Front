@@ -6,6 +6,14 @@ export interface RolResponseDto {
   nombre: string;
 }
 
+export interface AreaDocenteDto {
+  id: number;
+  nivelId: number;
+  nivelNombre?: string | null;
+  codigo: string;
+  nombre: string;
+}
+
 export interface UserResponseDto {
   id: number;
   username: string;
@@ -13,8 +21,16 @@ export interface UserResponseDto {
   dni?: string | null;
   email: string;
   activo: boolean;
+  telefono?: string | null;
+  direccion?: string | null;
   especialidad?: string | null;
+  codigoModular?: string | null;
+  numeroColegiatura?: string | null;
+  tipoContrato?: string | null;
+  estadoLaboral?: string | null;
+  fechaIngreso?: string | null;
   roles: RolResponseDto[];
+  areasCurriculares?: AreaDocenteDto[];
   createdAt: string;
   updatedAt: string;
 }
@@ -25,7 +41,30 @@ export interface CrearUsuarioRequestDto {
   nombreCompleto?: string;
   email: string;
   password: string;
+  telefono?: string;
+  direccion?: string;
+  especialidad?: string;
+  codigoModular?: string;
+  numeroColegiatura?: string;
+  tipoContrato?: string;
   roles: RolNombre[];
+  areaCurricularIds?: number[];
+}
+
+export interface ActualizarUsuarioAdminRequestDto {
+  dni?: string;
+  nombreCompleto?: string;
+  email?: string;
+  telefono?: string;
+  direccion?: string;
+  especialidad?: string;
+  codigoModular?: string;
+  numeroColegiatura?: string;
+  tipoContrato?: string;
+  estadoLaboral?: 'ACTIVO' | 'SUSPENDIDO' | 'CESADO' | 'INACTIVO';
+  passwordNuevo?: string;
+  roles?: RolNombre[];
+  areaCurricularIds?: number[];
 }
 
 export interface CambiarPasswordRequestDto {

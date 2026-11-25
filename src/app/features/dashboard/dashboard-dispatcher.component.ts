@@ -2348,32 +2348,34 @@ export class DashboardDispatcherComponent implements OnInit {
 
   private inicializarCatalogosIndicadores(): void {
     this.cargarIndicadoresDireccion();
-    this.http.get<AnioLectivoResponseDto[]>(`${environment.apiUrl}/academico/anios`).pipe(
-      catchError(() => of([] as AnioLectivoResponseDto[]))
-    ).subscribe(anios => {
-      const lista = Array.isArray(anios) ? anios : [];
-      this.aniosDisponibles.set(lista);
+    forkJoin({
+      anios: this.http.get<AnioLectivoResponseDto[]>(`${environment.apiUrl}/academico/anios`).pipe(
+        catchError(() => of([] as AnioLectivoResponseDto[]))
+      ),
+      niveles: this.http.get<NivelResponseDto[]>(`${environment.apiUrl}/academico/niveles`).pipe(
+        catchError(() => of([] as NivelResponseDto[]))
+      ),
+      grados: this.http.get<GradoResponseDto[]>(`${environment.apiUrl}/academico/grados`).pipe(
+        catchError(() => of([] as GradoResponseDto[]))
+      )
+    }).subscribe(({ anios, niveles, grados }) => {
+      const listaAnios = Array.isArray(anios) ? anios : [];
+      const listaNiveles = Array.isArray(niveles) ? niveles : [];
+      const listaGrados = Array.isArray(grados) ? grados : [];
+      const mapaNiveles = new Map(listaNiveles.map(n => [n.id, n.codigo]));
+      this.gradosCatalogo.set(
+        listaGrados
+          .filter(g => mapaNiveles.has(g.nivelId))
+          .map(g => ({ ...g, nivelCodigo: mapaNiveles.get(g.nivelId)! }))
+      );
+      this.aniosDisponibles.set(listaAnios);
       const anioActual = new Date().getFullYear();
-      const activo = lista.find(a => a.abierto && a.anio === anioActual) ?? lista.find(a => a.abierto) ?? lista[0];
+      const activo = listaAnios.find(a => a.abierto && a.anio === anioActual) ?? listaAnios.find(a => a.abierto) ?? listaAnios[0];
       if (activo) {
         this.anioFiltroId = activo.id;
       }
-      this.cargarGradosCatalogo();
-      this.alCambiarAnioFiltro();
-    });
-  }
-
-  private cargarGradosCatalogo(): void {
-    this.http.get<NivelResponseDto[]>(environment.apiUrl + '/academico/niveles').pipe(
-      switchMap(niveles => niveles.length ? forkJoin(niveles.map(nivel =>
-        this.http.get<GradoResponseDto[]>(environment.apiUrl + '/academico/grados', { params: { nivelId: nivel.id } }).pipe(
-          map(grados => grados.map(grado => ({ ...grado, nivelCodigo: nivel.codigo })))
-        )
-      )) : of([])),
-      catchError(() => of([]))
-    ).subscribe(grupos => {
-      this.gradosCatalogo.set(grupos.flat());
       this.enriquecerSeccionesCupos();
+      this.cargarCatalogosAnio(false);
     });
   }
 
@@ -2392,12 +2394,18 @@ export class DashboardDispatcherComponent implements OnInit {
   }
 
   alCambiarAnioFiltro(): void {
+    this.cargarCatalogosAnio(true);
+  }
+
+  private cargarCatalogosAnio(recargarIndicadores: boolean): void {
     const consulta = ++this.consultaCatalogos;
     this.periodoFiltroId = 0;
     this.seccionFiltroId = 0;
     this.periodosDisponibles.set([]);
     this.seccionesCatalogo.set([]);
-    this.cargarIndicadoresDireccion();
+    if (recargarIndicadores) {
+      this.cargarIndicadoresDireccion();
+    }
     if (!this.anioFiltroId) return;
     forkJoin({
       periodos: this.http.get<PeriodoResponseDto[]>(`${environment.apiUrl}/academico/periodos`, { params: { anioId: this.anioFiltroId } }).pipe(catchError(() => of([]))),
@@ -2411,7 +2419,9 @@ export class DashboardDispatcherComponent implements OnInit {
       const vigenteId = this.periodoVigenteId();
       if (vigenteId > 0 && this.periodoFiltroId !== vigenteId) {
         this.periodoFiltroId = vigenteId;
-        this.cargarIndicadoresDireccion();
+        if (recargarIndicadores) {
+          this.cargarIndicadoresDireccion();
+        }
       }
       this.enriquecerSeccionesCupos();
     });
